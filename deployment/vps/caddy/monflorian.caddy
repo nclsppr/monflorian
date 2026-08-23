@@ -8,7 +8,6 @@ monflorian.com {
 	}
 
 	handle {
-		import /etc/caddy/monflorian-private-access.caddy
 		reverse_proxy monflorian-backend:8080
 	}
 }

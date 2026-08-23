@@ -256,7 +256,13 @@ def expected_probes(revision: str) -> dict[str, object]:
                 "path": "/.well-known/monflorian-release",
                 "status": 200,
             },
-            {"host": "monflorian.com", "path": "/", "status": 401},
+            {"host": "monflorian.com", "path": "/", "status": 200},
+            {
+                "body_contains": '"serviceReady":false',
+                "host": "monflorian.com",
+                "path": "/api/config",
+                "status": 200,
+            },
             {"host": "www.monflorian.com", "path": "/", "status": 308},
         ],
         "schema": 1,
@@ -281,6 +287,8 @@ def _validate_runtime_sources(root: Path, revision: str) -> tuple[bytes, bytes, 
     required_compose = (
         b"image: ${MONFLORIAN_BACKEND_IMAGE:",
         b"OPENAI_API_KEY_FILE: /run/secrets/monflorian_openai_api_key",
+        b'MONFLORIAN_GENERATION_ENABLED: "false"',
+        b'MONFLORIAN_ILLUSTRATION_ENABLED: "false"',
         b"file: /etc/vps/secrets/monflorian/monflorian-openai-api-key",
         b"external: true",
         b"name: app_monflorian",
@@ -294,11 +302,10 @@ def _validate_runtime_sources(root: Path, revision: str) -> tuple[bytes, bytes, 
         raise ContractError("VPS Compose source contains a forbidden runtime feature")
     required_caddy = (
         b"handle /.well-known/monflorian-release",
-        b'import /etc/caddy/monflorian-private-access.caddy',
         b"reverse_proxy monflorian-backend:8080",
     )
     if any(fragment not in caddy for fragment in required_caddy):
-        raise ContractError("VPS Caddy source misses private edge or identity routing")
+        raise ContractError("VPS Caddy source misses preview edge or identity routing")
     if b"dns ovh" in caddy or b"OVH_" in caddy or b"basic_auth" in caddy:
         raise ContractError("VPS Caddy source packages DNS or access credentials")
     placeholder = REVISION_PLACEHOLDER.encode("ascii")
