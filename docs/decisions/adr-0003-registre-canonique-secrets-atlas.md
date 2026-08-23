@@ -1,7 +1,7 @@
 # ADR-0003 : registre canonique des secrets Atlas
 
 - Statut : accepté
-- Statut d'implémentation : règle adoptée ; registre central proposé dans `vps-infra` PR #99
+- Statut d'implémentation : règle adoptée ; registre central livré par `vps-infra` PR #99
 - Date : 2026-08-23
 - Dernière vérification : 2026-08-23
 - Propriétaire : `nclsppr`
