@@ -19,6 +19,7 @@ Les contraintes de sécurité et l'autorité explicite de la tâche précèdent 
 
 - Inspecter Git et préserver les changements sans rapport.
 - Modifier les sources canoniques, jamais les captures ou rendus dérivés.
+- Toute tâche qui prévoit ou exige le déploiement, la rotation ou la révocation d'un secret sur Atlas doit aussi mettre à jour `nclsppr/vps-infra` avant sa clôture. Ajouter ou mettre à jour ce secret dans `secrets/registry.json`, le registre canonique requis pour reconstruire Atlas depuis un hôte vierge. Versionner seulement le contrat et les métadonnées, jamais la valeur, un condensat dérivé de la valeur, un fichier déchiffré ou un chemin source privé. Si la tâche n'autorise pas la modification de `vps-infra`, signaler le blocage et ne pas déclarer le travail terminé. Voir [ADR-0003](docs/decisions/adr-0003-registre-canonique-secrets-atlas.md).
 - Ne jamais modifier `docs/foundation/` localement.
 - Maintenir le prototype sous `prototype/` comme expérience locale tant qu'une ADR ne le promeut pas.
 - Ne jamais présenter le bouton à 50 €, le mini-site, le PDF, la carte ou les photos comme des capacités livrées sans preuve correspondante.
