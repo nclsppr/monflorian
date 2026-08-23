@@ -11,6 +11,7 @@ import re
 import stat
 import subprocess
 import tarfile
+import zlib
 from pathlib import Path
 from typing import Any, Mapping
 
@@ -469,7 +470,7 @@ def _validated_archive_files(
         raise ContractError("integration inventory path allowlist differs")
     try:
         tar_raw = gzip.decompress(archive_raw)
-    except (gzip.BadGzipFile, EOFError, OSError) as exc:
+    except (gzip.BadGzipFile, EOFError, OSError, zlib.error) as exc:
         raise ContractError("integration archive is not valid gzip") from exc
     if len(tar_raw) < 1024 or tar_raw[257:265] != b"ustar\x0000":
         raise ContractError("integration archive is not deterministic USTAR")

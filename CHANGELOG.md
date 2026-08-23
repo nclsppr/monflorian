@@ -11,7 +11,7 @@ Git reste la source du diff technique. Les ADR expliquent les décisions importa
 - Ajout des modes d'hébergement `off`, `external` et `cj-static`. Le mode affilié n'accepte que des liens approuvés et configurés sur une liste de domaines autorisés.
 - Ajout du contrat OpenAPI, du contrat de traitement, du modèle de menace, du runbook Atlas et d'une preuve de livraison en cours.
 - Ajout d'un contrat de publication OCI avec image non privilégiée, provenance, scan, bundle d'intégration et signal de release Atlas immuables.
-- Validation locale de F01 : 25 tests applicatifs, 12 tests de contrat Atlas, Compose sain, documentation Nimbus et contrôle responsive sur bureau et mobile.
+- Validation locale de F01 : 25 tests applicatifs, 13 tests de contrat Atlas, Compose sain, documentation Nimbus et contrôle responsive sur bureau et mobile.
 - Maintien du service en candidat privé tant que le domaine, le partenariat Booking.com et les preuves de production manquent.
 - Import du logo et des concepts avec une source canonique et une provenance explicites.
 - Isolation du concept interactif dans un prototype local sans paiement, stockage ou appel réseau.

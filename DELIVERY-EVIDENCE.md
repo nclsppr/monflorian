@@ -89,7 +89,7 @@ Produire une application déployable qui génère un itinéraire avec OpenAI, pr
 | GitHub Actions run `32637925764` | Ubuntu 24.04 | Succès | Preuve documentaire F00 seulement |
 | Navigateur 1440 x 900 et 390 x 844 sur F00 | navigateur intégré | Succès | Prototype, pas interface F01 |
 | `npm test` | Node 24 local | 25 tests réussis | Validation, fournisseur simulé, annulation, OpenAPI et serveur F01 |
-| `./scripts/verify-vps-release-contract` | Python local | 12 tests réussis | Contrats OCI, intégration Atlas et workflows F01 |
+| `./scripts/verify-vps-release-contract` | Python local | 13 tests réussis | Contrats OCI, intégration Atlas et workflows F01 |
 | `./scripts/verify.sh` | macOS arm64, Node 24 et Docker | Succès | Application F01, conteneur, contrats et documentation Nimbus |
 | Navigateur 1440 x 900 et 390 x 844 sur F01 | navigateur intégré | Succès | Interface, responsive, résultats simulés, liens sponsorisés et console |
 

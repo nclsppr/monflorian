@@ -5,6 +5,10 @@ ENV NODE_ENV=production \
     HOST=0.0.0.0 \
     PORT=8080
 
+# Runtime only: npm is not used and would add an unnecessary dependency tree.
+RUN rm -rf /usr/local/lib/node_modules/npm \
+    && rm -f /usr/local/bin/npm /usr/local/bin/npx
+
 COPY --chown=10001:10001 app ./app
 COPY --chown=10001:10001 assets/brand/monflorian-logo.png ./assets/brand/monflorian-logo.png
 

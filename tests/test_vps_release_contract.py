@@ -249,6 +249,11 @@ class VpsReleaseContractTests(unittest.TestCase):
             self.assertNotIn("ports", model["services"]["backend"])
             self.assertEqual(set(model["services"]["backend"]["networks"]), {"app_monflorian"})
 
+    def test_runtime_omits_the_unused_npm_dependency_tree(self) -> None:
+        dockerfile = (ROOT / "Dockerfile").read_text()
+        self.assertIn("rm -rf /usr/local/lib/node_modules/npm", dockerfile)
+        self.assertIn("rm -f /usr/local/bin/npm /usr/local/bin/npx", dockerfile)
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -16,7 +16,7 @@ Snapshot de l'état vérifié. Les objectifs et leurs critères vivent dans `ROA
 
 ## Résumé
 
-F00 est livrée sur `origin/main` avec une CI verte. Le worktree contient désormais une application Critique avec backend Node.js, génération OpenAI, projections dessinées, liens d'hébergement séparés et image de conteneur. Ses 25 tests applicatifs, 12 tests de contrat Atlas, son parcours Compose, sa documentation et son interface responsive sont verts localement. Cette tranche n'est pas encore une release tant que son commit poussé, sa CI et ses artefacts immuables ne sont pas consignés.
+F00 est livrée sur `origin/main` avec une CI verte. Le worktree contient désormais une application Critique avec backend Node.js, génération OpenAI, projections dessinées, liens d'hébergement séparés et image de conteneur. Ses 25 tests applicatifs, 13 tests de contrat Atlas, son parcours Compose, sa documentation et son interface responsive sont verts localement. Cette tranche n'est pas encore une release tant que son commit poussé, sa CI et ses artefacts immuables ne sont pas consignés.
 
 Aucun service Mon Florian ne tourne sur Atlas d'après les preuves disponibles. `monflorian.com` a été acheté chez OVHcloud le 2026-08-23 à 13:00:22Z. L'apex et `www` pointent encore vers le parking OVH `213.186.33.5`, pas vers Atlas `137.74.174.163`. Aucun partenariat Booking.com accepté ni identifiant d'affiliation n'a été observé.
 
@@ -69,7 +69,7 @@ Aucun service Mon Florian ne tourne sur Atlas d'après les preuves disponibles. 
 | 2026-08-23 | Contrôle navigateur F00 en 1440 x 900 et 390 x 844 | navigateur intégré | Succès | Mise en page, interactions, contraste, réseau et console du prototype |
 | 2026-08-23 | GitHub Actions [run 32637460676](https://github.com/nclsppr/monflorian/actions/runs/32637460676) | Ubuntu 24.04, commit `e8f5d97` | Succès | Vérification distante de F00 |
 | 2026-08-23 | GitHub Actions [run 32637925764](https://github.com/nclsppr/monflorian/actions/runs/32637925764) | Ubuntu 24.04, commit `6c6824a` | Succès | Vérification distante de la preuve F00 |
-| 2026-08-23 | `./scripts/verify.sh` sur F01 | macOS arm64, Node 24, Python et Docker | Succès | 25 tests applicatifs, 12 tests de release, Compose et documentation Nimbus |
+| 2026-08-23 | `./scripts/verify.sh` sur F01 | macOS arm64, Node 24, Python et Docker | Succès | 25 tests applicatifs, 13 tests de release, Compose et documentation Nimbus |
 | 2026-08-23 | Contrôle navigateur F01 en 1440 x 900 et 390 x 844 | navigateur intégré | Succès | Responsive, états, résultat simulé, liens sponsorisés et console |
 
 ## Blocages externes
