@@ -10,7 +10,7 @@ Ce fichier décrit le candidat applicatif `a7c5d1c32a41c2e43c92f02bff4d584910727
 | Branche produit | `main` |
 | Protection de branche | PR obligatoire, historique linéaire, `verify` et `Validate application release` requis |
 | Candidat produit | `a7c5d1c32a41c2e43c92f02bff4d584910727eb1` |
-| Contrôle Atlas | `891a898074314104e5bfacf78e46cdf512b7e5c5` |
+| Contrôle Atlas | `1d177efe019dda57f831c227f1ab03c1bef8a177` |
 | Environnements prouvés | macOS arm64, GitHub Actions Ubuntu 24.04, Docker local et VPS Atlas |
 | État public | DNS sur Atlas, application encore inactive |
 
@@ -24,18 +24,18 @@ Le frontend est responsive en 1440 x 900 et 390 x 844. Les essais navigateur n'o
 
 ## Ce qui n'est pas encore en ligne
 
-Atlas connaît maintenant Mon Florian, mais le profil reste désactivé. Le VPS a le réseau `app_monflorian`, les répertoires d'application et la route Caddy suffixée `.disabled`. Il n'a ni conteneur Mon Florian, ni secret OpenAI, ni certificat pour le domaine.
+Atlas connaît maintenant Mon Florian, mais le profil reste désactivé. Le VPS a le réseau `app_monflorian`, les répertoires d'application, le secret OpenAI et la route Caddy suffixée `.disabled`. Il n'a ni conteneur Mon Florian, ni certificat pour le domaine.
 
-La clé OpenAI envoyée dans la conversation est considérée exposée. Elle n'a pas été copiée dans Git, sur le VPS ou dans un fichier de travail. Il faut la révoquer, créer une nouvelle clé et l'installer hors conversation avant le premier appel réel.
+Une clé distincte a été récupérée depuis la console OpenAI dans Safari puis installée sur Atlas sans être affichée dans les sorties. L'appel non facturé à `/v1/models` depuis Atlas authentifie la clé et confirme l'accès à `gpt-5.4-mini-2026-03-17` et `gpt-image-2`. Aucun appel de génération n'a encore été exécuté. L'ancienne clé envoyée dans la conversation reste considérée exposée et doit être révoquée.
 
 ## Phases
 
 | Phase | État | Preuve suivante |
 | --- | --- | --- |
 | F01, candidat applicatif | terminée | Candidat, CI, digests et attestations consignés |
-| F02, appels OpenAI réels | bloquée | Nouvelle clé privée, puis deux smoke tests synthétiques à budget borné |
-| F03, admission Atlas | préparée | Profil encore désactivé, aucun conteneur lancé |
-| F04, domaine et accès privé | bloquée | Installer les secrets, activer la route privée, vérifier TLS et les chemins coûteux |
+| F02, appels OpenAI réels | en cours | Authentification et modèles prouvés, puis deux smoke tests synthétiques à budget borné |
+| F03, admission Atlas | préparée | Secret montable, profil encore désactivé, aucun conteneur lancé |
+| F04, domaine et accès privé | bloquée | Activer l'accès et la route privés, puis vérifier TLS et les chemins coûteux |
 | F05, affiliation Booking.com | bloquée | Partenariat accepté et liens approuvés |
 
 ## Artefacts du candidat
@@ -56,15 +56,15 @@ La clé OpenAI envoyée dans la conversation est considérée exposée. Elle n'a
 
 ## État Atlas
 
-L'admission dormante a été relue puis fusionnée dans [vps-infra PR 96](https://github.com/nclsppr/vps-infra/pull/96). La convergence réelle a terminé avec `ok=379`, `changed=13`, `failed=0`. Le second passage en mode prédictif a terminé avec `ok=221`, `changed=0`, `failed=0`.
+L'admission dormante a été relue puis fusionnée dans [vps-infra PR 96](https://github.com/nclsppr/vps-infra/pull/96). La convergence qui a installé le secret et actualisé le contrôleur a terminé avec `ok=380`, `changed=9`, `failed=0`. Le second passage en mode prédictif a terminé avec `ok=223`, `changed=0`, `failed=0`.
 
 | Contrôle | Observation |
 | --- | --- |
-| Révision du contrôleur | `891a898074314104e5bfacf78e46cdf512b7e5c5` |
+| Révision du contrôleur | `1d177efe019dda57f831c227f1ab03c1bef8a177` |
 | Réseau | `app_monflorian`, bridge `172.30.40.0/24`, géré par Atlas, aucun conteneur |
 | Répertoires | `/srv/applications/monflorian` et `releases`, propriétaire `root:root`, mode `0755` |
 | Dossier de secrets | `/etc/vps/secrets/monflorian`, propriétaire `root:root`, mode `0700` |
-| Secret OpenAI | absent |
+| Secret OpenAI | présent, fichier régulier `root:10001`, mode `0440`, un lien, authentification et modèles vérifiés sans afficher la valeur |
 | Application active | aucune |
 | Route | `platform/caddy/routes/monflorian.caddy.disabled` |
 | Services existants | Caddy, PostgreSQL et supervision toujours sains |
@@ -86,7 +86,7 @@ Ce changement ne prouve pas le déploiement. Une requête forcée vers l'IP Atla
 
 | Blocage | Action attendue |
 | --- | --- |
-| Clé OpenAI exposée | Révoquer la clé partagée, créer une nouvelle clé et la stocker hors Git et hors conversation |
+| Ancienne clé OpenAI exposée | Révoquer la clé partagée. La clé installée sur Atlas est distincte |
 | Accès privé | Créer un identifiant privé, protéger tous les chemins coûteux et tester les réponses `401` |
 | Appels fournisseurs | Exécuter un itinéraire et une image avec des données synthétiques, puis vérifier coût, logs et résultat |
 | Booking.com | Rester en mode `external` tant qu'aucun partenariat et aucun identifiant approuvé ne sont disponibles |

@@ -23,7 +23,8 @@ Ce document décrit la préparation, le déploiement privé, l'ouverture DNS et 
 | --- | --- | --- | --- |
 | Dépôt produit | Candidat `a7c5d1c32a41c2e43c92f02bff4d584910727eb1` publié par digest | Git, CI et attestations consignés | 2026-08-23 |
 | Application F01 | 25 tests, 13 tests Atlas, Compose et navigateur validés | `DELIVERY-EVIDENCE.md` | 2026-08-23 |
-| Atlas | Admission dormante convergée, réseau vide, secret et conteneur absents | Contrôleur `891a898074314104e5bfacf78e46cdf512b7e5c5` | 2026-08-23 |
+| Atlas | Admission dormante et secret convergés, réseau vide et conteneur absent | Contrôleur `1d177efe019dda57f831c227f1ab03c1bef8a177` | 2026-08-23 |
+| OpenAI | Clé authentifiée depuis Atlas, modèles texte et image configurés visibles, aucune génération | `STATUS.md` et `DELIVERY-EVIDENCE.md` | 2026-08-23 |
 | Domaine | Apex et `www` sur Atlas `137.74.174.163`, aucun AAAA, route inactive | Zone autoritaire et résolveurs publics | 2026-08-23 |
 | Booking.com | Aucun partenariat accepté observé | Audit des credentials et contrats disponibles | 2026-08-23 |
 

@@ -2,6 +2,13 @@
 
 Git reste la source du diff technique. Les ADR expliquent les décisions importantes.
 
+## 2026-08-23, clé OpenAI sur Atlas
+
+- Installation d'une clé OpenAI distincte sous `/etc/vps/secrets/monflorian/`, avec propriétaire `root`, groupe `10001` et mode `0440`, sans valeur dans Git ou les sorties.
+- Vérification depuis Atlas de l'authentification et de l'accès aux modèles texte et image configurés, sans appel de génération.
+- Maintien du profil, du conteneur et de la route Mon Florian désactivés.
+- Contrôle prédictif après convergence avec `changed=0` et `failed=0`.
+
 ## 2026-08-23, configuration des skills d'ingénierie
 
 - Déclaration de GitHub Issues, des labels de triage par défaut et du contexte de domaine unique consommés par les skills d'ingénierie.

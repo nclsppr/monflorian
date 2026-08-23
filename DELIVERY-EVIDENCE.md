@@ -11,7 +11,7 @@ Ce relevé sépare le candidat publié, la préparation du VPS et l'activation p
 | Dépôt | `nclsppr/monflorian` |
 | Branche | `main` |
 | Candidat vérifié | `a7c5d1c32a41c2e43c92f02bff4d584910727eb1` |
-| Admission Atlas | `891a898074314104e5bfacf78e46cdf512b7e5c5` |
+| Contrôle Atlas | `1d177efe019dda57f831c227f1ab03c1bef8a177` |
 | Statut | candidat publié, VPS préparé, service non activé |
 
 ## Résultat demandé
@@ -25,8 +25,9 @@ Produire une application qui génère un trajet avec OpenAI, ouvre des recherche
 - Trois workflows GitHub du même SHA sont verts.
 - Les trois artefacts OCI ont des digests et des attestations de provenance.
 - L'admission Atlas dormante a été relue, fusionnée et convergée sur le vrai VPS.
+- Une clé OpenAI distincte est installée avec des permissions minimales. Atlas l'authentifie et voit les deux modèles configurés sans appel de génération.
 - Les enregistrements A de l'apex et de `www` pointent vers Atlas sur les serveurs autoritaires et les résolveurs publics.
-- Mon Florian ne tourne pas encore. Le secret, le conteneur, la route active et le certificat sont absents.
+- Mon Florian ne tourne pas encore. Le conteneur, la route active et le certificat sont absents.
 
 ## Frontières produit
 
@@ -82,13 +83,14 @@ La PR [vps-infra 96](https://github.com/nclsppr/vps-infra/pull/96) a ajouté un 
 | Élément | Preuve |
 | --- | --- |
 | Révision fusionnée | `891a898074314104e5bfacf78e46cdf512b7e5c5` |
+| Révision installée | `1d177efe019dda57f831c227f1ab03c1bef8a177` |
 | Validate | [32644204671](https://github.com/nclsppr/vps-infra/actions/runs/32644204671) |
 | Platform integration artifact | [32644204694](https://github.com/nclsppr/vps-infra/actions/runs/32644204694) |
 | Caddy platform image | [32644204794](https://github.com/nclsppr/vps-infra/actions/runs/32644204794) |
-| Convergence réelle | `ok=379`, `changed=13`, `failed=0` |
-| Contrôle prédictif | `ok=221`, `changed=0`, `failed=0` |
+| Convergence réelle | `ok=380`, `changed=9`, `failed=0` |
+| Contrôle prédictif | `ok=223`, `changed=0`, `failed=0` |
 
-L'inspection distante confirme la révision installée, le réseau vide `172.30.40.0/24`, les répertoires root et l'absence du secret, du conteneur et du lien d'activation. Caddy, PostgreSQL et les services de supervision déjà présents restent sains.
+L'inspection distante confirme la révision installée, le réseau vide `172.30.40.0/24`, les répertoires root, l'absence du conteneur et du lien d'activation. Le secret OpenAI est un fichier régulier `root:10001` en `0440`, avec un seul lien. Un appel non facturé à `/v1/models` depuis Atlas authentifie la clé et confirme `gpt-5.4-mini-2026-03-17` et `gpt-image-2`. Caddy, PostgreSQL et les services de supervision déjà présents restent sains.
 
 ## Changement DNS
 
@@ -111,17 +113,17 @@ Une requête avec résolution forcée vers Atlas renvoie `404` en HTTP. TLS renv
 | Publication Git et CI | validée | rien pour le candidat `a7c5d1c` |
 | Artefacts et provenance | validée | rien pour le candidat `a7c5d1c` |
 | Admission Atlas dormante | validée | rien pour la préparation |
-| Secret OpenAI | bloquée | nouvelle clé créée hors conversation |
-| Smoke test Responses | bloqué | clé sûre et budget borné |
-| Smoke test Images | bloqué | clé sûre et fixture synthétique |
+| Secret OpenAI | validée | fichier Atlas protégé, authentification et modèles prouvés |
+| Smoke test Responses | bloqué | budget borné et brief synthétique |
+| Smoke test Images | bloqué | budget borné et fixture synthétique |
 | Accès privé | bloqué | identifiant privé et vérification de tous les chemins coûteux |
-| Activation Atlas | bloquée | PR d'activation, secret, route, profil et sondes |
+| Activation Atlas | bloquée | PR d'activation, accès privé, route, profil et sondes |
 | TLS public | bloqué | route active et application saine |
 | Booking affilié | bloqué | partenariat et lien approuvé |
 
 ## Secrets
 
-La clé OpenAI partagée dans la conversation n'est pas une entrée de production. Elle doit être révoquée. Aucun secret n'a été inscrit dans le dépôt, les sorties de CI ou Atlas. Le contrat de production attend un fichier root lisible par le groupe applicatif, mode `0440`, sous `/etc/vps/secrets/monflorian/`.
+La clé OpenAI partagée dans la conversation n'est pas une entrée de production et doit être révoquée. La clé distincte installée sur Atlas n'a été inscrite ni dans Git, ni dans les sorties de CI ou d'exploitation. Elle réside sous `/etc/vps/secrets/monflorian/` dans un fichier root lisible par le groupe applicatif, mode `0440`.
 
 ## Rollback
 
@@ -135,4 +137,4 @@ La clé OpenAI partagée dans la conversation n'est pas une entrée de productio
 
 ## Conclusion
 
-Le candidat est publié et l'hôte est prêt à le recevoir. Le domaine pointe déjà vers Atlas, un peu en avance sur l'application. Le service reste volontairement fermé tant qu'une nouvelle clé OpenAI, un accès privé et les deux smoke tests réels ne sont pas disponibles.
+Le candidat est publié, la clé OpenAI est installée et l'hôte est prêt à le recevoir. Le domaine pointe déjà vers Atlas, un peu en avance sur l'application. Le service reste volontairement fermé tant que l'accès privé et les deux smoke tests réels ne sont pas disponibles.
