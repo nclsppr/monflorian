@@ -5,6 +5,7 @@ Git reste la source du diff technique. Les ADR expliquent les décisions importa
 ## 2026-08-23, configuration des skills d'ingénierie
 
 - Déclaration de GitHub Issues, des labels de triage par défaut et du contexte de domaine unique consommés par les skills d'ingénierie.
+- Lecture structurée des tickets et limites explicites pour éviter les files de triage tronquées.
 
 ## 2026-08-23, candidat F01
 
