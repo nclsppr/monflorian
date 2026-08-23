@@ -196,7 +196,7 @@ Le projet n'utilise aucun SDK OpenAI ou Booking.com. Il s'appuie sur `fetch`, `F
 
 - Branche canonique : `main`.
 - Push direct : interdit, y compris au propriétaire. Toute modification passe par une branche et une PR à jour.
-- Contrôles requis : `verify` et `Publish immutable application release`, avec historique linéaire et résolution des conversations.
+- Contrôles requis avant fusion : `verify` et `Validate application release`, avec historique linéaire et résolution des conversations. La publication immuable s'exécute ensuite sur `main`.
 - Convention de commit : impératif préfixé par le périmètre.
 - Artefact : image OCI `ghcr.io/nclsppr/monflorian/backend` publiée et attestée par digest; aucun conteneur Atlas actif.
 - Déploiement : contrôleur Atlas depuis un contrat versionné dans `vps-infra`. Aucun déploiement direct depuis le poste.

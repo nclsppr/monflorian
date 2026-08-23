@@ -8,7 +8,7 @@ Ce fichier décrit le candidat applicatif `a7c5d1c32a41c2e43c92f02bff4d584910727
 | --- | --- |
 | Vérifié le | 2026-08-23 |
 | Branche produit | `main` |
-| Protection de branche | PR obligatoire, historique linéaire, `verify` et `Publish immutable application release` requis |
+| Protection de branche | PR obligatoire, historique linéaire, `verify` et `Validate application release` requis |
 | Candidat produit | `a7c5d1c32a41c2e43c92f02bff4d584910727eb1` |
 | Contrôle Atlas | `891a898074314104e5bfacf78e46cdf512b7e5c5` |
 | Environnements prouvés | macOS arm64, GitHub Actions Ubuntu 24.04, Docker local et VPS Atlas |
