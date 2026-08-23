@@ -1,0 +1,19 @@
+name: monflorian
+
+services:
+  prototype:
+    image: nginx:1.30.0-alpine@sha256:0272e4604ed93c1792f03695a033a6e8546840f86e0de20a884bb17d2c924883
+    init: true
+    ports:
+      - "127.0.0.1:${MONFLORIAN_PORT:-8080}:80"
+    volumes:
+      - ./prototype/index.html:/usr/share/nginx/html/index.html:ro
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - wget -qO- http://127.0.0.1/ | grep -q '<title>Mon Florian'
+      interval: 5s
+      timeout: 3s
+      retries: 5
+      start_period: 3s
+    stop_grace_period: 5s
