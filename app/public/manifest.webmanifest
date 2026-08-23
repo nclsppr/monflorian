@@ -1,0 +1,11 @@
+{
+  "name": "Mon Florian",
+  "short_name": "Mon Florian",
+  "description": "Préparer une première proposition de voyage à partir d'une envie.",
+  "lang": "fr",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#f4f7ff",
+  "theme_color": "#f4f7ff"
+}

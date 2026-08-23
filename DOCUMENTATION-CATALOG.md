@@ -8,9 +8,9 @@ Moteur déclaré : `nimbus`.
 
 | Collection | Visibilité | Fichiers |
 | --- | --- | ---: |
-| Documentation du projet | `internal` | 11 |
-| Décisions | `internal` | 1 |
-| Socle vendorisé | `reference` | 7 |
+| Documentation du projet | `internal` | 15 |
+| Décisions | `internal` | 2 |
+| Socle vendorisé | `reference` | 10 |
 | Maintenance Nimbus | `reference` | 1 |
 
 ## Documentation du projet
@@ -18,6 +18,8 @@ Moteur déclaré : `nimbus`.
 - [AGENTS.md](AGENTS.md)
 - [ASSETS.md](ASSETS.md)
 - [CHANGELOG.md](CHANGELOG.md)
+- [DATA-PROCESSING.md](DATA-PROCESSING.md)
+- [DELIVERY-EVIDENCE.md](DELIVERY-EVIDENCE.md)
 - [DESIGN.md](DESIGN.md)
 - [DOCUMENTATION-CATALOG.md](DOCUMENTATION-CATALOG.md)
 - [DOCUMENTATION.md](DOCUMENTATION.md)
@@ -25,20 +27,26 @@ Moteur déclaré : `nimbus`.
 - [PROJECT.md](PROJECT.md)
 - [README.md](README.md)
 - [ROADMAP.md](ROADMAP.md)
+- [RUNBOOK.md](RUNBOOK.md)
 - [STATUS.md](STATUS.md)
+- [THREAT-MODEL.md](THREAT-MODEL.md)
 
 ## Décisions
 
 - [docs/decisions/adr-0001-cadre-produit-et-frontiere-du-prototype.md](docs/decisions/adr-0001-cadre-produit-et-frontiere-du-prototype.md)
+- [docs/decisions/adr-0002-runtime-openai-photos-booking-atlas.md](docs/decisions/adr-0002-runtime-openai-photos-booking-atlas.md)
 
 ## Socle vendorisé
 
 - [docs/foundation/DEFAULTS.md](docs/foundation/DEFAULTS.md)
 - [docs/foundation/DEFINITION-OF-DONE.md](docs/foundation/DEFINITION-OF-DONE.md)
 - [docs/foundation/PRINCIPLES.md](docs/foundation/PRINCIPLES.md)
+- [docs/foundation/profiles/backend-data.md](docs/foundation/profiles/backend-data.md)
+- [docs/foundation/profiles/dependency-change.md](docs/foundation/profiles/dependency-change.md)
 - [docs/foundation/profiles/documentation-nimbus.md](docs/foundation/profiles/documentation-nimbus.md)
 - [docs/foundation/profiles/experiment.md](docs/foundation/profiles/experiment.md)
 - [docs/foundation/profiles/generated-artifacts.md](docs/foundation/profiles/generated-artifacts.md)
+- [docs/foundation/profiles/infrastructure-production.md](docs/foundation/profiles/infrastructure-production.md)
 - [docs/foundation/profiles/web.md](docs/foundation/profiles/web.md)
 
 ## Maintenance Nimbus

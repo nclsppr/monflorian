@@ -1,0 +1,756 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "API Mon Florian",
+    "version": "0.1.0",
+    "description": "Contrat du candidat privé. Le service ne réserve rien, ne persiste aucune donnée utilisateur et traite toute sortie générée comme une projection à vérifier."
+  },
+  "jsonSchemaDialect": "https://json-schema.org/draft/2020-12/schema",
+  "servers": [
+    {
+      "url": "{origin}",
+      "description": "Origine configurée pour l'environnement",
+      "variables": {
+        "origin": {
+          "default": "http://127.0.0.1:8080"
+        }
+      }
+    }
+  ],
+  "tags": [
+    {
+      "name": "Service"
+    },
+    {
+      "name": "Génération"
+    }
+  ],
+  "paths": {
+    "/api/health": {
+      "get": {
+        "operationId": "getHealth",
+        "summary": "Lire la santé du processus",
+        "description": "Cette sonde ne contacte pas OpenAI et ne prouve pas qu'une génération aboutira.",
+        "tags": ["Service"],
+        "responses": {
+          "200": {
+            "description": "Le processus HTTP répond.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Health"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/config": {
+      "get": {
+        "operationId": "getPublicConfig",
+        "summary": "Lire les capacités publiques de l'environnement",
+        "tags": ["Service"],
+        "responses": {
+          "200": {
+            "description": "Configuration publique sans secret.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PublicConfig"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/itineraries": {
+      "post": {
+        "operationId": "createItinerary",
+        "summary": "Composer une proposition de voyage",
+        "description": "Le code de lancement est requis en mode private. Il peut être envoyé par l'en-tête X-Monflorian-Access-Code ou par accessCode dans le JSON. L'origine configurée est obligatoire en production.",
+        "tags": ["Génération"],
+        "security": [
+          {
+            "launchCode": []
+          },
+          {}
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ItineraryRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Proposition générée et revalidée.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ItineraryResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/AccessRequired"
+          },
+          "403": {
+            "$ref": "#/components/responses/OriginRejected"
+          },
+          "413": {
+            "$ref": "#/components/responses/RequestTooLarge"
+          },
+          "415": {
+            "$ref": "#/components/responses/UnsupportedMediaType"
+          },
+          "422": {
+            "$ref": "#/components/responses/ContentBlocked"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          },
+          "502": {
+            "$ref": "#/components/responses/ProviderFailure"
+          },
+          "503": {
+            "$ref": "#/components/responses/Unavailable"
+          },
+          "504": {
+            "$ref": "#/components/responses/ProviderTimeout"
+          }
+        }
+      }
+    },
+    "/api/illustrations": {
+      "post": {
+        "operationId": "createIllustration",
+        "summary": "Créer une projection dessinée",
+        "description": "Le navigateur envoie d'une à quatre images PNG ou WebP réencodées. consent doit être true. Le code de lancement suit la même règle que pour l'itinéraire.",
+        "tags": ["Génération"],
+        "security": [
+          {
+            "launchCode": []
+          },
+          {}
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/IllustrationRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Image WebP générée et étiquetée comme projection.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IllustrationResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/AccessRequired"
+          },
+          "403": {
+            "$ref": "#/components/responses/OriginRejected"
+          },
+          "413": {
+            "$ref": "#/components/responses/RequestTooLarge"
+          },
+          "415": {
+            "$ref": "#/components/responses/UnsupportedMediaType"
+          },
+          "422": {
+            "$ref": "#/components/responses/ContentBlocked"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          },
+          "502": {
+            "$ref": "#/components/responses/ProviderFailure"
+          },
+          "503": {
+            "$ref": "#/components/responses/Unavailable"
+          },
+          "504": {
+            "$ref": "#/components/responses/ProviderTimeout"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "launchCode": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-Monflorian-Access-Code",
+        "description": "Secret partagé du lancement privé. Il n'est pas une identité utilisateur."
+      }
+    },
+    "schemas": {
+      "Health": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["status", "release", "generationReady"],
+        "properties": {
+          "status": {
+            "const": "ok"
+          },
+          "release": {
+            "type": "string"
+          },
+          "generationReady": {
+            "type": "boolean"
+          }
+        }
+      },
+      "PublicConfig": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["serviceReady", "illustrationEnabled", "accessMode", "bookingMode", "bookingAllowedHosts", "limits"],
+        "properties": {
+          "serviceReady": {
+            "type": "boolean"
+          },
+          "illustrationEnabled": {
+            "type": "boolean"
+          },
+          "accessMode": {
+            "type": "string",
+            "enum": ["private", "public"]
+          },
+          "bookingMode": {
+            "type": "string",
+            "enum": ["off", "external", "cj-static"]
+          },
+          "bookingAllowedHosts": {
+            "type": "array",
+            "description": "Hôtes autorisés pour les liens configurés. Le tableau reste vide hors du mode cj-static.",
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "format": "hostname"
+            }
+          },
+          "limits": {
+            "$ref": "#/components/schemas/PublicLimits"
+          }
+        }
+      },
+      "PublicLimits": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["maxPhotos", "maxPhotoBytes", "maxTripDays", "maxTravelers"],
+        "properties": {
+          "maxPhotos": {
+            "type": "integer",
+            "const": 4
+          },
+          "maxPhotoBytes": {
+            "type": "integer",
+            "const": 1500000
+          },
+          "maxTripDays": {
+            "type": "integer",
+            "const": 14
+          },
+          "maxTravelers": {
+            "type": "integer",
+            "const": 8
+          }
+        }
+      },
+      "ItineraryRequest": {
+        "type": "object",
+        "additionalProperties": true,
+        "required": ["brief", "travelers", "pace"],
+        "properties": {
+          "brief": {
+            "type": "string",
+            "minLength": 20,
+            "maxLength": 2000
+          },
+          "startDate": {
+            "type": ["string", "null"],
+            "format": "date"
+          },
+          "endDate": {
+            "type": ["string", "null"],
+            "format": "date"
+          },
+          "travelers": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 8
+          },
+          "pace": {
+            "type": "string",
+            "enum": ["calm", "balanced", "intense"]
+          },
+          "accessCode": {
+            "type": "string",
+            "writeOnly": true
+          }
+        },
+        "dependentRequired": {
+          "startDate": ["endDate"],
+          "endDate": ["startDate"]
+        }
+      },
+      "ItineraryResponse": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["itinerary", "accommodations", "meta"],
+        "properties": {
+          "itinerary": {
+            "$ref": "#/components/schemas/Itinerary"
+          },
+          "accommodations": {
+            "$ref": "#/components/schemas/AccommodationSuggestions"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/ItineraryMeta"
+          }
+        }
+      },
+      "Itinerary": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["title", "destination", "summary", "florianNote", "budgetNote", "reservationChecklist", "verificationChecklist", "days", "accommodationStops"],
+        "properties": {
+          "title": {
+            "type": "string",
+            "maxLength": 180
+          },
+          "destination": {
+            "type": "string",
+            "maxLength": 160
+          },
+          "summary": {
+            "type": "string",
+            "maxLength": 1200
+          },
+          "florianNote": {
+            "type": "string",
+            "maxLength": 700
+          },
+          "budgetNote": {
+            "type": "string",
+            "maxLength": 700
+          },
+          "reservationChecklist": {
+            "type": "array",
+            "maxItems": 10,
+            "items": {
+              "type": "string",
+              "maxLength": 300
+            }
+          },
+          "verificationChecklist": {
+            "type": "array",
+            "maxItems": 10,
+            "items": {
+              "type": "string",
+              "maxLength": 300
+            }
+          },
+          "days": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 14,
+            "items": {
+              "$ref": "#/components/schemas/ItineraryDay"
+            }
+          },
+          "accommodationStops": {
+            "type": "array",
+            "maxItems": 14,
+            "items": {
+              "$ref": "#/components/schemas/AccommodationStop"
+            }
+          }
+        }
+      },
+      "ItineraryDay": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["day", "date", "base", "title", "summary", "moments", "transfer"],
+        "properties": {
+          "day": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 14
+          },
+          "date": {
+            "type": ["string", "null"],
+            "format": "date"
+          },
+          "base": {
+            "type": "string",
+            "maxLength": 120
+          },
+          "title": {
+            "type": "string",
+            "maxLength": 180
+          },
+          "summary": {
+            "type": "string",
+            "maxLength": 700
+          },
+          "moments": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 3,
+            "items": {
+              "$ref": "#/components/schemas/Moment"
+            }
+          },
+          "transfer": {
+            "type": "string",
+            "maxLength": 500
+          }
+        }
+      },
+      "Moment": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["period", "title", "description", "duration", "bookingRequired", "rainAlternative", "fatigueAlternative"],
+        "properties": {
+          "period": {
+            "type": "string",
+            "enum": ["matin", "après-midi", "soir"]
+          },
+          "title": {
+            "type": "string",
+            "maxLength": 160
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 800
+          },
+          "duration": {
+            "type": "string",
+            "maxLength": 80
+          },
+          "bookingRequired": {
+            "type": "boolean"
+          },
+          "rainAlternative": {
+            "type": "string",
+            "maxLength": 500
+          },
+          "fatigueAlternative": {
+            "type": "string",
+            "maxLength": 500
+          }
+        }
+      },
+      "AccommodationStop": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["destination", "checkIn", "checkOut", "nights"],
+        "properties": {
+          "destination": {
+            "type": "string",
+            "maxLength": 120
+          },
+          "checkIn": {
+            "type": ["string", "null"],
+            "format": "date"
+          },
+          "checkOut": {
+            "type": ["string", "null"],
+            "format": "date"
+          },
+          "nights": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 14
+          }
+        }
+      },
+      "AccommodationSuggestions": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["mode", "affiliateDisclosure", "items"],
+        "properties": {
+          "mode": {
+            "type": "string",
+            "enum": ["off", "external", "cj-static"]
+          },
+          "affiliateDisclosure": {
+            "type": ["string", "null"]
+          },
+          "items": {
+            "type": "array",
+            "maxItems": 14,
+            "items": {
+              "$ref": "#/components/schemas/AccommodationLink"
+            }
+          }
+        }
+      },
+      "AccommodationLink": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["destination", "label", "url", "affiliate"],
+        "properties": {
+          "destination": {
+            "type": "string"
+          },
+          "label": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string",
+            "format": "uri",
+            "pattern": "^https://"
+          },
+          "affiliate": {
+            "type": "boolean"
+          }
+        }
+      },
+      "ItineraryMeta": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["generatedAt", "projection", "supportCode"],
+        "properties": {
+          "generatedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "projection": {
+            "const": true
+          },
+          "supportCode": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      },
+      "IllustrationRequest": {
+        "type": "object",
+        "additionalProperties": true,
+        "required": ["destination", "scene", "consent", "photos"],
+        "properties": {
+          "destination": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 120
+          },
+          "scene": {
+            "type": "string",
+            "minLength": 10,
+            "maxLength": 500
+          },
+          "consent": {
+            "const": true
+          },
+          "photos": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 4,
+            "items": {
+              "type": "string",
+              "pattern": "^data:image/(webp|png);base64,[A-Za-z0-9+/]+={0,2}$"
+            }
+          },
+          "accessCode": {
+            "type": "string",
+            "writeOnly": true
+          }
+        }
+      },
+      "IllustrationResponse": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["imageDataUrl", "alt", "meta"],
+        "properties": {
+          "imageDataUrl": {
+            "type": "string",
+            "pattern": "^data:image/webp;base64,[A-Za-z0-9+/]+={0,2}$"
+          },
+          "alt": {
+            "type": "string"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/IllustrationMeta"
+          }
+        }
+      },
+      "IllustrationMeta": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["generatedAt", "label", "supportCode"],
+        "properties": {
+          "generatedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "label": {
+            "const": "Projection personnalisée · image générée"
+          },
+          "supportCode": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      },
+      "Error": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["error"],
+        "properties": {
+          "error": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["code", "message", "requestId"],
+            "properties": {
+              "code": {
+                "type": "string"
+              },
+              "message": {
+                "type": "string"
+              },
+              "requestId": {
+                "type": "string",
+                "format": "uuid"
+              }
+            }
+          }
+        }
+      }
+    },
+    "responses": {
+      "BadRequest": {
+        "description": "JSON, dates, brief, photo ou consentement invalide.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
+      },
+      "AccessRequired": {
+        "description": "Code de lancement absent ou incorrect.",
+        "headers": {
+          "WWW-Authenticate": {
+            "schema": {
+              "type": "string",
+              "const": "MonFlorianAccess"
+            }
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
+      },
+      "OriginRejected": {
+        "description": "Origine absente en production ou différente de l'origine configurée.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
+      },
+      "RequestTooLarge": {
+        "description": "Corps ou ensemble de photos trop volumineux.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
+      },
+      "UnsupportedMediaType": {
+        "description": "Le corps doit être application/json.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
+      },
+      "ContentBlocked": {
+        "description": "Le fournisseur a refusé le contenu.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
+      },
+      "RateLimited": {
+        "description": "Quota local, concurrence ou limite fournisseur atteinte.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
+      },
+      "ProviderFailure": {
+        "description": "Réponse fournisseur refusée, invalide ou incomplète.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
+      },
+      "Unavailable": {
+        "description": "Génération fermée, mal configurée ou fournisseur indisponible.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
+      },
+      "ProviderTimeout": {
+        "description": "Le fournisseur n'a pas répondu avant le timeout.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
+      }
+    }
+  }
+}

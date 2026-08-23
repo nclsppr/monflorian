@@ -15,6 +15,7 @@ Source canonique des visuels de marque et des références importées le 2026-08
 - Le logo PNG est le master actuel. Une future vectorisation doit être validée visuellement contre ce fichier et faire l'objet d'une provenance propre.
 - `prototype/index.html` est la source éditable de l'expérience. Sa capture principale n'est jamais modifiée pour simuler un changement du produit.
 - Le prototype contient encore deux WebP embarqués en base64. Ils sont des dérivés propres au prototype, pas des masters concurrents.
+- L'application active charge le master depuis `/assets/monflorian-logo.png`. Ce chemin ne crée pas un second master.
 - La capture alternative contient des promesses non prouvées, dont avis, paiement sécurisé et annulation. Elle ne doit pas guider la copie ni être publiée comme preuve.
 - Les textes fonctionnels restent en HTML et ne sont pas extraits depuis les images.
 
@@ -22,7 +23,9 @@ Source canonique des visuels de marque et des références importées le 2026-08
 
 Les trois fichiers ont été fournis par le propriétaire pour ce dépôt. Aucun fichier de licence ni preuve de droits distincte n'accompagne actuellement les sources. Toute diffusion hors de ce projet ou utilisation commerciale doit confirmer les droits, l'auteur et les éventuelles conditions du générateur d'origine.
 
-Aucune photo personnelle réelle ne doit être ajoutée au dépôt. Les photos choisies dans le prototype restent en mémoire locale et ne sont pas des artefacts versionnés.
+Aucune photo personnelle réelle ne doit être ajoutée au dépôt. Les photos choisies dans le prototype restent en mémoire locale. Dans l'application candidate, le navigateur les réencode avant l'envoi ponctuel à OpenAI. Elles ne deviennent pas des artefacts versionnés. Le détail de ce flux vit dans [`DATA-PROCESSING.md`](DATA-PROCESSING.md).
+
+Les projections créées par l'API sont des sorties temporaires reçues par le navigateur. Elles portent la mention "Projection personnalisée · image générée". Une future conservation, publication ou livraison de ces images exige une décision de stockage, une durée de rétention et un moyen d'effacement.
 
 ## Retrait
 

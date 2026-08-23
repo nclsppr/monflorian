@@ -1,0 +1,49 @@
+#!/usr/bin/env python3
+"""Build one immutable Atlas application release descriptor."""
+
+from __future__ import annotations
+
+import argparse
+import sys
+from pathlib import Path
+
+SCRIPT_ROOT = Path(__file__).resolve().parent
+sys.path.insert(0, str(SCRIPT_ROOT / "lib"))
+
+from release_contract import (  # noqa: E402
+    ContractError,
+    append_github_outputs,
+    build_application_release,
+)
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--revision", required=True)
+    parser.add_argument("--expected-images", required=True)
+    parser.add_argument("--integration-reference", required=True)
+    parser.add_argument("--migrations", required=True)
+    parser.add_argument("--probes", required=True)
+    parser.add_argument("--output", required=True)
+    parser.add_argument("--github-output")
+    arguments = parser.parse_args()
+    try:
+        values = build_application_release(
+            Path(arguments.output),
+            arguments.revision,
+            Path(arguments.expected_images),
+            arguments.integration_reference,
+            Path(arguments.migrations),
+            Path(arguments.probes),
+        )
+        if arguments.github_output:
+            append_github_outputs(Path(arguments.github_output), values)
+    except (ContractError, OSError) as exc:
+        print(f"application release build refused: {exc}", file=sys.stderr)
+        return 1
+    print("application release descriptor built")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

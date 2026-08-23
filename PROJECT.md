@@ -6,83 +6,95 @@
 | --- | --- |
 | Nom | Mon Florian |
 | Propriétaire | `nclsppr` |
-| Classe | Produit |
-| Environnement de production | Aucun au 2026-08-23 |
+| Classe | Critique |
+| Surface de production | Cible Atlas privée, aucune URL publique active au 2026-08-23 |
 | Socle adopté | [`FOUNDATION.md`](FOUNDATION.md) |
 | Licence | Aucune licence de réutilisation accordée |
 
 ## Problème
 
-Les voyageurs doivent aujourd'hui assembler seuls des recherches dispersées ou accepter des parcours génériques pour transformer une envie en voyage cohérent, pratique et personnel.
+Préparer un voyage demande de relier une envie personnelle, un rythme réaliste, des trajets et des réservations dispersées. Mon Florian produit une première proposition lisible, puis laisse les vérifications et les décisions réelles au voyageur et à Florian.
 
 ## Utilisateurs
 
 | Utilisateur | Situation | Besoin | Risque principal |
 | --- | --- | --- | --- |
-| Voyageur francophone | Prépare un voyage de loisir sans vouloir remplir un long questionnaire | Exprimer librement son envie et recevoir un parcours compréhensible | Confondre une projection attractive avec une réservation ou une information vérifiée |
-| Florian | Compose, explique et ajuste le voyage | Recevoir un brief exploitable et garder la responsabilité des choix | Promettre un niveau de service impossible à tenir |
-| Proche invité | Consulte le voyage avant, pendant ou après le séjour | Accéder à une version lisible et partageable | Accéder à des données ou photos sans autorisation |
+| Voyageur francophone | Prépare un séjour de loisir à partir d'une envie libre | Recevoir un parcours compréhensible sans remplir un long questionnaire | Prendre une projection générée pour une information vérifiée ou une réservation |
+| Florian | Relit, explique et ajuste la proposition | Repérer les points à vérifier et garder la responsabilité des choix | Laisser passer une durée, une fermeture ou un trajet inexact |
+| Proche représenté | Apparaît sur une projection dessinée | Comprendre l'usage de sa photo et donner son accord | Envoi d'une photo sans droit, consentement ou information suffisante |
 
 ## Résultat attendu
 
-Une personne raconte son envie en une phrase, ajoute seulement les informations utiles et peut commander une proposition expliquée qui l'accompagne avant, pendant et après le voyage.
+Une personne décrit son envie, précise les dates, le nombre de voyageurs et le rythme, puis reçoit une proposition structurée. Elle peut ouvrir des recherches d'hébergement séparées et, si elle le souhaite, créer une illustration dessinée à partir de photos fournies avec consentement.
 
-L'offre cible est un voyage prêt à 50 €, livré en mini-site privé et PDF personnalisé. Après la première livraison, l'option Voyage vivant à 50 € ajoute les ajustements, l'accompagnement pendant le séjour et le carnet de souvenirs. Ces prix sont une hypothèse produit, pas une capacité de paiement actuellement livrée.
+L'offre cible reste un voyage prêt à 50 €, livré en mini-site privé et PDF personnalisé. L'option Voyage vivant à 50 € vise des ajustements pendant le séjour et un carnet de souvenirs. Ces prix restent des hypothèses. Aucun paiement, PDF, compte client ou accompagnement humain n'est livré dans la tranche actuelle.
 
 ### Preuves de succès
 
 | Preuve | Baseline connue | Cible | Source | Échéance |
 | --- | --- | --- | --- | --- |
-| Compréhension de la promesse | Non mesurée | Un voyageur test explique correctement le service et ses limites après le parcours | Test utilisateur consigné | Avant promotion du prototype |
-| Utilisabilité du brief | Prototype visuel existant | Le parcours principal fonctionne sur petit mobile et bureau, au clavier et en mouvement réduit | Vérification navigateur | Phase F01 |
-| Valeur de l'offre | Hypothèse de prix uniquement | Une validation réelle sans témoignage ni chiffre inventé | Preuve commerciale autorisée | Avant activation du paiement |
-| Qualité du voyage | Non mesurée | Chaque choix important est expliqué et les trajets sont vérifiés par Florian | Guide livré et revue humaine | Avant premier client réel |
+| Compréhension de la proposition | Non mesurée | Un voyageur distingue l'itinéraire généré, les vérifications à faire et les liens externes | Test utilisateur consigné | Avant ouverture publique |
+| Parcours du brief | Prototype visuel validé | Brief, erreurs, résultat et mode dégradé utilisables sur petit mobile et bureau | Contrôles navigateur datés | Avant release Atlas |
+| Contrat du backend | Aucun dans F00 | OpenAPI, tests d'erreur et tests des frontières OpenAI et Booking.com cohérents | `docs/api/openapi.json` et CI | Avant image de production |
+| Confidentialité des photos | Aucun envoi dans F00 | Consentement explicite, réencodage, limites, absence de persistance applicative et test négatif | Tests et `DATA-PROCESSING.md` | Avant test avec une photo réelle |
+| Production privée | Aucune | Digest immuable déployé, route privée, santé et parcours synthétique observés | `DELIVERY-EVIDENCE.md` | Avant tout DNS public |
+| Valeur commerciale | Hypothèse de prix | Signal réel sans témoignage ni conversion inventés | Preuve commerciale autorisée | Avant paiement |
 
 ## Périmètre
 
 ### Inclus
 
-- Une entrée libre centrée sur l'envie, complétée seulement par dates, voyageurs, rythme et photos facultatives.
-- Une proposition composée et expliquée par Florian.
-- Un mini-site mobile et un PDF pour la livraison cible.
-- Des projections personnalisées limitées à la couverture, aux chapitres et à quelques moments forts.
-- Le prolongement Voyage vivant après la première livraison.
+- Une application web servie par un backend Node.js.
+- Un brief libre avec dates facultatives, voyageurs et rythme.
+- Une proposition structurée générée par l'API Responses d'OpenAI.
+- Des recherches Booking.com construites après la génération, sans transmettre de contenu Booking.com à OpenAI.
+- Un mode affilié statique réservé à des liens approuvés et configurés.
+- Une projection dessinée créée par l'API Image Edits à partir d'une à quatre photos réencodées.
+- Un accès de lancement privé, des quotas en mémoire, des limites de concurrence et des logs techniques sans contenu utilisateur.
+- Une image de conteneur immuable et une cible de déploiement sur Atlas.
 
 ### Non-objectifs
 
-- Une application native au lancement.
-- Une interface de chatbot ou un site institutionnel d'agence.
-- L'achat automatique de billets, hôtels ou activités.
-- L'insertion photoréaliste des voyageurs devant chaque monument.
-- Un paiement, un compte ou un stockage distant dans le prototype actuel.
+- Acheter automatiquement un billet, un hébergement ou une activité.
+- Afficher un prix, une disponibilité, une note ou une garantie récupérés en direct.
+- Utiliser l'API Demand de Booking.com ou extraire des pages Booking.com.
+- Payer, créer un compte ou stocker un voyage dans cette tranche.
+- Stocker les photos ou illustrations sur le serveur.
+- Produire une photographie synthétique présentée comme un souvenir réel.
+- Ouvrir le service au public avant le domaine, la protection d'accès et les preuves de production.
 
 ### Conditions d'arrêt ou de réévaluation
 
-- Les voyageurs test ne comprennent pas la valeur ou la responsabilité de Florian.
-- Les droits sur les visuels ou le traitement des photos ne peuvent pas être établis.
-- La qualité et l'actualité des informations de voyage ne peuvent pas être assurées.
-- Le prix cible n'est pas validé par un signal réel.
+- Une photo ou un brief apparaît dans les logs, un artefact, un cache ou une persistance locale.
+- Le fournisseur renvoie une sortie qui contourne le schéma ou injecte un lien.
+- Le coût ne peut pas être contenu par les quotas et la protection privée.
+- Les conditions OpenAI ou Booking.com ne couvrent pas l'usage prévu.
+- Le voyageur ne distingue pas la proposition générée d'une information de réservation vérifiée.
+- Une production expose le backend hors de la route privée prévue.
 
 ## Sources de vérité
 
 | Concept | Source canonique | Type | Notes |
 | --- | --- | --- | --- |
-| Produit | Ce document | normative | Promesse, utilisateurs, offre et limites |
+| Produit | Ce document | normative | Promesse, limites et architecture |
 | État courant | `STATUS.md` | snapshot opérationnel | Daté et vérifié |
 | Roadmap | `ROADMAP.md` | normative | Autorité de séquencement |
-| Historique des changements | `CHANGELOG.md` | historique | Impact observable de chaque livraison |
-| Architecture | `PROJECT.md#architecture` | normative | L'état cible non décidé reste explicitement ouvert |
-| Contrat API | Aucun | non applicable actuellement | À décider avant tout backend |
-| Schéma de données | Aucun | non applicable actuellement | Aucune donnée persistée |
-| Design system | `DESIGN.md` | normative | Extrait des concepts retenus |
-| Configuration | `compose.yaml` et `.env.example` | opérationnelle | Aperçu local uniquement |
-| Code livré | `prototype/index.html` | expérimentale | Source exécutable du prototype actuel |
-| Opérations | Ce document | normative | Aucune production active |
+| Historique des changements | `CHANGELOG.md` | historique | Impact observable de chaque tranche |
+| Architecture | `PROJECT.md#architecture` | normative | L'ADR explique la décision structurante |
+| Contrat API | `docs/api/openapi.json` | normative | OpenAPI 3.1 |
+| Schéma de données | Non applicable | normative | Aucune base de données ni persistance applicative |
+| Traitement des données | `DATA-PROCESSING.md` | normative | Catégories, destinataires, rétention et suppression |
+| Modèle de menace | `THREAT-MODEL.md` | normative | Menaces, contrôles et risques résiduels |
+| Design system | `DESIGN.md` | normative | Marque, interface et statut des projections |
+| Configuration | `compose.yaml`, `.env.example` et `deployment/vps/` | opérationnelle | Les secrets restent hors Git |
+| Code livré | `app/` et `Dockerfile` | opérationnelle | `prototype/` reste une expérience historique |
+| Opérations | `RUNBOOK.md` | normative | Ne vaut pas autorisation d'agir |
 | Décisions | `docs/decisions/` | normative | Décisions structurantes |
 | Documentation | `DOCUMENTATION.md`, `documentation.json` et `docs-nimbus/` | normative et dérivée | Catalogue généré |
-| Visuels | `ASSETS.md` | normative et historique | Source, rôle, provenance et retrait |
+| Preuves | `DELIVERY-EVIDENCE.md` | preuve | Résultats observés et limites |
+| Visuels | `ASSETS.md` | normative et historique | Sources, rôles, droits et retrait |
 | Archives | `references/concepts/` | historique | Captures non exécutables et non normatives |
-| Expériences | `prototype/` | expérimentale | Isolées de toute production |
+| Expériences | `prototype/` | expérimentale | Ancien concept local, distinct de `app/` |
 
 ## Architecture
 
@@ -90,37 +102,44 @@ L'offre cible est un voyage prêt à 50 €, livré en mini-site privé et PDF p
 
 | Composant | Rôle | Statut | Exécution | Version | Source | Preuve et date | Propriétaire |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| Prototype statique | Tester la promesse, la composition et les interactions locales | expérience | navigateur | HTML, CSS et JavaScript natifs | `prototype/index.html` | Audit source 2026-08-23 | `nclsppr` |
-| Serveur d'aperçu | Servir le prototype de façon reproductible | actuel en développement | Docker Compose | NGINX 1.30.0 par digest | `compose.yaml` | Sonde locale consignée dans `STATUS.md` | `nclsppr` |
-| Documentation Nimbus | Construire la documentation classée | actuel | local et CI | lockfile `docs-nimbus/package-lock.json` | `docs-nimbus/` | `./scripts/verify.sh` | `nclsppr` |
-| Service de voyage | Composer, stocker et livrer un voyage réel | cible non décidée | aucune | non choisie | future ADR | aucune preuve | `nclsppr` |
+| Interface web | Recueillir le brief, afficher le voyage et préparer les photos | candidat | navigateur | HTML, CSS et JavaScript natifs | `app/public/` | Preuve de la tranche en cours | `nclsppr` |
+| Serveur HTTP | Servir l'interface, valider les entrées, appliquer accès et quotas | candidat | Node.js | Node 24 dans l'image épinglée | `app/server.mjs` | Tests et Compose à consigner | `nclsppr` |
+| Coeur métier | Valider briefs, photos et sorties, construire les recherches d'hébergement | candidat | Node.js | sans package npm d'exécution | `app/core.mjs` | Tests unitaires à consigner | `nclsppr` |
+| Adaptateur OpenAI | Appeler Responses et Image Edits avec timeouts et erreurs bornées | candidat | service externe | modèles épinglés par configuration | `app/openai.mjs` | Smoke test synthétique requis | `nclsppr` |
+| Image OCI | Emballer le serveur sans privilège | candidat | Docker et Atlas | base Node épinglée par digest | `Dockerfile` | Build et scan à consigner | `nclsppr` |
+| Prototype F00 | Conserver le concept qui a précédé l'application | expérience | navigateur local | HTML autonome | `prototype/index.html` | Run CI `32637925764` | `nclsppr` |
+| Documentation Nimbus | Classer et rendre les contrats | actuel | local et CI | lockfile dédié | `docs-nimbus/` | `./scripts/verify.sh` | `nclsppr` |
+| Intégration Atlas | Décrire le service, le réseau, les sondes et la route Caddy | candidat | VPS | bundle producteur en cours | `deployment/vps/` | Aucune admission ni aucun runtime Mon Florian observés | `nclsppr` |
 
-### Flux principal actuel
+### Flux d'itinéraire
 
-Le navigateur charge un fichier autonome. Le texte et les puces modifient uniquement le DOM. Les photos choisies deviennent des URL temporaires en mémoire dans le navigateur et ne quittent pas l'appareil. Le bouton final affiche un retour local. Aucun réseau, paiement, compte, stockage, génération de voyage ou PDF n'est appelé.
+1. Le navigateur envoie le brief, les dates facultatives, le nombre de voyageurs, le rythme et le code de lancement si l'environnement reste privé.
+2. Le serveur contrôle l'origine, l'accès, la taille et les quotas. Il transforme l'adresse cliente en identifiant HMAC pour `safety_identifier`.
+3. Le backend envoie le brief et les paramètres à l'API Responses. Il fixe `store: false` et demande un JSON conforme au schéma strict.
+4. Le serveur revalide la sortie. Il refuse les dates, tailles ou structures hors contrat.
+5. Le serveur construit lui-même les liens d'hébergement depuis les étapes validées. Le modèle ne produit aucun lien Booking.com.
+6. Le navigateur reçoit le voyage, les liens externes et la mention de projection. Aucun résultat n'est enregistré par l'application.
+
+### Flux d'illustration
+
+1. Le navigateur demande l'accord sur les droits et le consentement des personnes, puis réencode une à quatre photos en PNG ou WebP.
+2. Le serveur contrôle le format réel, les dimensions, le poids et l'absence de blocs de métadonnées connus.
+3. Le backend envoie les images et la scène à l'API Image Edits avec un prompt qui impose un dessin éditorial.
+4. Le navigateur reçoit un WebP encodé dans la réponse. L'application l'étiquette comme projection personnalisée et ne le persiste pas.
 
 ### Dépendances externes
 
-| Dépendance | Usage | Données transmises | Mode d'échec | Alternative |
+| Dépendance | Usage | Données transmises | Mode d'échec | Alternative ou retrait |
 | --- | --- | --- | --- | --- |
-| NGINX officiel par digest | Aperçu local reproductible | Aucune donnée utilisateur | Prototype local indisponible par Compose | Ouvrir `prototype/index.html` directement |
-| Dépendances Nimbus verrouillées | Vérifier et rendre la documentation | Markdown du dépôt pendant le build local ou CI | Gate documentaire rouge | Aucune dans le socle adopté |
-| API Fichier du navigateur | Prévisualiser des photos localement | Aucune transmission réseau | Personnalisation visuelle indisponible | Continuer sans photo |
+| API Responses OpenAI | Composer le voyage | Brief, dates, voyageurs, rythme et identifiant de sûreté pseudonymisé | Itinéraire indisponible, erreur explicite sans retry automatique | Désactiver `MONFLORIAN_GENERATION_ENABLED` et conserver l'interface informative |
+| API Image Edits OpenAI | Créer un dessin à partir des photos | Photos réencodées, destination et scène | Illustration indisponible sans bloquer l'itinéraire | Désactiver `MONFLORIAN_ILLUSTRATION_ENABLED` |
+| Booking.com externe | Ouvrir une recherche dans le navigateur | Destination, dates et nombre d'adultes au clic | Lien externe indisponible, itinéraire conservé | `BOOKING_MODE=off` |
+| Liens CJ statiques | Attribuer une réservation quand un partenariat est accepté | Navigation du voyageur et paramètres du lien au clic | Repli vers une recherche externe non affiliée | Retirer la configuration et passer à `external` ou `off` |
+| Image Node officielle | Runtime de production | Code du dépôt pendant le build | Build bloqué | Revenir au digest précédent validé |
+| GitHub Actions | Vérifier et publier les artefacts | Sources du dépôt | Livraison bloquée | Vérification locale sans prétendre avoir livré |
+| Atlas et Caddy | Exécuter et router le service privé | Requêtes HTTP et logs techniques | Service inaccessible | Rollback vers le digest précédent |
 
-## Contrat de l'expérience actuelle
-
-| Champ | Valeur |
-| --- | --- |
-| Hypothèse | Une entrée libre et une présence ponctuelle de Florian rendent l'offre plus simple et personnelle qu'un questionnaire ou un chatbot |
-| Propriétaire | `nclsppr` |
-| Réévaluation | Avant toute publication ou au plus tard le 2026-09-23 |
-| Budget | Aucun service payant, aucune infrastructure persistante, une page statique |
-| Données | Exemples synthétiques et photos facultatives conservées en mémoire locale |
-| Accès | `http://127.0.0.1:8080` uniquement |
-| Succès | Parcours compris et utilisable sur mobile et bureau sans promesse fictive |
-| Arrêt | Retirer le service Compose et `prototype/`, puis conserver seulement les apprentissages documentés |
-
-Une promotion en produit exige une ADR, un contrat de données, une revue des droits, les profils Foundation adaptés et une preuve dans l'environnement final.
+Le projet n'utilise aucun SDK OpenAI ou Booking.com. Il s'appuie sur `fetch`, `FormData` et le serveur HTTP de Node.js afin de limiter les dépendances d'exécution.
 
 ## Environnements
 
@@ -128,56 +147,70 @@ Une promotion en produit exige une ADR, un contrat de données, une revue des dr
 | --- | --- | --- | --- | --- |
 | Développement | Docker Compose sur macOS ou Linux | `compose.yaml` et `.env.example` | `http://127.0.0.1:8080` par défaut | `./scripts/verify.sh` |
 | CI | GitHub Actions | `.github/workflows/verify.yml` | Runs GitHub | `./scripts/verify.sh` |
-| Production | Inactive | Aucune | Aucune | Non applicable |
+| Production privée | Atlas derrière Caddy | release immuable produite depuis `deployment/vps/`, puis profil `vps-infra` | Aucun accès actif au 2026-08-23 | `RUNBOOK.md` |
+| Production publique | Atlas et DNS OVHcloud | domaine enregistré, DNS web encore sur le parking OVH | `monflorian.com`, inactif pour Mon Florian | Sonde publique après route Atlas, secrets et changement DNS autorisé |
 
 ## Commandes canoniques
 
 | Action | Commande | Résultat attendu |
 | --- | --- | --- |
-| Installer | `npm ci --prefix docs-nimbus --ignore-scripts --no-audit --no-fund` | Dépendances documentaires conformes au lockfile |
-| Développer | `docker compose up --build --wait` | Prototype sain sur le port configuré |
-| Vérifier | `./scripts/verify.sh` | Prototype, Compose, documentation et aperçu local valides |
-| Construire la documentation | `npm run build --prefix docs-nimbus` | Site Nimbus statique généré depuis les Markdown classés |
-| Arrêter | `docker compose down` | Service arrêté sans suppression de donnée |
-| Contrôler la santé | `python3 -m urllib.request http://127.0.0.1:8080` | La page d'accueil répond |
-
-Le projet ne possède actuellement ni commande de déploiement, ni état persistant à réinitialiser, sauvegarder ou restaurer.
+| Installer l'application | `npm ci --ignore-scripts --no-audit --no-fund` | Lockfile vérifié sans package d'exécution tiers |
+| Installer Nimbus | `npm ci --prefix docs-nimbus --ignore-scripts --no-audit --no-fund` | Dépendances documentaires conformes au lockfile |
+| Développer | `docker compose up --build --wait` | Application saine sur le port configuré |
+| Vérifier | `./scripts/verify.sh` | Tests, contrat, image, Compose et documentation valides selon le script courant |
+| Tester le backend | `npm test` | Tests unitaires et d'intégration locaux valides |
+| Construire l'image | `docker build --tag monflorian:local .` | Image locale construite depuis le Dockerfile épinglé |
+| Construire Nimbus | `npm run build --prefix docs-nimbus` | Site documentaire généré |
+| Arrêter | `docker compose down` | Service arrêté sans donnée à supprimer |
+| Contrôler la santé | `python3 -m urllib.request http://127.0.0.1:8080/api/health` | JSON avec `status` égal à `ok` |
+| Déployer | Aucune commande produit directe | Le contrôleur Atlas doit consommer un artefact immuable validé |
+| Sauvegarder | Non applicable aux données utilisateur | L'application ne possède aucune persistance |
+| Restaurer | Non applicable aux données utilisateur | Le rollback porte sur le digest et la configuration Git |
 
 ## Données, sécurité et confidentialité
 
-- Le prototype ne persiste rien et ne transmet aucune photo.
-- Les photos restent des URL temporaires du navigateur et disparaissent au rechargement.
-- Aucun secret, compte, rôle, paiement ou journal applicatif n'existe.
-- Les exemples de voyage sont synthétiques et ne prouvent aucune capacité de réservation.
-- Avant un paiement réel, une authentification ou un stockage de photos, le projet doit être reclassifié et activer les profils Foundation adaptés.
-- Aucune photo personnelle réelle ne doit être ajoutée au dépôt.
+- Les catégories, destinataires et durées vivent dans `DATA-PROCESSING.md`.
+- Le serveur ne possède ni base, ni volume de données, ni session persistante.
+- La clé OpenAI, le code d'accès et le secret HMAC sont injectés hors Git. Le runtime peut lire une clé depuis un fichier monté.
+- Le développement privé exige un code de lancement côté backend quand la génération est ouverte. Sur Atlas, le backend n'a aucun port hôte et Caddy protège toute la page avant de lui relayer les requêtes. Le mode applicatif `public` n'est acceptable dans cette topologie qu'avec cette protection Caddy chargée et vérifiée.
+- Le serveur rejette les requêtes cross-origin, limite les corps, les dimensions, les quotas quotidiens et la concurrence.
+- Les logs contiennent la date, un identifiant de requête, la méthode, le chemin, le statut, le code d'erreur et la durée. Ils ne doivent contenir ni brief, ni photo, ni clé, ni sortie générée.
+- `store: false` désactive le stockage applicatif de la réponse OpenAI. Il ne supprime pas les journaux de sûreté possibles du fournisseur. `DATA-PROCESSING.md` expose cette limite.
+- Aucune photo personnelle réelle n'entre dans le dépôt, les fixtures, les captures de test ou les smoke tests.
+- Le modèle de menace et les risques résiduels vivent dans `THREAT-MODEL.md`.
 
 ## Qualité
 
 | Risque | Contrôle automatisé | Contrôle manuel | Environnement |
 | --- | --- | --- | --- |
-| Dérive du contrat Foundation | `./scripts/verify.sh` | Diff du snapshot et des contrats | local et CI |
-| Prototype cassé ou trompeur | `python3 scripts/check_prototype.py` | Parcours complet et console | navigateur mobile et bureau |
-| Aperçu non reproductible | `python3 scripts/check_compose.py` et sonde HTTP | Chargement de la page | Docker Compose |
-| Interface inaccessible | Contrôles statiques minimaux | Clavier, focus, zoom et mouvement réduit | navigateurs ciblés dans `DESIGN.md` |
-| Visuel sans provenance | Inventaire `ASSETS.md` | Revue des droits et du rendu | dépôt et navigateur |
+| Entrée ou sortie hors contrat | Tests des validateurs et OpenAPI | Revue des limites et erreurs visibles | local et CI |
+| Appel fournisseur non borné | Fakes de frontière, timeouts, quotas et concurrence | Smoke test synthétique contrôlé | local, puis Atlas privé |
+| Fuite de photo ou de brief | Tests des logs, origine et formats | Inspection réseau avec données synthétiques | navigateur et backend |
+| Lien affilié injecté | Liste de domaines autorisés et construction côté serveur | Revue du contrat accepté et de la mention commerciale | local, puis Atlas privé |
+| Coût abusif | Quotas par client et globaux | Vérification des limites du compte fournisseur | production privée |
+| Interface trompeuse | Contrôles statiques et tests DOM | Parcours mobile, bureau, clavier et mouvement réduit | navigateurs ciblés |
+| Image ou conteneur vulnérable | Build immuable et scan à consigner | Revue du digest et des permissions | CI et Atlas |
+| Dérive Foundation | `./scripts/verify.sh` | Diff du snapshot et des profils | local et CI |
 
 ## Livraison
 
 - Branche canonique : `main`.
-- Push direct : autorisé tant que la branche reste personnelle et non protégée ; utiliser une branche avec revue si cette politique change.
+- Push direct : autorisé tant que la branche reste personnelle et non protégée. Une protection impose une branche et une revue.
 - Convention de commit : impératif préfixé par le périmètre.
-- Artefact actuel : SHA Git contenant le prototype statique et les contrats.
-- Déploiement : aucun au 2026-08-23.
-- Rollback : revenir au SHA précédent par un commit inverse, sans réécrire l'historique.
-- Vérification finale : CI distante puis contrôle navigateur lorsqu'une interface est publiée.
-- Observabilité : santé Compose uniquement tant qu'aucune production n'existe.
+- Artefact : image OCI `ghcr.io/nclsppr/monflorian/backend` publiée par digest, cible non encore observée.
+- Déploiement : contrôleur Atlas depuis un contrat versionné dans `vps-infra`. Aucun déploiement direct depuis le poste.
+- Rollback : redéployer le digest précédent et la configuration correspondante, puis sonder la santé et le parcours critique.
+- Vérification finale : CI du producteur, réconciliation Atlas, healthcheck local, parcours privé, puis sonde publique seulement après activation du domaine.
+- Observabilité : logs structurés, santé locale, signaux Caddy et supervision Atlas. La santé HTTP ne prouve pas qu'OpenAI accepte une génération.
 - Escalade : propriétaire `nclsppr`.
 
 ## Responsabilités
 
 | Zone | Propriétaire | Suppléant | Runbook |
 | --- | --- | --- | --- |
-| Produit, marque, code et livraison | `nclsppr` | Aucun désigné | Aucun tant que la production est inactive |
+| Produit, marque, code et release | `nclsppr` | Aucun désigné | `RUNBOOK.md` |
+| Données et usage des photos | `nclsppr` | Aucun désigné | `DATA-PROCESSING.md` et `RUNBOOK.md` |
+| Service Atlas, Caddy et DNS | `nclsppr` | Aucun désigné | `RUNBOOK.md` |
+| Vérification éditoriale du voyage | Florian | Aucun désigné | Procédure humaine à écrire avant un client réel |
 
-Les risques courants et prochaines preuves vivent dans `STATUS.md`. Les décisions structurantes vivent dans les ADR.
+Les risques courants et les preuves manquantes vivent dans `STATUS.md`. Une capacité n'est livrée que lorsque la preuve nomme son SHA, son environnement et sa limite.

@@ -20,7 +20,7 @@ command -v python3 >/dev/null 2>&1 || {
 }
 
 command -v node >/dev/null 2>&1 || {
-  echo "Node >= 22.12.0 est requis pour vérifier Nimbus." >&2
+  echo "Node >= 24.0.0 est requis pour vérifier l’application et Nimbus." >&2
   exit 1
 }
 
@@ -29,8 +29,8 @@ command -v npm >/dev/null 2>&1 || {
   exit 1
 }
 
-node -e 'const [major, minor] = process.versions.node.split(".").map(Number); process.exit(major > 22 || (major === 22 && minor >= 12) ? 0 : 1)' || {
-  echo "Node >= 22.12.0 est requis (version détectée : $(node --version))." >&2
+node -e 'const [major] = process.versions.node.split(".").map(Number); process.exit(major >= 24 ? 0 : 1)' || {
+  echo "Node >= 24.0.0 est requis (version détectée : $(node --version))." >&2
   exit 1
 }
 
@@ -55,6 +55,11 @@ python3 "${SCRIPT_DIR}/check_markdown.py"
 python3 "${SCRIPT_DIR}/check_compose.py"
 python3 "${SCRIPT_DIR}/check_prototype.py"
 
+python3 -m json.tool "${PROJECT_ROOT}/docs/api/openapi.json" >/dev/null
+npm ci --prefix "${PROJECT_ROOT}" --ignore-scripts --no-audit --no-fund
+npm run check --prefix "${PROJECT_ROOT}"
+"${SCRIPT_DIR}/verify-vps-release-contract"
+
 export MONFLORIAN_PORT="${MONFLORIAN_PORT:-8080}"
 compose_down() {
   docker compose --project-directory "${PROJECT_ROOT}" down
@@ -66,10 +71,21 @@ import os
 from urllib.request import urlopen
 
 port = os.environ["MONFLORIAN_PORT"]
-with urlopen(f"http://127.0.0.1:{port}/", timeout=5) as response:
-    body = response.read()
-if b"<title>Mon Florian" not in body:
-    raise SystemExit("Le prototype servi ne contient pas le titre attendu.")
+base = f"http://127.0.0.1:{port}"
+with urlopen(f"{base}/", timeout=5) as response:
+    home = response.read()
+if b"<title>Mon Florian" not in home:
+    raise SystemExit("L’application servie ne contient pas le titre attendu.")
+
+with urlopen(f"{base}/api/health", timeout=5) as response:
+    health = __import__("json").load(response)
+if health != {"status": "ok", "release": "local-compose", "generationReady": False}:
+    raise SystemExit(f"Santé locale inattendue : {health!r}")
+
+with urlopen(f"{base}/api/config", timeout=5) as response:
+    config = __import__("json").load(response)
+if config.get("serviceReady") is not False or config.get("bookingMode") != "external":
+    raise SystemExit(f"Configuration locale inattendue : {config!r}")
 PY
 compose_down
 trap - EXIT INT TERM

@@ -9,7 +9,7 @@ Contrat d'adoption du socle commun par ce projet.
 | Source | `https://github.com/nclsppr/project-foundation.git` |
 | Version lisible | `v0.5.2` |
 | Commit immuable | `708d7374f87060809a805c57abc2cf7e7b66c182` |
-| Pack adopté | `full` |
+| Pack adopté | `critical` |
 | Adoptée le | 2026-08-23 |
 | Adoptée par | nclsppr |
 
@@ -23,6 +23,9 @@ Les fichiers sous `docs/foundation/` proviennent exactement du commit ci-dessus 
 - `web`
 - `experiment`
 - `generated-artifacts`
+- `backend-data`
+- `infrastructure-production`
+- `dependency-change`
 
 Les gates d'un profil s'appliquent seulement aux unités qui rencontrent son déclencheur.
 
@@ -47,7 +50,9 @@ P18 et P19 ne peuvent pas être désactivés par convenance. Le projet conserve 
 
 ## Reclassification
 
-La classe Produit couvre le prototype actuel. Avant tout paiement réel, compte, stockage de photos ou données de voyage, le projet doit réévaluer la classe Critique, activer au minimum `backend-data` puis `infrastructure-production` lors d'un déploiement, et documenter le changement dans une ADR.
+Le projet est classé Critique depuis le 2026-08-23. Le backend reçoit des briefs de voyage et des photos personnelles, appelle deux API OpenAI et prépare un déploiement de production. Cette combinaison rend insuffisant le pack Produit, même sans base de données ni paiement.
+
+L'[ADR-0002](docs/decisions/adr-0002-runtime-openai-photos-booking-atlas.md) fixe la frontière de cette reclassification. Le pack Critique impose notamment le [runbook](RUNBOOK.md), la [preuve de livraison](DELIVERY-EVIDENCE.md), le [contrat de traitement](DATA-PROCESSING.md) et le [modèle de menace](THREAT-MODEL.md). Une activation externe décrite dans ces fichiers demande toujours l'autorité prévue par la tâche et ses checkpoints.
 
 ## Challenger le socle
 

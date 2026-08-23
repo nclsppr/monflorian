@@ -1,0 +1,48 @@
+#!/usr/bin/env python3
+"""Resolve the exact Mon Florian image and verify its GitHub attestation."""
+
+from __future__ import annotations
+
+import argparse
+import os
+import stat
+import sys
+from pathlib import Path
+
+SCRIPT_ROOT = Path(__file__).resolve().parent
+sys.path.insert(0, str(SCRIPT_ROOT / "lib"))
+
+from vps_image_resolver import (  # noqa: E402
+    ImageResolutionError,
+    resolve_image,
+    resolved_image_bytes,
+)
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--revision", required=True)
+    parser.add_argument("--output", required=True)
+    parser.add_argument("--github-output")
+    arguments = parser.parse_args()
+    try:
+        output = Path(arguments.output)
+        if output.exists() or output.is_symlink():
+            raise ImageResolutionError("resolved image output must not exist")
+        output.write_bytes(resolved_image_bytes(resolve_image(arguments.revision)))
+        os.chmod(output, 0o600)
+        if arguments.github_output:
+            github_output = Path(arguments.github_output)
+            if not stat.S_ISREG(github_output.lstat().st_mode):
+                raise ImageResolutionError("GitHub output is not a regular file")
+            with github_output.open("a", encoding="utf-8") as destination:
+                destination.write(f"component_images={output}\n")
+    except (ImageResolutionError, OSError) as exc:
+        print(f"image resolution refused: {exc}", file=sys.stderr)
+        return 1
+    print("verified backend image reference written")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

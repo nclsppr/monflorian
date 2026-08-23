@@ -1,17 +1,36 @@
 name: monflorian
 
 services:
-  prototype:
-    image: nginx:1.30.0-alpine@sha256:0272e4604ed93c1792f03695a033a6e8546840f86e0de20a884bb17d2c924883
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
     init: true
     ports:
-      - "127.0.0.1:${MONFLORIAN_PORT:-8080}:80"
-    volumes:
-      - ./prototype/index.html:/usr/share/nginx/html/index.html:ro
+      - "127.0.0.1:${MONFLORIAN_PORT:-8080}:8080"
+    environment:
+      BOOKING_MODE: external
+      MONFLORIAN_ACCESS_MODE: private
+      MONFLORIAN_GENERATION_ENABLED: "false"
+      MONFLORIAN_ILLUSTRATION_ENABLED: "false"
+      MONFLORIAN_PUBLIC_ORIGIN: "http://127.0.0.1:${MONFLORIAN_PORT:-8080}"
+      MONFLORIAN_RELEASE: local-compose
+    read_only: true
+    tmpfs:
+      - /tmp:size=16m,mode=1777
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    pids_limit: 100
+    mem_limit: 256m
+    cpus: 1.0
     healthcheck:
       test:
-        - CMD-SHELL
-        - wget -qO- http://127.0.0.1/ | grep -q '<title>Mon Florian'
+        - CMD
+        - node
+        - -e
+        - fetch('http://127.0.0.1:8080/api/health').then(r=>r.json()).then(v=>process.exit(v.status==='ok'?0:1)).catch(()=>process.exit(1))
       interval: 5s
       timeout: 3s
       retries: 5

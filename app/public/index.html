@@ -1,0 +1,339 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#f4f7ff" />
+    <meta name="robots" content="noindex,nofollow,noarchive" />
+    <meta name="referrer" content="no-referrer" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; connect-src 'self'; img-src 'self' data: blob:; style-src 'self'; script-src 'self'; object-src 'none'; base-uri 'none'; form-action 'self'"
+    />
+    <meta
+      name="description"
+      content="Mon Florian prépare une première proposition de voyage à partir de ton envie."
+    />
+    <title>Mon Florian · Prépare ton voyage</title>
+    <link rel="icon" href="/assets/monflorian-logo.png" type="image/png" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <link rel="stylesheet" href="/styles.css" />
+    <script src="/app.js" defer></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Aller au contenu</a>
+
+    <div class="page-shell">
+      <header class="site-header" aria-label="En-tête">
+        <a class="brand" href="#main" aria-label="Mon Florian, revenir au début">
+          <img src="/assets/monflorian-logo.png" alt="Mon Florian" width="2172" height="724" />
+        </a>
+        <div class="launch-state" aria-label="Statut du service">
+          <span class="launch-dot" aria-hidden="true"></span>
+          Lancement privé
+        </div>
+      </header>
+
+      <main id="main">
+        <section class="hero" aria-labelledby="hero-title">
+          <div class="hero-copy">
+            <p class="service-label">Ton voyage, mis au propre</p>
+            <h1 id="hero-title">Raconte-moi ton envie.<br /><span>Je prépare le trajet.</span></h1>
+            <p class="hero-lead">
+              Décris le voyage avec tes mots. Tu peux ajouter des dates, le nombre de voyageurs et le
+              rythme souhaité. Tu recevras un déroulé à relire avant de réserver.
+            </p>
+
+            <div id="config-status" class="notice notice-loading" role="status" aria-live="polite">
+              <span class="notice-spinner" aria-hidden="true"></span>
+              <div>
+                <strong>Connexion au service</strong>
+                <p>Je vérifie que la préparation de voyage est disponible.</p>
+              </div>
+            </div>
+
+            <form id="trip-form" class="trip-form" novalidate aria-describedby="trip-form-note">
+              <div class="field-group brief-field">
+                <label for="brief">Ton envie de voyage</label>
+                <textarea
+                  id="brief"
+                  name="brief"
+                  rows="5"
+                  minlength="20"
+                  maxlength="2000"
+                  required
+                  placeholder="Ex. Dix jours au Portugal en octobre, sans voiture, avec Lisbonne et quelques étapes près de l'océan."
+                  aria-describedby="brief-hint brief-error"
+                ></textarea>
+                <div class="field-meta">
+                  <span id="brief-hint">20 à 2 000 caractères.</span>
+                  <span id="brief-count" aria-hidden="true">0 / 2 000</span>
+                </div>
+                <p id="brief-error" class="field-error" aria-live="polite"></p>
+              </div>
+
+              <div class="form-grid">
+                <div class="field-group">
+                  <label for="start-date">Départ <span>facultatif</span></label>
+                  <input id="start-date" name="startDate" type="date" />
+                </div>
+                <div class="field-group">
+                  <label for="end-date">Retour <span>facultatif</span></label>
+                  <input id="end-date" name="endDate" type="date" />
+                </div>
+                <div class="field-group">
+                  <label for="travelers">Voyageurs</label>
+                  <select id="travelers" name="travelers">
+                    <option value="1">1 voyageur</option>
+                    <option value="2" selected>2 voyageurs</option>
+                    <option value="3">3 voyageurs</option>
+                    <option value="4">4 voyageurs</option>
+                    <option value="5">5 voyageurs</option>
+                    <option value="6">6 voyageurs</option>
+                    <option value="7">7 voyageurs</option>
+                    <option value="8">8 voyageurs</option>
+                  </select>
+                </div>
+              </div>
+
+              <p id="dates-error" class="field-error dates-error" aria-live="polite"></p>
+
+              <fieldset class="pace-field">
+                <legend>Rythme</legend>
+                <div class="segmented-control">
+                  <label>
+                    <input type="radio" name="pace" value="calm" />
+                    <span>Calme</span>
+                  </label>
+                  <label>
+                    <input type="radio" name="pace" value="balanced" checked />
+                    <span>Équilibré</span>
+                  </label>
+                  <label>
+                    <input type="radio" name="pace" value="intense" />
+                    <span>Soutenu</span>
+                  </label>
+                </div>
+              </fieldset>
+
+              <div id="access-field" class="field-group access-field" hidden>
+                <label for="access-code">Code d'accès</label>
+                <input
+                  id="access-code"
+                  name="accessCode"
+                  type="password"
+                  autocomplete="one-time-code"
+                  spellcheck="false"
+                  maxlength="128"
+                  aria-describedby="access-hint access-error"
+                />
+                <p id="access-hint" class="field-hint">Le service est réservé aux personnes invitées.</p>
+                <p id="access-error" class="field-error" aria-live="polite"></p>
+              </div>
+
+              <div class="submit-row">
+                <button id="trip-submit" class="primary-button" type="submit" disabled>
+                  <span class="button-label">Préparer mon trajet</span>
+                  <span class="button-arrow" aria-hidden="true">↗</span>
+                </button>
+                <p id="trip-form-note">
+                  Première proposition générée avec OpenAI. Vérifie les horaires, prix, formalités et
+                  conditions avant toute réservation.
+                </p>
+              </div>
+            </form>
+
+            <div id="trip-status" class="request-status" role="status" aria-live="polite" hidden></div>
+          </div>
+
+          <aside class="travel-preview" aria-label="Aperçu indicatif du carnet de voyage">
+            <div class="preview-shape preview-shape-blue" aria-hidden="true"></div>
+            <div class="preview-shape preview-shape-lime" aria-hidden="true"></div>
+            <div class="paper-plane" aria-hidden="true">➤</div>
+            <article class="preview-phone">
+              <div class="phone-notch" aria-hidden="true"></div>
+              <div class="preview-cover">
+                <div class="preview-cover-top">
+                  <span>EXEMPLE D'INTERFACE</span>
+                  <span>8 JOURS</span>
+                </div>
+                <div class="preview-sun" aria-hidden="true"></div>
+                <div class="preview-mountain back" aria-hidden="true"></div>
+                <div class="preview-mountain front" aria-hidden="true"></div>
+                <div class="preview-cover-copy">
+                  <small>APERÇU INDICATIF</small>
+                  <strong>Le Portugal<br />en train</strong>
+                </div>
+              </div>
+              <div class="preview-route">
+                <div class="preview-route-head">
+                  <strong>Ton itinéraire</strong>
+                  <span>sans réservation</span>
+                </div>
+                <div class="preview-day active">
+                  <span class="preview-day-number">J1</span>
+                  <span><strong>Premiers pas à Lisbonne</strong><small>Baixa · Alfama · miradouros</small></span>
+                  <span class="preview-thumbnail sea" aria-hidden="true"></span>
+                </div>
+                <div class="preview-day">
+                  <span class="preview-day-number">J3</span>
+                  <span><strong>Train vers Coimbra</strong><small>Trajet calme · vieille ville</small></span>
+                  <span class="preview-thumbnail lime" aria-hidden="true"></span>
+                </div>
+                <div class="preview-day">
+                  <span class="preview-day-number">J6</span>
+                  <span><strong>Deux jours à Porto</strong><small>Ribeira · jardins · océan</small></span>
+                  <span class="preview-thumbnail ink" aria-hidden="true"></span>
+                </div>
+              </div>
+            </article>
+            <div class="florian-card">
+              <img src="/assets/monflorian-logo.png" alt="" width="2172" height="724" />
+              <p><strong>Le conseil de Florian</strong>Garde une soirée libre après chaque changement de ville.</p>
+            </div>
+          </aside>
+        </section>
+
+        <section id="trip-result" class="result-section" aria-labelledby="result-title" hidden>
+          <div class="result-heading">
+            <div>
+              <p id="result-destination" class="result-kicker"></p>
+              <h2 id="result-title" tabindex="-1"></h2>
+              <p id="result-summary" class="result-summary"></p>
+            </div>
+            <button id="print-button" class="secondary-button print-button" type="button">
+              Imprimer ou enregistrer en PDF
+            </button>
+          </div>
+
+          <div class="result-notes">
+            <article id="florian-note" class="result-note florian-note-result" hidden>
+              <span class="note-avatar" aria-hidden="true">F</span>
+              <div>
+                <h3>Le choix de Florian</h3>
+                <p></p>
+              </div>
+            </article>
+            <article id="budget-note" class="result-note" hidden>
+              <h3>Repère budget</h3>
+              <p></p>
+            </article>
+          </div>
+
+          <div id="days-list" class="days-list"></div>
+
+          <section id="accommodations-section" class="accommodations" aria-labelledby="accommodations-title" hidden>
+            <div class="accommodations-heading">
+              <div>
+                <p class="result-kicker">Pour chercher où dormir</p>
+                <h2 id="accommodations-title">Hébergements par étape</h2>
+              </div>
+              <p id="affiliate-disclosure" class="affiliate-disclosure"></p>
+            </div>
+            <div id="accommodations-list" class="accommodations-list"></div>
+          </section>
+
+          <section class="illustration-workshop" aria-labelledby="illustration-title">
+            <div class="workshop-intro">
+              <p class="result-kicker">Une image avant le départ</p>
+              <h2 id="illustration-title">Imagine une scène du voyage</h2>
+              <p>
+                Ajoute jusqu'à quatre portraits. Le navigateur réencode les photos en WebP avant
+                l'envoi. Mon Florian ne les conserve pas sur son serveur. OpenAI peut les conserver
+                temporairement dans ses journaux de sûreté selon les règles du compte et de sa
+                plateforme.
+              </p>
+            </div>
+
+            <form id="illustration-form" class="illustration-form" novalidate>
+              <div class="illustration-fields">
+                <div class="field-group">
+                  <label for="illustration-destination">Destination</label>
+                  <input
+                    id="illustration-destination"
+                    name="destination"
+                    type="text"
+                    minlength="2"
+                    maxlength="120"
+                    required
+                  />
+                </div>
+                <div class="field-group">
+                  <label for="illustration-scene">Scène à dessiner</label>
+                  <textarea
+                    id="illustration-scene"
+                    name="scene"
+                    rows="3"
+                    minlength="10"
+                    maxlength="500"
+                    required
+                    placeholder="Ex. Nous deux sur un petit bateau au lever du jour, avec les îles au loin."
+                  ></textarea>
+                </div>
+              </div>
+              <p id="illustration-fields-error" class="field-error" aria-live="polite"></p>
+
+              <div class="photo-field">
+                <div class="photo-field-head">
+                  <div>
+                    <h3>Portraits des voyageurs</h3>
+                    <p id="photo-help">1 à 4 photos. JPEG, PNG ou WebP.</p>
+                  </div>
+                  <label class="photo-picker">
+                    <input id="photo-input" type="file" accept="image/jpeg,image/png,image/webp" multiple />
+                    <span>Choisir des photos</span>
+                  </label>
+                </div>
+                <div id="photo-list" class="photo-list" aria-live="polite">
+                  <p class="photo-empty">Aucune photo ajoutée.</p>
+                </div>
+                <p id="photo-error" class="field-error" aria-live="polite"></p>
+              </div>
+
+              <label class="consent-row">
+                <input id="photo-consent" name="consent" type="checkbox" required />
+                <span>
+                  Je confirme avoir le droit d'utiliser ces photos et l'accord des personnes visibles.
+                  Pour un mineur, je confirme l'accord de son représentant légal. J'accepte leur envoi à
+                  OpenAI pour créer cette image.
+                </span>
+              </label>
+              <p id="consent-error" class="field-error" aria-live="polite"></p>
+
+              <div class="submit-row illustration-submit-row">
+                <button id="illustration-submit" class="primary-button" type="submit">
+                  <span class="button-label">Créer le dessin</span>
+                  <span class="button-arrow" aria-hidden="true">✦</span>
+                </button>
+                <p>La génération est séparée du trajet. Elle ne démarre qu'après ton accord.</p>
+              </div>
+            </form>
+
+            <div id="illustration-status" class="request-status" role="status" aria-live="polite" hidden></div>
+
+            <figure id="illustration-result" class="illustration-result" hidden>
+              <img id="illustration-image" src="/assets/monflorian-logo.png" alt="" />
+              <figcaption>
+                <strong>Projection personnalisée · image générée</strong>
+                <span>Cette scène est une illustration. Elle ne montre pas l'état réel du lieu.</span>
+              </figcaption>
+            </figure>
+          </section>
+
+          <footer class="result-footer">
+            <p>
+              Ce trajet est une base de préparation. Consulte les sources officielles et les prestataires
+              avant de décider ou de payer.
+            </p>
+            <button id="new-trip-button" class="text-button" type="button">Préparer un autre voyage</button>
+          </footer>
+        </section>
+      </main>
+
+      <footer class="site-footer">
+        <img src="/assets/monflorian-logo.png" alt="Mon Florian" width="2172" height="724" />
+        <p>Lancement privé. Aucun paiement ni réservation sur ce site.</p>
+      </footer>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+set -Eeuo pipefail
+
+REPOSITORY_ROOT=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd -P)
+readonly REPOSITORY_ROOT
+
+cd "${REPOSITORY_ROOT}"
+python3 -m unittest discover -s tests -p 'test_vps_*.py'

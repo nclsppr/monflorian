@@ -1,0 +1,7 @@
+**
+!Dockerfile
+!app/
+!app/**
+!assets/
+!assets/brand/
+!assets/brand/monflorian-logo.png

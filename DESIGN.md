@@ -80,7 +80,19 @@ L'action principale reste unique. Dans le prototype, elle doit annoncer qu'aucun
 
 Une note de Florian explique un choix concret du parcours. Elle n'est ni une bulle de discussion, ni une mascotte décorative. Le retour dynamique utilise un statut annoncé aux technologies d'assistance et ne dépend pas du mouvement.
 
-Les photos des voyageurs apparaissent sur la couverture, les ouvertures de chapitre, quelques projections fortes et les repères de carte. Chaque image créée avant le départ porte la mention "Projection personnalisée". Les autres images montrent les lieux réels.
+Les photos des voyageurs peuvent alimenter une couverture ou un moment fort. Le rendu reste un dessin éditorial, jamais une fausse photographie de voyage. Chaque image créée avant le départ porte la mention "Projection personnalisée · image générée". L'interface explique l'envoi à OpenAI avant le consentement. Elle ne présente pas cette projection comme une preuve du lieu, du trajet ou de la présence des personnes.
+
+## Evaluation Astryx
+
+L'évaluation du 2026-08-23 n'adopte pas Astryx pour l'interface publique. Le système officiel est en bêta, repose sur React et StyleX et vise d'abord les outils internes riches en composants. Mon Florian possède une page grand public courte, une composition de marque spécifique et aucun framework côté navigateur. Une migration réécrirait le rendu sans ajouter de capacité au voyageur.
+
+Le projet retient trois disciplines d'Astryx sans ajouter sa dépendance :
+
+- nommer une échelle d'espacement avant le prochain écran partagé ;
+- documenter ensemble les états repos, focus, chargement, erreur et désactivation des champs, boutons et statuts ;
+- reprendre une checklist d'accessibilité couvrant nom, rôle, état, clavier, focus, annonces, mouvement réduit, couleurs forcées, traduction et taille de cible.
+
+Une nouvelle évaluation devient utile pour un futur back-office avec navigation, tableaux, réglages et composants répétés. Elle doit alors mesurer le bundle réel et isoler le thème Mon Florian. Sources de la décision : [dépôt officiel Astryx](https://github.com/facebook/astryx) et [checklist d'accessibilité officielle](https://github.com/facebook/astryx/wiki/Accessibility-Checklist).
 
 ## Do's and Don'ts
 

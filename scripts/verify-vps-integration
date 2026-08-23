@@ -1,0 +1,40 @@
+#!/usr/bin/env python3
+"""Verify the deterministic Mon Florian integration artifact."""
+
+from __future__ import annotations
+
+import argparse
+import sys
+from pathlib import Path
+
+SCRIPT_ROOT = Path(__file__).resolve().parent
+REPOSITORY_ROOT = SCRIPT_ROOT.parent
+sys.path.insert(0, str(SCRIPT_ROOT / "lib"))
+
+from release_contract import ContractError, verify_integration  # noqa: E402
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--archive", required=True)
+    parser.add_argument("--inventory", required=True)
+    parser.add_argument("--expected-revision", required=True)
+    parser.add_argument("--expected-created")
+    arguments = parser.parse_args()
+    try:
+        verify_integration(
+            REPOSITORY_ROOT,
+            Path(arguments.archive),
+            Path(arguments.inventory),
+            arguments.expected_revision,
+            arguments.expected_created,
+        )
+    except (ContractError, OSError) as exc:
+        print(f"integration verification refused: {exc}", file=sys.stderr)
+        return 1
+    print("integration package matches the exact Mon Florian Atlas contract")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
