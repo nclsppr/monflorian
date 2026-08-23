@@ -61,7 +61,7 @@ Le choix d'une stack applicative, d'une IA, d'un fournisseur de paiement, d'un h
 ### Risques
 
 - Une personne peut encore prendre la copie cible pour une capacité active si l'étiquette de prototype disparaît.
-- La branche GitHub n'impose pas encore les checks.
+- La branche GitHub n'imposait pas encore les checks. Ce risque est levé depuis le 2026-08-23 par une protection qui exige une PR, un historique linéaire, `verify` et la validation de la release applicative.
 - Les droits des visuels ne possèdent pas de preuve séparée.
 
 ## Mise en oeuvre
