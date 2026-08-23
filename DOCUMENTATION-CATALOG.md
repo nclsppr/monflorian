@@ -8,7 +8,7 @@ Moteur déclaré : `nimbus`.
 
 | Collection | Visibilité | Fichiers |
 | --- | --- | ---: |
-| Documentation du projet | `internal` | 15 |
+| Documentation du projet | `internal` | 18 |
 | Décisions | `internal` | 2 |
 | Socle vendorisé | `reference` | 10 |
 | Maintenance Nimbus | `reference` | 1 |
@@ -30,6 +30,9 @@ Moteur déclaré : `nimbus`.
 - [RUNBOOK.md](RUNBOOK.md)
 - [STATUS.md](STATUS.md)
 - [THREAT-MODEL.md](THREAT-MODEL.md)
+- [docs/agents/domain.md](docs/agents/domain.md)
+- [docs/agents/issue-tracker.md](docs/agents/issue-tracker.md)
+- [docs/agents/triage-labels.md](docs/agents/triage-labels.md)
 
 ## Décisions
 

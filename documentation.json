@@ -9,7 +9,7 @@
       "id": "project",
       "title": "Documentation du projet",
       "visibility": "internal",
-      "include": ["*.md"]
+      "include": ["*.md", "docs/agents/**/*.md"]
     },
     {
       "id": "decisions",

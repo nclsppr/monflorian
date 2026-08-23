@@ -35,6 +35,20 @@ Les contraintes de sécurité et l'autorité explicite de la tâche précèdent 
 - Branche dédiée et revue dès qu'une protection ou une politique d'équipe l'exige.
 - Aucun force-push ni réécriture de l'historique partagé.
 
+## Agent skills
+
+### Issue tracker
+
+Les tickets et spécifications vivent dans les issues GitHub de ce dépôt. Voir `docs/agents/issue-tracker.md`.
+
+### Triage labels
+
+Le triage utilise les cinq labels canoniques sans alias local. Voir `docs/agents/triage-labels.md`.
+
+### Domain docs
+
+Le dépôt utilise un contexte unique, avec `CONTEXT.md` à la racine et les ADR sous `docs/decisions/`. Voir `docs/agents/domain.md`.
+
 ## Langue et copie
 
 - Appliquer le skill `unslop` à toute prose : documentation, interface, changelog et messages de commit. S'il n'est pas disponible, relire avec les mêmes critères avant livraison.
