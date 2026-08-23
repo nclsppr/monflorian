@@ -9,11 +9,11 @@ Ce document décrit la préparation, le déploiement privé, l'ouverture DNS et 
 | Opération | Livrer puis exploiter Mon Florian sur Atlas |
 | Propriétaire | `nclsppr` |
 | Suppléant | Aucun désigné |
-| Statut documentaire | Cible, jamais exécutée pour Mon Florian |
+| Statut documentaire | Préparation exécutée, activation non exécutée |
 | Dernière vérification | 2026-08-23 |
 | Environnement concerné | Atlas, Caddy, registre GitHub et DNS OVHcloud |
 | Décision liée | `docs/decisions/adr-0002-runtime-openai-photos-booking-atlas.md` |
-| Preuve de la dernière exécution | Aucune |
+| Preuve de la dernière exécution | `STATUS.md` et `DELIVERY-EVIDENCE.md` |
 
 ## État actuel et cible
 
@@ -21,10 +21,10 @@ Ce document décrit la préparation, le déploiement privé, l'ouverture DNS et 
 
 | Élément | Valeur observée | Preuve | Vérifié le |
 | --- | --- | --- | --- |
-| Dépôt produit | `origin/main` à `6c6824ae609e816ee34a555d0edcac9cf85877c5` avant la tranche F01 | Git et run CI `32637925764` | 2026-08-23 |
-| Application F01 | Worktree en cours, sans SHA final ni digest | `git status` local | 2026-08-23 |
-| Atlas | Aucun service Mon Florian prouvé | Audit du contrôle central consigné dans `STATUS.md` | 2026-08-23 |
-| Domaine | Enregistré chez OVHcloud le 2026-08-23 à 13:00:22Z, apex et `www` sur le parking `213.186.33.5` | Registre et zone autoritaire consignés dans `STATUS.md` | 2026-08-23 |
+| Dépôt produit | Candidat `a7c5d1c32a41c2e43c92f02bff4d584910727eb1` publié par digest | Git, CI et attestations consignés | 2026-08-23 |
+| Application F01 | 25 tests, 13 tests Atlas, Compose et navigateur validés | `DELIVERY-EVIDENCE.md` | 2026-08-23 |
+| Atlas | Admission dormante convergée, réseau vide, secret et conteneur absents | Contrôleur `891a898074314104e5bfacf78e46cdf512b7e5c5` | 2026-08-23 |
+| Domaine | Apex et `www` sur Atlas `137.74.174.163`, aucun AAAA, route inactive | Zone autoritaire et résolveurs publics | 2026-08-23 |
 | Booking.com | Aucun partenariat accepté observé | Audit des credentials et contrats disponibles | 2026-08-23 |
 
 ### Cible privée
@@ -39,7 +39,7 @@ Ce document décrit la préparation, le déploiement privé, l'ouverture DNS et 
 
 ### Cible publique ultérieure
 
-`https://monflorian.com` et `https://www.monflorian.com` répondent depuis Caddy avec TLS. Cette cible reste fermée tant que la route et les secrets Atlas, la session OVHcloud, le canal de contact pour les données et les preuves privées ne sont pas terminés.
+`https://monflorian.com` et `https://www.monflorian.com` répondent depuis Caddy avec TLS. Cette cible reste fermée tant que la route, les secrets Atlas, le canal de contact pour les données et les preuves privées ne sont pas terminés.
 
 ## Autorité et checkpoints
 
@@ -142,21 +142,17 @@ Ne pas lancer une commande Compose improvisée sur Atlas. Une mutation directe c
 
 Observer au moins quinze minutes après le premier parcours privé. Arrêter si les erreurs serveur se répètent, si le budget monte sans requête autorisée ou si un contenu utilisateur apparaît dans les logs.
 
-## Ouverture DNS
+## DNS et ouverture HTTPS
 
-Le domaine est enregistré. Les serveurs autoritaires sont `dns200.anycast.me` et `ns200.anycast.me`. L'apex et `www` pointent sur `213.186.33.5`. La cible Atlas vérifiée est `137.74.174.163`. Aucun AAAA n'est présent.
+Les serveurs autoritaires sont `dns200.anycast.me` et `ns200.anycast.me`. L'apex et `www` pointent déjà sur Atlas `137.74.174.163`. Aucun AAAA n'est présent. Le changement DNS a précédé l'activation applicative à la demande du propriétaire. Les valeurs précédentes étaient `213.186.33.5`.
 
-Cette section ne s'exécute qu'après l'installation de la route et des secrets Atlas, puis l'ouverture d'une session OVHcloud autorisée.
-
-1. Résoudre les serveurs de noms autoritaires et confirmer le compte qui gère la zone.
-2. Exporter ou lister tous les enregistrements existants. Préserver NS, SOA, les MX de priorités 1, 5 et 100, le SPF qui inclut `mx.ovh.com`, les autres TXT et tout sous-domaine hors `www`.
-3. Confirmer que l'IPv4 Atlas `137.74.174.163` répond pour les services attendus.
-4. Préparer un diff limité à l'apex et `www`. Ne pas ajouter d'AAAA sans chemin IPv6 vérifié.
-5. Ajouter la route Caddy pour les deux noms et valider la configuration avant reload.
-6. Remplacer seulement les A de l'apex et de `www`, actuellement `213.186.33.5`, par `137.74.174.163`, avec le TTL observé ou décidé.
-7. Attendre la propagation sans supprimer la route privée.
-8. Vérifier depuis l'extérieur la résolution, HTTP, HTTPS, le certificat, apex, `www`, les en-têtes et le parcours critique.
-9. Consigner les valeurs précédentes et nouvelles, les heures, le TTL et les sondes.
+1. Confirmer que la nouvelle clé OpenAI et l'accès privé existent sans afficher leur valeur.
+2. Activer le profil et la route Caddy par le contrôle central.
+3. Valider Caddy avant son rechargement.
+4. Vérifier que le certificat couvre l'apex et `www`.
+5. Sonder depuis l'extérieur la résolution, HTTP, HTTPS, les en-têtes et le parcours critique.
+6. Vérifier que NS, SOA, les MX de priorités 1, 5 et 100, le SPF, les autres TXT et les sous-domaines hors `www` n'ont pas changé.
+7. Revenir aux deux A précédents si l'activation échoue et ne peut pas être réparée dans la fenêtre prévue.
 
 Le DNS seul n'est pas une preuve de déploiement. Un HTTP 200 sur la page seule ne prouve pas la génération.
 

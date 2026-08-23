@@ -2,7 +2,7 @@
 
 Mon Florian transforme un brief libre en proposition de voyage expliquée. Le candidat actuel compose l'itinéraire avec OpenAI, construit séparément des recherches d'hébergement et peut créer une projection dessinée à partir de photos fournies avec consentement.
 
-Le dépôt contient l'application web, son backend sans dépendance npm d'exécution, le prototype historique et les références de marque. Il ne contient ni paiement, ni compte, ni base de données. Le service public n'est pas actif. `monflorian.com` est enregistré chez OVHcloud, mais ses enregistrements web pointent encore vers le parking OVH et aucun partenariat Booking.com n'a été prouvé.
+Le dépôt contient l'application web, son backend sans dépendance npm d'exécution, le prototype historique et les références de marque. Il ne contient ni paiement, ni compte, ni base de données. Le service public n'est pas actif. `monflorian.com` et `www.monflorian.com` pointent vers Atlas, mais la route y reste désactivée et aucun partenariat Booking.com n'a été prouvé.
 
 ## Démarrage
 
@@ -25,7 +25,7 @@ L'application est alors disponible sur `http://127.0.0.1:8080`. Sans clé OpenAI
 - [`DATA-PROCESSING.md`](DATA-PROCESSING.md) : données reçues, destinataires et rétention.
 - [`THREAT-MODEL.md`](THREAT-MODEL.md) : scénarios d'abus et contrôles.
 - [`RUNBOOK.md`](RUNBOOK.md) : préparation, déploiement et rollback sur Atlas.
-- [`DELIVERY-EVIDENCE.md`](DELIVERY-EVIDENCE.md) : preuves et limites de la tranche en cours.
+- [`DELIVERY-EVIDENCE.md`](DELIVERY-EVIDENCE.md) : preuves et limites de la dernière tranche livrée.
 - `docs/api/openapi.json` : contrat canonique de l'API HTTP.
 - [`DOCUMENTATION-CATALOG.md`](DOCUMENTATION-CATALOG.md) : navigation exhaustive des Markdown et de leurs audiences.
 - [`AGENTS.md`](AGENTS.md) : règles locales d'intervention.

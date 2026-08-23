@@ -15,6 +15,8 @@ L'ADR-0001 gardait le HTML sous `prototype/` et interdisait backend, IA, stockag
 
 Le domaine `monflorian.com` a été enregistré chez OVHcloud le 2026-08-23. Ses enregistrements web pointent encore vers le parking OVH. Aucun partenariat Booking.com accepté n'a été observé. La route Atlas, les secrets et le changement DNS limitent l'activation, pas la construction du candidat.
 
+Ce paragraphe conserve l'état observé au moment de la décision. `STATUS.md` porte l'état opérationnel courant, dont le changement DNS réalisé plus tard le même jour.
+
 ## Problème à décider
 
 Comment produire une première version déployable sans stocker les données du voyage, sans confier les liens commerciaux au modèle et sans présenter une intégration externe non acceptée comme active ?

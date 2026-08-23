@@ -7,7 +7,7 @@
 | Nom | Mon Florian |
 | Propriétaire | `nclsppr` |
 | Classe | Critique |
-| Surface de production | Cible Atlas privée, aucune URL publique active au 2026-08-23 |
+| Surface de production | DNS public sur Atlas, aucune application Mon Florian active au 2026-08-23 |
 | Socle adopté | [`FOUNDATION.md`](FOUNDATION.md) |
 | Licence | Aucune licence de réutilisation accordée |
 
@@ -102,14 +102,14 @@ L'offre cible reste un voyage prêt à 50 €, livré en mini-site privé et PDF
 
 | Composant | Rôle | Statut | Exécution | Version | Source | Preuve et date | Propriétaire |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| Interface web | Recueillir le brief, afficher le voyage et préparer les photos | candidat | navigateur | HTML, CSS et JavaScript natifs | `app/public/` | Preuve de la tranche en cours | `nclsppr` |
-| Serveur HTTP | Servir l'interface, valider les entrées, appliquer accès et quotas | candidat | Node.js | Node 24 dans l'image épinglée | `app/server.mjs` | Tests et Compose à consigner | `nclsppr` |
-| Coeur métier | Valider briefs, photos et sorties, construire les recherches d'hébergement | candidat | Node.js | sans package npm d'exécution | `app/core.mjs` | Tests unitaires à consigner | `nclsppr` |
+| Interface web | Recueillir le brief, afficher le voyage et préparer les photos | candidat publié | navigateur | HTML, CSS et JavaScript natifs | `app/public/` | Contrôles navigateur bureau et mobile du 2026-08-23 | `nclsppr` |
+| Serveur HTTP | Servir l'interface, valider les entrées, appliquer accès et quotas | candidat publié | Node.js | Node 24 dans l'image épinglée | `app/server.mjs` | Tests, CI et Compose verts sur `a7c5d1c` | `nclsppr` |
+| Coeur métier | Valider briefs, photos et sorties, construire les recherches d'hébergement | candidat publié | Node.js | sans package npm d'exécution | `app/core.mjs` | 25 tests applicatifs verts | `nclsppr` |
 | Adaptateur OpenAI | Appeler Responses et Image Edits avec timeouts et erreurs bornées | candidat | service externe | modèles épinglés par configuration | `app/openai.mjs` | Smoke test synthétique requis | `nclsppr` |
-| Image OCI | Emballer le serveur sans privilège | candidat | Docker et Atlas | base Node épinglée par digest | `Dockerfile` | Build et scan à consigner | `nclsppr` |
+| Image OCI | Emballer le serveur sans privilège | publiée | Docker et Atlas | base Node épinglée par digest | `Dockerfile` | Digest, scan distant et attestation consignés | `nclsppr` |
 | Prototype F00 | Conserver le concept qui a précédé l'application | expérience | navigateur local | HTML autonome | `prototype/index.html` | Run CI `32637925764` | `nclsppr` |
 | Documentation Nimbus | Classer et rendre les contrats | actuel | local et CI | lockfile dédié | `docs-nimbus/` | `./scripts/verify.sh` | `nclsppr` |
-| Intégration Atlas | Décrire le service, le réseau, les sondes et la route Caddy | candidat | VPS | bundle producteur en cours | `deployment/vps/` | Aucune admission ni aucun runtime Mon Florian observés | `nclsppr` |
+| Intégration Atlas | Décrire le service, le réseau, les sondes et la route Caddy | admise, inactive | VPS | release immuable et profil central désactivé | `deployment/vps/` | PR Atlas 96, contrôleur `891a898`, aucun runtime Mon Florian | `nclsppr` |
 
 ### Flux d'itinéraire
 
@@ -148,7 +148,7 @@ Le projet n'utilise aucun SDK OpenAI ou Booking.com. Il s'appuie sur `fetch`, `F
 | Développement | Docker Compose sur macOS ou Linux | `compose.yaml` et `.env.example` | `http://127.0.0.1:8080` par défaut | `./scripts/verify.sh` |
 | CI | GitHub Actions | `.github/workflows/verify.yml` | Runs GitHub | `./scripts/verify.sh` |
 | Production privée | Atlas derrière Caddy | release immuable produite depuis `deployment/vps/`, puis profil `vps-infra` | Aucun accès actif au 2026-08-23 | `RUNBOOK.md` |
-| Production publique | Atlas et DNS OVHcloud | domaine enregistré, DNS web encore sur le parking OVH | `monflorian.com`, inactif pour Mon Florian | Sonde publique après route Atlas, secrets et changement DNS autorisé |
+| Production publique | Atlas et DNS OVHcloud | apex et `www` sur `137.74.174.163`, route inactive | `monflorian.com`, inactif pour Mon Florian | Sonde publique après route Atlas, secrets et TLS |
 
 ## Commandes canoniques
 
@@ -189,7 +189,7 @@ Le projet n'utilise aucun SDK OpenAI ou Booking.com. Il s'appuie sur `fetch`, `F
 | Lien affilié injecté | Liste de domaines autorisés et construction côté serveur | Revue du contrat accepté et de la mention commerciale | local, puis Atlas privé |
 | Coût abusif | Quotas par client et globaux | Vérification des limites du compte fournisseur | production privée |
 | Interface trompeuse | Contrôles statiques et tests DOM | Parcours mobile, bureau, clavier et mouvement réduit | navigateurs ciblés |
-| Image ou conteneur vulnérable | Build immuable et scan à consigner | Revue du digest et des permissions | CI et Atlas |
+| Image ou conteneur vulnérable | Build immuable et scan distant | Revue du digest et des permissions | CI et Atlas |
 | Dérive Foundation | `./scripts/verify.sh` | Diff du snapshot et des profils | local et CI |
 
 ## Livraison
@@ -197,7 +197,7 @@ Le projet n'utilise aucun SDK OpenAI ou Booking.com. Il s'appuie sur `fetch`, `F
 - Branche canonique : `main`.
 - Push direct : autorisé tant que la branche reste personnelle et non protégée. Une protection impose une branche et une revue.
 - Convention de commit : impératif préfixé par le périmètre.
-- Artefact : image OCI `ghcr.io/nclsppr/monflorian/backend` publiée par digest, cible non encore observée.
+- Artefact : image OCI `ghcr.io/nclsppr/monflorian/backend` publiée et attestée par digest; aucun conteneur Atlas actif.
 - Déploiement : contrôleur Atlas depuis un contrat versionné dans `vps-infra`. Aucun déploiement direct depuis le poste.
 - Rollback : redéployer le digest précédent et la configuration correspondante, puis sonder la santé et le parcours critique.
 - Vérification finale : CI du producteur, réconciliation Atlas, healthcheck local, parcours privé, puis sonde publique seulement après activation du domaine.

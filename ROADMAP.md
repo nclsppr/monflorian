@@ -20,10 +20,10 @@ Mon Florian doit devenir un guide continu. Il aide à choisir avant le départ, 
 | Ordre | ID | Phase | Résultat utilisateur ou opérationnel | État macro | Critère de sortie | Preuve observée | Sortie le |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | 0 | F00 | Dépôt et prototype reproductible | Le concept est versionné et consultable localement | done | Vérification locale, Compose, navigateur, push et CI verte | Commit `e8f5d97`, preuve `6c6824a`, runs `32637460676` et `32637925764` | 2026-08-23 |
-| 1 | F01 | Candidat applicatif critique | Une personne peut préparer un brief, recevoir un voyage structuré et demander un dessin | in_progress | Tests, OpenAPI, image de production, Compose et contrôle navigateur valides | Implémentation présente dans le worktree, vérification finale non consignée | |
+| 1 | F01 | Candidat applicatif critique | Une personne peut préparer un brief, recevoir un voyage structuré et demander un dessin | done | Tests, OpenAPI, image de production, Compose et contrôle navigateur valides | Candidat `a7c5d1c`, trois workflows verts, digests et attestations consignés | 2026-08-23 |
 | 2 | F02 | Frontières OpenAI vérifiées | Les deux générations fonctionnent avec données synthétiques et erreurs sûres | planned | Smoke tests Responses et Image Edits, coût observé, aucune donnée dans les logs | | |
-| 3 | F03 | Release Atlas privée | Le digest validé tourne derrière une protection privée | planned | Release immuable, admission du contrôle central, secret monté, santé et parcours synthétique | | |
-| 4 | F04 | Domaine et ouverture publique | Le service répond sur `monflorian.com` avec TLS et protections décidées | blocked | Route Atlas, secrets, zone OVHcloud autorisée, Caddy valide, sondes apex et `www` | Domaine acheté le 2026-08-23, DNS web encore sur le parking OVH | |
+| 3 | F03 | Release Atlas privée | Le digest validé tourne derrière une protection privée | in_progress | Release immuable, admission du contrôle central, secret monté, santé et parcours synthétique | Release publiée, admission dormante fusionnée et convergence Atlas sans activation | |
+| 4 | F04 | Domaine et ouverture publique | Le service répond sur `monflorian.com` avec TLS et protections décidées | blocked | Route Atlas, secrets, Caddy valide, sondes apex et `www` | Les deux A pointent vers Atlas; route et TLS encore absents | |
 | 5 | F05 | Attribution Booking.com | Les liens affiliés approuvés portent une mention commerciale claire | blocked | Partenariat accepté, liens CJ validés, domaines autorisés et test d'attribution | Aucun partenariat ou identifiant accepté observé | |
 | 6 | F06 | Offre payante et livraison durable | Un client paie et retrouve un mini-site ou PDF relu | planned | Paiement, contrat de données persistant, support et rollback prouvés | | |
 | 7 | F07 | Voyage vivant | Le guide s'ajuste pendant le séjour et devient un carnet après le retour | planned | Parcours avant, pendant et après vérifié avec un utilisateur réel | | |
@@ -82,12 +82,11 @@ Une image publiée n'est pas un déploiement. Une CI du dépôt produit ne prouv
 
 ## F04, domaine et ouverture publique
 
-Le domaine `monflorian.com` a été enregistré chez OVHcloud le 2026-08-23 à 13:00:22Z. Ses serveurs autoritaires sont `dns200.anycast.me` et `ns200.anycast.me`. L'apex et `www` pointent encore vers l'adresse de parking OVH `213.186.33.5`. Atlas répond sur `137.74.174.163`, mais la route Mon Florian et les secrets requis ne sont pas installés.
+Le domaine `monflorian.com` a été enregistré chez OVHcloud le 2026-08-23 à 13:00:22Z. Ses serveurs autoritaires sont `dns200.anycast.me` et `ns200.anycast.me`. L'apex et `www` pointent maintenant vers Atlas `137.74.174.163`, mais la route Mon Florian et les secrets requis ne sont pas installés.
 
-La suite demande une session OVHcloud autorisée et les preuves privées Atlas :
+La suite demande les preuves privées Atlas :
 
-- créer ou vérifier la zone OVHcloud sans toucher aux enregistrements non liés au site ;
-- pointer l'apex et `www` vers `137.74.174.163` ;
+- confirmer que la zone conserve tous les enregistrements non liés au site ;
 - ne pas ajouter d'AAAA sans chemin IPv6 vérifié ;
 - préserver les MX de priorités 1, 5 et 100 ainsi que le SPF qui inclut `mx.ovh.com` ;
 - valider Caddy avant reload et attendre le certificat ;
