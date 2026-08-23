@@ -2,6 +2,10 @@
 
 Git reste la source du diff technique. Les ADR expliquent les décisions importantes.
 
+## 2026-08-23, configuration des skills d'ingénierie
+
+- Déclaration de GitHub Issues, des labels de triage par défaut et du contexte de domaine unique consommés par les skills d'ingénierie.
+
 ## 2026-08-23, candidat F01
 
 - Reclassification de Produit à Critique avec les profils backend, infrastructure et changement de dépendance de Project Foundation `v0.5.2`.
