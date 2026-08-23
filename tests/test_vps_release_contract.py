@@ -73,8 +73,17 @@ class VpsReleaseContractTests(unittest.TestCase):
             self.assertEqual(migrations["strategy"], "none")
             self.assertEqual(migrations["migrations"], [])
             self.assertEqual(probes["public"][0]["body_contains"], self.revision)
-            self.assertEqual(probes["public"][1], {"host": "monflorian.com", "path": "/", "status": 401})
-            self.assertEqual(probes["public"][2], {"host": "www.monflorian.com", "path": "/", "status": 308})
+            self.assertEqual(probes["public"][1], {"host": "monflorian.com", "path": "/", "status": 200})
+            self.assertEqual(
+                probes["public"][2],
+                {
+                    "body_contains": '"serviceReady":false',
+                    "host": "monflorian.com",
+                    "path": "/api/config",
+                    "status": 200,
+                },
+            )
+            self.assertEqual(probes["public"][3], {"host": "www.monflorian.com", "path": "/", "status": 308})
             self.assertIn(self.revision.encode(), files["caddy/monflorian.caddy"])
             self.assertNotIn(release.REVISION_PLACEHOLDER.encode(), files["caddy/monflorian.caddy"])
 

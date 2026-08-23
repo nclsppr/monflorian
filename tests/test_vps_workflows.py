@@ -45,15 +45,15 @@ class VpsWorkflowTests(unittest.TestCase):
         self.assertNotIn("OPENAI_API_KEY", workflow)
         self.assertNotIn("BOOKING_AFFILIATE", workflow)
 
-    def test_private_access_stays_outside_the_bundle(self) -> None:
+    def test_public_preview_disables_paid_functions(self) -> None:
         caddy = (ROOT / "deployment/vps/caddy/monflorian.caddy").read_text()
         compose = (ROOT / "deployment/vps/compose.yaml").read_text()
-        self.assertIn(
-            "import /etc/caddy/monflorian-private-access.caddy", caddy
-        )
+        self.assertNotIn("monflorian-private-access.caddy", caddy)
         self.assertNotIn("basic_auth", caddy)
         self.assertNotIn("MONFLORIAN_ACCESS_CODE", compose)
         self.assertIn("MONFLORIAN_ACCESS_MODE: public", compose)
+        self.assertIn('MONFLORIAN_GENERATION_ENABLED: "false"', compose)
+        self.assertIn('MONFLORIAN_ILLUSTRATION_ENABLED: "false"', compose)
         self.assertIn("__SOURCE_REVISION__", caddy)
 
 

@@ -4,6 +4,8 @@ Git reste la source du diff technique. Les ADR expliquent les décisions importa
 
 ## Non publié
 
+- Préparation d'un aperçu public sur Atlas qui sert l'interface réelle, désactive
+  les deux générations OpenAI et annonce cette indisponibilité dans le produit.
 - Ajout d'une règle d'intervention qui impose la mise à jour du registre des
   secrets Atlas dans `nclsppr/vps-infra` avant de terminer toute tâche qui
   prévoit ou exige le déploiement, la rotation ou la révocation d'un secret.

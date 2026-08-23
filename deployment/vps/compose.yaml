@@ -15,6 +15,8 @@ services:
       BOOKING_MODE: external
       HOST: 0.0.0.0
       MONFLORIAN_ACCESS_MODE: public
+      MONFLORIAN_GENERATION_ENABLED: "false"
+      MONFLORIAN_ILLUSTRATION_ENABLED: "false"
       MONFLORIAN_PUBLIC_ORIGIN: https://monflorian.com
       MONFLORIAN_RELEASE: ${MONFLORIAN_BACKEND_IMAGE:?MONFLORIAN_BACKEND_IMAGE must be an immutable digest reference}
       MONFLORIAN_TRUST_PROXY: "true"

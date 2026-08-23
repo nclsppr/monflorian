@@ -1,4 +1,4 @@
-# Plan de reprise vers une V1 privée
+# Plan de reprise vers un aperçu public
 
 Dernière mise à jour : 2026-08-23. Ce document est la checklist de reprise. L'état observé vit dans [`STATUS.md`](STATUS.md) et les procédures stables dans [`RUNBOOK.md`](RUNBOOK.md).
 
@@ -8,14 +8,15 @@ Dernière mise à jour : 2026-08-23. Ce document est la checklist de reprise. L'
 - [x] Geler `codex/monflorian-edge-adoption`. Cette branche interrompue sert seulement de référence et ne doit être ni reprise, ni fusionnée, ni déployée.
 - [ ] Ne jamais placer une clé, un identifiant privé ou un condensat du fragment d'accès dans Git, un état public, une commande ou un journal.
 
-## V1 privée attendue
+## Aperçu public attendu
 
 La première livraison est terminée seulement si :
 
 - `https://monflorian.com` possède un certificat valide et `www` redirige vers l'apex ;
-- la page et toutes les routes payantes répondent `401` sans identifiants ;
+- la page répond `200` sans identifiant ;
 - le backend utilise le digest figé, l'UID `10001` et aucun port hôte ;
-- un itinéraire et une illustration de 256 px, tous deux synthétiques, réussissent avec OpenAI ;
+- `/api/config` annonce `serviceReady: false` ;
+- les deux marqueurs de génération valent `false` dans le runtime ;
 - aucun brief, image, identifiant privé ou secret n'apparaît dans les journaux ;
 - Booking reste en mode `external`, sans prix, stock ou affiliation inventés ;
 - les services et sites déjà présents sur Atlas restent inchangés pendant quinze minutes.
@@ -43,8 +44,8 @@ Cette phase doit finir avant d'ouvrir une fenêtre de déploiement.
 
 - [ ] Créer une branche `vps-infra` propre depuis `086d9d8`, sans reprendre le contrôleur de la branche gelée.
 - [ ] Réutiliser le rôle `public_static_edge`, sa bascule atomique et son rollback existants.
-- [ ] Ajouter un état `monflorian-private` qui assemble un seul release avec les trois sites statiques existants, Surplasse statique et Mon Florian.
-- [ ] Ajouter seulement le Compose privé, la route Mon Florian et les contrôles des deux marqueurs de génération.
+- [ ] Ajouter un état `monflorian-preview` qui assemble un seul release avec les sites existants et Mon Florian.
+- [ ] Ajouter seulement le Compose d'aperçu, la route Mon Florian et les contrôles des deux marqueurs de génération.
 - [ ] Conserver de l'ancienne branche uniquement les constantes de route, le manifeste Surplasse observé et le tuple produit ci-dessus.
 - [ ] Refuser toute extension générique de schéma ou tout nouveau mécanisme d'adoption.
 - [ ] Garder la tranche sous 14 fichiers et 450 lignes nettes. Au-delà, arrêter et réduire le périmètre.
@@ -60,16 +61,17 @@ Le statut `READY_TO_DEPLOY` est autorisé uniquement lorsque la branche centrale
 | --- | --- | --- |
 | 0 à 10 min | Audit en lecture seule | Aucun verrou, transaction, service en échec ou état edge actif inattendu. Sinon, arrêt. |
 | 10 à 25 min | Convergence de la base centrale | Révision attendue, sans secret Mon Florian et sans changement des sites. |
-| 25 à 35 min | Adoption de la clé existante et installation de l'accès privé | Deux marqueurs génération 1, permissions exactes, aucune valeur lue ou journalisée. |
+| 25 à 35 min | Audit du secret existant | Métadonnées exactes, aucune valeur lue ou journalisée. |
 | 35 à 50 min | Préparation du release edge complet | Caddy valide et sites existants identiques. |
 | 50 à 65 min | Activation du backend figé | Digest exact, service sain, UID `10001`, aucun port hôte. |
-| 65 à 85 min | TLS, accès privé, deux générations synthétiques et observation | Tous les critères de la V1 privée sont prouvés. |
+| 65 à 85 min | TLS, page publique, génération coupée et observation | Tous les critères de l'aperçu public sont prouvés. |
 | 85 à 90 min | Preuve finale ou rollback | Résultat consigné, ou route et profil retirés. |
 
 Une seule tentative est permise par étape. Si une étape dépasse sa limite de cinq minutes, le diagnostic en direct s'arrête. Si une mutation a déjà eu lieu, appliquer le rollback préparé. Aucun développement, rebase ou correctif improvisé n'entre dans cette fenêtre.
 
 ## Reporté après la V1
 
+- Accès privé et deux générations synthétiques prouvées.
 - Affiliation Booking.com et liens sponsorisés approuvés.
 - Migration visuelle Astryx ou nouveau back-office.
 - Photos réelles, comptes, paiement, PDF et persistance.
