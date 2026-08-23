@@ -2,6 +2,12 @@
 
 Git reste la source du diff technique. Les ADR expliquent les décisions importantes.
 
+## Non publié
+
+- Ajout d'une règle d'intervention qui impose la mise à jour du registre des
+  secrets Atlas dans `nclsppr/vps-infra` avant de terminer toute tâche qui
+  prévoit ou exige le déploiement, la rotation ou la révocation d'un secret.
+
 ## 2026-08-23, configuration des skills d'ingénierie
 
 - Déclaration de GitHub Issues, des labels de triage par défaut et du contexte de domaine unique consommés par les skills d'ingénierie.
