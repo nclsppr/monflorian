@@ -2,6 +2,8 @@
 
 Ce relevé sépare le candidat publié, la préparation du VPS et l'activation publique. Ces trois étapes n'ont pas le même niveau de preuve.
 
+> Ce relevé conserve la preuve historique du candidat F01. Il ne décrit pas le candidat courant et ne doit pas servir d'entrée à un déploiement. Utiliser [`STATUS.md`](STATUS.md) pour le tuple figé et [`RESTE-A-FAIRE.md`](RESTE-A-FAIRE.md) pour l'ordre de reprise.
+
 ## Référence
 
 | Champ | Valeur |

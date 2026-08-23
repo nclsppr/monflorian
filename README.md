@@ -2,7 +2,7 @@
 
 Mon Florian transforme un brief libre en proposition de voyage expliquée. Le candidat actuel compose l'itinéraire avec OpenAI, construit séparément des recherches d'hébergement et peut créer une projection dessinée à partir de photos fournies avec consentement.
 
-Le dépôt contient l'application web, son backend sans dépendance npm d'exécution, le prototype historique et les références de marque. Il ne contient ni paiement, ni compte, ni base de données. Le service public n'est pas actif. `monflorian.com` et `www.monflorian.com` pointent vers Atlas, mais la route y reste désactivée et aucun partenariat Booking.com n'a été prouvé.
+Le dépôt contient l'application web, son backend sans dépendance npm d'exécution, le prototype historique et les références de marque. Il ne contient ni paiement, ni compte, ni base de données. Le service public n'est pas actif. Le dernier état Atlas connu est historique depuis l'interruption d'une convergence et aucun partenariat Booking.com n'a été prouvé.
 
 ## Démarrage
 
@@ -17,6 +17,7 @@ L'application est alors disponible sur `http://127.0.0.1:8080`. Sans clé OpenAI
 
 - [`PROJECT.md`](PROJECT.md) : contrat produit, architecture, données et commandes.
 - [`STATUS.md`](STATUS.md) : état réellement vérifié à une date donnée.
+- [`RESTE-A-FAIRE.md`](RESTE-A-FAIRE.md) : conditions et fenêtre bornée pour reprendre la livraison.
 - [`ROADMAP.md`](ROADMAP.md) : ordre de livraison et critères de sortie.
 - [`DESIGN.md`](DESIGN.md) : langage visuel extrait des concepts existants.
 - [`ASSETS.md`](ASSETS.md) : sources, rôles, provenance et limites des visuels.
