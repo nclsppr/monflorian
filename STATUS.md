@@ -9,19 +9,19 @@ Snapshot de l'état réellement vérifié. Les capacités non livrées restent d
 | Vérifié le | 2026-08-23 |
 | Par | Codex pour `nclsppr` |
 | Branche | `main` |
-| Commit | Baseline distante `585ebb93b844fe3bef7de15bbf342f508a208813`, changements locaux validés mais pas encore commités |
-| Environnement | Local, macOS arm64 |
-| Version livrée | Aucune |
+| Commit | Implémentation F00 `e8f5d97667b47b5e74ffc34eff7b3511064a9c4d` |
+| Environnement | Local, macOS arm64, et GitHub Actions sur Ubuntu 24.04 |
+| Version livrée | F00, sans version commerciale |
 
 ## Résumé
 
-Le dépôt distant ne contient initialement qu'un README. Le worktree contient maintenant le socle Foundation, le logo, deux captures de concept et un prototype HTML autonome. Les contrôles locaux sont verts. Aucune capacité de production, de paiement, de génération ou de stockage n'est livrée. Le commit, le push et la CI doivent encore fermer la phase F00.
+Le dépôt contient maintenant le socle Foundation, le logo, deux captures de concept et un prototype HTML autonome. Le commit d'implémentation est sur `origin/main` et sa CI est verte. Aucune capacité de production, de paiement, de génération ou de stockage n'est livrée.
 
-## Phase active
+## Phase suivante
 
 | Phase roadmap | État observé | Prochaine preuve | Responsable |
 | --- | --- | --- | --- |
-| F00 | in_progress | Commit, push et CI GitHub Actions | `nclsppr` |
+| F01 | planned | Test du brief avec un voyageur sur mobile et bureau | `nclsppr` |
 
 ## Livré et vérifié
 
@@ -36,8 +36,8 @@ Le dépôt distant ne contient initialement qu'un README. Le worktree contient m
 
 | Cible | URL ou accès | Artefact ou SHA | Santé | Dernière vérification |
 | --- | --- | --- | --- | --- |
-| Dépôt | `origin/main` | `585ebb93b844fe3bef7de15bbf342f508a208813` | Accessible | 2026-08-23 |
-| Prototype local | `http://127.0.0.1:8080` | Worktree | Sain pendant la vérification, puis arrêté | 2026-08-23 |
+| Implémentation F00 | `origin/main` | `e8f5d97667b47b5e74ffc34eff7b3511064a9c4d` | CI verte | 2026-08-23 |
+| Prototype local | `http://127.0.0.1:8080` | `e8f5d97667b47b5e74ffc34eff7b3511064a9c4d` | Sain pendant la vérification, puis arrêté | 2026-08-23 |
 | Production | Aucune | Aucun | Inactive | 2026-08-23 |
 
 ## Validations récentes
@@ -49,6 +49,7 @@ Le dépôt distant ne contient initialement qu'un README. Le worktree contient m
 | 2026-08-23 | `./scripts/verify.sh` | macOS arm64, Docker et Node 24 | Succès | Runtime, sonde HTTP, catalogue, Markdown, tests, types, build Nimbus, recherche et lint |
 | 2026-08-23 | Contrôle navigateur en 1440 x 900 et 390 x 844 | navigateur intégré | Succès | Aucun débordement horizontal, interactions et statut dynamiques, contraste CTA 6,72:1, aucune ressource externe ni erreur console |
 | 2026-08-23 | Contrôle source du clavier et du mouvement réduit | `scripts/check_prototype.py` | Succès | Noms accessibles, libellé photo, focus visible et défilement adapté |
+| 2026-08-23 | GitHub Actions [run 32637460676](https://github.com/nclsppr/monflorian/actions/runs/32637460676) | Ubuntu 24.04, commit `e8f5d97` | Succès | Vérification distante complète du commit d'implémentation |
 
 ## Blocages externes
 
@@ -71,4 +72,4 @@ Aucun blocage externe connu au 2026-08-23.
 | Photos personnelles | risque | Atteinte à la vie privée | Contrat de données et test d'effacement | `nclsppr` | Avant tout stockage distant |
 | Exactitude du voyage | risque | Mauvaise décision de voyage | Revue humaine et sources datées | Florian | Avant premier client réel |
 
-La prochaine tranche reste F00 jusqu'au commit distant et à la CI verte.
+F00 est terminée. La prochaine tranche est F01, sans activation de production.

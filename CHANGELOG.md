@@ -9,3 +9,4 @@ Git reste la source du diff technique. Les ADR expliquent les décisions importa
 - Isolation du concept interactif dans un prototype local sans paiement, stockage ou appel réseau.
 - Ajout d'un aperçu Docker Compose, de contrôles statiques et de la CI.
 - Formalisation de la promesse avant, pendant et après le voyage, ainsi que de ses limites actuelles.
+- Validation locale et distante de la phase F00 sur le commit `e8f5d97`.

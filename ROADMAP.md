@@ -18,7 +18,7 @@ Mon Florian doit devenir un objet continu : projection désirable avant le dépa
 
 | Ordre | ID | Phase | Résultat utilisateur ou opérationnel | État macro | Critère de sortie | Preuve observée | Sortie le |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| 0 | F00 | Dépôt et prototype reproductible | Le concept est compris, versionné et consultable localement | in_progress | `verify`, Compose, mobile et bureau valides, puis SHA distant vert | Vide tant que non prouvé | |
+| 0 | F00 | Dépôt et prototype reproductible | Le concept est compris, versionné et consultable localement | done | `verify`, Compose, mobile et bureau valides, puis SHA distant vert | Commit `e8f5d97`, run GitHub Actions `32637460676` vert | 2026-08-23 |
 | 1 | F01 | Brief de voyage utilisable | Une personne fournit une intention exploitable sans questionnaire long | planned | Test utilisateur, erreurs, accessibilité et copie honnête validés | | |
 | 2 | F02 | Première livraison manuelle | Florian livre un mini-site privé et un PDF vérifiés sans automatisation prématurée | planned | Un voyage complet relu et livré dans un espace privé | | |
 | 3 | F03 | Paiement et données personnelles | Un client peut payer et retrouver son voyage sans exposer ses données | planned | Reclassification, ADR, contrat de données, sécurité et rollback prouvés | | |

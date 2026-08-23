@@ -1,7 +1,7 @@
 # ADR-0001 : cadre produit et frontière du prototype
 
 - Statut : accepté
-- Statut d'implémentation : partiel
+- Statut d'implémentation : livré
 - Date : 2026-08-23
 - Dernière vérification : 2026-08-23
 - Propriétaire : `nclsppr`
@@ -77,7 +77,7 @@ Le choix d'une stack applicative, d'une IA, d'un fournisseur de paiement, d'un h
 - Commandes : `./scripts/verify.sh` et contrôles navigateur.
 - Environnements : macOS arm64, Docker Compose, petit mobile et bureau.
 - Résultat attendu : prototype sain, aucune transmission réseau de photo, copie honnête et CI verte.
-- Preuve observée : en cours de constitution dans `STATUS.md` pour la phase F00.
+- Preuve observée : commit `e8f5d97667b47b5e74ffc34eff7b3511064a9c4d`, contrôles navigateur consignés dans `STATUS.md` et run GitHub Actions `32637460676` vert.
 - Limites de la preuve : aucune production ni commande réelle n'est couverte.
 
 ## Rollback
