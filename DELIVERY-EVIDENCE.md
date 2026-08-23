@@ -1,139 +1,138 @@
-# Preuve de livraison F01 : candidat applicatif critique
+# Preuve de livraison F01
 
-Ce document consigne la tranche ouverte le 2026-08-23. Son statut reste partiel tant que le commit, la CI, le digest OCI et les smoke tests OpenAI ne sont pas inscrits avec leur résultat. Les contrôles locaux et navigateur sont désormais consignés ci-dessous.
+Ce relevé sépare le candidat publié, la préparation du VPS et l'activation publique. Ces trois étapes n'ont pas le même niveau de preuve.
 
 ## Référence
 
 | Champ | Valeur |
 | --- | --- |
-| Unité de travail | F01, backend OpenAI, interface, projections dessinées et préparation Atlas |
-| Demande source | Tâche utilisateur du 2026-08-23 |
-| Auteur | Codex pour `nclsppr` |
-| Vérificateur | `nclsppr` pour les checkpoints externes |
+| Unité de travail | F01, backend OpenAI, interface, dessins et contrat Atlas |
 | Date | 2026-08-23 |
+| Dépôt | `nclsppr/monflorian` |
 | Branche | `main` |
-| Commit initial | `6c6824ae609e816ee34a555d0edcac9cf85877c5` |
-| Commit final | Non créé au moment de ce relevé |
-| Artefact final | Aucun digest publié observé |
-| Profils applicables | `documentation-nimbus`, `web`, `experiment`, `generated-artifacts`, `backend-data`, `infrastructure-production`, `dependency-change` |
+| Candidat vérifié | `a7c5d1c32a41c2e43c92f02bff4d584910727eb1` |
+| Admission Atlas | `891a898074314104e5bfacf78e46cdf512b7e5c5` |
+| Statut | candidat publié, VPS préparé, service non activé |
 
 ## Résultat demandé
 
-Produire une application déployable qui génère un itinéraire avec OpenAI, propose des hébergements via Booking.com sans inventer d'affiliation, crée une image dessinée à partir de photos consenties, puis prépare son déploiement sur Atlas et son domaine OVHcloud.
+Produire une application qui génère un trajet avec OpenAI, ouvre des recherches d'hébergement Booking.com sans inventer d'affiliation, puis crée une projection dessinée à partir de photos consenties. Préparer son déploiement sur Atlas et le domaine OVHcloud.
 
-## Résultat observé à ce stade
+## Résultat prouvé
 
-- F00 est commitée, poussée et verte sur GitHub Actions.
-- Le worktree contient le backend et les contrats Critique de F01, validés localement.
-- L'implémentation choisit une absence de persistance et sépare OpenAI des liens Booking.com.
-- L'achat du domaine est observé. Aucun déploiement Atlas, changement DNS web ou activation affiliée n'est prouvé dans ce document.
+- Le backend et le frontend sont commités et poussés sur `main`.
+- Les tests locaux, Compose, l'interface mobile et l'interface bureau passent.
+- Trois workflows GitHub du même SHA sont verts.
+- Les trois artefacts OCI ont des digests et des attestations de provenance.
+- L'admission Atlas dormante a été relue, fusionnée et convergée sur le vrai VPS.
+- Les enregistrements A de l'apex et de `www` pointent vers Atlas sur les serveurs autoritaires et les résolveurs publics.
+- Mon Florian ne tourne pas encore. Le secret, le conteneur, la route active et le certificat sont absents.
 
-## Exclusions
+## Frontières produit
 
-- paiement, compte, PDF, historique et base de données ;
-- API Demand Booking.com, scraping et disponibilité en direct ;
-- test avec photo personnelle ;
-- modification DNS sans session OVHcloud autorisée ;
-- présentation d'un artefact publié comme service déployé.
+| Sujet | Contrat retenu |
+| --- | --- |
+| Itinéraire | Réponse JSON structurée, `store: false`, délai borné et annulation si le client part |
+| Photos | 1 à 4 images consenties, validation réelle, réencodage et aucune persistance applicative |
+| Illustration | Dessin de projection, jamais présenté comme une photo future réelle |
+| Booking.com | Modes `off`, `external` et `cj-static`; aucun hôtel, prix ou stock inventé |
+| Affiliation | `rel="sponsored"`; mode `cj-static` interdit sans lien approuvé |
+| Runtime | Node.js 24, bibliothèque standard, aucun paquet npm en production |
+| Exposition | Aucun port hôte, Caddy doit rejoindre le réseau applicatif et protéger les routes coûteuses |
 
-## État initial
+## Contrôles du candidat
 
-| Élément | Observation | Preuve |
+| Contrôle | Résultat | Portée |
 | --- | --- | --- |
-| Worktree | Propre avant le début de F01, puis changements F01 partagés | Audit Git de la tâche |
-| Remote | `git@github.com:nclsppr/monflorian.git` | Configuration Git observée |
-| SHA initial | `6c6824ae609e816ee34a555d0edcac9cf85877c5` | `git rev-parse HEAD` |
-| CI initiale | Run `32637925764` terminé avec succès | GitHub Actions |
-| Production Mon Florian | Aucune observée | Audit Atlas et `STATUS.md` |
-| Domaine | `monflorian.com` acheté chez OVHcloud le 2026-08-23 à 13:00:22Z, A web sur `213.186.33.5` | Registre et zone autoritaire observés |
-| Booking.com | Aucun partenariat accepté observé | Audit du périmètre disponible |
+| `npm test` | 25 tests réussis | Validation, fournisseur simulé, erreurs, annulation et serveur |
+| Contrat de release Atlas | 13 tests réussis | Compose, OCI, workflows et règles d'intégration |
+| `./scripts/verify.sh` | succès | Tests, documentation, image, santé Compose et arrêt propre |
+| Navigateur 1440 x 900 | succès | Mise en page, états et console |
+| Navigateur 390 x 844 | succès | Responsive, cibles tactiles et absence de débordement |
+| Trivy distant | 0 HIGH, 0 CRITICAL | Image backend publiée |
+| Détection de fausse image | rejetée | Le serveur ne fait pas confiance au seul en-tête de fichier |
+| Requête HTTP mal formée | `400`, serveur toujours sain | Robustesse du parseur |
+| Photo quand la fonction est coupée | bloquée avant envoi | Le drapeau de fonction ne laisse pas fuiter les photos |
 
-## Sources et dérivés
+## Publication immuable
 
-| Concept ou artefact | Source canonique | Dérivé ou consommateur | Alignement attendu |
-| --- | --- | --- | --- |
-| Marque | `assets/brand/monflorian-logo.png` | `/assets/monflorian-logo.png` dans l'application | Hash du master et inspection navigateur |
-| Interface | `DESIGN.md` et `app/public/` | Image OCI et page servie | Contrôle mobile et bureau |
-| API | `docs/api/openapi.json` | `app/server.mjs` et frontend | Tests de routes et erreurs |
-| Itinéraire | Schéma et validateurs dans `app/core.mjs` | Requête Responses et rendu | Tests de frontière et smoke test synthétique |
-| Illustration | `DATA-PROCESSING.md`, validateur et prompt | Image WebP temporaire | Fixture synthétique et inspection visuelle |
-| Hébergement | ADR-0002 et configuration Booking | Liens du résultat | Tests des modes et domaines |
-| Release | SHA produit, `deployment/vps/` et digest OCI | Artefacts d'intégration puis contrat `vps-infra` | Déterminisme, provenance, admission et runtime inspecté |
+| Élément | Preuve |
+| --- | --- |
+| Backend | `ghcr.io/nclsppr/monflorian/backend@sha256:a5c3b1d1f1164697039afe62ccb4bfcb1258c941a5667a220cb3a80a7e3ae114` |
+| Intégration | `ghcr.io/nclsppr/monflorian/vps-integration@sha256:cb485c36bc32311f9066bb9e7af6089377090fde2f5d493e7f5d48a9205e052b` |
+| Release applicative | `ghcr.io/nclsppr/monflorian/application-release@sha256:9f7e279892bb3d2e4fbddf8a3bbb36238485d4c3279ff4ddef15927ec4b460e1` |
+| Archive de preuve | [artifact 9494271140](https://github.com/nclsppr/monflorian/actions/runs/32643543726/artifacts/9494271140) |
+| SHA-256 de l'archive | `793181a9f1043de7d982e810329843ca1a39b91c0634940cbad62c8d38128aa3` |
+| Attestation backend | [42424171](https://github.com/nclsppr/monflorian/attestations/42424171) |
+| Attestation intégration | [42424201](https://github.com/nclsppr/monflorian/attestations/42424201) |
+| Attestation release | [42424207](https://github.com/nclsppr/monflorian/attestations/42424207) |
+
+## CI distante
+
+| Workflow | Run | État |
+| --- | --- | --- |
+| Verify | [32643543755](https://github.com/nclsppr/monflorian/actions/runs/32643543755) | succès |
+| Container images | [32643543727](https://github.com/nclsppr/monflorian/actions/runs/32643543727) | succès |
+| VPS integration release | [32643543726](https://github.com/nclsppr/monflorian/actions/runs/32643543726) | succès |
+
+## Admission Atlas
+
+La PR [vps-infra 96](https://github.com/nclsppr/vps-infra/pull/96) a ajouté un profil désactivé, sans base ni migrateur. Les contrôles de branche et les trois workflows de `main` sont verts.
+
+| Élément | Preuve |
+| --- | --- |
+| Révision fusionnée | `891a898074314104e5bfacf78e46cdf512b7e5c5` |
+| Validate | [32644204671](https://github.com/nclsppr/vps-infra/actions/runs/32644204671) |
+| Platform integration artifact | [32644204694](https://github.com/nclsppr/vps-infra/actions/runs/32644204694) |
+| Caddy platform image | [32644204794](https://github.com/nclsppr/vps-infra/actions/runs/32644204794) |
+| Convergence réelle | `ok=379`, `changed=13`, `failed=0` |
+| Contrôle prédictif | `ok=221`, `changed=0`, `failed=0` |
+
+L'inspection distante confirme la révision installée, le réseau vide `172.30.40.0/24`, les répertoires root et l'absence du secret, du conteneur et du lien d'activation. Caddy, PostgreSQL et les services de supervision déjà présents restent sains.
+
+## Changement DNS
+
+| Contrôle | Résultat |
+| --- | --- |
+| A autoritaire, apex | `137.74.174.163` |
+| A autoritaire, `www` | `137.74.174.163` |
+| Cloudflare `1.1.1.1` | les deux noms sur `137.74.174.163` |
+| Google `8.8.8.8` | les deux noms sur `137.74.174.163` |
+| AAAA | aucun |
+| MX | `mx1.mail.ovh.net`, `mx2.mail.ovh.net`, `mx3.mail.ovh.net` préservés |
+| TXT | présents, hors du changement |
+
+Une requête avec résolution forcée vers Atlas renvoie `404` en HTTP. TLS renvoie une erreur interne avant émission du certificat. C'est le résultat attendu d'une route encore désactivée, pas une preuve de mise en ligne.
 
 ## Gates
 
-| Gate | Applicabilité | Contrôle | État au relevé | Preuve ou manque |
-| --- | --- | --- | --- | --- |
-| P02, sources et dérivés | Oui | Logo, code, contrat et artefact alignés | En cours | Artefact final absent |
-| P03, contrat | Oui | OpenAPI 3.1 et schéma strict | Validé localement | JSON autonome, quatre routes et tests de frontière verts |
-| P04, données | Oui | Contrat de traitement, aucune persistance | Validé localement | Test serveur négatif sur le contenu des logs vert |
-| P05, changement risqué | Oui | Runbook, checkpoints et rollback | Documenté | Exécution Atlas absente |
-| P08, dépendances | Oui | Modèles, image, services et retrait documentés | En cours | Scan, coût et conditions du compte à consigner |
-| P09, secrets | Oui | Injection par fichier, aucun secret dans Git | En cours | Permissions Atlas à observer |
-| P10, sécurité | Oui | Modèle de menace et contrôles | Validé localement | Tests négatifs, conteneur non privilégié et cible read-only vérifiés ; runtime Atlas requis |
-| P11, observabilité | Oui | Logs structurés et santé | En cours | Rotation, alertes et inspection Atlas absentes |
-| P13, intégrations | Oui | Fakes, timeouts, erreurs et mode dégradé | En cours | Smoke tests OpenAI réels absents |
-| P14, production | Oui | Image immuable et admission centrale ciblées | Non exécuté | Aucun digest lancé |
-| P15, DNS | Oui pour F04 | Diff limité et rollback documentés | Bloqué | Session OVHcloud disponible ; route et secrets Atlas manquent |
-| P18, publication Git | Oui | Commit et push de la tranche | Non exécuté | SHA final absent |
-| P19, Compose | Oui | Parcours local intégré | Validé localement | Build, santé, configuration et arrêt propre réussis |
-| Profil web | Oui | Accessibilité, responsive, erreurs, réduction du mouvement | Validé localement | 1440 x 900 et 390 x 844, aucun débordement ni erreur console |
-| Profil generated-artifacts | Oui | Photos et illustrations distinguées des masters | Documenté | Vérification de l'image générée absente |
-
-## Contrôles déjà observés
-
-| Commande ou contrôle | Environnement | Résultat | Portée |
-| --- | --- | --- | --- |
-| `./scripts/verify.sh` sur `e8f5d97` | macOS arm64 | Succès | F00 seulement |
-| GitHub Actions run `32637460676` | Ubuntu 24.04 | Succès | F00 seulement |
-| GitHub Actions run `32637925764` | Ubuntu 24.04 | Succès | Preuve documentaire F00 seulement |
-| Navigateur 1440 x 900 et 390 x 844 sur F00 | navigateur intégré | Succès | Prototype, pas interface F01 |
-| `npm test` | Node 24 local | 25 tests réussis | Validation, fournisseur simulé, annulation, OpenAPI et serveur F01 |
-| `./scripts/verify-vps-release-contract` | Python local | 13 tests réussis | Contrats OCI, intégration Atlas et workflows F01 |
-| `./scripts/verify.sh` | macOS arm64, Node 24 et Docker | Succès | Application F01, conteneur, contrats et documentation Nimbus |
-| Navigateur 1440 x 900 et 390 x 844 sur F01 | navigateur intégré | Succès | Interface, responsive, résultats simulés, liens sponsorisés et console |
-
-## Contrôles à inscrire avant clôture
-
-| Contrôle exact | Résultat attendu | Preuve minimale |
+| Gate | État | Ce qui manque |
 | --- | --- | --- |
-| Smoke test Responses | JSON valide avec `store: false` | Modèle, statut et identifiant de requête |
-| Smoke test Image Edits | WebP dessiné depuis fixture synthétique | Modèle, format, dimensions et inspection |
-| Scan des logs | Aucun contenu, photo, code ou clé | Recherche négative et portée |
-| Push et CI | Même SHA vert | Commit et run |
-| Publication OCI | Digest relié au SHA | Digest et provenance |
-| Déploiement Atlas privé | Digest admis réellement lancé | Profil, contrôleur, runtime et healthcheck |
-| Rollback Atlas | Retour au digest précédent ou retrait propre | Commande canonique et santé |
+| Publication Git et CI | validée | rien pour le candidat `a7c5d1c` |
+| Artefacts et provenance | validée | rien pour le candidat `a7c5d1c` |
+| Admission Atlas dormante | validée | rien pour la préparation |
+| Secret OpenAI | bloquée | nouvelle clé créée hors conversation |
+| Smoke test Responses | bloqué | clé sûre et budget borné |
+| Smoke test Images | bloqué | clé sûre et fixture synthétique |
+| Accès privé | bloqué | identifiant privé et vérification de tous les chemins coûteux |
+| Activation Atlas | bloquée | PR d'activation, secret, route, profil et sondes |
+| TLS public | bloqué | route active et application saine |
+| Booking affilié | bloqué | partenariat et lien approuvé |
 
-## Actions externes
+## Secrets
 
-| Action | Cible | Autorité ou checkpoint | Exécutée | Résultat | Rollback |
-| --- | --- | --- | --- | --- | --- |
-| Appel OpenAI synthétique | Projet OpenAI du propriétaire | Clé lue hors sortie et budget limité | Non au relevé | Non vérifié | Désactiver la génération |
-| Publication OCI | GitHub Container Registry | SHA vert | Non au relevé | Aucun digest | Retirer l'admission du digest |
-| Admission Atlas | `vps-infra` | Revue et checks requis | Non au relevé | Aucun service Mon Florian | Retirer profil et route |
-| Achat du domaine | OVHcloud | Autorité du propriétaire | Oui | Domaine enregistré le 2026-08-23 à 13:00:22Z | Conditions OVHcloud |
-| DNS OVHcloud | Zone `monflorian.com` | Session autorisée, route et secrets Atlas prouvés | Session ouverte, aucune modification | Apex et `www` restent sur `213.186.33.5` | Restaurer les A précédents sans toucher aux MX ou TXT |
-| Activation CJ | Compte affilié accepté | Contrat et liens approuvés | Non | `external` ou `off` requis | Revenir à `external` ou `off` |
+La clé OpenAI partagée dans la conversation n'est pas une entrée de production. Elle doit être révoquée. Aucun secret n'a été inscrit dans le dépôt, les sorties de CI ou Atlas. Le contrat de production attend un fichier root lisible par le groupe applicatif, mode `0440`, sous `/etc/vps/secrets/monflorian/`.
 
-## Rollback, sauvegarde et restauration
+## Rollback
 
-| Contrôle | Cible | Procédure | Résultat au relevé | Limite |
-| --- | --- | --- | --- | --- |
-| Données utilisateur | Non applicable | Aucune persistance | Aucun volume à restaurer | OpenAI et les sites externes gardent leurs propres journaux |
-| Source | GitHub | Commit inverse sans réécriture | Possible, non testé sur F01 | SHA final absent |
-| Runtime | Atlas | Digest précédent via contrôle central | Documenté, non testé | Aucun premier digest déployé |
-| DNS | OVHcloud | Valeurs apex et `www` précédentes | Zone et valeurs observées, aucune modification | Rollback non testé |
-
-## Conclusion provisoire
-
-| Champ | Valeur |
+| Cible | Procédure |
 | --- | --- |
-| Statut observé | Partiel |
-| Résultat prouvé | F00 seulement |
-| Résultat candidat | Backend, interface, contrats et image en cours dans le worktree |
-| Risques restants | Données fournisseur, coût, exactitude, droits photo, accès privé, supply chain et DNS |
-| Validations non réalisées | Tests finaux, navigateur F01, OpenAI réel, OCI, Atlas, rollback et public |
-| Actions externes restantes | Propriétaire `nclsppr`, selon les checkpoints du runbook |
+| DNS | Remettre seulement apex et `www` sur `213.186.33.5` |
+| Admission dormante | Revenir sur la PR Atlas sans toucher aux autres applications |
+| Activation future | Retirer la route, désactiver le profil et revenir au digest précédent |
+| Booking.com | Garder ou remettre le mode `external` |
+| Données utilisateur | Aucun volume applicatif à restaurer, car l'application ne persiste rien |
 
-La conclusion passe à "livré" seulement après remplacement des champs provisoires par des preuves du même SHA. Aucun résultat local ne doit être généralisé à Atlas ou au domaine public.
+## Conclusion
+
+Le candidat est publié et l'hôte est prêt à le recevoir. Le domaine pointe déjà vers Atlas, un peu en avance sur l'application. Le service reste volontairement fermé tant qu'une nouvelle clé OpenAI, un accès privé et les deux smoke tests réels ne sont pas disponibles.
