@@ -2,6 +2,8 @@
 
 Ce document décrit la préparation, le déploiement privé, l'ouverture DNS et le rollback. Il ne crée aucune autorisation. Une image publiée, une configuration prête ou une instruction passée ne remplace pas les checkpoints ci-dessous.
 
+> Les SHA, digests et observations déjà inscrits dans ce runbook sont historiques. Le candidat courant et les gates de reprise vivent dans [`STATUS.md`](STATUS.md) et [`RESTE-A-FAIRE.md`](RESTE-A-FAIRE.md). Atlas n'a pas été revalidé depuis l'arrêt demandé pendant la dernière convergence.
+
 ## Identité
 
 | Champ | Valeur |
@@ -15,19 +17,7 @@ Ce document décrit la préparation, le déploiement privé, l'ouverture DNS et 
 | Décision liée | `docs/decisions/adr-0002-runtime-openai-photos-booking-atlas.md` |
 | Preuve de la dernière exécution | `STATUS.md` et `DELIVERY-EVIDENCE.md` |
 
-## État actuel et cible
-
-### État actuel vérifié
-
-| Élément | Valeur observée | Preuve | Vérifié le |
-| --- | --- | --- | --- |
-| Dépôt produit | Candidat `a7c5d1c32a41c2e43c92f02bff4d584910727eb1` publié par digest | Git, CI et attestations consignés | 2026-08-23 |
-| Application F01 | 25 tests, 13 tests Atlas, Compose et navigateur validés | `DELIVERY-EVIDENCE.md` | 2026-08-23 |
-| Atlas | Admission dormante convergée, réseau vide, secret et conteneur absents | Contrôleur `891a898074314104e5bfacf78e46cdf512b7e5c5` | 2026-08-23 |
-| Domaine | Apex et `www` sur Atlas `137.74.174.163`, aucun AAAA, route inactive | Zone autoritaire et résolveurs publics | 2026-08-23 |
-| Booking.com | Aucun partenariat accepté observé | Audit des credentials et contrats disponibles | 2026-08-23 |
-
-### Cible privée
+## Cible privée
 
 - Une image `ghcr.io/nclsppr/monflorian/backend` admise par digest.
 - Un service mono-instance non privilégié, sans port hôte, sans volume utilisateur et avec système de fichiers en lecture seule.
@@ -144,9 +134,9 @@ Observer au moins quinze minutes après le premier parcours privé. Arrêter si 
 
 ## DNS et ouverture HTTPS
 
-Les serveurs autoritaires sont `dns200.anycast.me` et `ns200.anycast.me`. L'apex et `www` pointent déjà sur Atlas `137.74.174.163`. Aucun AAAA n'est présent. Le changement DNS a précédé l'activation applicative à la demande du propriétaire. Les valeurs précédentes étaient `213.186.33.5`.
+Le dernier relevé DNS daté indiquait `dns200.anycast.me` et `ns200.anycast.me` comme serveurs autoritaires, l'apex et `www` sur Atlas `137.74.174.163`, et aucun AAAA. Ces valeurs doivent être relues avant toute mutation. Les valeurs A précédentes étaient `213.186.33.5`.
 
-1. Confirmer que la nouvelle clé OpenAI et l'accès privé existent sans afficher leur valeur.
+1. Confirmer que la clé OpenAI admise et l'accès privé existent sans afficher leur valeur.
 2. Activer le profil et la route Caddy par le contrôle central.
 3. Valider Caddy avant son rechargement.
 4. Vérifier que le certificat couvre l'apex et `www`.
