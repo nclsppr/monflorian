@@ -15,6 +15,7 @@ Git reste la source du diff technique. Les ADR expliquent les décisions importa
 - Publication des trois artefacts OCI du candidat `a7c5d1c`, avec CI, scan et attestations verts.
 - Admission Atlas dormante fusionnée et convergée sans secret ni conteneur Mon Florian.
 - Bascule des deux A web OVHcloud vers Atlas, sans toucher aux enregistrements de messagerie. La route reste désactivée.
+- Protection de `main` avec PR obligatoire, historique linéaire, conversations résolues et contrôles `verify` et `Validate application release` avant fusion. La publication immuable reste exécutée après fusion.
 - Maintien du service fermé tant que la nouvelle clé OpenAI, l'accès privé et les preuves fournisseur manquent.
 - Import du logo et des concepts avec une source canonique et une provenance explicites.
 - Isolation du concept interactif dans un prototype local sans paiement, stockage ou appel réseau.
