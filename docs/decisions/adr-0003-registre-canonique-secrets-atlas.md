@@ -81,5 +81,5 @@ ne le charge, puis la mise à jour coordonnée du registre central.
 
 ## Références
 
-- [`vps-infra` ADR-0017](https://github.com/nclsppr/vps-infra/blob/203b5ff675b82e17c3107ca6ae75a05fc533fd15/docs/decisions/0017-versioned-atlas-secret-registry.md)
+- [`vps-infra` ADR-0017](https://github.com/nclsppr/vps-infra/blob/d0561f2323e7c430ef0bddcdf723b5575f5a5920/docs/decisions/0017-versioned-atlas-secret-registry.md)
 - [`vps-infra` PR #99](https://github.com/nclsppr/vps-infra/pull/99)
