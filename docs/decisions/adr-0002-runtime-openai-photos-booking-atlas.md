@@ -1,13 +1,13 @@
 # ADR-0002 : runtime OpenAI, photos, Booking.com et Atlas
 
-- Statut : accepté
+- Statut : remplacé
 - Statut d'implémentation : candidat en cours de vérification
 - Date : 2026-08-23
 - Dernière vérification : 2026-08-23
 - Propriétaire : `nclsppr`
 - Domaine : architecture, données et production
 - Remplace : la frontière de prototype définie par l'ADR-0001
-- Remplacé par : aucune
+- Remplacé par : ADR-0007 pour le runtime et la production Cloudflare
 
 ## Contexte
 

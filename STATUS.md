@@ -1,50 +1,69 @@
 # État courant
 
-Dernière vérification : 2026-08-24 sur Atlas et depuis le réseau public.
+Dernière vérification : 2026-08-24 sur Cloudflare, GitHub et le DNS public.
 
 ## Résultat
 
-L'aperçu public est en ligne sur `https://monflorian.com`. La page réelle répond
-sans identifiant, mais aucune demande de voyage ni photo n'est envoyée. Le
-formulaire annonce l'indisponibilité et son action reste désactivée, conformément
-à [ADR-0004](docs/decisions/adr-0004-apercu-public-sans-generation.md).
+Un premier aperçu Cloudflare répond sur
+`https://monflorian.nclsppr.workers.dev`. Il sert l'interface et les contrats
+publics, avec `generationReady: false`, `serviceReady: false` et les deux routes
+coûteuses fermées en `503`.
 
-## Release active
+Le domaine `monflorian.com` n'est pas migré. Ses serveurs de noms restent chez
+OVHcloud et les enregistrements web pointent encore vers l'environnement
+précédent. Cette migration n'a modifié aucun DNS ni aucune ressource Atlas.
 
-| Champ | Valeur |
+## Ressources Cloudflare vérifiées
+
+| Ressource | État | Preuve |
+| --- | --- | --- |
+| Worker `monflorian` | déployé | version `91251c60-c62d-4eb0-93fb-1594d64b3942` |
+| Static Assets | actifs | 13 fichiers lus, page et sept PNG servis |
+| D1 `monflorian-production` | actif, juridiction `eu`, région d'exécution `EEUR` | migration `0001_trip_lifecycle.sql` appliquée |
+| Tables D1 | vides et prêtes | `trips`, `trip_assets`, `daily_quotas` |
+| Workflow `monflorian-trip` | déployé | classe `TripWorkflow`, garde-fou fermé |
+| R2 | bloqué | activation initiale du compte requise dans le Dashboard |
+| Turnstile | absent | requis avant génération gratuite |
+| Secrets Worker | absents | aucun secret requis par l'aperçu fermé |
+| Domaine Cloudflare | absent | zone et serveurs de noms non migrés |
+
+## Preuves publiques Cloudflare
+
+- `/` répond `200` avec le titre attendu et les en-têtes de sécurité.
+- `/api/health` répond `200`, version Worker exacte et
+  `generationReady: false`.
+- `/api/config` répond `200`, `serviceReady: false` et Booking `external`.
+- `/.well-known/monflorian-release` annonce `cloudflare-workers` et la même
+  version.
+- `POST /api/itineraries` répond `503 GENERATION_UNAVAILABLE`.
+- Aucun secret, brief, courriel ou photo n'a été envoyé pendant ces sondes.
+
+## État du dépôt et de la livraison
+
+- Branche de travail : `codex/cloudflare-migration`.
+- Le runtime Worker, l'ADR, la migration et la CI Cloudflare ne sont pas encore
+  fusionnés dans `main` au moment de ce relevé.
+- Le dépôt GitHub ne possède actuellement aucun secret Actions Cloudflare.
+- Le déploiement initial a donc été réalisé depuis la session Wrangler locale.
+- La protection de branche demande encore l'ancien contrôle
+  `Validate application release` jusqu'à la migration de la règle.
+
+## DNS observé avant migration
+
+| Type | Valeur utile |
 | --- | --- |
-| Source produit | `4c5619f807c98c929becf7589886577c2bdf9a5b` |
-| Backend | `ghcr.io/nclsppr/monflorian/backend@sha256:47dbc6705f5a1a8ce5a259dc5919a9472bda8afeae406319fb12447b70aaa816` |
-| Intégration VPS | `ghcr.io/nclsppr/monflorian/vps-integration@sha256:528d64d5d3c4b7e70b2de3ecc21c0eaf6d6f064908cacaf5d27d14b4a89f63da` |
-| Release applicative | `ghcr.io/nclsppr/monflorian/application-release@sha256:73837666d5b4bc7e96560f5c64a5908976c9afd9f3ded3d0686b55c336394f9b` |
-| Route publique Atlas | `72b3ad4c8e3d83ce629cdc68cea11c599d9b543e` |
-| Contrôleur applicatif installé | `d98db4e339224faebacbc0bc415388749abac91e` |
-| Booking | Mode `external`, aucune affiliation prouvée |
+| NS | `ns200.anycast.me`, `dns200.anycast.me` |
+| A apex | `137.74.174.163` |
+| MX | priorités 1, 5 et 100 vers `mx1.mail.ovh.net`, `mx2.mail.ovh.net`, `mx3.mail.ovh.net` |
+| SPF | inclut `mx.ovh.com` et `_spf.tem.scaleway.com` |
 
-## Preuves publiques et Atlas
-
-- L'apex répond `200` en HTTPS avec un certificat valide et HSTS.
-- `www` répond `308` vers l'apex.
-- `/api/config` répond `200` avec `serviceReady: false` et
-  `illustrationEnabled: false`.
-- `/.well-known/monflorian-release` expose la source produit exacte.
-- Le conteneur est sain, utilise le digest backend ci-dessus, l'UID/GID
-  `10001:10001`, un système de fichiers en lecture seule et aucun port hôte.
-- Le backend ne rejoint que `app_monflorian`. Caddy y possède l'adresse
-  `172.30.40.254` et reste sain.
-- Les transactions applicatives sont vides après activation.
-- Les cinq avatars publics sont les fichiers PNG RGBA attendus. Le navigateur a
-  vu `original`, `wind`, `beanie`, `summer` et `flower` en rotation. Le même
-  avatar est utilisé dans les deux emplacements pendant une visite.
-- `nicolaspieper.com`, `papersempire.com` et `parkventory.com` répondent encore
-  `200`.
-- Le contrôle navigateur passe en 1280 x 720 et 390 x 844. Les avatars ont un
-  fond CSS transparent, conservent leur taille intrinsèque de 1254 x 1254 et ne
-  provoquent aucun débordement horizontal.
+Le futur transfert de zone doit recopier et vérifier tous les enregistrements,
+pas seulement ceux de ce tableau.
 
 ## Limites
 
-Cette mise en ligne prouve le rendu et la chaîne de déploiement. Elle ne prouve
-ni génération OpenAI, ni illustration, ni réservation, ni affiliation, ni
-paiement, ni mini-site personnalisé. Ces capacités restent fermées jusqu'à une
-nouvelle preuve et une nouvelle décision d'activation.
+Cette tranche prouve le runtime Cloudflare fermé, D1 et le Workflow. Elle ne
+prouve ni R2, ni génération OpenAI, ni page privée, ni courriel, ni Turnstile,
+ni affiliation, ni paiement, ni migration du domaine. Aucun utilisateur ne doit
+envoyer de brief ou de photo tant que les gates de `RESTE-A-FAIRE.md` ne sont pas
+terminées.

@@ -1,8 +1,13 @@
 # Mon Florian
 
-Mon Florian transforme un brief libre en proposition de voyage expliquée. Le candidat actuel compose l'itinéraire avec OpenAI, construit séparément des recherches d'hébergement et peut créer une projection dessinée à partir de photos fournies avec consentement.
+Mon Florian transforme un brief libre en proposition de voyage expliquée. La
+cible Cloudflare servira ensuite une page privée avec l'itinéraire, des
+projections dessinées à partir de photos consenties et des liens d'hébergement.
 
-Le dépôt contient l'application web, son backend sans dépendance npm d'exécution, le prototype historique et les références de marque. Il ne contient ni paiement, ni compte, ni base de données. Le service public n'est pas actif. Le dernier état Atlas connu est historique depuis l'interruption d'une convergence et aucun partenariat Booking.com n'a été prouvé.
+Le runtime courant est un Worker TypeScript avec Static Assets. Il expose déjà
+l'interface sur `workers.dev`, mais maintient les générations fermées. D1 et un
+Workflow sont provisionnés sans donnée utilisateur. R2, les secrets, le courriel,
+Turnstile et Stripe ne sont pas activés.
 
 ## Démarrage
 
@@ -11,24 +16,32 @@ cp .env.example .env
 docker compose up --build --wait
 ```
 
-L'application est alors disponible sur `http://127.0.0.1:8080`. Sans clé OpenAI et sans code d'accès, l'interface reste consultable mais les routes de génération restent fermées. Les prérequis et résultats attendus vivent dans [`PROJECT.md`](PROJECT.md).
+L'application répond sur `http://127.0.0.1:8080`. Les variables publiques vivent
+dans `wrangler.jsonc`. Les secrets locaux éventuels vont dans `.dev.vars`, jamais
+dans Git.
+
+Commandes utiles :
+
+```bash
+npm run dev
+npm run check:worker
+./scripts/verify.sh
+```
 
 ## Carte documentaire
 
-- [`PROJECT.md`](PROJECT.md) : contrat produit, architecture, données et commandes.
-- [`STATUS.md`](STATUS.md) : état réellement vérifié à une date donnée.
-- [`RESTE-A-FAIRE.md`](RESTE-A-FAIRE.md) : conditions et fenêtre bornée pour reprendre la livraison.
-- [`ROADMAP.md`](ROADMAP.md) : ordre de livraison et critères de sortie.
-- [`DESIGN.md`](DESIGN.md) : langage visuel extrait des concepts existants.
-- [`ASSETS.md`](ASSETS.md) : sources, rôles, provenance et limites des visuels.
-- [`CHANGELOG.md`](CHANGELOG.md) : changements livrés et impact observable.
-- [`FOUNDATION.md`](FOUNDATION.md) : version du socle, profils et dérogations.
-- [`DATA-PROCESSING.md`](DATA-PROCESSING.md) : données reçues, destinataires et rétention.
-- [`THREAT-MODEL.md`](THREAT-MODEL.md) : scénarios d'abus et contrôles.
-- [`RUNBOOK.md`](RUNBOOK.md) : préparation, déploiement et rollback sur Atlas.
-- [`DELIVERY-EVIDENCE.md`](DELIVERY-EVIDENCE.md) : preuves et limites de la dernière tranche livrée.
-- `docs/api/openapi.json` : contrat canonique de l'API HTTP.
-- [`DOCUMENTATION-CATALOG.md`](DOCUMENTATION-CATALOG.md) : navigation exhaustive des Markdown et de leurs audiences.
+- [`PROJECT.md`](PROJECT.md) : contrat produit, architecture et commandes.
+- [`STATUS.md`](STATUS.md) : état vérifié de Cloudflare et limites publiques.
+- [`RESTE-A-FAIRE.md`](RESTE-A-FAIRE.md) : gates restantes avant génération.
+- [`ROADMAP.md`](ROADMAP.md) : ordre de livraison.
+- [`DATA-PROCESSING.md`](DATA-PROCESSING.md) : données, destinataires et durées.
+- [`THREAT-MODEL.md`](THREAT-MODEL.md) : menaces et contrôles.
+- [`RUNBOOK.md`](RUNBOOK.md) : déploiement et rollback Cloudflare.
+- [`DELIVERY-EVIDENCE.md`](DELIVERY-EVIDENCE.md) : preuves actuelles et archives.
+- [`DESIGN.md`](DESIGN.md) et [`ASSETS.md`](ASSETS.md) : interface et visuels.
+- [`CHANGELOG.md`](CHANGELOG.md) : changements livrés.
+- [`FOUNDATION.md`](FOUNDATION.md) : socle, profils et dérogations.
+- [`DOCUMENTATION-CATALOG.md`](DOCUMENTATION-CATALOG.md) : catalogue exhaustif.
 - [`AGENTS.md`](AGENTS.md) : règles locales d'intervention.
 
-Le dépôt est public mais aucune licence de réutilisation n'est accordée à ce stade.
+Le dépôt est public, mais aucune licence de réutilisation n'est accordée.

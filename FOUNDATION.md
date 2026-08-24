@@ -52,7 +52,7 @@ P18 et P19 ne peuvent pas être désactivés par convenance. Le projet conserve 
 
 Le projet est classé Critique depuis le 2026-08-23. Le backend reçoit des briefs de voyage et des photos personnelles, appelle deux API OpenAI et prépare un déploiement de production. Cette combinaison rend insuffisant le pack Produit, même sans base de données ni paiement.
 
-L'[ADR-0002](docs/decisions/adr-0002-runtime-openai-photos-booking-atlas.md) fixe la frontière de cette reclassification. Le pack Critique impose notamment le [runbook](RUNBOOK.md), la [preuve de livraison](DELIVERY-EVIDENCE.md), le [contrat de traitement](DATA-PROCESSING.md) et le [modèle de menace](THREAT-MODEL.md). Une activation externe décrite dans ces fichiers demande toujours l'autorité prévue par la tâche et ses checkpoints.
+L'[ADR-0007](docs/decisions/adr-0007-runtime-et-production-cloudflare.md) fixe la frontière courante de cette reclassification. Le pack Critique impose notamment le [runbook](RUNBOOK.md), la [preuve de livraison](DELIVERY-EVIDENCE.md), le [contrat de traitement](DATA-PROCESSING.md) et le [modèle de menace](THREAT-MODEL.md). Une activation externe décrite dans ces fichiers demande toujours l'autorité prévue par la tâche et ses checkpoints.
 
 ## Challenger le socle
 

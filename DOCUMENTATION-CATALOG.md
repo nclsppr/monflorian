@@ -9,7 +9,7 @@ Moteur déclaré : `nimbus`.
 | Collection | Visibilité | Fichiers |
 | --- | --- | ---: |
 | Documentation du projet | `internal` | 19 |
-| Décisions | `internal` | 6 |
+| Décisions | `internal` | 7 |
 | Socle vendorisé | `reference` | 10 |
 | Maintenance Nimbus | `reference` | 1 |
 
@@ -43,6 +43,7 @@ Moteur déclaré : `nimbus`.
 - [docs/decisions/adr-0004-apercu-public-sans-generation.md](docs/decisions/adr-0004-apercu-public-sans-generation.md)
 - [docs/decisions/adr-0005-logo-modulable.md](docs/decisions/adr-0005-logo-modulable.md)
 - [docs/decisions/adr-0006-portraits-florian-transparents.md](docs/decisions/adr-0006-portraits-florian-transparents.md)
+- [docs/decisions/adr-0007-runtime-et-production-cloudflare.md](docs/decisions/adr-0007-runtime-et-production-cloudflare.md)
 
 ## Socle vendorisé
 
@@ -70,6 +71,7 @@ Ces chemins contiennent des dépendances ou sorties dérivées, pas des sources 
 | Dépendances tierces | `node_modules/**/*.md` |
 | Sorties générées | `dist/**/*.md` |
 | Sorties générées | `build/**/*.md` |
+| Sorties générées par Wrangler | `.wrangler/**/*.md` |
 | Environnement Python local | `.venv/**/*.md` |
 | Collection Nimbus générée depuis les sources classées | `docs-nimbus/src/content/docs/**/*.md` |
 | Dépendances Nimbus tierces | `docs-nimbus/node_modules/**/*.md` |

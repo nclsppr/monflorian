@@ -1,0 +1,65 @@
+{
+	"$schema": "./node_modules/wrangler/config-schema.json",
+	"name": "monflorian",
+	"main": "src/worker.ts",
+	"compatibility_date": "2026-08-24",
+	"compatibility_flags": [
+		"nodejs_compat"
+	],
+	"workers_dev": true,
+	"preview_urls": false,
+	"assets": {
+		"directory": "./dist",
+		"binding": "ASSETS",
+		"not_found_handling": "none",
+		"run_worker_first": [
+			"/api/*",
+			"/.well-known/monflorian-release"
+		]
+	},
+  "version_metadata": {
+    "binding": "CF_VERSION_METADATA"
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "monflorian-production",
+      "database_id": "e18ef42c-eef9-47b3-bfd2-96cab1f3658f",
+      "migrations_dir": "migrations"
+    }
+  ],
+  "workflows": [
+    {
+      "binding": "TRIP_WORKFLOW",
+      "name": "monflorian-trip",
+      "class_name": "TripWorkflow"
+    }
+  ],
+  "vars": {
+		"BOOKING_MODE": "external",
+		"MONFLORIAN_ACCESS_MODE": "private",
+		"MONFLORIAN_GENERATION_ENABLED": "false",
+		"MONFLORIAN_ILLUSTRATION_ENABLED": "false",
+		"MONFLORIAN_RELEASE": "cloudflare",
+		"OPENAI_TEXT_MODEL": "gpt-5.4-mini-2026-03-17",
+		"OPENAI_IMAGE_MODEL": "gpt-image-2"
+	},
+	"observability": {
+		"enabled": true,
+		"logs": {
+			"enabled": true,
+			"head_sampling_rate": 1,
+			"invocation_logs": true
+		},
+		"traces": {
+			"enabled": false
+		}
+	},
+	"d1_databases": [
+		{
+			"binding": "DB",
+			"database_name": "monflorian-production",
+			"database_id": "e18ef42c-eef9-47b3-bfd2-96cab1f3658f"
+		}
+	]
+}

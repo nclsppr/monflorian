@@ -2,7 +2,8 @@
 
 ## Statut
 
-Acceptée le 2026-08-23.
+Remplacée le 2026-08-24 par l'ADR-0007 pour le runtime et la production. Elle
+reste la preuve historique de l'aperçu Atlas.
 
 ## Contexte
 

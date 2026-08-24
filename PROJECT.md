@@ -7,211 +7,203 @@
 | Nom | Mon Florian |
 | Propriétaire | `nclsppr` |
 | Classe | Critique |
-| Surface de production | Aperçu public actif sur Atlas, générations désactivées |
-| Socle adopté | [`FOUNDATION.md`](FOUNDATION.md) |
+| Surface Cloudflare | Aperçu fermé actif sur `workers.dev` |
+| Domaine public historique | `monflorian.com`, pas encore migré |
+| Décision courante | [ADR-0007](docs/decisions/adr-0007-runtime-et-production-cloudflare.md) |
 | Licence | Aucune licence de réutilisation accordée |
 
 ## Problème
 
-Préparer un voyage demande de relier une envie personnelle, un rythme réaliste, des trajets et des réservations dispersées. Mon Florian produit une première proposition lisible, puis laisse les vérifications et les décisions réelles au voyageur et à Florian.
+Préparer un voyage demande de relier une envie personnelle, un rythme réaliste,
+des trajets et des réservations dispersées. Mon Florian produit une première
+proposition lisible, puis laisse les vérifications et les décisions réelles au
+voyageur et à Florian.
 
-## Utilisateurs
+## Utilisateurs et résultat attendu
 
-| Utilisateur | Situation | Besoin | Risque principal |
-| --- | --- | --- | --- |
-| Voyageur francophone | Prépare un séjour de loisir à partir d'une envie libre | Recevoir un parcours compréhensible sans remplir un long questionnaire | Prendre une projection générée pour une information vérifiée ou une réservation |
-| Florian | Relit, explique et ajuste la proposition | Repérer les points à vérifier et garder la responsabilité des choix | Laisser passer une durée, une fermeture ou un trajet inexact |
-| Proche représenté | Apparaît sur une projection dessinée | Comprendre l'usage de sa photo et donner son accord | Envoi d'une photo sans droit, consentement ou information suffisante |
+Une personne décrit son envie, ajoute des dates, le nombre de voyageurs, son
+adresse de courriel et, avec consentement, une à quatre photos. Elle reçoit plus
+tard un lien privé vers une page qui contient :
 
-## Résultat attendu
+- un itinéraire structuré et signalé comme projection ;
+- des points à vérifier avant réservation ;
+- des recherches d'hébergement externes ou des liens affiliés approuvés ;
+- des illustrations générées, jamais présentées comme de vraies photos du lieu ;
+- une échéance et une action de suppression anticipée.
 
-Une personne décrit son envie, précise les dates, le nombre de voyageurs et le rythme, puis reçoit une proposition structurée. Elle peut ouvrir des recherches d'hébergement séparées et, si elle le souhaite, créer une illustration dessinée à partir de photos fournies avec consentement.
+Le premier MVP est gratuit. L'offre à 50 €, le paiement Stripe, le PDF, le compte
+client et le Voyage vivant restent des hypothèses non livrées.
 
-L'offre cible reste un voyage prêt à 50 €, livré en mini-site privé et PDF personnalisé. L'option Voyage vivant à 50 € vise des ajustements pendant le séjour et un carnet de souvenirs. Ces prix restent des hypothèses. Aucun paiement, PDF, compte client ou accompagnement humain n'est livré dans la tranche actuelle.
+## Périmètre courant
 
-### Preuves de succès
+### Livré
 
-| Preuve | Baseline connue | Cible | Source | Échéance |
-| --- | --- | --- | --- | --- |
-| Compréhension de la proposition | Non mesurée | Un voyageur distingue l'itinéraire généré, les vérifications à faire et les liens externes | Test utilisateur consigné | Avant ouverture publique |
-| Parcours du brief | Prototype visuel validé | Brief, erreurs, résultat et mode dégradé utilisables sur petit mobile et bureau | Contrôles navigateur datés | Avant release Atlas |
-| Contrat du backend | Aucun dans F00 | OpenAPI, tests d'erreur et tests des frontières OpenAI et Booking.com cohérents | `docs/api/openapi.json` et CI | Avant image de production |
-| Confidentialité des photos | Aucun envoi dans F00 | Consentement explicite, réencodage, limites, absence de persistance applicative et test négatif | Tests et `DATA-PROCESSING.md` | Avant test avec une photo réelle |
-| Production privée | Aucune | Digest immuable déployé, route privée, santé et parcours synthétique observés | `DELIVERY-EVIDENCE.md` | Avant tout DNS public |
-| Valeur commerciale | Hypothèse de prix | Signal réel sans témoignage ni conversion inventés | Preuve commerciale autorisée | Avant paiement |
+- Interface HTML, CSS et JavaScript native.
+- Worker TypeScript qui sert les assets et les routes API publiques.
+- Contrats OpenAPI, validateurs métier et adaptateurs OpenAI testés avec fakes.
+- D1 en juridiction UE avec schéma de cycle de vie vide.
+- Workflow Cloudflare déployé mais fermé.
+- Booking en mode `external`, sans affiliation annoncée.
+- Aperçu Cloudflare public qui refuse toute génération.
 
-## Périmètre
+### À livrer avant une génération réelle
 
-### Inclus
+- R2 privé en juridiction UE.
+- Création asynchrone du voyage et page privée à jeton.
+- Chiffrement du brief et de l'adresse de courriel.
+- Turnstile, quotas persistants et budget fournisseur.
+- Appels OpenAI depuis le Workflow.
+- Courriel transactionnel et nettoyage automatique.
+- Notice de traitement et canal de droits.
 
-- Une application web servie par un backend Node.js.
-- Un brief libre avec dates facultatives, voyageurs et rythme.
-- Une proposition structurée générée par l'API Responses d'OpenAI.
-- Des recherches Booking.com construites après la génération, sans transmettre de contenu Booking.com à OpenAI.
-- Un mode affilié statique réservé à des liens approuvés et configurés.
-- Une projection dessinée créée par l'API Image Edits à partir d'une à quatre photos réencodées.
-- Un accès de lancement privé, des quotas en mémoire, des limites de concurrence et des logs techniques sans contenu utilisateur.
-- Une image de conteneur immuable et une cible de déploiement sur Atlas.
+### Non-objectifs du MVP
 
-### Non-objectifs
-
-- Acheter automatiquement un billet, un hébergement ou une activité.
-- Afficher un prix, une disponibilité, une note ou une garantie récupérés en direct.
-- Utiliser l'API Demand de Booking.com ou extraire des pages Booking.com.
-- Payer, créer un compte ou stocker un voyage dans cette tranche.
-- Stocker les photos ou illustrations sur le serveur.
-- Produire une photographie synthétique présentée comme un souvenir réel.
-- Ouvrir le service au public avant le domaine, la protection d'accès et les preuves de production.
-
-### Conditions d'arrêt ou de réévaluation
-
-- Une photo ou un brief apparaît dans les logs, un artefact, un cache ou une persistance locale.
-- Le fournisseur renvoie une sortie qui contourne le schéma ou injecte un lien.
-- Le coût ne peut pas être contenu par les quotas et la protection privée.
-- Les conditions OpenAI ou Booking.com ne couvrent pas l'usage prévu.
-- Le voyageur ne distingue pas la proposition générée d'une information de réservation vérifiée.
-- Une production expose le backend hors de la route privée prévue.
-
-## Sources de vérité
-
-| Concept | Source canonique | Type | Notes |
-| --- | --- | --- | --- |
-| Produit | Ce document | normative | Promesse, limites et architecture |
-| État courant | `STATUS.md` | snapshot opérationnel | Daté et vérifié |
-| Roadmap | `ROADMAP.md` | normative | Autorité de séquencement |
-| Historique des changements | `CHANGELOG.md` | historique | Impact observable de chaque tranche |
-| Architecture | `PROJECT.md#architecture` | normative | L'ADR explique la décision structurante |
-| Contrat API | `docs/api/openapi.json` | normative | OpenAPI 3.1 |
-| Schéma de données | Non applicable | normative | Aucune base de données ni persistance applicative |
-| Traitement des données | `DATA-PROCESSING.md` | normative | Catégories, destinataires, rétention et suppression |
-| Modèle de menace | `THREAT-MODEL.md` | normative | Menaces, contrôles et risques résiduels |
-| Design system | `DESIGN.md` | normative | Marque, interface et statut des projections |
-| Configuration | `compose.yaml`, `.env.example` et `deployment/vps/` | opérationnelle | Les secrets restent hors Git |
-| Code livré | `app/` et `Dockerfile` | opérationnelle | `prototype/` reste une expérience historique |
-| Opérations | `RUNBOOK.md` | normative | Ne vaut pas autorisation d'agir |
-| Décisions | `docs/decisions/` | normative | Décisions structurantes |
-| Documentation | `DOCUMENTATION.md`, `documentation.json` et `docs-nimbus/` | normative et dérivée | Catalogue généré |
-| Preuves | `DELIVERY-EVIDENCE.md` | preuve | Résultats observés et limites |
-| Visuels | `ASSETS.md` | normative et historique | Sources, rôles, droits et retrait |
-| Archives | `references/concepts/` | historique | Captures non exécutables et non normatives |
-| Expériences | `prototype/` | expérimentale | Ancien concept local, distinct de `app/` |
+- Réserver automatiquement un billet, un hôtel ou une activité.
+- Afficher en direct prix, disponibilité, note ou garantie.
+- Scraper Booking.com ou utiliser son API Demand.
+- Exposer une galerie ou une page de voyage indexable.
+- Garder des photos d'entrée au-delà du traitement.
+- Ouvrir Stripe avant la preuve du parcours gratuit.
 
 ## Architecture
 
 ### Composants
 
-| Composant | Rôle | Statut | Exécution | Version | Source | Preuve et date | Propriétaire |
-| --- | --- | --- | --- | --- | --- | --- | --- |
-| Interface web | Recueillir le brief, afficher le voyage et préparer les photos | candidat publié | navigateur | HTML, CSS et JavaScript natifs | `app/public/` | Contrôles navigateur bureau et mobile du 2026-08-23 | `nclsppr` |
-| Serveur HTTP | Servir l'interface, valider les entrées, appliquer accès et quotas | candidat publié | Node.js | Node 24 dans l'image épinglée | `app/server.mjs` | Tests, CI et Compose verts sur `a7c5d1c` | `nclsppr` |
-| Coeur métier | Valider briefs, photos et sorties, construire les recherches d'hébergement | candidat publié | Node.js | sans package npm d'exécution | `app/core.mjs` | 25 tests applicatifs verts | `nclsppr` |
-| Adaptateur OpenAI | Appeler Responses et Image Edits avec timeouts et erreurs bornées | candidat | service externe | modèles épinglés par configuration | `app/openai.mjs` | Smoke test synthétique requis | `nclsppr` |
-| Image OCI | Emballer le serveur sans privilège | publiée | Docker et Atlas | base Node épinglée par digest | `Dockerfile` | Digest, scan distant et attestation consignés | `nclsppr` |
-| Prototype F00 | Conserver le concept qui a précédé l'application | expérience | navigateur local | HTML autonome | `prototype/index.html` | Run CI `32637925764` | `nclsppr` |
-| Documentation Nimbus | Classer et rendre les contrats | actuel | local et CI | lockfile dédié | `docs-nimbus/` | `./scripts/verify.sh` | `nclsppr` |
-| Intégration Atlas | Décrire le service, le réseau, les sondes et la route Caddy | active pour l'aperçu public | VPS | release immuable et profil central actif | `deployment/vps/` | Preuves publiques et runtime consignées dans `STATUS.md` | `nclsppr` |
+| Composant | Rôle | Source | État |
+| --- | --- | --- | --- |
+| Worker | API, sécurité, rendu de la page privée et accès aux bindings | `src/worker.ts` | déployé, génération fermée |
+| Static Assets | Interface et visuels canoniques | `app/public/`, `assets/brand/` | déployé |
+| Coeur métier | Validation des briefs, photos, résultats et liens | `app/core.mjs` | réutilisé, tests locaux |
+| Adaptateur OpenAI | Responses et Image Edits sans SDK | `app/openai.mjs` | non appelé en production |
+| D1 | États, quotas, données chiffrées et jetons hachés | `migrations/` | base vide, schéma appliqué |
+| R2 | Photos d'entrée et illustrations | binding futur `MEDIA` | bloqué par l'activation du compte |
+| Workflows | Traitement durable et notification | `src/workflows/` | déployé, garde-fou fermé |
+| Turnstile | Réduction de l'abus gratuit | binding futur | non configuré |
+| Courriel | Envoi du lien privé | fournisseur HTTP à choisir | non configuré |
+| Stripe | Paiement ponctuel futur | Checkout Sessions et webhook | hors tranche |
+| Documentation Nimbus | Rendu des contrats | `docs-nimbus/` | local et CI |
 
-### Flux d'itinéraire
+Pages, KV, Queues, Durable Objects, Vectorize, Workers AI et Containers ne sont
+pas requis dans le MVP. TypeScript remplace le backend serveur : Java ajouterait
+un conteneur et une seconde chaîne d'exploitation sans bénéfice actuel.
 
-1. Le navigateur envoie le brief, les dates facultatives, le nombre de voyageurs, le rythme et le code de lancement si l'environnement reste privé.
-2. Le serveur contrôle l'origine, l'accès, la taille et les quotas. Il transforme l'adresse cliente en identifiant HMAC pour `safety_identifier`.
-3. Le backend envoie le brief et les paramètres à l'API Responses. Il fixe `store: false` et demande un JSON conforme au schéma strict.
-4. Le serveur revalide la sortie. Il refuse les dates, tailles ou structures hors contrat.
-5. Le serveur construit lui-même les liens d'hébergement depuis les étapes validées. Le modèle ne produit aucun lien Booking.com.
-6. Le navigateur reçoit le voyage, les liens externes et la mention de projection. Aucun résultat n'est enregistré par l'application.
+### Flux cible
 
-### Flux d'illustration
+```text
+navigateur
+  -> Worker + Turnstile
+      -> D1 : état, quota, jeton haché, données chiffrées
+      -> R2 : photos privées et illustrations
+      -> Workflow
+          -> OpenAI Responses
+          -> OpenAI Image Edits
+          -> fournisseur de courriel
 
-1. Le navigateur demande l'accord sur les droits et le consentement des personnes, puis réencode une à quatre photos en PNG ou WebP.
-2. Le serveur contrôle le format réel, les dimensions, le poids et l'absence de blocs de métadonnées connus.
-3. Le backend envoie les images et la scène à l'API Image Edits avec un prompt qui impose un dessin éditorial.
-4. Le navigateur reçoit un WebP encodé dans la réponse. L'application l'étiquette comme projection personnalisée et ne le persiste pas.
+navigateur
+  -> /voyages/{jeton}
+      -> Worker -> D1 + R2
 
-### Dépendances externes
+navigateur
+  -> Booking.com au clic explicite
+```
 
-| Dépendance | Usage | Données transmises | Mode d'échec | Alternative ou retrait |
-| --- | --- | --- | --- | --- |
-| API Responses OpenAI | Composer le voyage | Brief, dates, voyageurs, rythme et identifiant de sûreté pseudonymisé | Itinéraire indisponible, erreur explicite sans retry automatique | Désactiver `MONFLORIAN_GENERATION_ENABLED` et conserver l'interface informative |
-| API Image Edits OpenAI | Créer un dessin à partir des photos | Photos réencodées, destination et scène | Illustration indisponible sans bloquer l'itinéraire | Désactiver `MONFLORIAN_ILLUSTRATION_ENABLED` |
-| Booking.com externe | Ouvrir une recherche dans le navigateur | Destination, dates et nombre d'adultes au clic | Lien externe indisponible, itinéraire conservé | `BOOKING_MODE=off` |
-| Liens CJ statiques | Attribuer une réservation quand un partenariat est accepté | Navigation du voyageur et paramètres du lien au clic | Repli vers une recherche externe non affiliée | Retirer la configuration et passer à `external` ou `off` |
-| Image Node officielle | Runtime de production | Code du dépôt pendant le build | Build bloqué | Revenir au digest précédent validé |
-| GitHub Actions | Vérifier et publier les artefacts | Sources du dépôt | Livraison bloquée | Vérification locale sans prétendre avoir livré |
-| Atlas et Caddy | Exécuter et router l'aperçu public | Requêtes HTTP et logs techniques | Service inaccessible | Rollback vers le digest précédent |
+Le Workflow reçoit des identifiants et des clés R2, pas les photos dans ses
+paramètres. Le Worker rend la page depuis un template commun et des données
+structurées ; il ne stocke pas une copie HTML par voyage.
 
-Le projet n'utilise aucun SDK OpenAI ou Booking.com. Il s'appuie sur `fetch`, `FormData` et le serveur HTTP de Node.js afin de limiter les dépendances d'exécution.
+## Dépendances externes
+
+| Dépendance | Usage | Échec sûr |
+| --- | --- | --- |
+| Cloudflare Workers | Runtime et distribution | revenir à une version Worker précédente |
+| D1 | Métadonnées et état | fermer la création, garder les lectures existantes |
+| R2 | Images privées | fermer les photos et préserver les objets existants |
+| Workflows | Traitement asynchrone | laisser le voyage en échec explicite sans retry payant aveugle |
+| OpenAI Responses | Itinéraire JSON strict avec `store: false` | marquer le voyage en échec et permettre un nouvel essai contrôlé |
+| OpenAI Image Edits | Projection dessinée depuis les photos | livrer l'itinéraire sans illustration si le contrat produit le permet |
+| Booking.com | Recherche externe au clic | retirer les liens sans perdre le voyage |
+| Fournisseur de courriel | Envoyer le lien privé | conserver la page et proposer une reprise d'envoi |
+| Stripe, plus tard | Paiement ponctuel | ne jamais autoriser depuis le seul retour navigateur |
 
 ## Environnements
 
-| Environnement | Plateforme | Configuration canonique | URL ou accès | Vérification |
-| --- | --- | --- | --- | --- |
-| Développement | Docker Compose sur macOS ou Linux | `compose.yaml` et `.env.example` | `http://127.0.0.1:8080` par défaut | `./scripts/verify.sh` |
-| CI | GitHub Actions | `.github/workflows/verify.yml` | Runs GitHub | `./scripts/verify.sh` |
-| Production privée | Atlas derrière Caddy | future release avec générations prouvées et accès décidé | Aucun parcours privé actif | `RUNBOOK.md` |
-| Production publique | Atlas et DNS OVHcloud | release immuable `4ac2c42`, route Caddy active, générations désactivées | `https://monflorian.com` | Sondes publiques et navigateur, puis observation de quinze minutes |
+| Environnement | Plateforme | URL | Source de configuration |
+| --- | --- | --- | --- |
+| Local | Wrangler dans Docker Compose ou sur Node 24 | `http://127.0.0.1:8080` | `wrangler.jsonc`, `.dev.vars` hors Git |
+| CI | GitHub Actions | runs du dépôt | `.github/workflows/` |
+| Aperçu Cloudflare | Workers | `https://monflorian.nclsppr.workers.dev` | version Worker et bindings |
+| Domaine cible | Cloudflare | `https://monflorian.com` | zone à migrer après preuve |
+
+L'ancien domaine continue de répondre sur l'environnement précédent tant que le
+DNS n'est pas migré. Il ne fait pas partie de la nouvelle chaîne de livraison.
 
 ## Commandes canoniques
 
 | Action | Commande | Résultat attendu |
 | --- | --- | --- |
-| Installer l'application | `npm ci --ignore-scripts --no-audit --no-fund` | Lockfile vérifié sans package d'exécution tiers |
-| Installer Nimbus | `npm ci --prefix docs-nimbus --ignore-scripts --no-audit --no-fund` | Dépendances documentaires conformes au lockfile |
-| Développer | `docker compose up --build --wait` | Application saine sur le port configuré |
-| Vérifier | `./scripts/verify.sh` | Tests, contrat, image, Compose et documentation valides selon le script courant |
-| Tester le backend | `npm test` | Tests unitaires et d'intégration locaux valides |
-| Construire l'image | `docker build --tag monflorian:local .` | Image locale construite depuis le Dockerfile épinglé |
-| Construire Nimbus | `npm run build --prefix docs-nimbus` | Site documentaire généré |
-| Arrêter | `docker compose down` | Service arrêté sans donnée à supprimer |
-| Contrôler la santé | `python3 -m urllib.request http://127.0.0.1:8080/api/health` | JSON avec `status` égal à `ok` |
-| Déployer | Aucune commande produit directe | Le contrôleur Atlas doit consommer un artefact immuable validé |
-| Sauvegarder | Non applicable aux données utilisateur | L'application ne possède aucune persistance |
-| Restaurer | Non applicable aux données utilisateur | Le rollback porte sur le digest et la configuration Git |
+| Installer | `npm ci --ignore-scripts --no-audit --no-fund` | dépendances exactes du lockfile |
+| Développer | `npm run dev` | Worker local Wrangler |
+| Développer avec Foundation | `docker compose up --build --wait` | Worker sain sur le port local |
+| Construire les assets | `npm run build:assets` | `dist/` dérivé des sources canoniques |
+| Vérifier le Worker | `npm run check:worker` | types générés, TypeScript et dry-run Wrangler valides |
+| Vérifier le projet | `./scripts/verify.sh` | documentation, tests, Worker, Compose et Nimbus valides |
+| Déployer | `npm run deploy` | nouvelle version Worker sur Cloudflare |
+| Lister les migrations | `npx wrangler d1 migrations list monflorian-production --remote` | état distant sans contenu utilisateur |
+| Arrêter le local | `docker compose down` | environnement local arrêté |
 
-## Données, sécurité et confidentialité
+## Données et sécurité
 
-- Les catégories, destinataires et durées vivent dans `DATA-PROCESSING.md`.
-- Le serveur ne possède ni base, ni volume de données, ni session persistante.
-- La clé OpenAI, le code d'accès et le secret HMAC sont injectés hors Git. Le runtime peut lire une clé depuis un fichier monté.
-- Le développement privé exige un code de lancement côté backend quand la génération est ouverte. Sur Atlas, l'aperçu public n'accepte aucune génération, le backend n'a aucun port hôte et Caddy est le seul point d'entrée.
-- Le serveur rejette les requêtes cross-origin, limite les corps, les dimensions, les quotas quotidiens et la concurrence.
-- Les logs contiennent la date, un identifiant de requête, la méthode, le chemin, le statut, le code d'erreur et la durée. Ils ne doivent contenir ni brief, ni photo, ni clé, ni sortie générée.
-- `store: false` désactive le stockage applicatif de la réponse OpenAI. Il ne supprime pas les journaux de sûreté possibles du fournisseur. `DATA-PROCESSING.md` expose cette limite.
-- Aucune photo personnelle réelle n'entre dans le dépôt, les fixtures, les captures de test ou les smoke tests.
-- Le modèle de menace et les risques résiduels vivent dans `THREAT-MODEL.md`.
+- Les Worker Secrets ne sont jamais inscrits dans Git, les commandes ou les
+  preuves.
+- Le jeton de page possède 256 bits et seul son SHA-256 est indexé dans D1.
+- Le brief, le résultat et l'adresse de courriel sont chiffrés avant persistance.
+- Les photos d'entrée sont supprimées après génération et au plus tard sous 24
+  heures ; le voyage expire sous 30 jours dans le MVP.
+- R2 reste privé. Aucune URL `r2.dev` ni clé d'objet prévisible n'est publiée.
+- Les logs contiennent seulement identifiant de requête, route, statut, code
+  d'erreur, durée et version.
+- Les sorties OpenAI sont hostiles jusqu'à leur revalidation locale.
+- Booking est construit après la génération et n'entre pas dans le prompt.
+- Les routes coûteuses restent fermées si un seul garde-fou manque.
 
-## Qualité
+Les détails normatifs vivent dans [`DATA-PROCESSING.md`](DATA-PROCESSING.md) et
+[`THREAT-MODEL.md`](THREAT-MODEL.md).
 
-| Risque | Contrôle automatisé | Contrôle manuel | Environnement |
-| --- | --- | --- | --- |
-| Entrée ou sortie hors contrat | Tests des validateurs et OpenAPI | Revue des limites et erreurs visibles | local et CI |
-| Appel fournisseur non borné | Fakes de frontière, timeouts, quotas et concurrence | Smoke test synthétique contrôlé | local, puis Atlas privé |
-| Fuite de photo ou de brief | Tests des logs, origine et formats | Inspection réseau avec données synthétiques | navigateur et backend |
-| Lien affilié injecté | Liste de domaines autorisés et construction côté serveur | Revue du contrat accepté et de la mention commerciale | local, puis Atlas privé |
-| Coût abusif | Quotas par client et globaux | Vérification des limites du compte fournisseur | production privée |
-| Interface trompeuse | Contrôles statiques et tests DOM | Parcours mobile, bureau, clavier et mouvement réduit | navigateurs ciblés |
-| Image ou conteneur vulnérable | Build immuable et scan distant | Revue du digest et des permissions | CI et Atlas |
-| Dérive Foundation | `./scripts/verify.sh` | Diff du snapshot et des profils | local et CI |
+## Qualité et preuves
+
+Les contrôles critiques sont :
+
+- tests des validateurs et adaptateurs fournisseur ;
+- génération des types Cloudflare et dry-run Wrangler ;
+- migration D1 versionnée ;
+- santé, configuration fermée, assets et en-têtes sur l'URL déployée ;
+- absence de contenu utilisateur dans les logs ;
+- un seul parcours synthétique avant toute personne réelle.
+
+Une ressource créée n'est pas une capacité livrée. `STATUS.md` décrit l'état
+observé et `DELIVERY-EVIDENCE.md` conserve les preuves.
 
 ## Livraison
 
-- Branche canonique : `main`.
-- Push direct : interdit, y compris au propriétaire. Toute modification passe par une branche et une PR à jour.
-- Contrôles requis avant fusion : `verify` et `Validate application release`, avec historique linéaire et résolution des conversations. La publication immuable s'exécute ensuite sur `main`.
-- Convention de commit : impératif préfixé par le périmètre.
-- Artefact : image OCI `ghcr.io/nclsppr/monflorian/backend` publiée et attestée par digest; le digest `f5340476e924a15618a95f215b7172b50c98f5deff7a47a4cc07c698cad46e7d` est actif sur Atlas.
-- Déploiement : contrôleur Atlas depuis un contrat versionné dans `vps-infra`. Aucun déploiement direct depuis le poste.
-- Rollback : redéployer le digest précédent et la configuration correspondante, puis sonder la santé et le parcours critique.
-- Vérification finale : CI du producteur, réconciliation Atlas, healthcheck local, sondes publiques, contrôle navigateur et observation des autres sites Atlas.
-- Observabilité : logs structurés, santé locale, signaux Caddy et supervision Atlas. La santé HTTP ne prouve pas qu'OpenAI accepte une génération.
-- Escalade : propriétaire `nclsppr`.
+- Branche canonique : `main` protégée.
+- Toute modification passe par une branche et une PR.
+- Contrôles cibles : `verify` et `Validate Cloudflare release`.
+- Artefact : version Worker et manifeste Wrangler, sans image OCI de production.
+- Publication actuelle : `npm run deploy` depuis une session Cloudflare
+  autorisée.
+- Publication cible : Workers Builds ou jeton GitHub restreint, à configurer.
+- Rollback : version Worker précédente, puis DNS web seulement si nécessaire.
+- Une mutation ou un retrait de l'ancien environnement demande une tâche
+  séparée.
 
 ## Responsabilités
 
-| Zone | Propriétaire | Suppléant | Runbook |
-| --- | --- | --- | --- |
-| Produit, marque, code et release | `nclsppr` | Aucun désigné | `RUNBOOK.md` |
-| Données et usage des photos | `nclsppr` | Aucun désigné | `DATA-PROCESSING.md` et `RUNBOOK.md` |
-| Service Atlas, Caddy et DNS | `nclsppr` | Aucun désigné | `RUNBOOK.md` |
-| Vérification éditoriale du voyage | Florian | Aucun désigné | Procédure humaine à écrire avant un client réel |
+| Zone | Propriétaire | Source |
+| --- | --- | --- |
+| Produit, code et release | `nclsppr` | `RUNBOOK.md` |
+| Photos, rétention et droits | `nclsppr` | `DATA-PROCESSING.md` |
+| Cloudflare, DNS et secrets | `nclsppr` | `RUNBOOK.md` |
+| Vérification du voyage | Florian | procédure humaine à écrire |
 
-Les risques courants et les preuves manquantes vivent dans `STATUS.md`. Une capacité n'est livrée que lorsque la preuve nomme son SHA, son environnement et sa limite.
+Une capacité n'est livrée que lorsque sa preuve nomme le SHA, la version
+Cloudflare, l'environnement et les limites encore actives.
