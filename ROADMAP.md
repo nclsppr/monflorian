@@ -31,7 +31,7 @@ de ce parcours.
 | 4 | F04 | Stockage privé et cycle de vie | blocked | R2 UE, chiffrement, jetons et purge prouvés |
 | 5 | F05 | Génération synthétique asynchrone | planned | texte, images, quotas, reprise et coûts observés |
 | 6 | F06 | Page privée et courriel | planned | rendu, suppression, notification et notice validés |
-| 7 | F07 | Domaine Cloudflare | in_progress | zone web-only décidée, apex et `www` à vérifier |
+| 7 | F07 | Domaine Cloudflare | done | zone web-only, apex, `www`, TLS et release vérifiés |
 | 8 | F08 | MVP gratuit limité | planned | Turnstile, budget et premier utilisateur informé |
 | 9 | F09 | Attribution Booking.com | blocked | partenariat et liens approuvés |
 | 10 | F10 | Paiement Stripe | planned | Checkout, webhook signé, fiscalité et remboursement décidés |
@@ -90,12 +90,13 @@ Un test avec fake ne termine pas cette phase.
 
 ## F07, domaine Cloudflare
 
-- Relever l'ancienne zone OVHcloud avant toute mutation.
-- Garder la zone Cloudflare web-only selon l'ADR-0008, sans recréer les anciens
+- L'ancienne zone OVHcloud a été relevée avant mutation.
+- La zone Cloudflare reste web-only selon l'ADR-0008, sans recréer les anciens
   MX, SPF et DMARC inutilisés.
-- Attacher le Worker à l'apex et `www` comme Custom Domains.
-- Conserver les valeurs précédentes et le TTL pour rollback.
-- Sonder DNS, TLS, page, configuration et release après propagation.
+- Le Worker porte l'apex et `www` comme Custom Domains.
+- Les anciennes valeurs A web restent consignées pour un rollback explicite.
+- DNS public, TLS, page, configuration et release ont été sondés après
+  propagation.
 
 ## F08, MVP gratuit limité
 

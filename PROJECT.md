@@ -7,9 +7,9 @@
 | Nom | Mon Florian |
 | Propriétaire | `nclsppr` |
 | Classe | Critique |
-| Surface Cloudflare | Aperçu fermé actif sur `workers.dev` |
-| Domaine public historique | `monflorian.com`, pas encore migré |
-| Décision courante | [ADR-0007](docs/decisions/adr-0007-runtime-et-production-cloudflare.md) |
+| Surface Cloudflare | Production web-only active sur l'apex, `www` et `workers.dev` |
+| Domaine public | `monflorian.com` sur Cloudflare Workers |
+| Décisions courantes | [ADR-0007](docs/decisions/adr-0007-runtime-et-production-cloudflare.md) et [ADR-0008](docs/decisions/adr-0008-domaine-web-only-cloudflare.md) |
 | Licence | Aucune licence de réutilisation accordée |
 
 ## Problème
@@ -45,6 +45,7 @@ client et le Voyage vivant restent des hypothèses non livrées.
 - Workflow Cloudflare déployé mais fermé.
 - Booking en mode `external`, sans affiliation annoncée.
 - Aperçu Cloudflare public qui refuse toute génération.
+- Custom Domains `monflorian.com` et `www.monflorian.com` actifs en HTTPS.
 
 ### À livrer avant une génération réelle
 
@@ -131,11 +132,12 @@ structurées ; il ne stocke pas une copie HTML par voyage.
 | --- | --- | --- | --- |
 | Local | Wrangler dans Docker Compose ou sur Node 24 | `http://127.0.0.1:8080` | `wrangler.jsonc`, `.dev.vars` hors Git |
 | CI | GitHub Actions | runs du dépôt | `.github/workflows/` |
-| Aperçu Cloudflare | Workers | `https://monflorian.nclsppr.workers.dev` | version Worker et bindings |
-| Domaine cible | Cloudflare | `https://monflorian.com` | zone à migrer après preuve |
+| Diagnostic Cloudflare | Workers | `https://monflorian.nclsppr.workers.dev` | version Worker et bindings |
+| Production web-only | Workers Custom Domains | `https://monflorian.com`, `https://www.monflorian.com` | `wrangler.jsonc` et zone Cloudflare |
 
-L'ancien domaine continue de répondre sur l'environnement précédent tant que le
-DNS n'est pas migré. Il ne fait pas partie de la nouvelle chaîne de livraison.
+Les deux noms publics servent directement le même Worker. La zone ne porte
+volontairement aucun service de courriel. Atlas ne fait plus partie de cette
+chaîne de livraison.
 
 ## Commandes canoniques
 
@@ -192,9 +194,8 @@ observé et `DELIVERY-EVIDENCE.md` conserve les preuves.
 - Publication actuelle : `npm run deploy` depuis une session Cloudflare
   autorisée.
 - Publication cible : Workers Builds ou jeton GitHub restreint, à configurer.
-- Rollback : version Worker précédente, puis DNS web seulement si nécessaire.
-- Une mutation ou un retrait de l'ancien environnement demande une tâche
-  séparée.
+- Rollback : version Worker précédente, puis anciennes valeurs A web consignées
+  si un retour d'hébergement devient nécessaire.
 
 ## Responsabilités
 

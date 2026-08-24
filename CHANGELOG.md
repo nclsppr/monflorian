@@ -4,6 +4,9 @@ Git reste la source du diff technique. Les ADR expliquent les décisions importa
 
 ## Non publié
 
+- Activation publique vérifiée de `monflorian.com` et `www.monflorian.com` sur
+  le même Worker, avec DNS, TLS, santé et version contrôlés. La zone reste
+  volontairement sans service de courriel.
 - Rattachement versionné de `monflorian.com` et `www.monflorian.com` au Worker
   comme Custom Domains Cloudflare, avec maintien de `workers.dev` comme surface
   de diagnostic.
