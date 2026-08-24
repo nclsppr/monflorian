@@ -3,6 +3,27 @@
 Chaque section nomme son environnement et ses limites. Les sections Atlas sont
 des archives historiques ; la section Cloudflare porte la migration courante.
 
+## Champs de date contenus sur iOS, 2026-08-24
+
+La PR [#17](https://github.com/nclsppr/monflorian/pull/17) retire le padding des
+champs `date` qui déclenche le calcul de largeur incorrect de WebKit iOS. La
+feuille CSS change aussi d'URL pour éviter de conserver l'ancienne règle dans le
+cache du navigateur.
+
+| Preuve | Résultat |
+| --- | --- |
+| Source runtime | `753fbd91aab7df1f3e4b2ccdac757b2bacadcd35` |
+| Version active | `f5a18f77-3f32-466e-a3d4-35fa4218ee97` |
+| CI du SHA | runs `32753875356` et `32753875457` verts |
+| URL CSS | `/styles.css?v=ios-date-1` sur l'apex et `www` |
+| Mobile | viewport `430 × 932`, largeur de page `430`, dépassement `0` |
+| Contrôles mesurés | départ, retour, voyageurs et code d'accès |
+
+La régression ciblée échoue sans la surcharge `padding-inline: 0` et passe avec
+elle. La page publique, la santé et la nouvelle feuille CSS répondent en `200`
+sur `monflorian.com` et `www.monflorian.com`. La génération reste fermée et
+aucune donnée utilisateur n'a été envoyée.
+
 ## Domaine Cloudflare web-only, 2026-08-24
 
 La PR [#15](https://github.com/nclsppr/monflorian/pull/15) attache l'apex et

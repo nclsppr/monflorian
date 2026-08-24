@@ -7,7 +7,7 @@ Dernière vérification : 2026-08-24 sur Cloudflare, GitHub et le DNS public.
 `https://monflorian.com`, `https://www.monflorian.com` et la surface de
 diagnostic `workers.dev` servent le même Worker Cloudflare. L'apex et `www`
 répondent en HTTPS avec la version
-`ce9761c2-5c36-480e-958c-d923bdf49ef0`.
+`f5a18f77-3f32-466e-a3d4-35fa4218ee97`.
 
 La zone est volontairement web-only. Aucun MX, SPF ou DMARC n'a été recréé.
 La génération reste fermée avec `generationReady: false`, `serviceReady: false`
@@ -17,7 +17,7 @@ et `POST /api/itineraries` en `503`.
 
 | Ressource | État | Preuve |
 | --- | --- | --- |
-| Worker `monflorian` | déployé | version `ce9761c2-5c36-480e-958c-d923bdf49ef0` |
+| Worker `monflorian` | déployé | version `f5a18f77-3f32-466e-a3d4-35fa4218ee97` |
 | Static Assets | actifs | interface et visuels servis par l'apex et `www` |
 | D1 `monflorian-production` | actif, juridiction `eu`, région d'exécution `EEUR` | migration `0001_trip_lifecycle.sql` appliquée |
 | Tables D1 | vides et prêtes | `trips`, `trip_assets`, `daily_quotas` |
@@ -41,9 +41,9 @@ et `POST /api/itineraries` en `503`.
 
 ## État du dépôt et de la livraison
 
-- Source runtime : `main` à `6f6a8438222db31293541c81957434e1841c5df4`,
-  fusionné par la PR [#15](https://github.com/nclsppr/monflorian/pull/15).
-- Les runs `32752297195` (`Validate Cloudflare release`) et `32752297248`
+- Source runtime : `main` à `753fbd91aab7df1f3e4b2ccdac757b2bacadcd35`,
+  fusionné par la PR [#17](https://github.com/nclsppr/monflorian/pull/17).
+- Les runs `32753875356` (`Validate Cloudflare release`) et `32753875457`
   (`Verify`) du SHA fusionné sont verts.
 - Le dépôt GitHub ne possède actuellement aucun secret Actions Cloudflare.
 - Le déploiement du SHA fusionné a donc été réalisé depuis la session Wrangler
