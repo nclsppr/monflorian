@@ -3,6 +3,28 @@
 Chaque section nomme son environnement et ses limites. Les sections Atlas sont
 des archives historiques ; la section Cloudflare porte la migration courante.
 
+## Notice de confidentialité publique, 2026-08-24
+
+La PR [#27](https://github.com/nclsppr/monflorian/pull/27) publie la notice et
+la relie au formulaire ainsi qu'aux pages privées. Elle ne termine pas le gate
+de droits : le canal complémentaire et les réglages de rétention OpenAI restent
+explicitement à publier avant une personne réelle.
+
+| Preuve | Résultat |
+| --- | --- |
+| Source runtime | `7ff50daa26e4d3a06ae1b780e66929ac07ca23db` |
+| Version active | `0d1b0955-6b73-41ba-abc7-43ea9d4679c0` |
+| CI du SHA | runs `32768890646` et `32768890626` verts |
+| URL | `/confidentialite` en `200` sur l'apex, `www` et `workers.dev` |
+| Contenu | données, Cloudflare, OpenAI, Booking.com, durées et retrait anticipé |
+| Mobile | viewport `430 × 932`, largeur de page `430`, dépassement `0` |
+| Bureau | viewport `1 440 × 900`, dépassement `0` |
+| Garde-fou | création toujours en `503`, D1 à zéro voyage, asset et quota |
+
+`./scripts/verify.sh` passe avec 33 tests. Le contrôle navigateur public confirme
+le titre, la copie de limite et le rendu mobile. Aucun brief, portrait, courriel
+ni appel OpenAI n'a été envoyé.
+
 ## Courriel Cloudflare fermé déployé, 2026-08-24
 
 La PR [#25](https://github.com/nclsppr/monflorian/pull/25) ajoute l'envoi du
