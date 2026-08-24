@@ -19,7 +19,7 @@ La première livraison est terminée seulement si :
 - [x] Les deux marqueurs de génération valent `false` dans le runtime.
 - [x] Aucun brief, image, identifiant privé ou secret n'apparaît dans les preuves de déploiement.
 - [x] Booking reste en mode `external`, sans prix, stock ou affiliation inventés.
-- [ ] Confirmer une dernière fois les sites existants après quinze minutes d'observation.
+- [x] Les sites existants sont restés en `200` pendant quinze minutes d'observation.
 
 ## Candidat figé
 
