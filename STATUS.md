@@ -7,7 +7,7 @@ Dernière vérification : 2026-08-24 sur Cloudflare, GitHub et le DNS public.
 `https://monflorian.com`, `https://www.monflorian.com` et la surface de
 diagnostic `workers.dev` servent le même Worker Cloudflare. L'apex et `www`
 répondent en HTTPS avec la version
-`621217cf-3033-4144-8f74-be1cd7c3ff4b`.
+`0d1b0955-6b73-41ba-abc7-43ea9d4679c0`.
 
 La zone ne reçoit aucun courriel humain. Cloudflare Email Service est activé
 avec ses seuls DNS d'envoi, de signature et de gestion des bounces.
@@ -15,13 +15,15 @@ La génération reste fermée avec `generationReady: false`, `serviceReady: fals
 `tripCreationEnabled: false` et `POST /api/trips` en `503`. Le quota
 transactionnel, les appels Responses et Image Edits, la page privée, la lecture
 privée des images, R2 et le cron de purge sont déployés sans accepter de demande
-réelle.
+réelle. La notice `/confidentialite` nomme les données, les destinataires, les
+durées et la suppression anticipée, sans masquer les réglages et le canal encore
+manquants.
 
 ## Ressources Cloudflare vérifiées
 
 | Ressource | État | Preuve |
 | --- | --- | --- |
-| Worker `monflorian` | déployé | version `621217cf-3033-4144-8f74-be1cd7c3ff4b` |
+| Worker `monflorian` | déployé | version `0d1b0955-6b73-41ba-abc7-43ea9d4679c0` |
 | Static Assets | actifs | interface et visuels servis par l'apex et `www` |
 | D1 `monflorian-production` | actif, juridiction `eu`, région d'exécution `EEUR` | migrations `0001`, `0002` et `0003` appliquées |
 | Tables D1 | vides et prêtes | `trips`, `trip_assets`, `daily_quotas` |
@@ -39,6 +41,8 @@ réelle.
 - `/api/health` répond `200`, version Worker exacte et
   `generationReady: false`.
 - `/api/config` répond `200`, `serviceReady: false` et Booking `external`.
+- `/confidentialite` répond `200` sur les trois hôtes et reste contenue à
+  `430 px` sans débordement horizontal.
 - `/.well-known/monflorian-release` annonce `cloudflare-workers` et la même
   version.
 - `POST /api/trips` répond `503 TRIP_CREATION_UNAVAILABLE` avant de lire une
@@ -51,11 +55,12 @@ réelle.
 
 ## État du dépôt et de la livraison
 
-- Source runtime : `main` à `ab852a55d5dcd8095b445cdc5dd7e868b95a20fa`,
+- Source runtime : `main` à `7ff50daa26e4d3a06ae1b780e66929ac07ca23db`,
   issue des PR [#22](https://github.com/nclsppr/monflorian/pull/22),
   [#23](https://github.com/nclsppr/monflorian/pull/23) et
-  [#25](https://github.com/nclsppr/monflorian/pull/25).
-- Les runs `32767377995` (`Cloudflare release`) et `32767378027` (`Verify`) du
+  [#25](https://github.com/nclsppr/monflorian/pull/25), puis de la PR
+  [#27](https://github.com/nclsppr/monflorian/pull/27).
+- Les runs `32768890646` (`Cloudflare release`) et `32768890626` (`Verify`) du
   SHA fusionné sont verts.
 - Le dépôt GitHub ne possède actuellement aucun secret Actions Cloudflare.
 - Le déploiement du SHA fusionné a donc été réalisé depuis la session Wrangler
@@ -81,8 +86,9 @@ Cloudflare peut faire évoluer ses adresses anycast. Les deux résolveurs public
 ## Limites
 
 Cette tranche prouve le runtime Cloudflare fermé, son domaine web, le quota D1
-atomique, la configuration privée du bucket R2 vide et le rendu fermé de la page
-privée. Elle ne prouve ni appel OpenAI réel, ni coût fournisseur, ni purge
+atomique, la configuration privée du bucket R2 vide, le rendu fermé de la page
+privée et la notice publique. Elle ne prouve ni appel OpenAI réel, ni coût
+fournisseur, ni purge
 applicative distante sur des données synthétiques, ni validation Turnstile de
 bout en bout, ni envoi synthétique de courriel, ni affiliation, ni paiement. Aucun
 utilisateur ne doit envoyer de brief ou de photo tant que les gates de
