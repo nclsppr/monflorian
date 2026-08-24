@@ -64,6 +64,33 @@ test("une cible HTTP invalide reçoit 400 sans arrêter le serveur", async () =>
   }
 });
 
+test("les éléments du logo modulable sont servis comme images immuables", async () => {
+  const config = loadConfiguration({
+    MONFLORIAN_PUBLIC_ORIGIN: "https://monflorian.test",
+    MONFLORIAN_GENERATION_ENABLED: "false",
+  });
+  const server = createMonFlorianServer({ config, logger: () => {} });
+  const base = await listen(server);
+
+  try {
+    for (const path of [
+      "/assets/monflorian-wordmark.png",
+      "/assets/florian-original.png",
+      "/assets/florian-wind.png",
+      "/assets/florian-beanie.png",
+      "/assets/florian-summer.png",
+    ]) {
+      const response = await fetch(`${base}${path}`);
+      assert.equal(response.status, 200, path);
+      assert.equal(response.headers.get("content-type"), "image/png", path);
+      assert.match(response.headers.get("cache-control"), /max-age=86400/u, path);
+      assert.ok(Number(response.headers.get("content-length")) > 0, path);
+    }
+  } finally {
+    await close(server);
+  }
+});
+
 test("une déconnexion abandonne OpenAI et libère la concurrence", async () => {
   let providerCalls = 0;
   let providerStarted;

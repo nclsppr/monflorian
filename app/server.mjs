@@ -88,6 +88,11 @@ function loadStaticAssets() {
     ["/app.js", [new URL("public/app.js", import.meta.url), "text/javascript; charset=utf-8", "public, max-age=300"]],
     ["/manifest.webmanifest", [new URL("public/manifest.webmanifest", import.meta.url), "application/manifest+json; charset=utf-8", "public, max-age=300"]],
     ["/assets/monflorian-logo.png", [new URL("../assets/brand/monflorian-logo.png", import.meta.url), "image/png", "public, max-age=86400"]],
+    ["/assets/monflorian-wordmark.png", [new URL("../assets/brand/monflorian-wordmark.png", import.meta.url), "image/png", "public, max-age=86400"]],
+    ["/assets/florian-original.png", [new URL("../assets/brand/florian-original.png", import.meta.url), "image/png", "public, max-age=86400"]],
+    ["/assets/florian-wind.png", [new URL("../assets/brand/florian-wind.png", import.meta.url), "image/png", "public, max-age=86400"]],
+    ["/assets/florian-beanie.png", [new URL("../assets/brand/florian-beanie.png", import.meta.url), "image/png", "public, max-age=86400"]],
+    ["/assets/florian-summer.png", [new URL("../assets/brand/florian-summer.png", import.meta.url), "image/png", "public, max-age=86400"]],
   ]);
   const assets = new Map();
   for (const [route, [url, contentType, cacheControl]] of definitions) {

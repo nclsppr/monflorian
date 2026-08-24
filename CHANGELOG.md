@@ -4,6 +4,9 @@ Git reste la source du diff technique. Les ADR expliquent les décisions importa
 
 ## Non publié
 
+- Séparation du logo en un mot-symbole fixe et un portrait modulable. Une visite
+  choisit parmi le Florian original, cheveux au vent, avec bonnet ou avec bob,
+  puis garde ce choix sur toute la page.
 - Mise en ligne de l'aperçu public sur `monflorian.com` avec TLS, redirection
   `www`, backend non privilégié et absence de port hôte. Les deux générations
   restent désactivées et aucune demande n'est envoyée.

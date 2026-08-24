@@ -8,6 +8,12 @@ const DEFAULT_LIMITS = Object.freeze({
 
 const MAX_SOURCE_PHOTO_BYTES = 30 * 1024 * 1024;
 const MAX_TEXT_LENGTH = 5000;
+const FLORIAN_VARIANTS = Object.freeze([
+  "/assets/florian-original.png?v=1",
+  "/assets/florian-wind.png?v=1",
+  "/assets/florian-beanie.png?v=1",
+  "/assets/florian-summer.png?v=1",
+]);
 
 const state = {
   config: null,
@@ -58,7 +64,22 @@ const elements = {
   illustrationStatus: document.querySelector("#illustration-status"),
   illustrationResult: document.querySelector("#illustration-result"),
   illustrationImage: document.querySelector("#illustration-image"),
+  florianVariants: [...document.querySelectorAll("[data-florian-variant]")],
 };
+
+async function chooseFlorianVariant() {
+  const source = FLORIAN_VARIANTS[Math.floor(Math.random() * FLORIAN_VARIANTS.length)];
+  if (source === FLORIAN_VARIANTS[0]) return;
+
+  const candidate = new Image();
+  candidate.src = source;
+  try {
+    await candidate.decode();
+  } catch {
+    return;
+  }
+  elements.florianVariants.forEach((image) => { image.src = source; });
+}
 
 class RequestError extends Error {
   constructor(status, code, message) {
@@ -1024,4 +1045,5 @@ elements.newTripButton.addEventListener("click", startAnotherTrip);
 window.addEventListener("pagehide", clearPhotos, { once: true });
 
 renderPhotos();
+chooseFlorianVariant();
 loadConfig();
