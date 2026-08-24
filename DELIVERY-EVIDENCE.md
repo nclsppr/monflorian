@@ -3,6 +3,32 @@
 Chaque section nomme son environnement et ses limites. Les sections Atlas sont
 des archives historiques ; la section Cloudflare porte la migration courante.
 
+## Domaine Cloudflare web-only, 2026-08-24
+
+La PR [#15](https://github.com/nclsppr/monflorian/pull/15) attache l'apex et
+`www` au Worker comme Custom Domains. La version a été déployée après fusion,
+puis sondée sur les deux noms publics.
+
+| Preuve | Résultat |
+| --- | --- |
+| URLs | `https://monflorian.com`, `https://www.monflorian.com` |
+| Surface de diagnostic | `https://monflorian.nclsppr.workers.dev` conservée |
+| Source runtime | `6f6a8438222db31293541c81957434e1841c5df4` |
+| Version active | `ce9761c2-5c36-480e-958c-d923bdf49ef0` |
+| CI du SHA | runs `32752297195` et `32752297248` verts |
+| NS | `armfazh.ns.cloudflare.com`, `uma.ns.cloudflare.com` |
+| DNS web | apex et `www` résolus en A et AAAA par `1.1.1.1` et `8.8.8.8` |
+| TLS | certificat Google Trust Services pour `monflorian.com` et `*.monflorian.com` |
+| HTTP | page, santé et marqueur de release en `200` sur les deux noms |
+| Garde-fou | `POST /api/itineraries` en `503 GENERATION_UNAVAILABLE` |
+| Courriel de zone | aucun MX, SPF ou DMARC, conformément à l'ADR-0008 |
+
+La santé et le marqueur public renvoient tous deux la version exacte
+`ce9761c2-5c36-480e-958c-d923bdf49ef0`. Le titre public est
+`Mon Florian · Prépare ton voyage` et la politique de sécurité reste servie par
+le Worker. Aucun secret, brief, courriel ou fichier n'a été envoyé pendant ces
+sondes. Atlas n'a pas été modifié.
+
 ## Bootstrap Cloudflare fermé, 2026-08-24
 
 Cette preuve ouvre la migration décidée par l'ADR-0007. La PR
