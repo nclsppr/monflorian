@@ -19,7 +19,7 @@ Dernière mise à jour : 2026-08-24.
 
 - [ ] Relier le dépôt à Workers Builds ou installer un jeton GitHub limité au
   déploiement du Worker.
-- [x] Domaine, apex, `www`, TLS et état web-only vérifiés sur Cloudflare.
+- [x] Domaine, apex, `www`, TLS et absence de réception humaine vérifiés.
 
 ## Avant la première génération synthétique
 
@@ -35,11 +35,13 @@ Dernière mise à jour : 2026-08-24.
 - [ ] Installer et appeler OpenAI depuis le Workflow.
 - [x] Ajouter les quotas D1 persistants et atomiques.
 - [x] Créer Turnstile et installer son secret.
-- [ ] Choisir et configurer le fournisseur de courriel transactionnel.
+- [x] Choisir Cloudflare Email Service, activer le domaine et câbler son binding.
 - [ ] Prouver le nettoyage des photos sous 24 heures et des voyages sous 30
   jours.
 - [ ] Exécuter un seul parcours synthétique texte et image, puis inspecter les
   coûts et les logs.
+- [ ] Envoyer un seul courriel synthétique et inspecter livraison, bounce et
+  suppression de l'adresse chiffrée.
 
 ## Avant une personne réelle
 

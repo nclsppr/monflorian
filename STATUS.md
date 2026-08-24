@@ -9,7 +9,8 @@ diagnostic `workers.dev` servent le même Worker Cloudflare. L'apex et `www`
 répondent en HTTPS avec la version
 `ff2bc6e7-6bc2-4a6f-968c-3862ed060534`.
 
-La zone est volontairement web-only. Aucun MX, SPF ou DMARC n'a été recréé.
+La zone ne reçoit aucun courriel humain. Cloudflare Email Service est activé
+avec ses seuls DNS d'envoi, de signature et de gestion des bounces.
 La génération reste fermée avec `generationReady: false`, `serviceReady: false`,
 `tripCreationEnabled: false` et `POST /api/trips` en `503`. Le quota
 transactionnel, les appels Responses et Image Edits, la page privée, la lecture
@@ -27,6 +28,7 @@ réelle.
 | Workflow `monflorian-trip` | déployé | Responses et Image Edits sans retry, garde-fou fermé |
 | R2 `monflorian-media-production` | actif, privé, juridiction `eu`, région `EEUR`, vide | aucun domaine, `r2.dev` désactivé, règles 24 h et 30 jours |
 | Turnstile | widget géré configuré | apex, `www` et `workers.dev`, parcours encore fermé |
+| Email Service | domaine activé, quota initial de 200 envois par jour | binding candidat restreint à `voyage@monflorian.com`, drapeau fermé |
 | Secrets Worker | trois secrets installés | chiffrement, quota et Turnstile, valeurs jamais consignées |
 | Domaines Cloudflare | actifs | `monflorian.com` et `www.monflorian.com` comme Custom Domains |
 
@@ -68,7 +70,9 @@ réelle.
 | A apex et `www` | `188.114.96.2`, `188.114.97.2` lors des sondes |
 | AAAA apex et `www` | `2a06:98c1:3120::2`, `2a06:98c1:3121::2` lors des sondes |
 | TLS | certificat `monflorian.com` couvrant aussi `*.monflorian.com` |
-| MX | absent par décision web-only |
+| MX apex | absent, aucune boîte de réception humaine |
+| MX `cf-bounce` | trois routes Cloudflare pour les retours de livraison |
+| TXT | SPF et DKIM d'envoi, DMARC `p=reject` |
 
 Cloudflare peut faire évoluer ses adresses anycast. Les deux résolveurs publics
 `1.1.1.1` et `8.8.8.8` ont renvoyé les deux noms pendant la vérification.
@@ -79,6 +83,6 @@ Cette tranche prouve le runtime Cloudflare fermé, son domaine web, le quota D1
 atomique, la configuration privée du bucket R2 vide et le rendu fermé de la page
 privée. Elle ne prouve ni appel OpenAI réel, ni coût fournisseur, ni purge
 applicative distante sur des données synthétiques, ni validation Turnstile de
-bout en bout, ni courriel transactionnel, ni affiliation, ni paiement. Aucun
+bout en bout, ni envoi synthétique de courriel, ni affiliation, ni paiement. Aucun
 utilisateur ne doit envoyer de brief ou de photo tant que les gates de
 `RESTE-A-FAIRE.md` ne sont pas terminées.

@@ -12,6 +12,7 @@ modifier un compte, un secret, un domaine ou une production.
 | Métadonnées | D1 `monflorian-production` |
 | Traitement durable | Workflow `monflorian-trip` |
 | Images | bucket R2 privé `monflorian-media-production`, juridiction `eu` |
+| Courriel | Cloudflare Email Service, expéditeur `voyage@monflorian.com` |
 | Domaine cible | `monflorian.com` et `www.monflorian.com` |
 | État sûr | générations texte et image fermées |
 
@@ -136,7 +137,6 @@ Les secrets cibles sont ajoutés seulement quand leur consommateur est prêt.
 - `OPENAI_API_KEY` ;
 - `MONFLORIAN_ACCESS_CODE` ;
 - `TURNSTILE_SECRET_KEY` ;
-- secret du fournisseur de courriel ;
 - `STRIPE_RESTRICTED_KEY` et `STRIPE_WEBHOOK_SECRET`, plus tard.
 
 Utiliser la saisie locale silencieuse de Wrangler ou le Dashboard. Ne jamais
@@ -159,6 +159,10 @@ Avant d'activer les drapeaux :
    preuve technique.
 8. Supprimer les photos sources après génération.
 9. Envoyer le courriel après passage atomique à `ready`.
+
+Le binding `EMAIL` ne doit autoriser que `voyage@monflorian.com`. Un échec de
+notification marque `notification_status=failed` sans retirer le résultat. Un
+succès marque `sent` et efface immédiatement l'adresse chiffrée.
 
 Les limites par défaut sont `MONFLORIAN_DAILY_GLOBAL_LIMIT=10` et
 `MONFLORIAN_DAILY_CLIENT_LIMIT=2`. Leur modification exige une vérification du
@@ -192,7 +196,8 @@ confirme qu'ils n'étaient pas utilisés et ne doivent pas être recréés.
 2. Vérifier l'absence de conflit A, AAAA ou CNAME sur l'apex et `www`.
 3. Lier le Worker à l'apex et à `www` avec deux Custom Domains.
 4. Sonder plusieurs résolveurs, TLS, apex, `www`, release et en-têtes.
-5. Vérifier que l'absence de MX reste intentionnelle.
+5. Vérifier que les seuls MX présents servent `cf-bounce.monflorian.com` et que
+   l'apex ne reçoit toujours aucun courriel humain.
 6. Observer au moins un TTL.
 
 ## Livraison continue

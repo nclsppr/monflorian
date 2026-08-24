@@ -3,6 +3,7 @@ import { readFileSync } from "node:fs";
 import test from "node:test";
 
 import { AppError } from "../app/core.mjs";
+import { buildTripReadyEmail } from "../app/email.mjs";
 import {
   decryptJson,
   encryptJson,
@@ -89,12 +90,17 @@ test("la configuration R2 reste privee et les routes masquent les jetons", () =>
   const worker = readFileSync(new URL("../src/worker.ts", import.meta.url), "utf8");
   const page = readFileSync(new URL("../src/trips/page.ts", import.meta.url), "utf8");
   const workflow = readFileSync(new URL("../src/workflows/trip.ts", import.meta.url), "utf8");
+  const repository = readFileSync(new URL("../src/trips/repository.ts", import.meta.url), "utf8");
   const quotaMigration = readFileSync(new URL("../migrations/0003_atomic_quotas.sql", import.meta.url), "utf8");
 
   assert.deepEqual(config.r2_buckets, [{
     binding: "MEDIA",
     bucket_name: "monflorian-media-production",
     jurisdiction: "eu",
+  }]);
+  assert.deepEqual(config.send_email, [{
+    name: "EMAIL",
+    allowed_sender_addresses: ["voyage@monflorian.com"],
   }]);
   assert.ok(config.assets.run_worker_first.includes("/voyages/*"));
   assert.equal(config.observability.logs.invocation_logs, false);
@@ -115,4 +121,34 @@ test("la configuration R2 reste privee et les routes masquent les jetons", () =>
   assert.doesNotMatch(workflow, /limit:\s*[1-9]/u);
   assert.match(workflow, /generate-and-encrypt-itinerary/u);
   assert.match(workflow, /generate-store-and-encrypt-image/u);
+  assert.match(workflow, /send-private-link-email/u);
+  assert.match(workflow, /this\.env\.EMAIL\.send/u);
+  assert.match(workflow, /markNotificationFailed/u);
+  assert.match(repository, /email_ciphertext = NULL/u);
+});
+
+test("le courriel contient seulement le lien prive et sa date d’expiration", () => {
+  const token = generateTripToken();
+  const email = buildTripReadyEmail({
+    to: "voyageur@example.com",
+    from: "voyage@monflorian.com",
+    origin: "https://monflorian.com",
+    publicToken: token,
+    expiresAt: Date.UTC(2026, 8, 23, 12),
+  });
+
+  assert.equal(email.subject, "Ton voyage est prêt");
+  assert.match(email.text, new RegExp(`https://monflorian\\.com/voyages/${token}`, "u"));
+  assert.match(email.html, new RegExp(`/voyages/${token}`, "u"));
+  assert.doesNotMatch(email.text, /Portugal|photo|OpenAI/u);
+  assert.throws(
+    () => buildTripReadyEmail({
+      to: "voyageur@example.com",
+      from: "voyage@monflorian.com",
+      origin: "http://monflorian.com",
+      publicToken: token,
+      expiresAt: Date.UTC(2026, 8, 23, 12),
+    }),
+    (error) => error instanceof AppError && error.code === "EMAIL_CONFIGURATION",
+  );
 });
