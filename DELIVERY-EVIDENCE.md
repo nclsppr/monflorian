@@ -2,6 +2,39 @@
 
 Ce relevé sépare le candidat publié, la préparation du VPS et l'activation publique. Ces trois étapes n'ont pas le même niveau de preuve.
 
+## Avatars transparents en production, 2026-08-24
+
+La source `4c5619f807c98c929becf7589886577c2bdf9a5b` est active sur
+`https://monflorian.com`. La PR produit
+[#10](https://github.com/nclsppr/monflorian/pull/10) fournit cinq avatars PNG
+RGBA. La PR Atlas [#114](https://github.com/nclsppr/vps-infra/pull/114) aligne
+la route publique sur la source attestée avant l'activation applicative.
+
+| Preuve | Résultat |
+| --- | --- |
+| Source produit | `4c5619f807c98c929becf7589886577c2bdf9a5b` |
+| Backend | `ghcr.io/nclsppr/monflorian/backend@sha256:47dbc6705f5a1a8ce5a259dc5919a9472bda8afeae406319fb12447b70aaa816` |
+| Intégration VPS | `ghcr.io/nclsppr/monflorian/vps-integration@sha256:528d64d5d3c4b7e70b2de3ecc21c0eaf6d6f064908cacaf5d27d14b4a89f63da` |
+| Release applicative | `ghcr.io/nclsppr/monflorian/application-release@sha256:73837666d5b4bc7e96560f5c64a5908976c9afd9f3ded3d0686b55c336394f9b` |
+| Route publique Atlas | `72b3ad4c8e3d83ce629cdc68cea11c599d9b543e` |
+| HTTP | apex `200`, `www` `308`, configuration publique désactivée |
+| Runtime | sain, aucun redémarrage, UID/GID `10001:10001`, lecture seule, aucun port hôte |
+| Navigateur | 1280 x 720 et 390 x 844, cinq variantes vues, fond transparent et aucun débordement |
+
+Les cinq fichiers publics ont les mêmes SHA-256 que les sources du dépôt :
+
+- `florian-original.png` : `05e7d579661357685a75057990ca2526101b287be1a15c0b6cf0e374d7f5f20c` ;
+- `florian-wind.png` : `e7886a41ce1e3975c9a89935ba352160a0b8f0095aafc21dde1d4bc0d5c936dc` ;
+- `florian-beanie.png` : `0ec7f32e8fc276a5ec6b824cf7cb841bc5ac5db0ddbaae678dc8c16f8955c7e6` ;
+- `florian-summer.png` : `8ebf4de989f1d5a84b9c56b00fc33e18e8ee5e930ea25b96d005bc34869382cc` ;
+- `florian-flower.png` : `cdd5e43f5bcc015517682313faca5077b12b84cc71e03e1fca2058ec8c51d202`.
+
+Les workflows produit `32726011754`, `32726011698` et `32726011739` sont
+verts. Le workflow Atlas `32735640921` est vert. La convergence de l'edge a
+terminé avec `failed=0`. Le contrôle prédictif global a terminé avec `failed=0`
+et n'a appliqué aucun changement. Les trois autres apex publics répondent encore
+`200`.
+
 ## Aperçu public Atlas, 2026-08-24
 
 L'aperçu décidé par ADR-0004 est actif sur `https://monflorian.com`. Il sert

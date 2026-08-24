@@ -13,11 +13,12 @@ formulaire annonce l'indisponibilité et son action reste désactivée, conform�
 
 | Champ | Valeur |
 | --- | --- |
-| Source produit | `4ac2c42339941e34c128f779399688032c8ef304` |
-| Backend | `ghcr.io/nclsppr/monflorian/backend@sha256:f5340476e924a15618a95f215b7172b50c98f5deff7a47a4cc07c698cad46e7d` |
-| Intégration VPS | `ghcr.io/nclsppr/monflorian/vps-integration@sha256:f5785b6b37d482c279b62386231810ced750c6189c1595aafa71f95851f1b102` |
-| Release applicative | `ghcr.io/nclsppr/monflorian/application-release@sha256:af8d18a3df82f8be18f2fd48aebb0a7ff5d62159baf552f1d9fe00ef92d418ba` |
-| Contrôle central Atlas | `d98db4e339224faebacbc0bc415388749abac91e` |
+| Source produit | `4c5619f807c98c929becf7589886577c2bdf9a5b` |
+| Backend | `ghcr.io/nclsppr/monflorian/backend@sha256:47dbc6705f5a1a8ce5a259dc5919a9472bda8afeae406319fb12447b70aaa816` |
+| Intégration VPS | `ghcr.io/nclsppr/monflorian/vps-integration@sha256:528d64d5d3c4b7e70b2de3ecc21c0eaf6d6f064908cacaf5d27d14b4a89f63da` |
+| Release applicative | `ghcr.io/nclsppr/monflorian/application-release@sha256:73837666d5b4bc7e96560f5c64a5908976c9afd9f3ded3d0686b55c336394f9b` |
+| Route publique Atlas | `72b3ad4c8e3d83ce629cdc68cea11c599d9b543e` |
+| Contrôleur applicatif installé | `d98db4e339224faebacbc0bc415388749abac91e` |
 | Booking | Mode `external`, aucune affiliation prouvée |
 
 ## Preuves publiques et Atlas
@@ -32,10 +33,14 @@ formulaire annonce l'indisponibilité et son action reste désactivée, conform�
 - Le backend ne rejoint que `app_monflorian`. Caddy y possède l'adresse
   `172.30.40.254` et reste sain.
 - Les transactions applicatives sont vides après activation.
+- Les cinq avatars publics sont les fichiers PNG RGBA attendus. Le navigateur a
+  vu `original`, `wind`, `beanie`, `summer` et `flower` en rotation. Le même
+  avatar est utilisé dans les deux emplacements pendant une visite.
 - `nicolaspieper.com`, `papersempire.com` et `parkventory.com` répondent encore
   `200`.
-- Le contrôle navigateur passe en 1440 x 900 et 390 x 844, sans débordement ni
-  erreur de console.
+- Le contrôle navigateur passe en 1280 x 720 et 390 x 844. Les avatars ont un
+  fond CSS transparent, conservent leur taille intrinsèque de 1254 x 1254 et ne
+  provoquent aucun débordement horizontal.
 
 ## Limites
 
