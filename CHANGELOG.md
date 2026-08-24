@@ -4,6 +4,8 @@ Git reste la source du diff technique. Les ADR expliquent les décisions importa
 
 ## Non publié
 
+- Suppression du padding natif des champs de date qui faisait dépasser leur
+  largeur sur WebKit iOS, avec renouvellement de l'URL de la feuille CSS.
 - Activation publique vérifiée de `monflorian.com` et `www.monflorian.com` sur
   le même Worker, avec DNS, TLS, santé et version contrôlés. La zone reste
   volontairement sans service de courriel.

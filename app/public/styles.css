@@ -419,6 +419,7 @@ select {
 input[type="date"] {
   min-inline-size: 0;
   max-inline-size: 100%;
+  padding-inline: 0;
 }
 
 textarea {

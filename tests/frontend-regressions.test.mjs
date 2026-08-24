@@ -84,4 +84,9 @@ test("les champs mobiles ne dependent pas de la largeur intrinseque de Safari", 
     /\.form-grid\s*\{[^}]*grid-template-columns:\s*1fr;/s,
     "les dates doivent etre empilees sur petit ecran",
   );
+  assert.match(
+    css,
+    /input\[type="date"\]\s*\{[^}]*padding-inline:\s*0;/s,
+    "le champ date ne doit pas cumuler width 100% et padding sur WebKit iOS",
+  );
 });
