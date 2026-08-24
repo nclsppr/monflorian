@@ -34,8 +34,8 @@ plafond est dépassé et confirme le rollback des deux compteurs.
 
 `./scripts/verify.sh` passe avec 31 tests. Aucun appel OpenAI, aucun courriel,
 aucune photo réelle et aucun coût fournisseur n'ont été déclenchés. L'ouverture
-attend encore la clé OpenAI, le fournisseur de courriel, le secret du code
-d'accès, la validation Turnstile de bout en bout et un unique essai synthétique
+attend encore la clé OpenAI, le secret du code d'accès, la validation Turnstile
+de bout en bout, l'envoi synthétique du lien privé et un unique essai OpenAI
 observé.
 
 ## Fondation du voyage privé déployée, 2026-08-24

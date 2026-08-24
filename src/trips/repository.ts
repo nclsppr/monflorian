@@ -182,9 +182,37 @@ export async function saveTripResult(
             result_nonce = ?4,
             updated_at = ?5,
             completed_at = CASE WHEN ?2 = 'ready' THEN ?5 ELSE completed_at END,
-            notification_status = CASE WHEN ?2 = 'ready' THEN 'skipped' ELSE notification_status END
+            notification_status = CASE WHEN ?2 = 'ready' THEN 'pending' ELSE notification_status END
       WHERE id = ?1 AND status NOT IN ('deleted', 'expired')`,
   ).bind(tripId, status, ciphertext, nonce, now).run();
+}
+
+export async function markNotificationSent(
+  db: D1Database,
+  tripId: string,
+  now: number,
+): Promise<void> {
+  await db.prepare(
+    `UPDATE trips
+        SET notification_status = 'sent',
+            email_ciphertext = NULL,
+            email_nonce = NULL,
+            notified_at = ?2,
+            updated_at = ?2
+      WHERE id = ?1 AND status = 'ready'`,
+  ).bind(tripId, now).run();
+}
+
+export async function markNotificationFailed(
+  db: D1Database,
+  tripId: string,
+  now: number,
+): Promise<void> {
+  await db.prepare(
+    `UPDATE trips
+        SET notification_status = 'failed', updated_at = ?2
+      WHERE id = ?1 AND status = 'ready' AND notification_status <> 'sent'`,
+  ).bind(tripId, now).run();
 }
 
 export async function debitDailyTripQuota(

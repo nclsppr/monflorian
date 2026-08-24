@@ -30,8 +30,8 @@ de ce parcours.
 | 3 | F03 | Runtime Cloudflare fermé | done | Worker, D1, Workflow, PR, CI et preuve publique |
 | 4 | F04 | Stockage privé et cycle de vie | in_progress | R2 UE, chiffrement, jetons et purge prouvés |
 | 5 | F05 | Génération synthétique asynchrone | in_progress | texte, images, quotas, reprise et coûts observés |
-| 6 | F06 | Page privée et courriel | planned | rendu, suppression, notification et notice validés |
-| 7 | F07 | Domaine Cloudflare | done | zone web-only, apex, `www`, TLS et release vérifiés |
+| 6 | F06 | Page privée et courriel | in_progress | rendu, suppression, notification et notice validés |
+| 7 | F07 | Domaine Cloudflare | done | web, DNS d'envoi, apex, `www`, TLS et release vérifiés |
 | 8 | F08 | MVP gratuit limité | planned | Turnstile, budget et premier utilisateur informé |
 | 9 | F09 | Attribution Booking.com | blocked | partenariat et liens approuvés |
 | 10 | F10 | Paiement Stripe | planned | Checkout, webhook signé, fiscalité et remboursement décidés |
@@ -91,6 +91,10 @@ Un test avec fake ne termine pas cette phase.
 
 ## F06, page privée et courriel
 
+Le domaine Cloudflare Email Service est actif et le binding restreint à
+`voyage@monflorian.com` est câblé derrière
+`MONFLORIAN_EMAIL_ENABLED=false`. Aucun courriel n'a encore été envoyé.
+
 - Rendre `/voyages/{jeton}` depuis D1 et R2 avec `noindex` et `no-store`.
 - Ne pas enregistrer une copie HTML par voyage ; utiliser le template commun.
 - Envoyer un lien privé, jamais les photos ou le brief complet dans le courriel.
@@ -101,8 +105,8 @@ Un test avec fake ne termine pas cette phase.
 ## F07, domaine Cloudflare
 
 - L'ancienne zone OVHcloud a été relevée avant mutation.
-- La zone Cloudflare reste web-only selon l'ADR-0008, sans recréer les anciens
-  MX, SPF et DMARC inutilisés.
+- Les anciens MX, SPF et DMARC inutilisés n'ont pas été recréés. L'ADR-0009
+  ajoute seulement les DNS propres à l'envoi transactionnel Cloudflare.
 - Le Worker porte l'apex et `www` comme Custom Domains.
 - Les anciennes valeurs A web restent consignées pour un rollback explicite.
 - DNS public, TLS, page, configuration et release ont été sondés après

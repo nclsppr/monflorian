@@ -466,11 +466,15 @@
       "TripStatus": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["status", "expiresAt"],
+        "required": ["status", "notificationStatus", "expiresAt"],
         "properties": {
           "status": {
             "type": "string",
             "enum": ["pending", "queued", "generating_itinerary", "generating_images", "ready", "failed", "deleted", "expired"]
+          },
+          "notificationStatus": {
+            "type": "string",
+            "enum": ["pending", "sent", "failed", "skipped"]
           },
           "expiresAt": {
             "type": "string",

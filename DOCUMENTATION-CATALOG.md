@@ -9,7 +9,7 @@ Moteur déclaré : `nimbus`.
 | Collection | Visibilité | Fichiers |
 | --- | --- | ---: |
 | Documentation du projet | `internal` | 19 |
-| Décisions | `internal` | 8 |
+| Décisions | `internal` | 9 |
 | Socle vendorisé | `reference` | 10 |
 | Maintenance Nimbus | `reference` | 1 |
 
@@ -45,6 +45,7 @@ Moteur déclaré : `nimbus`.
 - [docs/decisions/adr-0006-portraits-florian-transparents.md](docs/decisions/adr-0006-portraits-florian-transparents.md)
 - [docs/decisions/adr-0007-runtime-et-production-cloudflare.md](docs/decisions/adr-0007-runtime-et-production-cloudflare.md)
 - [docs/decisions/adr-0008-domaine-web-only-cloudflare.md](docs/decisions/adr-0008-domaine-web-only-cloudflare.md)
+- [docs/decisions/adr-0009-courriel-transactionnel-cloudflare.md](docs/decisions/adr-0009-courriel-transactionnel-cloudflare.md)
 
 ## Socle vendorisé
 

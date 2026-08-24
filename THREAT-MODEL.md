@@ -3,7 +3,7 @@
 ## Portée
 
 Ce modèle couvre le navigateur, Cloudflare Workers et Static Assets, D1, R2,
-Workflows, OpenAI, le fournisseur de courriel, les liens Booking.com et le futur
+Workflows, OpenAI, Cloudflare Email Service, les liens Booking.com et le futur
 webhook Stripe. L'aperçu actuel garde les générations fermées ; les contrôles
 marqués requis sont des gates d'activation.
 
@@ -12,7 +12,7 @@ marqués requis sont des gates d'activation.
 - photos et apparence des voyageurs ;
 - brief, dates, courriel et projet de déplacement ;
 - jeton de page privée et clé de chiffrement ;
-- secrets OpenAI, Turnstile, courriel et Stripe ;
+- secrets OpenAI, Turnstile et Stripe ;
 - budget fournisseur et quotas gratuits ;
 - intégrité du voyage, des images et des liens externes ;
 - Worker, D1, R2, Workflow, zone DNS et compte Cloudflare ;
@@ -42,7 +42,7 @@ navigateur
           -> R2 privé
           -> Workflow
               -> OpenAI
-              -> fournisseur de courriel
+              -> Cloudflare Email Service
 
 navigateur -> Booking.com ou CJ après clic
 navigateur -> Stripe Checkout plus tard
@@ -90,7 +90,7 @@ revue.
 | T16 | Bucket ou objet public | fuite de photos | pas de `r2.dev`, binding Worker uniquement, noms opaques, contrôle périodique | erreur d'administration Cloudflare |
 | T17 | D1 lu sans clé | contenu personnel exposé | AES-GCM, clé distincte, nonces uniques, métadonnées minimales | clé et base compromises ensemble |
 | T18 | Purge non exécutée | rétention excessive | échéances D1/R2, tâche planifiée et règles R2 de secours à 24 heures et 30 jours | panne prolongée du nettoyage |
-| T19 | Courriel envoyé au mauvais destinataire | lien privé divulgué | validation, confirmation visible, envoi unique, contenu minimal | faute de saisie de l'utilisateur |
+| T19 | Courriel envoyé au mauvais destinataire | lien privé divulgué | validation, confirmation visible, envoi unique, expéditeur restreint, contenu minimal | faute de saisie de l'utilisateur |
 | T20 | Logs contiennent du contenu | fuite durable | allowlist de champs, pas de query string, tests négatifs | logs propres aux fournisseurs |
 | T21 | Bundle ou action compromis | code malveillant | lockfiles, actions par SHA, dry-run Wrangler, PR protégée | vulnérabilité inconnue d'une dépendance |
 | T22 | Compte Cloudflare pris | contrôle total | MFA forte, portée minimale des jetons, comptes séparés si possible, audit | propriétaire unique sans suppléant |

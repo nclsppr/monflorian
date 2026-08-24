@@ -5,7 +5,8 @@
 Acceptée le 2026-08-24. Implémentation en cours.
 
 La reprise de la messagerie pendant la migration du domaine est remplacée par
-[l'ADR-0008](adr-0008-domaine-web-only-cloudflare.md).
+[l'ADR-0008](adr-0008-domaine-web-only-cloudflare.md). Le choix du courriel est
+remplacé par [l'ADR-0009](adr-0009-courriel-transactionnel-cloudflare.md).
 
 Cette décision remplace l'ADR-0002 pour le runtime et la production, ainsi que
 l'ADR-0004 pour la cible de l'aperçu. L'ADR-0003 reste applicable uniquement à
@@ -56,7 +57,7 @@ par bindings sans réseau privé ni SDK d'infrastructure. Cette option est reten
 | Workflows | Enchaîner OpenAI, persistance, nettoyage et courriel sans garder une requête HTTP ouverte | Un identifiant de workflow par voyage, étapes idempotentes |
 | Turnstile | Réduire les créations automatisées du MVP gratuit | Obligatoire avant l'ouverture de la génération |
 | OpenAI | Produire l'itinéraire structuré et éditer les images | Responses avec `store: false`, Image Edits, sorties revalidées |
-| Courriel transactionnel | Envoyer le lien privé quand le voyage est prêt | Fournisseur HTTP dédié, choisi avant l'ouverture; Email Routing ne suffit pas à ce besoin |
+| Courriel transactionnel | Envoyer le lien privé quand le voyage est prêt | Cloudflare Email Service selon l'ADR-0009 |
 | Booking.com | Ouvrir des recherches externes ou des liens affiliés approuvés | Construction côté Worker, jamais par le modèle |
 | Stripe | Paiement ponctuel après le MVP gratuit | Checkout Sessions hébergé et webhook signé, aucune ressource Stripe dans cette tranche |
 
@@ -75,7 +76,7 @@ résoudre une limite observée, pas une hypothèse.
    après un résultat incertain. Chaque étape vérifie l'état D1 avant d'agir.
 5. L'itinéraire JSON validé et les métadonnées restent dans D1. Les images
    générées restent dans R2. Le Worker rend `/voyages/{jeton}` depuis ces données.
-6. Le fournisseur de courriel reçoit l'adresse nécessaire et le lien privé après
+6. Cloudflare Email Service reçoit l'adresse nécessaire et le lien privé après
    le passage à `ready`. Le courriel n'embarque ni photo ni brief complet.
 
 La page HTML n'est pas dupliquée dans un objet par voyage. Un template commun

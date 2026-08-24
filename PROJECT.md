@@ -7,9 +7,9 @@
 | Nom | Mon Florian |
 | Propriétaire | `nclsppr` |
 | Classe | Critique |
-| Surface Cloudflare | Production web-only active sur l'apex, `www` et `workers.dev` |
+| Surface Cloudflare | Web actif sur l'apex, `www` et `workers.dev`, envoi transactionnel fermé |
 | Domaine public | `monflorian.com` sur Cloudflare Workers |
-| Décisions courantes | [ADR-0007](docs/decisions/adr-0007-runtime-et-production-cloudflare.md) et [ADR-0008](docs/decisions/adr-0008-domaine-web-only-cloudflare.md) |
+| Décisions courantes | [ADR-0007](docs/decisions/adr-0007-runtime-et-production-cloudflare.md), [ADR-0008](docs/decisions/adr-0008-domaine-web-only-cloudflare.md) et [ADR-0009](docs/decisions/adr-0009-courriel-transactionnel-cloudflare.md) |
 | Licence | Aucune licence de réutilisation accordée |
 
 ## Problème
@@ -54,7 +54,7 @@ client et le Voyage vivant restent des hypothèses non livrées.
 - Déployer puis éprouver la création asynchrone et la page privée à jeton.
 - Prouver le chiffrement, la suppression anticipée et la purge sur des données
   synthétiques.
-- Secret OpenAI, code d'accès, courriel et budget fournisseur.
+- Secret OpenAI, code d'accès, preuve réelle du courriel et budget fournisseur.
 - Premier appel OpenAI synthétique avec coût et journaux inspectés.
 - Courriel transactionnel et preuve synthétique du nettoyage automatique.
 - Notice de traitement et canal de droits.
@@ -82,7 +82,7 @@ client et le Voyage vivant restent des hypothèses non livrées.
 | R2 | Photos d'entrée et illustrations | binding `MEDIA` | bucket privé UE créé, vide, binding déployé |
 | Workflows | Traitement durable et notification | `src/workflows/` | texte et image câblés, garde-fous fermés |
 | Turnstile | Réduction de l'abus gratuit | clé publique et Worker Secret | widget géré configuré, parcours fermé |
-| Courriel | Envoi du lien privé | fournisseur HTTP à choisir | non configuré |
+| Courriel | Envoi du lien privé | binding Cloudflare `EMAIL` | domaine actif, code câblé, drapeau fermé |
 | Stripe | Paiement ponctuel futur | Checkout Sessions et webhook | hors tranche |
 | Documentation Nimbus | Rendu des contrats | `docs-nimbus/` | local et CI |
 
@@ -100,7 +100,7 @@ navigateur
       -> Workflow
           -> OpenAI Responses
           -> OpenAI Image Edits
-          -> fournisseur de courriel
+          -> Cloudflare Email Service
 
 navigateur
   -> /voyages/{jeton}
@@ -125,7 +125,7 @@ structurées ; il ne stocke pas une copie HTML par voyage.
 | OpenAI Responses | Itinéraire JSON strict avec `store: false` | marquer le voyage en échec et permettre un nouvel essai contrôlé |
 | OpenAI Image Edits | Projection dessinée depuis les photos | livrer l'itinéraire sans illustration si le contrat produit le permet |
 | Booking.com | Recherche externe au clic | retirer les liens sans perdre le voyage |
-| Fournisseur de courriel | Envoyer le lien privé | conserver la page et proposer une reprise d'envoi |
+| Cloudflare Email Service | Envoyer le lien privé | conserver la page et proposer une reprise d'envoi |
 | Stripe, plus tard | Paiement ponctuel | ne jamais autoriser depuis le seul retour navigateur |
 
 ## Environnements
@@ -135,11 +135,11 @@ structurées ; il ne stocke pas une copie HTML par voyage.
 | Local | Wrangler dans Docker Compose ou sur Node 24 | `http://127.0.0.1:8080` | `wrangler.jsonc`, `.dev.vars` hors Git |
 | CI | GitHub Actions | runs du dépôt | `.github/workflows/` |
 | Diagnostic Cloudflare | Workers | `https://monflorian.nclsppr.workers.dev` | version Worker et bindings |
-| Production web-only | Workers Custom Domains | `https://monflorian.com`, `https://www.monflorian.com` | `wrangler.jsonc` et zone Cloudflare |
+| Production | Workers Custom Domains et Email Service | `https://monflorian.com`, `https://www.monflorian.com` | `wrangler.jsonc` et zone Cloudflare |
 
-Les deux noms publics servent directement le même Worker. La zone ne porte
-volontairement aucun service de courriel. Atlas ne fait plus partie de cette
-chaîne de livraison.
+Les deux noms publics servent directement le même Worker. La zone autorise
+l'envoi transactionnel, sans boîte de réception humaine. Atlas ne fait plus
+partie de cette chaîne de livraison.
 
 ## Commandes canoniques
 

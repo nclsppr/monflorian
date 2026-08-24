@@ -72,12 +72,13 @@ n'est pas une promesse d'absence de journaux de sûreté. Les contrôles du proj
 la région, les sous-traitants et toute option de partage doivent être vérifiés
 sur le compte réellement utilisé avant ouverture.
 
-### Fournisseur de courriel
+### Cloudflare Email Service
 
-Le fournisseur, encore à choisir, reçoit l'adresse et un lien privé. Il ne reçoit
-ni photo, ni brief complet, ni contenu de voyage dans le courriel. Son contrat,
-sa région, sa rétention, son domaine d'envoi et sa procédure de suppression
-doivent être consignés avant activation.
+Le binding d'envoi reçoit l'adresse, le lien privé et sa date d'expiration. Il ne
+reçoit ni photo, ni brief complet, ni contenu de voyage dans le courriel.
+Cloudflare gère aussi le journal de livraison, les bounces et les suppressions.
+Le message réel et les réglages de rétention doivent être vérifiés avant une
+personne réelle.
 
 ### Booking.com et CJ
 

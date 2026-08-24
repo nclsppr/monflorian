@@ -18,6 +18,10 @@ Git reste la source du diff technique. Les ADR expliquent les décisions importa
   création est fermée ; leur absence ne bloque plus un déploiement sûr.
 - Création du widget Turnstile géré `monflorian-production` pour l'apex, `www`
   et `workers.dev`, avec secret installé directement dans le Worker.
+- Activation de Cloudflare Email Service pour `monflorian.com` et ajout du
+  binding `EMAIL`, restreint à `voyage@monflorian.com`, sans secret tiers.
+- Envoi du seul lien privé après génération, sans photo ni brief, avec effacement
+  de l'adresse chiffrée après succès et aucun retry automatique.
 - Ajout des quotas D1 atomiques, globaux et par client pseudonymisé, avec
   rollback complet quand une limite est atteinte et purge après 31 jours.
 - Portage des adaptateurs Responses et Image Edits dans le Workflow, sans retry

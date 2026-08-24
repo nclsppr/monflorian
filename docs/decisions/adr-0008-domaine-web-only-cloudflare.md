@@ -7,6 +7,9 @@ Acceptée le 2026-08-24.
 Cette décision remplace uniquement l'obligation de reprise des enregistrements
 de messagerie prévue par l'ADR-0007.
 
+L'ADR-0009 complète ensuite cette décision avec les DNS nécessaires à l'envoi
+transactionnel, sans créer de boîte de réception humaine.
+
 ## Contexte
 
 `monflorian.com` est désormais délégué aux serveurs de noms Cloudflare. La zone
@@ -16,8 +19,8 @@ Les anciens serveurs OVHcloud conservent un relevé de trois MX, d'un SPF et d'u
 DMARC. Le propriétaire confirme qu'aucune adresse de courriel du domaine n'a été
 utilisée et qu'aucun service de messagerie entrant ne doit être repris.
 
-Le futur courriel transactionnel du produit reste un besoin distinct. Il sera
-configuré avec un fournisseur dédié avant l'ouverture du parcours utilisateur.
+Le futur courriel transactionnel du produit reste un besoin distinct, décidé
+ensuite par l'ADR-0009.
 
 ## Décision
 
@@ -33,8 +36,8 @@ configuré avec un fournisseur dédié avant l'ouverture du parcours utilisateur
 - Le domaine devient volontairement web-only.
 - Un courriel envoyé vers une adresse `@monflorian.com` n'a pas de service de
   réception prévu.
-- La future notification transactionnelle exige sa propre décision fournisseur,
-  ses enregistrements DNS et une preuve d'envoi.
+- La notification transactionnelle exige sa propre décision, ses
+  enregistrements DNS et une preuve d'envoi.
 - Le relevé OVHcloud reste une preuve historique et non une source à restaurer.
 
 ## Vérification

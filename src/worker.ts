@@ -102,6 +102,9 @@ function tripCreationReady(env: Env): boolean {
     String(env.MONFLORIAN_GENERATION_ENABLED) === "true" &&
     String(env.MONFLORIAN_ILLUSTRATION_ENABLED) === "true" &&
     String(env.MONFLORIAN_EMAIL_ENABLED) === "true" &&
+    Boolean(env.EMAIL) &&
+    Boolean(env.MONFLORIAN_EMAIL_FROM) &&
+    Boolean(env.MONFLORIAN_PUBLIC_ORIGIN) &&
     Boolean(env.TURNSTILE_SITE_KEY) &&
     Boolean(secrets.TURNSTILE_SECRET_KEY) &&
     Boolean(secrets.OPENAI_API_KEY) &&
@@ -441,6 +444,7 @@ async function tripStatus(
     await deleteTripData(env.DB, env.MEDIA, trip, "expired", Date.now());
     return jsonResponse(env, 200, {
       status: "expired",
+      notificationStatus: trip.notification_status,
       expiresAt: new Date(trip.expires_at).toISOString(),
     }, requestId);
   }
@@ -455,6 +459,7 @@ async function tripStatus(
   }
   return jsonResponse(env, 200, {
     status: trip.status,
+    notificationStatus: trip.notification_status,
     expiresAt: new Date(trip.expires_at).toISOString(),
     result,
   }, requestId);
