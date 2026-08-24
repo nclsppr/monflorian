@@ -26,12 +26,15 @@ Dernière mise à jour : 2026-08-24.
 - [x] Écrire les photos validées dans R2 avant de démarrer le Workflow, avec la
   création toujours fermée.
 - [x] Chiffrer le brief et l'adresse de courriel stockés dans D1.
-- [ ] Porter l'adaptateur OpenAI dans les étapes Workflow sans retry aveugle.
+- [x] Porter l'adaptateur OpenAI dans les étapes Workflow sans retry aveugle,
+  derrière les drapeaux fermés.
 - [x] Rendre les états de la page privée depuis D1 avec un jeton haché.
 - [x] Installer les secrets de chiffrement hors Git.
-- [ ] Servir l'illustration privée depuis R2 après génération.
+- [x] Servir l'illustration privée depuis R2 après génération, avec un jeton
+  valide et sans cache.
 - [ ] Installer et appeler OpenAI depuis le Workflow.
-- [ ] Ajouter Turnstile et les quotas persistants.
+- [x] Ajouter les quotas D1 persistants et atomiques.
+- [ ] Créer Turnstile et installer son secret.
 - [ ] Choisir et configurer le fournisseur de courriel transactionnel.
 - [ ] Prouver le nettoyage des photos sous 24 heures et des voyages sous 30
   jours.

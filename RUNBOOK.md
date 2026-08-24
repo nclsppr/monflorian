@@ -33,6 +33,10 @@ ne retire aucun de ses secrets, services ou routes.
 Arrêter immédiatement si une valeur secrète apparaît dans Git ou les logs, si
 R2 devient public, ou si une route coûteuse est ouverte sans tous ses contrôles.
 
+La création ne devient prête que si les drapeaux voyage, texte, image et
+courriel sont tous à `true`, avec Turnstile, le code privé et OpenAI configurés.
+Une activation partielle doit donc rester publiquement fermée.
+
 ## Préparation locale
 
 1. Vérifier la branche et préserver les changements sans rapport.
@@ -155,6 +159,12 @@ Avant d'activer les drapeaux :
    preuve technique.
 8. Supprimer les photos sources après génération.
 9. Envoyer le courriel après passage atomique à `ready`.
+
+Les limites par défaut sont `MONFLORIAN_DAILY_GLOBAL_LIMIT=10` et
+`MONFLORIAN_DAILY_CLIENT_LIMIT=2`. Leur modification exige une vérification du
+budget. La migration `0003_atomic_quotas.sql` fait échouer tout le batch si une
+des deux limites est dépassée ; ne jamais remplacer ce débit par deux écritures
+indépendantes.
 
 Un seul voyage synthétique sans identité suffit pour la première preuve. Une
 erreur ou un coût inattendu ferme la fonction concernée.

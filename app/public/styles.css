@@ -1878,6 +1878,7 @@ textarea:disabled {
 }
 
 .private-trip-note,
+.private-trip-images,
 .private-trip-section,
 .private-trip-itinerary,
 .private-trip-footer {
@@ -1889,6 +1890,40 @@ textarea:disabled {
   background: var(--cream);
   border-left: 4px solid var(--lime);
   border-radius: var(--radius-md);
+}
+
+.private-trip-images > h2 {
+  margin-bottom: 20px;
+  font-size: clamp(1.5rem, 4vw, 2.2rem);
+}
+
+.private-trip-image {
+  margin: 0;
+  overflow: hidden;
+  background: var(--cream);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+}
+
+.private-trip-image img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 3 / 2;
+  object-fit: cover;
+}
+
+.private-trip-image figcaption {
+  display: grid;
+  gap: 4px;
+  padding: 14px 16px 16px;
+  color: var(--muted);
+  font-size: 0.78rem;
+  line-height: 1.45;
+}
+
+.private-trip-image figcaption strong {
+  color: var(--ink);
 }
 
 .private-trip-note p,
