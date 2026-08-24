@@ -81,6 +81,10 @@ img {
   max-width: 100%;
 }
 
+.is-florian-loading [data-florian-variant] {
+  visibility: hidden;
+}
+
 :where(a, button, input, select, textarea):focus-visible {
   outline: 3px solid var(--blue-deep);
   outline-offset: 3px;
@@ -395,7 +399,10 @@ h1 span::after {
 input,
 select,
 textarea {
+  display: block;
   width: 100%;
+  min-width: 0;
+  max-width: 100%;
   min-height: 48px;
   border: 1px solid var(--line-strong);
   border-radius: 12px;
@@ -407,6 +414,11 @@ textarea {
 input,
 select {
   padding-inline: 13px;
+}
+
+input[type="date"] {
+  min-inline-size: 0;
+  max-inline-size: 100%;
 }
 
 textarea {
@@ -544,6 +556,10 @@ textarea:disabled {
   margin-block-start: 19px;
 }
 
+.submit-row > * {
+  min-width: 0;
+}
+
 .submit-row > p {
   max-width: 36ch;
   margin: 0;
@@ -555,6 +571,7 @@ textarea:disabled {
 .primary-button,
 .secondary-button,
 .text-button {
+  max-width: 100%;
   min-height: 48px;
   border-radius: 14px;
   font-weight: 900;
@@ -1571,11 +1588,7 @@ textarea:disabled {
   }
 
   .form-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .form-grid .field-group:last-child {
-    grid-column: 1 / -1;
+    grid-template-columns: 1fr;
   }
 
   .submit-row {
