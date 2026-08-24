@@ -106,3 +106,19 @@ test("le formulaire public suit un seul parcours asynchrone", () => {
   assert.doesNotMatch(app, /\/api\/itineraries/u);
   assert.doesNotMatch(app, /\/api\/illustrations/u);
 });
+
+test("la notice publique explique les destinataires, la rétention et la suppression", () => {
+  const html = source("app/public/index.html");
+  const privacy = source("app/public/confidentialite.html");
+  const privatePage = source("src/trips/page.ts");
+
+  assert.match(html, /href="\/confidentialite"/u);
+  assert.match(privacy, /Cloudflare/u);
+  assert.match(privacy, /OpenAI/u);
+  assert.match(privacy, /au plus tard sous 24 heures/u);
+  assert.match(privacy, /réglages de conservation du projet OpenAI/u);
+  assert.match(privacy, /Après 30 jours au plus tard/u);
+  assert.match(privacy, /Supprimer cette proposition/u);
+  assert.match(privacy, /canal de contact sera publié avant l’ouverture/u);
+  assert.match(privatePage, /href="\/confidentialite"/u);
+});

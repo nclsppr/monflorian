@@ -45,8 +45,8 @@ Dernière mise à jour : 2026-08-24.
 
 ## Avant une personne réelle
 
-- [ ] Publier la notice de traitement, le canal de droits et la suppression
-  anticipée.
+- [x] Publier la notice de traitement et la suppression anticipée.
+- [ ] Publier un canal de droits complémentaire au retrait depuis le lien privé.
 - [ ] Vérifier les réglages de rétention du projet OpenAI utilisé.
 - [ ] Tester le consentement, le retrait et le lien privé avec des données sans
   identité réelle.
