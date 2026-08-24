@@ -3,6 +3,35 @@
 Chaque section nomme son environnement et ses limites. Les sections Atlas sont
 des archives historiques ; la section Cloudflare porte la migration courante.
 
+## Courriel Cloudflare fermé déployé, 2026-08-24
+
+La PR [#25](https://github.com/nclsppr/monflorian/pull/25) ajoute l'envoi du
+lien privé par le binding natif Cloudflare Email. Le domaine et le binding sont
+actifs, mais aucun message n'a été envoyé et tous les drapeaux restent fermés.
+
+| Preuve | Résultat |
+| --- | --- |
+| Source runtime | `ab852a55d5dcd8095b445cdc5dd7e868b95a20fa` |
+| Version active | `621217cf-3033-4144-8f74-be1cd7c3ff4b` |
+| CI du SHA | runs `32767377995` et `32767378027` verts |
+| Email Service | domaine `monflorian.com` activé, DNS configurés, quota initial de 200 par jour |
+| Binding Worker | `EMAIL`, expéditeur limité à `voyage@monflorian.com` |
+| Contenu | lien privé et date d'expiration, sans brief, photo ni itinéraire |
+| Échec d'envoi | voyage conservé prêt, notification marquée en échec, aucun retry automatique |
+| Succès d'envoi | notification marquée envoyée, adresse chiffrée effacée de D1 |
+| Secrets présents | chiffrement, quota et Turnstile seulement, aucun secret de courriel |
+| Garde-fous | création, texte, image et courriel à `false` |
+
+Les sondes de l'apex, de `www` et de `workers.dev` renvoient la même version,
+`generationReady: false` et `serviceReady: false`. `POST /api/trips` répond
+`503` et D1 contient toujours zéro voyage, zéro asset et zéro quota. Les MX de
+`cf-bounce.monflorian.com` répondent via `1.1.1.1` et `8.8.8.8`, tandis que
+l'apex reste sans MX de réception humaine.
+
+`./scripts/verify.sh` passe avec 32 tests. Aucun appel OpenAI, courriel, brief,
+photo ou coût fournisseur n'a été déclenché. Un parcours synthétique complet
+reste nécessaire avant l'ouverture.
+
 ## Génération asynchrone fermée déployée, 2026-08-24
 
 La PR [#22](https://github.com/nclsppr/monflorian/pull/22) câble le parcours

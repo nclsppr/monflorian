@@ -32,8 +32,8 @@ Git reste la source du diff technique. Les ADR expliquent les décisions importa
 - Suppression du padding natif des champs de date qui faisait dépasser leur
   largeur sur WebKit iOS, avec renouvellement de l'URL de la feuille CSS.
 - Activation publique vérifiée de `monflorian.com` et `www.monflorian.com` sur
-  le même Worker, avec DNS, TLS, santé et version contrôlés. La zone reste
-  volontairement sans service de courriel.
+  le même Worker, avec DNS, TLS, santé et version contrôlés. La zone reste sans
+  boîte de réception humaine.
 - Rattachement versionné de `monflorian.com` et `www.monflorian.com` au Worker
   comme Custom Domains Cloudflare, avec maintien de `workers.dev` comme surface
   de diagnostic.

@@ -92,7 +92,7 @@ Un test avec fake ne termine pas cette phase.
 ## F06, page privée et courriel
 
 Le domaine Cloudflare Email Service est actif et le binding restreint à
-`voyage@monflorian.com` est câblé derrière
+`voyage@monflorian.com` est déployé derrière
 `MONFLORIAN_EMAIL_ENABLED=false`. Aucun courriel n'a encore été envoyé.
 
 - Rendre `/voyages/{jeton}` depuis D1 et R2 avec `noindex` et `no-store`.
