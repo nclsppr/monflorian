@@ -144,18 +144,15 @@ img {
 
 .brand-character {
   display: block;
-  overflow: hidden;
   aspect-ratio: 1;
-  border-radius: 46%;
-  background: radial-gradient(circle at 48% 30%, white, var(--surface-blue) 74%);
-  box-shadow: inset 0 0 0 1px var(--line);
+  background: transparent;
 }
 
 .brand-character img {
   display: block;
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
 }
 
 .brand-wordmark {
@@ -862,10 +859,8 @@ textarea:disabled {
 .florian-card img {
   width: 38px;
   height: 38px;
-  border-radius: 46%;
-  object-fit: cover;
-  background: radial-gradient(circle at 48% 30%, white, var(--surface-blue) 74%);
-  box-shadow: inset 0 0 0 1px var(--line);
+  object-fit: contain;
+  background: transparent;
 }
 
 .florian-card p {

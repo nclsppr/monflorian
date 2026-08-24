@@ -52,9 +52,15 @@ l'utilise partout pendant cette visite. Si le script ou le portrait choisi
 
 Les variantes gardent le même visage, les lunettes rondes dorées, les yeux
 bruns, la barbe, le sourire et le rendu 3D doux du master. Seuls les cheveux,
-le couvre-chef et un petit accessoire de voyage peuvent changer. Le portrait
-reste cadré dans le même médaillon bleu pâle. Il ne reçoit ni texte, ni décor,
-ni second personnage.
+le couvre-chef et un petit accessoire de voyage peuvent changer. Chaque portrait
+utilise le même canevas carré et un vrai canal alpha. Tout ce qui entoure le
+personnage reste transparent. Aucun fichier ni composant ne peint de fond, de
+médaillon, de halo ou d'ombre derrière lui. Le portrait ne reçoit ni texte, ni
+décor, ni second personnage.
+
+La rotation comprend le Florian original, les cheveux au vent, le bonnet, le
+bob bleu et le chapeau de paille fleuri. Une nouvelle variante doit respecter
+le contrat de transparence automatisé avant d'entrer dans cette liste.
 
 Le changement se produit au chargement. Il ne tourne pas en boucle et ne doit
 pas détourner l'attention du composeur. Florian reste un repère de marque dans
@@ -116,6 +122,7 @@ Une nouvelle évaluation devient utile pour un futur back-office avec navigation
 
 - Utiliser le logo master comme référence de marque jusqu'à la validation d'une version vectorielle.
 - Garder le mot-symbole fixe et limiter les variantes au portrait de Florian.
+- Garder tous les portraits sur fond transparent, dans les fichiers comme dans leurs composants d'accueil.
 - Garder une seule action commerciale sur la page d'entrée. Voyage vivant arrive après la première livraison.
 - Respecter le clavier, le focus visible, les cibles tactiles, le contraste AA et le mouvement réduit.
 - Signaler les exemples synthétiques et les projections personnalisées.

@@ -4,6 +4,9 @@
 
 Acceptée le 2026-08-24.
 
+La règle du médaillon bleu pâle est remplacée par
+[ADR-0006](adr-0006-portraits-florian-transparents.md).
+
 ## Contexte
 
 Le master raster réunit le personnage, le nom et l'avion dans un seul fichier.

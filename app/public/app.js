@@ -9,10 +9,11 @@ const DEFAULT_LIMITS = Object.freeze({
 const MAX_SOURCE_PHOTO_BYTES = 30 * 1024 * 1024;
 const MAX_TEXT_LENGTH = 5000;
 const FLORIAN_VARIANTS = Object.freeze([
-  "/assets/florian-original.png?v=1",
-  "/assets/florian-wind.png?v=1",
-  "/assets/florian-beanie.png?v=1",
-  "/assets/florian-summer.png?v=1",
+  "/assets/florian-original.png?v=2",
+  "/assets/florian-wind.png?v=2",
+  "/assets/florian-beanie.png?v=2",
+  "/assets/florian-summer.png?v=2",
+  "/assets/florian-flower.png?v=2",
 ]);
 
 const state = {
