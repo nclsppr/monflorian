@@ -17,7 +17,10 @@ La première livraison est terminée seulement si :
 - [x] Le backend utilise le digest figé, l'UID `10001` et aucun port hôte.
 - [x] `/api/config` annonce `serviceReady: false`.
 - [x] Les deux marqueurs de génération valent `false` dans le runtime.
-- [x] Aucun brief, image, identifiant privé ou secret n'apparaît dans les preuves de déploiement.
+- [x] Les journaux Atlas ont été inspectés : le backend ne journalise que les
+  champs techniques prévus, sans brief, photo, clé, secret, corps de requête ni
+  corps de réponse. La seule mention `authorization` de Caddy est l'événement
+  ACME `authorization finalized`.
 - [x] Booking reste en mode `external`, sans prix, stock ou affiliation inventés.
 - [x] Les sites existants sont restés en `200` pendant quinze minutes d'observation.
 

@@ -18,6 +18,7 @@ l'interface réelle sans identifiant, tout en refusant les générations.
 | Runtime | backend sain, UID/GID `10001:10001`, lecture seule, aucun port hôte |
 | Réseau | backend sur `app_monflorian` uniquement, Caddy sain à `172.30.40.254` |
 | Navigateur | 1440 x 900 et 390 x 844, aucun débordement ni erreur de console |
+| Journaux | champs backend limités au contrat technique; aucun brief, photo, clé, secret ou corps; unique mention Caddy `authorization` liée à ACME |
 | Régression Atlas | Mon Florian et les trois apex existants sont restés en `200` pendant quinze minutes |
 
 Les workflows produit `32662637850`, `32662637871` et `32662637854` sont

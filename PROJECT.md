@@ -137,7 +137,7 @@ L'offre cible reste un voyage prêt à 50 €, livré en mini-site privé et PDF
 | Liens CJ statiques | Attribuer une réservation quand un partenariat est accepté | Navigation du voyageur et paramètres du lien au clic | Repli vers une recherche externe non affiliée | Retirer la configuration et passer à `external` ou `off` |
 | Image Node officielle | Runtime de production | Code du dépôt pendant le build | Build bloqué | Revenir au digest précédent validé |
 | GitHub Actions | Vérifier et publier les artefacts | Sources du dépôt | Livraison bloquée | Vérification locale sans prétendre avoir livré |
-| Atlas et Caddy | Exécuter et router le service privé | Requêtes HTTP et logs techniques | Service inaccessible | Rollback vers le digest précédent |
+| Atlas et Caddy | Exécuter et router l'aperçu public | Requêtes HTTP et logs techniques | Service inaccessible | Rollback vers le digest précédent |
 
 Le projet n'utilise aucun SDK OpenAI ou Booking.com. Il s'appuie sur `fetch`, `FormData` et le serveur HTTP de Node.js afin de limiter les dépendances d'exécution.
 
@@ -147,8 +147,8 @@ Le projet n'utilise aucun SDK OpenAI ou Booking.com. Il s'appuie sur `fetch`, `F
 | --- | --- | --- | --- | --- |
 | Développement | Docker Compose sur macOS ou Linux | `compose.yaml` et `.env.example` | `http://127.0.0.1:8080` par défaut | `./scripts/verify.sh` |
 | CI | GitHub Actions | `.github/workflows/verify.yml` | Runs GitHub | `./scripts/verify.sh` |
-| Production privée | Atlas derrière Caddy | release immuable produite depuis `deployment/vps/`, puis profil `vps-infra` | Aucun accès actif au 2026-08-23 | `RUNBOOK.md` |
-| Production publique | Atlas et DNS OVHcloud | apex et `www` sur `137.74.174.163`, route inactive | `monflorian.com`, inactif pour Mon Florian | Sonde publique après route Atlas, secrets et TLS |
+| Production privée | Atlas derrière Caddy | future release avec générations prouvées et accès décidé | Aucun parcours privé actif | `RUNBOOK.md` |
+| Production publique | Atlas et DNS OVHcloud | release immuable `4ac2c42`, route Caddy active, générations désactivées | `https://monflorian.com` | Sondes publiques et navigateur, puis observation de quinze minutes |
 
 ## Commandes canoniques
 
@@ -172,7 +172,7 @@ Le projet n'utilise aucun SDK OpenAI ou Booking.com. Il s'appuie sur `fetch`, `F
 - Les catégories, destinataires et durées vivent dans `DATA-PROCESSING.md`.
 - Le serveur ne possède ni base, ni volume de données, ni session persistante.
 - La clé OpenAI, le code d'accès et le secret HMAC sont injectés hors Git. Le runtime peut lire une clé depuis un fichier monté.
-- Le développement privé exige un code de lancement côté backend quand la génération est ouverte. Sur Atlas, le backend n'a aucun port hôte et Caddy protège toute la page avant de lui relayer les requêtes. Le mode applicatif `public` n'est acceptable dans cette topologie qu'avec cette protection Caddy chargée et vérifiée.
+- Le développement privé exige un code de lancement côté backend quand la génération est ouverte. Sur Atlas, l'aperçu public n'accepte aucune génération, le backend n'a aucun port hôte et Caddy est le seul point d'entrée.
 - Le serveur rejette les requêtes cross-origin, limite les corps, les dimensions, les quotas quotidiens et la concurrence.
 - Les logs contiennent la date, un identifiant de requête, la méthode, le chemin, le statut, le code d'erreur et la durée. Ils ne doivent contenir ni brief, ni photo, ni clé, ni sortie générée.
 - `store: false` désactive le stockage applicatif de la réponse OpenAI. Il ne supprime pas les journaux de sûreté possibles du fournisseur. `DATA-PROCESSING.md` expose cette limite.
@@ -198,10 +198,10 @@ Le projet n'utilise aucun SDK OpenAI ou Booking.com. Il s'appuie sur `fetch`, `F
 - Push direct : interdit, y compris au propriétaire. Toute modification passe par une branche et une PR à jour.
 - Contrôles requis avant fusion : `verify` et `Validate application release`, avec historique linéaire et résolution des conversations. La publication immuable s'exécute ensuite sur `main`.
 - Convention de commit : impératif préfixé par le périmètre.
-- Artefact : image OCI `ghcr.io/nclsppr/monflorian/backend` publiée et attestée par digest; aucun conteneur Atlas actif.
+- Artefact : image OCI `ghcr.io/nclsppr/monflorian/backend` publiée et attestée par digest; le digest `f5340476e924a15618a95f215b7172b50c98f5deff7a47a4cc07c698cad46e7d` est actif sur Atlas.
 - Déploiement : contrôleur Atlas depuis un contrat versionné dans `vps-infra`. Aucun déploiement direct depuis le poste.
 - Rollback : redéployer le digest précédent et la configuration correspondante, puis sonder la santé et le parcours critique.
-- Vérification finale : CI du producteur, réconciliation Atlas, healthcheck local, parcours privé, puis sonde publique seulement après activation du domaine.
+- Vérification finale : CI du producteur, réconciliation Atlas, healthcheck local, sondes publiques, contrôle navigateur et observation des autres sites Atlas.
 - Observabilité : logs structurés, santé locale, signaux Caddy et supervision Atlas. La santé HTTP ne prouve pas qu'OpenAI accepte une génération.
 - Escalade : propriétaire `nclsppr`.
 
