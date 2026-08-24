@@ -1,25 +1,28 @@
 # Plan de reprise vers un aperçu public
 
-Dernière mise à jour : 2026-08-23. Ce document est la checklist de reprise. L'état observé vit dans [`STATUS.md`](STATUS.md) et les procédures stables dans [`RUNBOOK.md`](RUNBOOK.md).
+Dernière mise à jour : 2026-08-24. L'aperçu public est livré. L'état observé vit dans [`STATUS.md`](STATUS.md) et les procédures stables dans [`RUNBOOK.md`](RUNBOOK.md).
 
-## Verrou actuel
+## Fenêtre terminée
 
-- [ ] Attendre une autorisation explicite de l'opérateur avant tout accès à Atlas, toute convergence, tout déploiement ou toute sonde publique dirigée vers Atlas.
+- [x] Autorisation explicite reçue pour reprendre Atlas, déployer l'aperçu et le rendre visible.
 - [x] Geler `codex/monflorian-edge-adoption`. Cette branche interrompue sert seulement de référence et ne doit être ni reprise, ni fusionnée, ni déployée.
-- [ ] Ne jamais placer une clé, un identifiant privé ou un condensat du fragment d'accès dans Git, un état public, une commande ou un journal.
+- [x] Aucun secret, identifiant privé ou condensat de secret ajouté à Git, aux commandes ou aux preuves publiques.
 
 ## Aperçu public attendu
 
 La première livraison est terminée seulement si :
 
-- `https://monflorian.com` possède un certificat valide et `www` redirige vers l'apex ;
-- la page répond `200` sans identifiant ;
-- le backend utilise le digest figé, l'UID `10001` et aucun port hôte ;
-- `/api/config` annonce `serviceReady: false` ;
-- les deux marqueurs de génération valent `false` dans le runtime ;
-- aucun brief, image, identifiant privé ou secret n'apparaît dans les journaux ;
-- Booking reste en mode `external`, sans prix, stock ou affiliation inventés ;
-- les services et sites déjà présents sur Atlas restent inchangés pendant quinze minutes.
+- [x] `https://monflorian.com` possède un certificat valide et `www` redirige vers l'apex.
+- [x] La page répond `200` sans identifiant.
+- [x] Le backend utilise le digest figé, l'UID `10001` et aucun port hôte.
+- [x] `/api/config` annonce `serviceReady: false`.
+- [x] Les deux marqueurs de génération valent `false` dans le runtime.
+- [x] Les journaux Atlas ont été inspectés : le backend ne journalise que les
+  champs techniques prévus, sans brief, photo, clé, secret, corps de requête ni
+  corps de réponse. La seule mention `authorization` de Caddy est l'événement
+  ACME `authorization finalized`.
+- [x] Booking reste en mode `external`, sans prix, stock ou affiliation inventés.
+- [x] Les sites existants sont restés en `200` pendant quinze minutes d'observation.
 
 ## Candidat figé
 
@@ -27,11 +30,11 @@ Un changement purement documentaire ne remplace pas ce candidat.
 
 | Élément | Référence immuable |
 | --- | --- |
-| Source | `fc9212f876b32ea5821b235200802e5b51e50a59` |
-| Backend | `ghcr.io/nclsppr/monflorian/backend@sha256:ca1a9b3b2dbf33c999e5cee445cf51cd6974781a24d2dda70286c8e50142f471` |
-| Intégration VPS | `ghcr.io/nclsppr/monflorian/vps-integration@sha256:9e8944e4cff11b3cbc17f6227b517717d48b8a1b3c47be0490c71afb36b2f87a` |
-| Release applicative | `ghcr.io/nclsppr/monflorian/application-release@sha256:1fb74335d7a2bb8ad5b36a6ff28718cd766bafcac26d807ccbd716a13fa3b446` |
-| Base centrale | `vps-infra` à `086d9d8894704a6755799bcb47ad3989f6b695ea` |
+| Source | `4ac2c42339941e34c128f779399688032c8ef304` |
+| Backend | `ghcr.io/nclsppr/monflorian/backend@sha256:f5340476e924a15618a95f215b7172b50c98f5deff7a47a4cc07c698cad46e7d` |
+| Intégration VPS | `ghcr.io/nclsppr/monflorian/vps-integration@sha256:f5785b6b37d482c279b62386231810ced750c6189c1595aafa71f95851f1b102` |
+| Release applicative | `ghcr.io/nclsppr/monflorian/application-release@sha256:af8d18a3df82f8be18f2fd48aebb0a7ff5d62159baf552f1d9fe00ef92d418ba` |
+| Base centrale | `vps-infra` à `d98db4e339224faebacbc0bc415388749abac91e` |
 
 ## A. Préparer hors Atlas
 

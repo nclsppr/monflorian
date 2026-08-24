@@ -2,6 +2,30 @@
 
 Ce relevé sépare le candidat publié, la préparation du VPS et l'activation publique. Ces trois étapes n'ont pas le même niveau de preuve.
 
+## Aperçu public Atlas, 2026-08-24
+
+L'aperçu décidé par ADR-0004 est actif sur `https://monflorian.com`. Il sert
+l'interface réelle sans identifiant, tout en refusant les générations.
+
+| Preuve | Résultat |
+| --- | --- |
+| Source produit | `4ac2c42339941e34c128f779399688032c8ef304` |
+| Release applicative | `ghcr.io/nclsppr/monflorian/application-release@sha256:af8d18a3df82f8be18f2fd48aebb0a7ff5d62159baf552f1d9fe00ef92d418ba` |
+| Contrôle central | `d98db4e339224faebacbc0bc415388749abac91e` |
+| Apex | HTTPS `200`, certificat valide, HSTS |
+| `www` | `308` vers `https://monflorian.com/` |
+| Configuration publique | `serviceReady: false`, `illustrationEnabled: false`, accès `public` |
+| Runtime | backend sain, UID/GID `10001:10001`, lecture seule, aucun port hôte |
+| Réseau | backend sur `app_monflorian` uniquement, Caddy sain à `172.30.40.254` |
+| Navigateur | 1440 x 900 et 390 x 844, aucun débordement ni erreur de console |
+| Journaux | champs backend limités au contrat technique; aucun brief, photo, clé, secret ou corps; unique mention Caddy `authorization` liée à ACME |
+| Régression Atlas | Mon Florian et les trois apex existants sont restés en `200` pendant quinze minutes |
+
+Les workflows produit `32662637850`, `32662637871` et `32662637854` sont
+verts. L'admission Atlas a été fusionnée par la PR 111, puis la correction du
+contrôleur historique par la PR 113. Aucun appel OpenAI, aucune photo, aucun
+paiement et aucune réservation ne font partie de cette preuve.
+
 > Ce relevé conserve la preuve historique du candidat F01. Il ne décrit pas le candidat courant et ne doit pas servir d'entrée à un déploiement. Utiliser [`STATUS.md`](STATUS.md) pour le tuple figé et [`RESTE-A-FAIRE.md`](RESTE-A-FAIRE.md) pour l'ordre de reprise.
 
 ## Référence

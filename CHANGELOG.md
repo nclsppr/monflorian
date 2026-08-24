@@ -4,6 +4,9 @@ Git reste la source du diff technique. Les ADR expliquent les décisions importa
 
 ## Non publié
 
+- Mise en ligne de l'aperçu public sur `monflorian.com` avec TLS, redirection
+  `www`, backend non privilégié et absence de port hôte. Les deux générations
+  restent désactivées et aucune demande n'est envoyée.
 - Préparation d'un aperçu public sur Atlas qui sert l'interface réelle, désactive
   les deux générations OpenAI et annonce cette indisponibilité dans le produit.
 - Ajout d'une règle d'intervention qui impose la mise à jour du registre des
