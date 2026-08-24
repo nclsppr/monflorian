@@ -8,22 +8,16 @@ services:
     init: true
     ports:
       - "127.0.0.1:${MONFLORIAN_PORT:-8080}:8080"
-    environment:
-      BOOKING_MODE: external
-      MONFLORIAN_ACCESS_MODE: private
-      MONFLORIAN_GENERATION_ENABLED: "false"
-      MONFLORIAN_ILLUSTRATION_ENABLED: "false"
-      MONFLORIAN_PUBLIC_ORIGIN: "http://127.0.0.1:${MONFLORIAN_PORT:-8080}"
-      MONFLORIAN_RELEASE: local-compose
     read_only: true
     tmpfs:
       - /tmp:size=16m,mode=1777
+      - /app/.wrangler:size=32m,mode=1777,uid=10001,gid=10001
     cap_drop:
       - ALL
     security_opt:
       - no-new-privileges:true
     pids_limit: 100
-    mem_limit: 256m
+    mem_limit: 512m
     cpus: 1.0
     healthcheck:
       test:

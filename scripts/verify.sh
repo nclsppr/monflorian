@@ -58,7 +58,6 @@ python3 "${SCRIPT_DIR}/check_prototype.py"
 python3 -m json.tool "${PROJECT_ROOT}/docs/api/openapi.json" >/dev/null
 npm ci --prefix "${PROJECT_ROOT}" --ignore-scripts --no-audit --no-fund
 npm run check --prefix "${PROJECT_ROOT}"
-"${SCRIPT_DIR}/verify-vps-release-contract"
 
 export MONFLORIAN_PORT="${MONFLORIAN_PORT:-8080}"
 compose_down() {

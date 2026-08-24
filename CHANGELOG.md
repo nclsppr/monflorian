@@ -4,6 +4,16 @@ Git reste la source du diff technique. Les ADR expliquent les décisions importa
 
 ## Non publié
 
+- Migration du runtime vers un Worker TypeScript unique avec Static Assets,
+  healthcheck, configuration publique et version Cloudflare. La génération reste
+  fermée pendant la migration.
+- Création de la base D1 en juridiction UE, application du schéma de cycle de vie
+  des voyages et déploiement du Workflow fermé `monflorian-trip`.
+- Retrait des workflows OCI, des contrats VPS, des scripts Atlas et de l'ancien
+  serveur HTTP du chemin de livraison. Docker Compose sert désormais uniquement
+  le Worker local.
+- Ajout de l'ADR-0007 pour R2 privé, pages à jeton, rétention, courriel,
+  Turnstile, OpenAI asynchrone et futur Checkout Stripe.
 - Séparation du logo en un mot-symbole fixe et un portrait modulable. Une visite
   choisit parmi le Florian original, cheveux au vent, avec bonnet, avec bob ou
   avec chapeau fleuri, puis garde ce choix sur toute la page. Tous les portraits

@@ -4,110 +4,123 @@ Source canonique de l'ordre de livraison.
 
 ## Résultat produit
 
-Mon Florian doit devenir un guide continu. Il aide à choisir avant le départ, reste pratique pendant le séjour et peut devenir un souvenir après le retour. La tranche actuelle prouve seulement la composition initiale et une projection dessinée facultative.
+Mon Florian prépare un voyage, montre les voyageurs dans les destinations sous
+forme de projections générées, conserve une page privée et l'envoie par
+courriel. Le MVP est gratuit. Booking affilié et Stripe viennent après la preuve
+de ce parcours.
 
 ## Principes de séquencement
 
-- Vérifier chaque fournisseur avec des données synthétiques avant une photo ou un brief réel.
-- Maintenir Florian dans la boucle pour les trajets, horaires, fermetures, prix et réservations.
-- Garder les générations fermées tant que les coûts, les données et le parcours ne sont pas observés sur Atlas.
-- Séparer l'image OCI publiée, son admission par Atlas, le DNS et l'ouverture publique.
-- Ne pas confondre un lien Booking.com externe avec un partenariat affilié.
-- Ne terminer une phase qu'avec une preuve datée dans l'environnement concerné.
+- Un seul runtime et un seul déploiement Cloudflare.
+- Aucune photo réelle avant R2 privé, rétention et suppression prouvées.
+- Aucun appel payant avant quotas persistants, Turnstile et budget.
+- Aucun retry aveugle d'une étape OpenAI au résultat incertain.
+- Aucun déplacement DNS avant preuve sur `workers.dev` et copie complète de la
+  messagerie.
+- Aucun paiement avant la preuve du parcours gratuit.
+- Une ressource provisionnée ne vaut pas capacité livrée.
 
 ## Vue d'ensemble
 
-| Ordre | ID | Phase | Résultat utilisateur ou opérationnel | État macro | Critère de sortie | Preuve observée | Sortie le |
-| --- | --- | --- | --- | --- | --- | --- | --- |
-| 0 | F00 | Dépôt et prototype reproductible | Le concept est versionné et consultable localement | done | Vérification locale, Compose, navigateur, push et CI verte | Commit `e8f5d97`, preuve `6c6824a`, runs `32637460676` et `32637925764` | 2026-08-23 |
-| 1 | F01 | Candidat applicatif critique | Une personne peut préparer un brief, recevoir un voyage structuré et demander un dessin | done | Tests, OpenAPI, image de production, Compose et contrôle navigateur valides | Candidat `fc9212f`, trois workflows verts, digests et attestations consignés | 2026-08-23 |
-| 2 | F02 | Frontières OpenAI vérifiées | Les deux générations fonctionnent avec données synthétiques et erreurs sûres | in_progress | Smoke tests Responses et Image Edits, coût observé, aucune donnée dans les logs | Générations fermées dans l'aperçu public; parcours fournisseur complets non prouvés | |
-| 3 | F03 | Release Atlas privée | Le digest validé tourne derrière une protection privée | cancelled | Release immuable, admission du contrôle central, secret monté, santé et parcours synthétique | ADR-0004 remplace cette étape par un aperçu public sans génération | 2026-08-23 |
-| 4 | F04 | Domaine et aperçu public | Le rendu répond sur `monflorian.com` avec TLS, sans génération | done | Route Atlas, Caddy valide, sondes apex et `www`, fonctions coûteuses fermées | Source `4ac2c42`, release `af8d18a`, contrôle Atlas `d98db4e`, sondes et navigateur publics réussis | 2026-08-24 |
-| 5 | F05 | Attribution Booking.com | Les liens affiliés approuvés portent une mention commerciale claire | blocked | Partenariat accepté, liens CJ validés, domaines autorisés et test d'attribution | Aucun partenariat ou identifiant accepté observé | |
-| 6 | F06 | Offre payante et livraison durable | Un client paie et retrouve un mini-site ou PDF relu | planned | Paiement, contrat de données persistant, support et rollback prouvés | | |
-| 7 | F07 | Voyage vivant | Le guide s'ajuste pendant le séjour et devient un carnet après le retour | planned | Parcours avant, pendant et après vérifié avec un utilisateur réel | | |
+| Ordre | ID | Phase | État | Critère de sortie |
+| --- | --- | --- | --- | --- |
+| 0 | F00 | Prototype reproductible | done | concept local, Compose et CI |
+| 1 | F01 | Contrats métier et OpenAI simulé | done | validateurs, OpenAPI et fakes fournisseur |
+| 2 | F02 | Aperçu historique sans génération | done | interface publique fermée sur l'ancienne cible |
+| 3 | F03 | Runtime Cloudflare fermé | in_progress | Worker, D1, Workflow, PR, CI et preuve publique |
+| 4 | F04 | Stockage privé et cycle de vie | planned | R2 UE, chiffrement, jetons et purge prouvés |
+| 5 | F05 | Génération synthétique asynchrone | planned | texte, images, quotas, reprise et coûts observés |
+| 6 | F06 | Page privée et courriel | planned | rendu, suppression, notification et notice validés |
+| 7 | F07 | Domaine Cloudflare | planned | zone copiée, mail préservé, apex et `www` vérifiés |
+| 8 | F08 | MVP gratuit limité | planned | Turnstile, budget et premier utilisateur informé |
+| 9 | F09 | Attribution Booking.com | blocked | partenariat et liens approuvés |
+| 10 | F10 | Paiement Stripe | planned | Checkout, webhook signé, fiscalité et remboursement décidés |
+| 11 | F11 | Voyage vivant | planned | parcours pendant et après le séjour testé |
 
 États autorisés : `planned`, `in_progress`, `blocked`, `done`, `cancelled`.
 
-## F01, candidat applicatif critique
+## F03, runtime Cloudflare fermé
 
-### Inclus
+Inclus :
 
-- Application web sous `app/` et prototype F00 conservé sous `prototype/`.
-- Backend Node.js sans package npm d'exécution tiers.
-- Contrat OpenAPI et validation stricte des entrées et sorties.
-- Appels OpenAI isolés derrière des fakes dans les tests.
-- Itinéraire, alternatives pluie et fatigue, listes de vérification et étapes d'hébergement.
-- Illustrations dessinées à partir de photos réencodées avec consentement.
-- Modes Booking `off`, `external` et `cj-static`.
-- Image de conteneur non privilégiée, Compose et documentation Critique.
+- Worker TypeScript et Static Assets ;
+- D1 avec migrations versionnées ;
+- Workflow déployé mais incapable d'appeler OpenAI ;
+- suppression du serveur HTTP et des releases OCI/VPS du chemin courant ;
+- CI Wrangler et Docker Compose local ;
+- URL `workers.dev` avec génération fermée.
 
-### Exclu
+La phase est terminée quand la branche est fusionnée, `main` est vert, la règle
+de protection exige `Validate Cloudflare release`, la version Worker issue du
+SHA fusionné répond et la preuve est consignée.
 
-- Photo personnelle dans les tests ou le dépôt.
-- Scraping, prix ou disponibilité Booking.com.
-- Persistance, compte, paiement, PDF ou partage public.
-- Mutation Atlas ou DNS dans la même preuve que le build local.
+## F04, stockage privé et cycle de vie
 
-### Critère de sortie
+- Activer R2 et créer un bucket à juridiction UE.
+- Garder le bucket privé et refuser `r2.dev`.
+- Écrire les photos dans R2 avant de démarrer le Workflow.
+- Chiffrer brief, résultat et courriel dans D1 avec un Worker Secret.
+- Hacher le jeton de consultation et ne jamais le journaliser.
+- Supprimer les sources après génération, au plus tard sous 24 heures.
+- Expirer le voyage sous 30 jours et offrir une suppression anticipée.
+- Prouver la purge avec des objets et données synthétiques.
 
-- `./scripts/verify.sh` passe localement puis sur le SHA poussé.
-- Les tests couvrent les tailles, formats, origines, accès, quotas, refus du fournisseur et liens autorisés.
-- Le conteneur démarre sans privilège et répond sur `/api/health` et `/api/config`.
-- Le parcours visible fonctionne sur petit mobile et bureau, au clavier et avec mouvement réduit.
-- La preuve nomme le SHA, le digest éventuel, les commandes et les limites.
+## F05, génération synthétique asynchrone
 
-## F02, frontières OpenAI vérifiées
+- Vérifier Turnstile avant création.
+- Débiter les quotas D1 de façon atomique.
+- Démarrer une seule instance Workflow par voyage.
+- Appeler Responses avec `store: false`, schéma strict et plafond de sortie.
+- Appeler Image Edits depuis des clés R2 validées.
+- Ne pas relancer automatiquement un appel payant si son résultat est inconnu.
+- Stocker les identifiants techniques et l'usage sans contenu.
+- Exécuter un seul brief et une seule image synthétiques, puis inspecter coût et
+  logs.
 
-- Lire la clé hors du dépôt et ne jamais l'imprimer.
-- Utiliser un brief synthétique et une image générée pour le test.
-- Vérifier que la requête Responses contient `store: false`.
-- Vérifier une sortie JSON conforme puis une image WebP lisible.
-- Rechercher le brief, l'image et la clé dans les logs et artefacts produits.
-- Consigner les identifiants de requête, le modèle, le résultat et le coût observable sans contenu utilisateur.
+Un test avec fake ne termine pas cette phase.
 
-Un test local simulé ne termine pas cette phase. Un appel fournisseur réel contrôlé est requis.
+## F06, page privée et courriel
 
-## F03, release Atlas privée
+- Rendre `/voyages/{jeton}` depuis D1 et R2 avec `noindex` et `no-store`.
+- Ne pas enregistrer une copie HTML par voyage ; utiliser le template commun.
+- Envoyer un lien privé, jamais les photos ou le brief complet dans le courriel.
+- Chiffrer puis supprimer l'adresse après envoi réussi.
+- Fournir statut, reprise d'envoi et suppression.
+- Publier la notice et le canal de droits avant un utilisateur réel.
 
-- Publier une image OCI par digest depuis le SHA vert.
-- Livrer le contrat de release et le profil Mon Florian dans `vps-infra`.
-- Monter les secrets avec les permissions minimales.
-- Déployer sans port hôte public, derrière le réseau applicatif et Caddy.
-- Protéger l'accès avant toute génération payante.
-- Observer santé, logs, quotas et un parcours synthétique, puis tester le rollback.
+## F07, domaine Cloudflare
 
-Une image publiée n'est pas un déploiement. Une CI du dépôt produit ne prouve pas l'admission ni l'exécution par Atlas.
+- Exporter ou relever toute la zone OVHcloud.
+- Ajouter la zone Cloudflare et recopier A, CNAME, MX, TXT et sous-domaines.
+- Préserver les trois MX et le SPF observés.
+- Vérifier le Worker sur l'apex et `www` avant la bascule des serveurs de noms.
+- Conserver les valeurs précédentes et le TTL pour rollback.
+- Sonder DNS, TLS, page, configuration, release et messagerie après propagation.
 
-## F04, domaine et ouverture publique
+## F08, MVP gratuit limité
 
-Le domaine `monflorian.com` a été enregistré chez OVHcloud le 2026-08-23 à
-13:00:22Z. Le 2026-08-24, les deux serveurs autoritaires et les résolveurs
-publics renvoient Atlas `137.74.174.163` pour l'apex et `www`, sans AAAA. La
-route, le certificat et le backend ont été activés ensemble avec les deux
-générations fermées.
+- Limite quotidienne globale et par client.
+- Turnstile visible et erreurs compréhensibles.
+- Budget OpenAI et alerte de coût.
+- Consentement photo et durée de rétention visibles.
+- Premier parcours humain volontaire, limité et supprimable.
 
-La preuve de sortie comprend :
+## F09, attribution Booking.com
 
-- confirmer que la zone conserve tous les enregistrements non liés au site ;
-- ne pas ajouter d'AAAA sans chemin IPv6 vérifié ;
-- préserver les MX de priorités 1, 5 et 100 ainsi que le SPF qui inclut `mx.ovh.com` ;
-- valider Caddy avant reload et attendre le certificat ;
-- sonder HTTP, HTTPS, apex, `www`, en-têtes et parcours critique depuis l'extérieur ;
-- conserver le rollback DNS et le TTL observé dans la preuve.
+Le mode `external` reste la valeur par défaut. `cj-static` exige un partenariat
+accepté, des liens approuvés, une liste d'hôtes et la mention commerciale près de
+chaque lien. Aucune affiliation n'est déduite d'une URL trouvée en ligne.
 
-## F05, attribution Booking.com
+## F10, paiement Stripe
 
-Le mode par défaut reste `external`. Il ouvre une recherche Booking.com ordinaire et ne présente aucune commission.
-
-Le mode `cj-static` reste fermé tant que le propriétaire ne possède pas une relation acceptée, les conditions applicables et des liens approuvés. Son activation exige aussi la mention suivante près des liens concernés : "Liens affiliés Booking.com. Mon Florian peut percevoir une commission si tu réserves via ces liens."
-
-L'API Demand ne fait pas partie de cette roadmap. Son usage demanderait un contrat de partenaire géré, une revue de production et la validation écrite nécessaire avant d'utiliser l'IA avec des éléments Booking.com.
+Le paiement ponctuel utilisera Checkout Sessions hébergé avec méthodes de
+paiement dynamiques et clé restreinte. Seul un webhook signé et idempotent peut
+marquer le paiement comme acquis. Fiscalité, remboursements, support et mode réel
+font l'objet d'une décision séparée.
 
 ## Règle de mise à jour
 
 - Mettre à jour une phase uniquement avec une preuve observable.
-- Reporter l'exécution et les limites dans `DELIVERY-EVIDENCE.md` et `STATUS.md`.
-- Créer une ADR si l'ordre ou un fournisseur change.
+- Reporter résultats et limites dans `DELIVERY-EVIDENCE.md` et `STATUS.md`.
+- Créer une ADR si l'ordre, la durée de rétention ou un fournisseur change.
 - Garder une seule roadmap.

@@ -44,6 +44,10 @@
       "reason": "Sorties générées"
     },
     {
+      "pattern": ".wrangler/**/*.md",
+      "reason": "Sorties générées par Wrangler"
+    },
+    {
       "pattern": ".venv/**/*.md",
       "reason": "Environnement Python local"
     },
