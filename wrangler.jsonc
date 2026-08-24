@@ -55,10 +55,8 @@
   ],
   "secrets": {
     "required": [
-      "MONFLORIAN_ACCESS_CODE",
       "TRIP_DATA_KEY",
-      "TRIP_QUOTA_HASH_KEY",
-      "TURNSTILE_SECRET_KEY"
+      "TRIP_QUOTA_HASH_KEY"
     ]
   },
   "vars": {
