@@ -54,6 +54,15 @@ interface TurnstileResponse {
   "error-codes"?: string[];
 }
 
+interface ClosedFeatureSecrets {
+  MONFLORIAN_ACCESS_CODE?: string;
+  TURNSTILE_SECRET_KEY?: string;
+}
+
+function closedFeatureSecrets(env: Env): ClosedFeatureSecrets {
+  return env as Env & ClosedFeatureSecrets;
+}
+
 function release(env: Env): string {
   if (env.MONFLORIAN_RELEASE !== "cloudflare") return env.MONFLORIAN_RELEASE;
   return env.CF_VERSION_METADATA.id;
@@ -131,7 +140,10 @@ function requireTrustedOrigin(request: Request, env: Env): void {
 
 function requirePrivateAccess(request: Request, env: Env): void {
   if (String(env.MONFLORIAN_ACCESS_MODE) !== "private") return;
-  if (!accessCodeMatches(env.MONFLORIAN_ACCESS_CODE, request.headers.get("X-Monflorian-Access-Code"))) {
+  if (!accessCodeMatches(
+    closedFeatureSecrets(env).MONFLORIAN_ACCESS_CODE,
+    request.headers.get("X-Monflorian-Access-Code"),
+  )) {
     throw new AppError(401, "ACCESS_REQUIRED", "Le code d’accès au lancement est absent ou incorrect.");
   }
 }
@@ -142,15 +154,16 @@ async function verifyTurnstile(
   env: Env,
   idempotencyKey: string,
 ): Promise<void> {
+  const turnstileSecret = closedFeatureSecrets(env).TURNSTILE_SECRET_KEY;
   if (typeof token !== "string" || token.length < 10 || token.length > 2_048) {
     throw new AppError(400, "TURNSTILE_REQUIRED", "Confirme que la demande vient bien de toi.");
   }
-  if (!env.TURNSTILE_SITE_KEY || !env.TURNSTILE_SECRET_KEY) {
+  if (!env.TURNSTILE_SITE_KEY || !turnstileSecret) {
     throw new AppError(503, "SERVICE_NOT_CONFIGURED", "La protection contre les abus n’est pas configurée.");
   }
 
   const body = new FormData();
-  body.set("secret", env.TURNSTILE_SECRET_KEY);
+  body.set("secret", turnstileSecret);
   body.set("response", token);
   body.set("idempotency_key", idempotencyKey);
   const remoteIp = request.headers.get("CF-Connecting-IP");
