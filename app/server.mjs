@@ -93,6 +93,7 @@ function loadStaticAssets() {
     ["/assets/florian-wind.png", [new URL("../assets/brand/florian-wind.png", import.meta.url), "image/png", "public, max-age=86400"]],
     ["/assets/florian-beanie.png", [new URL("../assets/brand/florian-beanie.png", import.meta.url), "image/png", "public, max-age=86400"]],
     ["/assets/florian-summer.png", [new URL("../assets/brand/florian-summer.png", import.meta.url), "image/png", "public, max-age=86400"]],
+    ["/assets/florian-flower.png", [new URL("../assets/brand/florian-flower.png", import.meta.url), "image/png", "public, max-age=86400"]],
   ]);
   const assets = new Map();
   for (const [route, [url, contentType, cacheControl]] of definitions) {

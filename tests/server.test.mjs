@@ -79,6 +79,7 @@ test("les éléments du logo modulable sont servis comme images immuables", asyn
       "/assets/florian-wind.png",
       "/assets/florian-beanie.png",
       "/assets/florian-summer.png",
+      "/assets/florian-flower.png",
     ]) {
       const response = await fetch(`${base}${path}`);
       assert.equal(response.status, 200, path);

@@ -9,7 +9,7 @@ Moteur déclaré : `nimbus`.
 | Collection | Visibilité | Fichiers |
 | --- | --- | ---: |
 | Documentation du projet | `internal` | 19 |
-| Décisions | `internal` | 5 |
+| Décisions | `internal` | 6 |
 | Socle vendorisé | `reference` | 10 |
 | Maintenance Nimbus | `reference` | 1 |
 
@@ -42,6 +42,7 @@ Moteur déclaré : `nimbus`.
 - [docs/decisions/adr-0003-registre-canonique-secrets-atlas.md](docs/decisions/adr-0003-registre-canonique-secrets-atlas.md)
 - [docs/decisions/adr-0004-apercu-public-sans-generation.md](docs/decisions/adr-0004-apercu-public-sans-generation.md)
 - [docs/decisions/adr-0005-logo-modulable.md](docs/decisions/adr-0005-logo-modulable.md)
+- [docs/decisions/adr-0006-portraits-florian-transparents.md](docs/decisions/adr-0006-portraits-florian-transparents.md)
 
 ## Socle vendorisé
 
