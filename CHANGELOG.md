@@ -4,6 +4,11 @@ Git reste la source du diff technique. Les ADR expliquent les décisions importa
 
 ## Non publié
 
+- Suppression du double rendu de Florian au rechargement : le portrait choisi
+  est chargé avant d'être révélé et le portrait original reste le repli sans
+  JavaScript ou en cas d'échec.
+- Empilement des sélecteurs de date sur petit écran et bornage explicite des
+  champs et boutons pour éviter le débordement des contrôles natifs sur iPhone.
 - Migration du runtime vers un Worker TypeScript unique avec Static Assets,
   healthcheck, configuration publique et version Cloudflare. La génération reste
   fermée pendant la migration.
