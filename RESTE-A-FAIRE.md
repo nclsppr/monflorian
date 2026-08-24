@@ -7,30 +7,30 @@ Dernière mise à jour : 2026-08-24.
 - [x] Worker TypeScript et Static Assets déployés sur `workers.dev`.
 - [x] Générations texte et image fermées en configuration et dans le code.
 - [x] D1 créé en juridiction UE et migration initiale appliquée.
+- [x] Bucket R2 privé créé en juridiction UE, sans domaine public, avec règles
+  d'expiration à 24 heures et 30 jours.
+- [x] Secrets de chiffrement et de pseudonymisation installés sans valeur dans
+  Git ni dans les preuves.
 - [x] Workflow `monflorian-trip` déployé avec garde-fou fermé.
 - [x] Chaîne OCI et contrats Atlas retirés du chemin de livraison du dépôt.
 - [x] ADR-0007 acceptée.
 
-## Avant de déplacer le domaine
+## Livraison Cloudflare encore à automatiser
 
-- [ ] Activer R2 dans le compte Cloudflare puis créer un bucket privé en
-  juridiction UE.
 - [ ] Relier le dépôt à Workers Builds ou installer un jeton GitHub limité au
   déploiement du Worker.
-- [ ] Ajouter la zone `monflorian.com` à Cloudflare et recopier tous les
-  enregistrements existants.
-- [ ] Vérifier en particulier les trois MX OVHcloud, le SPF et les autres TXT.
-- [ ] Tester l'apex et `www` sur Cloudflare avant le changement de serveurs de
-  noms.
-- [ ] Conserver le relevé DNS précédent et le délai de rollback.
+- [x] Domaine, apex, `www`, TLS et état web-only vérifiés sur Cloudflare.
 
 ## Avant la première génération synthétique
 
-- [ ] Écrire les photos dans R2 avant de démarrer le Workflow.
-- [ ] Chiffrer le brief et l'adresse de courriel stockés dans D1.
+- [x] Écrire les photos validées dans R2 avant de démarrer le Workflow, avec la
+  création toujours fermée.
+- [x] Chiffrer le brief et l'adresse de courriel stockés dans D1.
 - [ ] Porter l'adaptateur OpenAI dans les étapes Workflow sans retry aveugle.
-- [ ] Rendre la page privée depuis D1 et R2 avec un jeton haché.
-- [ ] Installer les secrets OpenAI et de chiffrement hors Git.
+- [x] Rendre les états de la page privée depuis D1 avec un jeton haché.
+- [x] Installer les secrets de chiffrement hors Git.
+- [ ] Servir l'illustration privée depuis R2 après génération.
+- [ ] Installer et appeler OpenAI depuis le Workflow.
 - [ ] Ajouter Turnstile et les quotas persistants.
 - [ ] Choisir et configurer le fournisseur de courriel transactionnel.
 - [ ] Prouver le nettoyage des photos sous 24 heures et des voyages sous 30

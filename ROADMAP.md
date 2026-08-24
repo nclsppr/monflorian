@@ -28,7 +28,7 @@ de ce parcours.
 | 1 | F01 | Contrats métier et OpenAI simulé | done | validateurs, OpenAPI et fakes fournisseur |
 | 2 | F02 | Aperçu historique sans génération | done | interface publique fermée sur l'ancienne cible |
 | 3 | F03 | Runtime Cloudflare fermé | done | Worker, D1, Workflow, PR, CI et preuve publique |
-| 4 | F04 | Stockage privé et cycle de vie | blocked | R2 UE, chiffrement, jetons et purge prouvés |
+| 4 | F04 | Stockage privé et cycle de vie | in_progress | R2 UE, chiffrement, jetons et purge prouvés |
 | 5 | F05 | Génération synthétique asynchrone | planned | texte, images, quotas, reprise et coûts observés |
 | 6 | F06 | Page privée et courriel | planned | rendu, suppression, notification et notice validés |
 | 7 | F07 | Domaine Cloudflare | done | zone web-only, apex, `www`, TLS et release vérifiés |
@@ -55,6 +55,11 @@ de protection exige `Validate Cloudflare release`, la version Worker issue du
 SHA fusionné répond et la preuve est consignée.
 
 ## F04, stockage privé et cycle de vie
+
+Le bucket privé UE, ses règles de cycle de vie, les secrets de chiffrement et
+la migration d'idempotence sont en place. Le candidat ajoute l'écriture R2, le
+chiffrement AES-GCM, le jeton haché, la suppression anticipée et la tâche de
+purge. La phase reste ouverte jusqu'à une preuve synthétique après déploiement.
 
 - Activer R2 et créer un bucket à juridiction UE.
 - Garder le bucket privé et refuser `r2.dev`.

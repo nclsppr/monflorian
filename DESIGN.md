@@ -98,7 +98,12 @@ Le téléphone, l'avion en papier et les montagnes sont des repères propres à 
 
 ## Components
 
-Le composeur réunit la phrase libre, les puces de contexte et l'ajout facultatif de photos. Il garde un nom accessible, un focus visible et une erreur lisible. Une information manquante déclenche au plus une ou deux questions de Florian, pas une nouvelle suite d'écrans.
+Le composeur réunit dans un seul envoi la phrase libre, les dates, le rythme,
+l'adresse de courriel et l'ajout facultatif de photos. Il garde un nom
+accessible, un focus visible et une erreur lisible. Une information manquante
+déclenche au plus une ou deux questions de Florian, pas une nouvelle suite
+d'écrans. Après acceptation, le navigateur ouvre la page privée : elle annonce
+clairement l'attente, le résultat, l'échec, l'expiration ou la suppression.
 
 L'action principale reste unique. Dans le prototype, elle doit annoncer qu'aucun paiement n'a lieu. Dans le produit actif, elle peut porter le prix seulement quand le parcours de paiement existe et a été vérifié.
 

@@ -32,9 +32,16 @@ Source canonique des visuels de marque et des références importées le 2026-08
 
 Les visuels ont été fournis par le propriétaire pour ce dépôt. Aucun fichier de licence ni preuve de droits distincte n'accompagne actuellement les sources. Toute diffusion hors de ce projet ou utilisation commerciale doit confirmer les droits, l'auteur et les éventuelles conditions du générateur d'origine.
 
-Aucune photo personnelle réelle ne doit être ajoutée au dépôt. Les photos choisies dans le prototype restent en mémoire locale. Dans l'application candidate, le navigateur les réencode avant l'envoi ponctuel à OpenAI. Elles ne deviennent pas des artefacts versionnés. Le détail de ce flux vit dans [`DATA-PROCESSING.md`](DATA-PROCESSING.md).
+Aucune photo personnelle réelle ne doit être ajoutée au dépôt. Dans
+l'application candidate, le navigateur les réencode avant l'envoi au Worker,
+qui les garde dans le bucket R2 privé jusqu'à la génération ou pendant 24 heures
+au maximum. Elles ne deviennent pas des artefacts versionnés. Le détail de ce
+flux vit dans [`DATA-PROCESSING.md`](DATA-PROCESSING.md).
 
-Les projections créées par l'API sont des sorties temporaires reçues par le navigateur. Elles portent la mention "Projection personnalisée · image générée". Une future conservation, publication ou livraison de ces images exige une décision de stockage, une durée de rétention et un moyen d'effacement.
+Les projections créées par l'API sont destinées à la page privée du voyage et
+portent la mention "Projection personnalisée · image générée". Le stockage cible
+est R2 privé pendant 30 jours au maximum, avec suppression anticipée depuis la
+page. Cette capacité reste fermée tant que sa preuve synthétique manque.
 
 ## Retrait
 

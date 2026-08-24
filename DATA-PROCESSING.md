@@ -7,10 +7,12 @@ personne réelle.
 
 ## État courant
 
-L'aperçu `workers.dev` ne reçoit aucun brief ni photo : l'interface désactive
-l'action, `/api/config` annonce `serviceReady: false` et les routes de génération
-répondent `503`. D1 contient le schéma mais aucun voyage. R2, OpenAI, Turnstile et
-le courriel ne sont pas reliés au Worker.
+L'aperçu public ne reçoit aucun brief ni photo : l'interface désactive l'action,
+`/api/config` annonce `serviceReady: false` et les routes de génération répondent
+`503`. D1 contient le schéma mais aucun voyage. Le bucket R2 privé est vide, sans
+URL publique, avec des règles d'expiration de secours. Le candidat relie D1 et
+R2 au Worker, mais la création reste fermée. OpenAI, Turnstile et le courriel ne
+sont pas activés.
 
 ## Parcours cible
 
@@ -25,7 +27,7 @@ le courriel ne sont pas reliés au Worker.
 | Résultat | itinéraire et listes de vérification | rendre la page privée | chiffré dans D1 |
 | Illustrations | WebP générés | illustrer le voyage | R2 privé |
 | Jeton privé | secret dans l'URL | autoriser consultation et retrait | SHA-256 seulement dans D1 |
-| Logs | route, statut, durée, identifiants techniques | diagnostic et sécurité | Cloudflare Logs |
+| Logs | route normalisée, statut, durée, identifiants techniques | diagnostic et sécurité | Cloudflare Logs |
 | Navigation Booking.com | destination, dates, voyageurs | recherche au clic | navigateur puis site externe |
 
 Ne saisis pas de diagnostic médical, document d'identité, adresse privée, moyen

@@ -23,18 +23,22 @@ function inspectReferences(value) {
   Object.values(value).forEach(inspectReferences);
 }
 
-test("le contrat OpenAPI est autonome et ne décrit que les quatre routes servies", () => {
+test("le contrat OpenAPI est autonome et décrit le voyage asynchrone et les routes fermées", () => {
   assert.equal(contract.openapi, "3.1.0");
   assert.deepEqual(Object.keys(contract.paths).sort(), [
     "/api/config",
     "/api/health",
     "/api/illustrations",
     "/api/itineraries",
+    "/api/trips",
+    "/api/trips/{token}",
   ]);
   assert.deepEqual(Object.keys(contract.paths["/api/health"]), ["get"]);
   assert.deepEqual(Object.keys(contract.paths["/api/config"]), ["get"]);
   assert.deepEqual(Object.keys(contract.paths["/api/itineraries"]), ["post"]);
   assert.deepEqual(Object.keys(contract.paths["/api/illustrations"]), ["post"]);
+  assert.deepEqual(Object.keys(contract.paths["/api/trips"]), ["post"]);
+  assert.deepEqual(Object.keys(contract.paths["/api/trips/{token}"]), ["parameters", "get", "delete"]);
   inspectReferences(contract);
 });
 
@@ -51,15 +55,23 @@ test("les limites publiques et les corps correspondent aux validateurs du serveu
 
   const publicConfig = contract.components.schemas.PublicConfig;
   assert.ok(publicConfig.required.includes("bookingAllowedHosts"));
+  assert.ok(publicConfig.required.includes("tripCreationEnabled"));
   assert.equal(publicConfig.properties.bookingAllowedHosts.type, "array");
+
+  const trip = contract.components.schemas.TripCreationRequest;
+  assert.ok(trip.required.includes("email"));
+  assert.ok(trip.required.includes("photos"));
+  assert.equal(trip.properties.photos.maxItems, 4);
+  assert.equal(trip.properties.email.format, "email");
 });
 
 test("chaque opération possède un identifiant unique et documente ses réponses", () => {
   const identifiers = [];
   for (const pathItem of Object.values(contract.paths)) {
-    for (const operation of Object.values(pathItem)) {
+    for (const [key, operation] of Object.entries(pathItem)) {
+      if (key === "parameters") continue;
       assert.equal(typeof operation.operationId, "string");
-      assert.ok(operation.responses?.["200"]);
+      assert.ok(Object.keys(operation.responses || {}).some((status) => /^2\d\d$/u.test(status)));
       identifiers.push(operation.operationId);
     }
   }

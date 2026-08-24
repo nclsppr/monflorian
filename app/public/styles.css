@@ -521,8 +521,56 @@ textarea:disabled {
   margin-block-start: 17px;
 }
 
-.trip-form:has(.access-field[hidden]) .pace-field {
+.email-field {
+  margin-block-start: 17px;
+}
+
+.trip-form > .photo-field,
+.trip-form > .consent-row,
+.trip-form > .consent-row + .field-error,
+.trip-form > .access-field,
+.turnstile-field {
   grid-column: 1 / -1;
+}
+
+.trip-form > .photo-field {
+  border-color: var(--line);
+}
+
+.trip-form .photo-field h3 {
+  color: var(--ink);
+}
+
+.trip-form .photo-field h3 span {
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.trip-form .photo-field-head p,
+.trip-form .photo-empty {
+  color: var(--muted);
+}
+
+.trip-form .photo-picker {
+  border-color: var(--line-strong);
+  background: var(--surface-blue);
+}
+
+.trip-form .photo-item img {
+  border-color: var(--line-strong);
+}
+
+.trip-form > .consent-row {
+  color: var(--ink-2);
+}
+
+.trip-form > .consent-row input {
+  accent-color: var(--blue-deep);
+}
+
+.turnstile-field {
+  min-width: 0;
+  margin-block-start: 18px;
 }
 
 .field-hint,
@@ -1761,6 +1809,180 @@ textarea:disabled {
 
   .segmented-control {
     grid-template-columns: 1fr;
+  }
+}
+
+.private-trip-page {
+  min-width: 0;
+  color: var(--ink);
+  background:
+    radial-gradient(circle at top right, rgba(72, 220, 255, 0.18), transparent 34rem),
+    var(--surface);
+}
+
+.private-trip-brand {
+  width: min(760px, calc(100% - 32px));
+  margin: 0 auto;
+  padding: 24px 0 18px;
+}
+
+.private-trip-brand a {
+  display: inline-flex;
+  border-radius: 14px;
+}
+
+.private-trip-brand img {
+  width: 190px;
+  height: auto;
+}
+
+.private-trip-shell {
+  width: min(760px, calc(100% - 32px));
+  min-width: 0;
+  margin: 0 auto 48px;
+  padding: clamp(26px, 5vw, 54px);
+  overflow-wrap: anywhere;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow);
+}
+
+.private-trip-hero h1,
+.private-trip-state h1 {
+  max-width: 16ch;
+  margin: 8px 0 18px;
+  font-size: clamp(2.2rem, 8vw, 4.8rem);
+  line-height: 0.98;
+  letter-spacing: -0.055em;
+}
+
+.private-trip-hero > p:last-child,
+.private-trip-state > p:last-child {
+  max-width: 62ch;
+  color: var(--muted);
+  font-size: 1.05rem;
+  line-height: 1.65;
+}
+
+.private-trip-state[aria-busy="true"]::before {
+  width: 12px;
+  height: 12px;
+  margin-bottom: 22px;
+  border: 3px solid rgba(23, 114, 255, 0.2);
+  border-top-color: var(--blue-deep);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  content: "";
+  display: block;
+}
+
+.private-trip-note,
+.private-trip-section,
+.private-trip-itinerary,
+.private-trip-footer {
+  margin-top: clamp(34px, 7vw, 64px);
+}
+
+.private-trip-note {
+  padding: 22px;
+  background: var(--cream);
+  border-left: 4px solid var(--lime);
+  border-radius: var(--radius-md);
+}
+
+.private-trip-note p,
+.private-trip-footer p,
+.private-trip-day p,
+.private-trip-day li {
+  line-height: 1.65;
+}
+
+.private-trip-itinerary > h2,
+.private-trip-section > h2 {
+  margin-bottom: 20px;
+  font-size: clamp(1.5rem, 4vw, 2.2rem);
+}
+
+.private-trip-day {
+  padding: 26px 0;
+  border-top: 1px solid var(--line);
+}
+
+.private-trip-day h2 {
+  margin: 6px 0 12px;
+  font-size: clamp(1.35rem, 4vw, 1.9rem);
+}
+
+.private-trip-day ol,
+.private-trip-checklist,
+.private-trip-links {
+  display: grid;
+  gap: 14px;
+  margin: 20px 0 0;
+  padding-left: 22px;
+}
+
+.private-trip-day li p {
+  margin: 6px 0 0;
+  color: var(--muted);
+}
+
+.private-trip-transfer {
+  color: var(--ink-2);
+}
+
+.private-trip-links a {
+  color: var(--blue-deep);
+  font-weight: 700;
+  text-underline-offset: 0.2em;
+}
+
+.private-trip-footer {
+  padding-top: 26px;
+  color: var(--muted);
+  border-top: 1px solid var(--line);
+}
+
+.private-trip-delete {
+  margin-top: 22px;
+}
+
+.private-trip-delete button {
+  min-height: 48px;
+  padding: 10px 16px;
+  color: #8b1e2d;
+  font: inherit;
+  font-weight: 700;
+  background: transparent;
+  border: 1px solid currentColor;
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.private-trip-home {
+  display: inline-flex;
+  margin-top: 22px;
+  text-decoration: none;
+}
+
+@media (max-width: 520px) {
+  .private-trip-brand,
+  .private-trip-shell {
+    width: min(100% - 20px, 760px);
+  }
+
+  .private-trip-brand {
+    padding-top: 14px;
+  }
+
+  .private-trip-brand img {
+    width: 156px;
+  }
+
+  .private-trip-shell {
+    padding: 24px 20px;
+    border-radius: 24px;
   }
 }
 

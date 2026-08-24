@@ -8,7 +8,7 @@
     <meta name="referrer" content="no-referrer" />
     <meta
       http-equiv="Content-Security-Policy"
-      content="default-src 'self'; connect-src 'self'; img-src 'self' data: blob:; style-src 'self'; script-src 'self'; object-src 'none'; base-uri 'none'; form-action 'self'"
+      content="default-src 'self'; connect-src 'self' https://challenges.cloudflare.com; frame-src https://challenges.cloudflare.com; img-src 'self' data: blob:; style-src 'self'; script-src 'self' https://challenges.cloudflare.com; object-src 'none'; base-uri 'none'; form-action 'self'"
     />
     <meta
       name="description"
@@ -18,8 +18,8 @@
     <link rel="icon" href="/assets/florian-original.png?v=2" type="image/png" />
     <link rel="manifest" href="/manifest.webmanifest" />
     <script src="/avatar.js?v=1"></script>
-    <link rel="stylesheet" href="/styles.css?v=ios-date-1" />
-    <script src="/app.js?v=responsive-1" defer></script>
+    <link rel="stylesheet" href="/styles.css?v=private-trip-1" />
+    <script src="/app.js?v=async-trip-1" defer></script>
   </head>
   <body>
     <a class="skip-link" href="#main">Aller au contenu</a>
@@ -56,8 +56,8 @@
             <p class="service-label">Ton voyage, mis au propre</p>
             <h1 id="hero-title">Raconte-moi ton envie.<br /><span>Je prépare le trajet.</span></h1>
             <p class="hero-lead">
-              Décris le voyage avec tes mots. Tu peux ajouter des dates, le nombre de voyageurs et le
-              rythme souhaité. Tu recevras un déroulé à relire avant de réserver.
+              Décris le voyage avec tes mots et ajoute, si tu le souhaites, quelques portraits. Tu
+              recevras un lien privé vers une proposition à relire avant de réserver.
             </p>
 
             <div id="config-status" class="notice notice-loading" role="status" aria-live="polite">
@@ -132,6 +132,59 @@
                 </div>
               </fieldset>
 
+              <div class="field-group email-field">
+                <label for="email">Adresse de courriel</label>
+                <input
+                  id="email"
+                  name="email"
+                  type="email"
+                  autocomplete="email"
+                  maxlength="254"
+                  required
+                  aria-describedby="email-hint email-error"
+                />
+                <p id="email-hint" class="field-hint">Le message contiendra seulement le lien privé vers ton voyage.</p>
+                <p id="email-error" class="field-error" aria-live="polite"></p>
+              </div>
+
+              <div class="photo-field">
+                <div class="photo-field-head">
+                  <div>
+                    <h3>Portraits des voyageurs <span>facultatif</span></h3>
+                    <p id="trip-photo-help">Jusqu’à 4 photos. JPEG, PNG ou WebP.</p>
+                  </div>
+                  <label class="photo-picker">
+                    <input
+                      id="trip-photo-input"
+                      type="file"
+                      accept="image/jpeg,image/png,image/webp"
+                      multiple
+                      aria-describedby="trip-photo-help trip-photo-error"
+                    />
+                    <span>Choisir des photos</span>
+                  </label>
+                </div>
+                <div id="trip-photo-list" class="photo-list" aria-live="polite">
+                  <p class="photo-empty">Aucune photo ajoutée.</p>
+                </div>
+                <p id="trip-photo-error" class="field-error" aria-live="polite"></p>
+              </div>
+
+              <label class="consent-row">
+                <input
+                  id="trip-photo-consent"
+                  name="photoConsent"
+                  type="checkbox"
+                  aria-describedby="trip-consent-help trip-consent-error"
+                />
+                <span id="trip-consent-help">
+                  Si j’ajoute des photos, je confirme avoir le droit de les utiliser et l’accord des
+                  personnes visibles. Elles seront stockées en privé, envoyées à OpenAI pour créer une
+                  projection, puis supprimées après traitement et au plus tard sous 24 heures.
+                </span>
+              </label>
+              <p id="trip-consent-error" class="field-error" aria-live="polite"></p>
+
               <div id="access-field" class="field-group access-field" hidden>
                 <label for="access-code">Code d'accès</label>
                 <input
@@ -147,14 +200,19 @@
                 <p id="access-error" class="field-error" aria-live="polite"></p>
               </div>
 
+              <div id="turnstile-field" class="turnstile-field" hidden>
+                <div id="turnstile-widget"></div>
+                <p id="turnstile-error" class="field-error" aria-live="polite"></p>
+              </div>
+
               <div class="submit-row">
                 <button id="trip-submit" class="primary-button" type="submit" disabled>
-                  <span class="button-label">Préparer mon trajet</span>
+                  <span class="button-label">Préparer mon voyage</span>
                   <span class="button-arrow" aria-hidden="true">↗</span>
                 </button>
                 <p id="trip-form-note">
-                  Première proposition générée avec OpenAI. Vérifie les horaires, prix, formalités et
-                  conditions avant toute réservation.
+                  La proposition privée sera conservée 30 jours au plus. Vérifie les horaires, prix,
+                  formalités et conditions avant toute réservation.
                 </p>
               </div>
             </form>
@@ -216,140 +274,6 @@
           </aside>
         </section>
 
-        <section id="trip-result" class="result-section" aria-labelledby="result-title" hidden>
-          <div class="result-heading">
-            <div>
-              <p id="result-destination" class="result-kicker"></p>
-              <h2 id="result-title" tabindex="-1"></h2>
-              <p id="result-summary" class="result-summary"></p>
-            </div>
-            <button id="print-button" class="secondary-button print-button" type="button">
-              Imprimer ou enregistrer en PDF
-            </button>
-          </div>
-
-          <div class="result-notes">
-            <article id="florian-note" class="result-note florian-note-result" hidden>
-              <span class="note-avatar" aria-hidden="true">F</span>
-              <div>
-                <h3>Le choix de Florian</h3>
-                <p></p>
-              </div>
-            </article>
-            <article id="budget-note" class="result-note" hidden>
-              <h3>Repère budget</h3>
-              <p></p>
-            </article>
-          </div>
-
-          <div id="days-list" class="days-list"></div>
-
-          <section id="accommodations-section" class="accommodations" aria-labelledby="accommodations-title" hidden>
-            <div class="accommodations-heading">
-              <div>
-                <p class="result-kicker">Pour chercher où dormir</p>
-                <h2 id="accommodations-title">Hébergements par étape</h2>
-              </div>
-              <p id="affiliate-disclosure" class="affiliate-disclosure"></p>
-            </div>
-            <div id="accommodations-list" class="accommodations-list"></div>
-          </section>
-
-          <section class="illustration-workshop" aria-labelledby="illustration-title">
-            <div class="workshop-intro">
-              <p class="result-kicker">Une image avant le départ</p>
-              <h2 id="illustration-title">Imagine une scène du voyage</h2>
-              <p>
-                Ajoute jusqu'à quatre portraits. Le navigateur réencode les photos en WebP avant
-                l'envoi. Mon Florian ne les conserve pas sur son serveur. OpenAI peut les conserver
-                temporairement dans ses journaux de sûreté selon les règles du compte et de sa
-                plateforme.
-              </p>
-            </div>
-
-            <form id="illustration-form" class="illustration-form" novalidate>
-              <div class="illustration-fields">
-                <div class="field-group">
-                  <label for="illustration-destination">Destination</label>
-                  <input
-                    id="illustration-destination"
-                    name="destination"
-                    type="text"
-                    minlength="2"
-                    maxlength="120"
-                    required
-                  />
-                </div>
-                <div class="field-group">
-                  <label for="illustration-scene">Scène à dessiner</label>
-                  <textarea
-                    id="illustration-scene"
-                    name="scene"
-                    rows="3"
-                    minlength="10"
-                    maxlength="500"
-                    required
-                    placeholder="Ex. Nous deux sur un petit bateau au lever du jour, avec les îles au loin."
-                  ></textarea>
-                </div>
-              </div>
-              <p id="illustration-fields-error" class="field-error" aria-live="polite"></p>
-
-              <div class="photo-field">
-                <div class="photo-field-head">
-                  <div>
-                    <h3>Portraits des voyageurs</h3>
-                    <p id="photo-help">1 à 4 photos. JPEG, PNG ou WebP.</p>
-                  </div>
-                  <label class="photo-picker">
-                    <input id="photo-input" type="file" accept="image/jpeg,image/png,image/webp" multiple />
-                    <span>Choisir des photos</span>
-                  </label>
-                </div>
-                <div id="photo-list" class="photo-list" aria-live="polite">
-                  <p class="photo-empty">Aucune photo ajoutée.</p>
-                </div>
-                <p id="photo-error" class="field-error" aria-live="polite"></p>
-              </div>
-
-              <label class="consent-row">
-                <input id="photo-consent" name="consent" type="checkbox" required />
-                <span>
-                  Je confirme avoir le droit d'utiliser ces photos et l'accord des personnes visibles.
-                  Pour un mineur, je confirme l'accord de son représentant légal. J'accepte leur envoi à
-                  OpenAI pour créer cette image.
-                </span>
-              </label>
-              <p id="consent-error" class="field-error" aria-live="polite"></p>
-
-              <div class="submit-row illustration-submit-row">
-                <button id="illustration-submit" class="primary-button" type="submit">
-                  <span class="button-label">Créer le dessin</span>
-                  <span class="button-arrow" aria-hidden="true">✦</span>
-                </button>
-                <p>La génération est séparée du trajet. Elle ne démarre qu'après ton accord.</p>
-              </div>
-            </form>
-
-            <div id="illustration-status" class="request-status" role="status" aria-live="polite" hidden></div>
-
-            <figure id="illustration-result" class="illustration-result" hidden>
-              <img id="illustration-image" src="/assets/monflorian-logo.png" alt="" />
-              <figcaption>
-                <strong>Projection personnalisée · image générée</strong>
-                <span>Cette scène est une illustration. Elle ne montre pas l'état réel du lieu.</span>
-              </figcaption>
-            </figure>
-          </section>
-
-          <footer class="result-footer">
-            <p>
-              Ce trajet est une base de préparation. Consulte les sources officielles et les prestataires
-              avant de décider ou de payer.
-            </p>
-            <button id="new-trip-button" class="text-button" type="button">Préparer un autre voyage</button>
-          </footer>
-        </section>
       </main>
 
       <footer class="site-footer">
