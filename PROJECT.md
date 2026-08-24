@@ -54,9 +54,9 @@ client et le Voyage vivant restent des hypothèses non livrées.
 - Déployer puis éprouver la création asynchrone et la page privée à jeton.
 - Prouver le chiffrement, la suppression anticipée et la purge sur des données
   synthétiques.
-- Turnstile, quotas persistants et budget fournisseur.
-- Appels OpenAI depuis le Workflow.
-- Courriel transactionnel et nettoyage automatique.
+- Turnstile, secrets d'ouverture et budget fournisseur.
+- Premier appel OpenAI synthétique avec coût et journaux inspectés.
+- Courriel transactionnel et preuve synthétique du nettoyage automatique.
 - Notice de traitement et canal de droits.
 
 ### Non-objectifs du MVP
@@ -80,7 +80,7 @@ client et le Voyage vivant restent des hypothèses non livrées.
 | Adaptateur OpenAI | Responses et Image Edits sans SDK | `app/openai.mjs` | non appelé en production |
 | D1 | États, quotas, données chiffrées et jetons hachés | `migrations/` | base vide, schéma appliqué |
 | R2 | Photos d'entrée et illustrations | binding `MEDIA` | bucket privé UE créé, vide, binding déployé |
-| Workflows | Traitement durable et notification | `src/workflows/` | déployé, garde-fou fermé |
+| Workflows | Traitement durable et notification | `src/workflows/` | texte et image câblés, garde-fous fermés |
 | Turnstile | Réduction de l'abus gratuit | binding futur | non configuré |
 | Courriel | Envoi du lien privé | fournisseur HTTP à choisir | non configuré |
 | Stripe | Paiement ponctuel futur | Checkout Sessions et webhook | hors tranche |
@@ -163,6 +163,8 @@ chaîne de livraison.
 - Le brief, le résultat et l'adresse de courriel sont chiffrés avant persistance.
 - Les photos d'entrée sont supprimées après génération et au plus tard sous 24
   heures ; le voyage expire sous 30 jours dans le MVP.
+- Les quotas global et client sont débités dans une seule transaction D1 avant
+  le démarrage du Workflow et leurs sujets sont pseudonymisés par HMAC.
 - R2 reste privé. Aucune URL `r2.dev` ni clé d'objet prévisible n'est publiée.
 - Les logs contiennent seulement identifiant de requête, route, statut, code
   d'erreur, durée et version.

@@ -18,7 +18,10 @@ import {
   validateTripCreationInput,
 } from "../app/trips.mjs";
 import {
+  QuotaExceededError,
+  debitDailyTripQuota,
   deleteTripData,
+  findGeneratedAsset,
   findTripByIdempotencyHash,
   findTripByTokenHash,
   insertAssets,
@@ -46,6 +49,7 @@ const API_HEADERS = {
 const PRIVATE_TRIP_PATH = /^\/voyages\/([A-Za-z0-9_-]+)$/u;
 const PRIVATE_TRIP_DELETE_PATH = /^\/voyages\/([A-Za-z0-9_-]+)\/supprimer$/u;
 const TRIP_API_PATH = /^\/api\/trips\/([A-Za-z0-9_-]+)$/u;
+const TRIP_MEDIA_PATH = /^\/api\/trips\/([A-Za-z0-9_-]+)\/media\/(\d{1,2})$/u;
 
 interface TurnstileResponse {
   success: boolean;
@@ -56,6 +60,7 @@ interface TurnstileResponse {
 
 interface ClosedFeatureSecrets {
   MONFLORIAN_ACCESS_CODE?: string;
+  OPENAI_API_KEY?: string;
   TURNSTILE_SECRET_KEY?: string;
 }
 
@@ -90,15 +95,28 @@ function tripCreationEnabled(env: Env): boolean {
   return String(env.MONFLORIAN_TRIP_CREATION_ENABLED) === "true";
 }
 
+function tripCreationReady(env: Env): boolean {
+  const secrets = closedFeatureSecrets(env);
+  const accessReady = String(env.MONFLORIAN_ACCESS_MODE) !== "private" || Boolean(secrets.MONFLORIAN_ACCESS_CODE);
+  return tripCreationEnabled(env) &&
+    String(env.MONFLORIAN_GENERATION_ENABLED) === "true" &&
+    String(env.MONFLORIAN_ILLUSTRATION_ENABLED) === "true" &&
+    String(env.MONFLORIAN_EMAIL_ENABLED) === "true" &&
+    Boolean(env.TURNSTILE_SITE_KEY) &&
+    Boolean(secrets.TURNSTILE_SECRET_KEY) &&
+    Boolean(secrets.OPENAI_API_KEY) &&
+    accessReady;
+}
+
 function publicConfiguration(env: Env) {
   const booking = parseBookingConfiguration(env);
   const accessMode = String(env.MONFLORIAN_ACCESS_MODE) === "public" ? "public" : "private";
 
   return {
-    serviceReady: tripCreationEnabled(env),
-    tripCreationEnabled: tripCreationEnabled(env),
-    illustrationEnabled: false,
-    turnstileSiteKey: tripCreationEnabled(env) && env.TURNSTILE_SITE_KEY
+    serviceReady: tripCreationReady(env),
+    tripCreationEnabled: tripCreationReady(env),
+    illustrationEnabled: tripCreationReady(env),
+    turnstileSiteKey: tripCreationReady(env) && env.TURNSTILE_SITE_KEY
       ? env.TURNSTILE_SITE_KEY
       : null,
     accessMode,
@@ -129,6 +147,11 @@ function allowedOrigins(env: Env): Set<string> {
       .map((origin) => origin.trim())
       .filter(Boolean),
   );
+}
+
+function quotaLimit(value: unknown, fallback: number): number {
+  const parsed = Number.parseInt(String(value), 10);
+  return Number.isInteger(parsed) && parsed >= 1 && parsed <= 10_000 ? parsed : fallback;
 }
 
 function requireTrustedOrigin(request: Request, env: Env): void {
@@ -209,6 +232,9 @@ function acceptedTripResponse(
   token: string,
   requestId: string,
 ): Response {
+  if (trip.status === "failed" && "error_code" in trip && trip.error_code === "QUOTA_EXCEEDED") {
+    throw new AppError(429, "QUOTA_EXCEEDED", "La limite gratuite du jour est atteinte.");
+  }
   if (["deleted", "expired"].includes(trip.status)) {
     throw new AppError(409, "TRIP_ALREADY_CLOSED", "Cette soumission correspond à un voyage déjà supprimé ou expiré.");
   }
@@ -238,7 +264,7 @@ async function parseTripBody(request: Request): Promise<unknown> {
 }
 
 async function createTrip(request: Request, env: Env, requestId: string): Promise<Response> {
-  if (!tripCreationEnabled(env)) {
+  if (!tripCreationReady(env)) {
     throw new AppError(503, "TRIP_CREATION_UNAVAILABLE", "La préparation de voyage n’est pas encore ouverte.");
   }
   requireTrustedOrigin(request, env);
@@ -257,6 +283,9 @@ async function createTrip(request: Request, env: Env, requestId: string): Promis
     : null;
   await verifyTurnstile(turnstileToken, request, env, idempotencyKey);
   const validated = validateTripCreationInput(body);
+  const clientAddress = request.headers.get("CF-Connecting-IP") || "unknown";
+  const clientSubjectHash = await hmacSha256Hex(env.TRIP_QUOTA_HASH_KEY, `network:${clientAddress}`);
+  const globalSubjectHash = await hmacSha256Hex(env.TRIP_QUOTA_HASH_KEY, "quota:global");
   const bookingMode = parseBookingConfiguration(env).mode;
   const tripId = crypto.randomUUID();
   const publicToken = generateTripToken();
@@ -268,6 +297,7 @@ async function createTrip(request: Request, env: Env, requestId: string): Promis
     itinerary: validated.itinerary,
     photoConsent: validated.photoConsent,
     photoCount: validated.photos.length,
+    safetyIdentifier: clientSubjectHash,
   }, `${tripId}:request`);
   const emailEnvelope = await encryptJson(
     env.TRIP_DATA_KEY,
@@ -293,6 +323,24 @@ async function createTrip(request: Request, env: Env, requestId: string): Promis
     if (concurrent) {
       return acceptedTripResponse(request, env, concurrent, await storedTripToken(env, concurrent), requestId);
     }
+    throw error;
+  }
+
+  try {
+    await debitDailyTripQuota(env.DB, {
+      bucketDate: new Date(createdAt).toISOString().slice(0, 10),
+      globalSubjectHash,
+      clientSubjectHash,
+      globalLimit: quotaLimit(env.MONFLORIAN_DAILY_GLOBAL_LIMIT, 10),
+      clientLimit: quotaLimit(env.MONFLORIAN_DAILY_CLIENT_LIMIT, 2),
+      now: createdAt,
+    });
+  } catch (error) {
+    if (error instanceof QuotaExceededError) {
+      await markTripFailed(env.DB, tripId, "QUOTA_EXCEEDED", Date.now());
+      throw new AppError(429, "QUOTA_EXCEEDED", "La limite gratuite du jour est atteinte.");
+    }
+    await markTripFailed(env.DB, tripId, "QUOTA_CHECK_FAILED", Date.now());
     throw error;
   }
 
@@ -412,6 +460,30 @@ async function tripStatus(
   }, requestId);
 }
 
+async function privateTripMedia(env: Env, token: string, rawPosition: string): Promise<Response> {
+  const position = Number.parseInt(rawPosition, 10);
+  if (!Number.isInteger(position) || position < 0 || position > 15) {
+    throw new AppError(404, "NOT_FOUND", "Cette image est introuvable.");
+  }
+  const trip = await tripFromToken(env, token);
+  if (!trip || trip.status !== "ready" || trip.expires_at <= Date.now()) {
+    throw new AppError(404, "NOT_FOUND", "Cette image est introuvable.");
+  }
+  const asset = await findGeneratedAsset(env.DB, trip.id, position);
+  if (!asset) throw new AppError(404, "NOT_FOUND", "Cette image est introuvable.");
+  const object = await env.MEDIA.get(asset.object_key);
+  if (!object) throw new AppError(404, "NOT_FOUND", "Cette image est introuvable.");
+  return new Response(object.body, {
+    headers: {
+      "Cache-Control": "no-store, max-age=0",
+      "Content-Type": asset.content_type,
+      "Cross-Origin-Resource-Policy": "same-origin",
+      "Referrer-Policy": "no-referrer",
+      "X-Content-Type-Options": "nosniff",
+    },
+  });
+}
+
 async function deletePrivateTrip(
   request: Request,
   env: Env,
@@ -444,6 +516,7 @@ function normalizedLogPath(pathname: string): string {
   if (PRIVATE_TRIP_PATH.test(pathname)) return "/voyages/:token";
   if (PRIVATE_TRIP_DELETE_PATH.test(pathname)) return "/voyages/:token/supprimer";
   if (TRIP_API_PATH.test(pathname)) return "/api/trips/:token";
+  if (TRIP_MEDIA_PATH.test(pathname)) return "/api/trips/:token/media/:position";
   return pathname;
 }
 
@@ -484,6 +557,13 @@ const worker = {
       }
       if (tripApiMatch && request.method === "DELETE") {
         const response = await deletePrivateTrip(request, env, tripApiMatch[1], true, requestId);
+        status = response.status;
+        return response;
+      }
+
+      const tripMediaMatch = TRIP_MEDIA_PATH.exec(url.pathname);
+      if (tripMediaMatch && request.method === "GET") {
+        const response = await privateTripMedia(env, tripMediaMatch[1], tripMediaMatch[2]);
         status = response.status;
         return response;
       }

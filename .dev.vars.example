@@ -3,3 +3,4 @@ MONFLORIAN_ACCESS_CODE=replace-with-a-local-launch-code
 TRIP_DATA_KEY=replace-with-32-random-bytes-encoded-as-base64
 TRIP_QUOTA_HASH_KEY=replace-with-32-random-bytes-encoded-as-base64
 TURNSTILE_SECRET_KEY=replace-with-a-local-turnstile-secret
+OPENAI_API_KEY=replace-with-a-local-openai-key

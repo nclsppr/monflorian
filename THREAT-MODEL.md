@@ -77,7 +77,7 @@ revue.
 | T03 | Jeton présent dans logs ou referer | fuite durable | URL exclue des logs, `Referrer-Policy: no-referrer` sur page privée, liens externes nettoyés | extension ou capture locale |
 | T04 | CSRF ou origine tierce | génération et coût | origine exacte, `Sec-Fetch-Site`, aucune CORS, jeton Turnstile | client non navigateur automatisé |
 | T05 | Bot contourne le MVP gratuit | budget épuisé | Turnstile, quota D1 global et pseudonymisé, limite du projet OpenAI | fermes de navigateurs et identifiants tournants |
-| T06 | Course sur le quota | dépassement simultané | mise à jour D1 atomique avant Workflow, clé d'idempotence | latence entre services |
+| T06 | Course sur le quota | dépassement simultané | batch D1 transactionnel, triggers de limite et clé d'idempotence | indisponibilité D1 |
 | T07 | Corps ou photo surdimensionné | mémoire et disponibilité | limites avant lecture complète, nombre et taille bornés, écriture R2 en flux | charge proche de la limite |
 | T08 | Faux format ou bombe d'image | crash, fuite ou coût | réencodage navigateur, signatures, dimensions, pixels et métadonnées contrôlés | stéganographie ou parseur incomplet |
 | T09 | Photo sans droit | atteinte aux personnes | consentement explicite, durée courte, retrait, pas de galerie | déclarations impossibles à vérifier automatiquement |
@@ -85,7 +85,7 @@ revue.
 | T11 | XSS dans la sortie | exécution navigateur | rendu par noeuds texte, CSP, aucun HTML fournisseur | future régression de rendu |
 | T12 | Lien injecté par le modèle | phishing ou attribution fausse | aucun URL dans le schéma, liens construits après validation, hôtes autorisés | mauvaise configuration opérateur |
 | T13 | Voyage halluciné | mauvaise décision | mentions de projection, vérifications, revue Florian, aucune disponibilité annoncée | information plausible mais fausse |
-| T14 | Retry Workflow duplique un appel payant | coût et résultats multiples | état D1 avant étape, identifiant fournisseur, zéro retry aveugle | timeout après traitement fournisseur |
+| T14 | Retry Workflow duplique un appel payant | coût et résultats multiples | étapes à zéro retry, résultat chiffré en D1 et identifiant fournisseur | timeout après traitement fournisseur |
 | T15 | État partiel entre D1 et R2 | page cassée ou donnée orpheline | statuts explicites, clés déterministes, écritures idempotentes, purge des orphelins | panne entre deux écritures |
 | T16 | Bucket ou objet public | fuite de photos | pas de `r2.dev`, binding Worker uniquement, noms opaques, contrôle périodique | erreur d'administration Cloudflare |
 | T17 | D1 lu sans clé | contenu personnel exposé | AES-GCM, clé distincte, nonces uniques, métadonnées minimales | clé et base compromises ensemble |

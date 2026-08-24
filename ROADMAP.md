@@ -29,7 +29,7 @@ de ce parcours.
 | 2 | F02 | Aperçu historique sans génération | done | interface publique fermée sur l'ancienne cible |
 | 3 | F03 | Runtime Cloudflare fermé | done | Worker, D1, Workflow, PR, CI et preuve publique |
 | 4 | F04 | Stockage privé et cycle de vie | in_progress | R2 UE, chiffrement, jetons et purge prouvés |
-| 5 | F05 | Génération synthétique asynchrone | planned | texte, images, quotas, reprise et coûts observés |
+| 5 | F05 | Génération synthétique asynchrone | in_progress | texte, images, quotas, reprise et coûts observés |
 | 6 | F06 | Page privée et courriel | planned | rendu, suppression, notification et notice validés |
 | 7 | F07 | Domaine Cloudflare | done | zone web-only, apex, `www`, TLS et release vérifiés |
 | 8 | F08 | MVP gratuit limité | planned | Turnstile, budget et premier utilisateur informé |
@@ -71,6 +71,11 @@ purge. La phase reste ouverte jusqu'à une preuve synthétique après déploieme
 - Prouver la purge avec des objets et données synthétiques.
 
 ## F05, génération synthétique asynchrone
+
+Le quota transactionnel, les étapes Responses et Image Edits sans retry, le
+stockage R2 et la lecture privée de l'image sont codés. La phase reste ouverte :
+Turnstile et la clé OpenAI ne sont pas installés sur le Worker, les drapeaux sont
+à `false` et aucun coût fournisseur n'a été engagé.
 
 - Vérifier Turnstile avant création.
 - Débiter les quotas D1 de façon atomique.

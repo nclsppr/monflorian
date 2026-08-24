@@ -3,7 +3,7 @@
   "info": {
     "title": "API Mon Florian",
     "version": "0.1.0",
-    "description": "Contrat de migration vers un voyage privé asynchrone. La création reste fermée tant que Turnstile, quotas et génération ne sont pas prêts."
+    "description": "Contrat du voyage privé asynchrone. La création reste fermée tant que Turnstile, les secrets et le budget fournisseur ne sont pas prêts."
   },
   "jsonSchemaDialect": "https://json-schema.org/draft/2020-12/schema",
   "servers": [
@@ -136,6 +136,9 @@
           "415": {
             "$ref": "#/components/responses/UnsupportedMediaType"
           },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          },
           "503": {
             "$ref": "#/components/responses/Unavailable"
           }
@@ -185,6 +188,51 @@
           },
           "403": {
             "$ref": "#/components/responses/OriginRejected"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      }
+    },
+    "/api/trips/{token}/media/{position}": {
+      "parameters": [
+        {
+          "name": "token",
+          "in": "path",
+          "required": true,
+          "description": "Jeton privé de 256 bits.",
+          "schema": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9_-]{43}$"
+          }
+        },
+        {
+          "name": "position",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 15
+          }
+        }
+      ],
+      "get": {
+        "operationId": "getTripMedia",
+        "summary": "Lire une illustration depuis un voyage privé prêt",
+        "tags": ["Voyages privés"],
+        "responses": {
+          "200": {
+            "description": "Image WebP privée, sans mise en cache.",
+            "content": {
+              "image/webp": {
+                "schema": {
+                  "type": "string",
+                  "contentEncoding": "binary"
+                }
+              }
+            }
           },
           "404": {
             "$ref": "#/components/responses/NotFound"

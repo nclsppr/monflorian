@@ -11,8 +11,9 @@ L'aperçu public ne reçoit aucun brief ni photo : l'interface désactive l'acti
 `/api/config` annonce `serviceReady: false` et les routes de génération répondent
 `503`. D1 contient le schéma mais aucun voyage. Le bucket R2 privé est vide, sans
 URL publique, avec des règles d'expiration de secours. Le Worker déployé relie
-D1 et R2, mais la création reste fermée. OpenAI, Turnstile et le courriel ne sont
-pas activés.
+D1 et R2, et le Workflow candidat contient les appels OpenAI sans retry
+automatique. La création reste fermée : aucun appel OpenAI n'est exécuté,
+Turnstile et le courriel ne sont pas activés.
 
 ## Parcours cible
 
@@ -112,7 +113,7 @@ vaut pas publication, entraînement, galerie ou conservation indéfinie.
 | R2, résultats | illustrations | 30 jours | expiration ou retrait anticipé |
 | D1 | demande et résultat chiffrés, métadonnées | 30 jours | expiration ou retrait anticipé |
 | D1, courriel | adresse chiffrée | jusqu'à l'envoi réussi, au plus 30 jours | suppression après envoi ou expiration |
-| D1, quotas | date et sujet pseudonymisé | 31 jours | purge automatique |
+| D1, quotas | date et sujet pseudonymisé par HMAC | 31 jours | purge automatique |
 | Logs Cloudflare | métadonnées techniques | durée minimale à configurer et consigner | politique Cloudflare |
 | OpenAI | entrées et sorties | selon le contrat et les contrôles du compte | procédure fournisseur |
 | Booking.com, CJ, Stripe | données après action explicite | politiques propres | procédure du fournisseur |

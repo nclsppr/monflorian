@@ -96,7 +96,24 @@ function renderBooking(items: unknown): string {
   return links ? `<section class="private-trip-section"><h2>Où dormir</h2><ul class="private-trip-links">${links}</ul></section>` : "";
 }
 
-function renderReady(result: unknown): string {
+function renderGeneratedImages(items: unknown, token: string): string {
+  if (!Array.isArray(items)) return "";
+  const figures = items.slice(0, 4).map((rawItem) => {
+    const item = objectValue(rawItem);
+    const position = typeof item?.position === "number" ? item.position : -1;
+    if (!Number.isInteger(position) || position < 0 || position > 15) return "";
+    const alt = text(item?.alt, "Projection personnalisée du voyage");
+    return `<figure class="private-trip-image">
+      <img src="/api/trips/${escapeHtml(token)}/media/${position}" alt="${escapeHtml(alt)}">
+      <figcaption><strong>Projection personnalisée · image générée</strong><span>Cette scène est une illustration, pas une photo du lieu.</span></figcaption>
+    </figure>`;
+  }).join("");
+  return figures
+    ? `<section class="private-trip-images" aria-labelledby="images-title"><h2 id="images-title">Une scène du voyage</h2>${figures}</section>`
+    : "";
+}
+
+function renderReady(result: unknown, token: string): string {
   const root = objectValue(result);
   const itinerary = objectValue(root?.itinerary ?? result);
   if (!itinerary) {
@@ -109,6 +126,7 @@ function renderReady(result: unknown): string {
       <p>${escapeHtml(text(itinerary.summary))}</p>
     </header>
     ${itinerary.florianNote ? `<aside class="private-trip-note"><strong>Le point de Florian</strong><p>${escapeHtml(itinerary.florianNote)}</p></aside>` : ""}
+    ${renderGeneratedImages(root?.generatedImages, token)}
     ${renderDays(itinerary.days)}
     ${renderChecklist("À réserver", itinerary.reservationChecklist)}
     ${renderChecklist("À vérifier", itinerary.verificationChecklist)}
@@ -149,7 +167,7 @@ export function renderPrivateTripPage(options: PrivateTripPageOptions): Response
   const isReady = options.status === "ready" && !options.deleted;
   const refresh = !isReady && state.refresh ? '<meta http-equiv="refresh" content="10">' : "";
   const content = isReady
-    ? renderReady(options.result)
+    ? renderReady(options.result, options.token)
     : `<section class="private-trip-state" ${state.refresh ? 'aria-busy="true"' : ""}>
         <p class="result-kicker">Voyage privé</p>
         <h1>${escapeHtml(state.title)}</h1>

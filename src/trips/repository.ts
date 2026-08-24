@@ -16,6 +16,13 @@ export interface StoredTrip {
   completed_at: number | null;
 }
 
+export class QuotaExceededError extends Error {
+  constructor() {
+    super("quota_exceeded");
+    this.name = "QuotaExceededError";
+  }
+}
+
 export interface StoredAsset {
   id: string;
   trip_id: string;
@@ -67,6 +74,16 @@ export async function findTripByIdempotencyHash(
        FROM trips
       WHERE idempotency_key_hash = ?1`,
   ).bind(idempotencyKeyHash).first<StoredTrip>();
+}
+
+export async function findTripById(db: D1Database, tripId: string): Promise<StoredTrip | null> {
+  return db.prepare(
+    `SELECT id, public_token_hash, status, request_ciphertext, request_nonce,
+            result_ciphertext, result_nonce, email_ciphertext, email_nonce,
+            notification_status, error_code, created_at, updated_at, expires_at, completed_at
+       FROM trips
+      WHERE id = ?1`,
+  ).bind(tripId).first<StoredTrip>();
 }
 
 export async function findTripByTokenHash(
@@ -150,6 +167,59 @@ export async function markTripFailed(
   ).bind(tripId, errorCode, now).run();
 }
 
+export async function saveTripResult(
+  db: D1Database,
+  tripId: string,
+  status: "generating_images" | "ready",
+  ciphertext: Uint8Array,
+  nonce: Uint8Array,
+  now: number,
+): Promise<void> {
+  await db.prepare(
+    `UPDATE trips
+        SET status = ?2,
+            result_ciphertext = ?3,
+            result_nonce = ?4,
+            updated_at = ?5,
+            completed_at = CASE WHEN ?2 = 'ready' THEN ?5 ELSE completed_at END,
+            notification_status = CASE WHEN ?2 = 'ready' THEN 'skipped' ELSE notification_status END
+      WHERE id = ?1 AND status NOT IN ('deleted', 'expired')`,
+  ).bind(tripId, status, ciphertext, nonce, now).run();
+}
+
+export async function debitDailyTripQuota(
+  db: D1Database,
+  input: {
+    bucketDate: string;
+    globalSubjectHash: string;
+    clientSubjectHash: string;
+    globalLimit: number;
+    clientLimit: number;
+    now: number;
+  },
+): Promise<void> {
+  const statement = db.prepare(
+    `INSERT INTO daily_quotas (
+       bucket_date, subject_hash, kind, used, updated_at, limit_value
+     ) VALUES (?1, ?2, 'trip', 1, ?3, ?4)
+     ON CONFLICT (bucket_date, subject_hash, kind) DO UPDATE SET
+       used = daily_quotas.used + 1,
+       updated_at = excluded.updated_at,
+       limit_value = excluded.limit_value`,
+  );
+  try {
+    await db.batch([
+      statement.bind(input.bucketDate, input.globalSubjectHash, input.now, input.globalLimit),
+      statement.bind(input.bucketDate, input.clientSubjectHash, input.now, input.clientLimit),
+    ]);
+  } catch (error) {
+    if (error instanceof Error && error.message.includes("quota_exceeded")) {
+      throw new QuotaExceededError();
+    }
+    throw error;
+  }
+}
+
 export async function listTripAssets(db: D1Database, tripId: string): Promise<StoredAsset[]> {
   const result = await db.prepare(
     `SELECT id, trip_id, kind, position, object_key, content_type, size_bytes,
@@ -161,11 +231,83 @@ export async function listTripAssets(db: D1Database, tripId: string): Promise<St
   return result.results;
 }
 
+export async function findGeneratedAsset(
+  db: D1Database,
+  tripId: string,
+  position: number,
+): Promise<StoredAsset | null> {
+  return db.prepare(
+    `SELECT id, trip_id, kind, position, object_key, content_type, size_bytes,
+            checksum_sha256, created_at, expires_at, deleted_at
+       FROM trip_assets
+      WHERE trip_id = ?1 AND kind = 'generated_image' AND position = ?2 AND deleted_at IS NULL`,
+  ).bind(tripId, position).first<StoredAsset>();
+}
+
+export async function upsertGeneratedAsset(db: D1Database, asset: NewAsset): Promise<void> {
+  await db.prepare(
+    `INSERT INTO trip_assets (
+       id, trip_id, kind, position, object_key, content_type, size_bytes,
+       checksum_sha256, created_at, expires_at
+     ) VALUES (?1, ?2, 'generated_image', ?3, ?4, ?5, ?6, ?7, ?8, ?9)
+     ON CONFLICT (trip_id, kind, position) DO UPDATE SET
+       object_key = excluded.object_key,
+       content_type = excluded.content_type,
+       size_bytes = excluded.size_bytes,
+       checksum_sha256 = excluded.checksum_sha256,
+       created_at = excluded.created_at,
+       expires_at = excluded.expires_at,
+       deleted_at = NULL`,
+  ).bind(
+    asset.id,
+    asset.tripId,
+    asset.position,
+    asset.objectKey,
+    asset.contentType,
+    asset.sizeBytes,
+    asset.checksumSha256,
+    asset.createdAt,
+    asset.expiresAt,
+  ).run();
+}
+
 async function markAssetsDeleted(db: D1Database, assetIds: string[], now: number): Promise<void> {
   if (!assetIds.length) return;
   await db.batch(assetIds.map((assetId) => db.prepare(
     "UPDATE trip_assets SET deleted_at = ?2 WHERE id = ?1 AND deleted_at IS NULL",
   ).bind(assetId, now)));
+}
+
+async function deleteAssetsByKind(
+  db: D1Database,
+  media: R2Bucket,
+  tripId: string,
+  kind: "source_photo" | "generated_image",
+  now: number,
+): Promise<number> {
+  const assets = (await listTripAssets(db, tripId)).filter((asset) => asset.kind === kind);
+  if (!assets.length) return 0;
+  await media.delete(assets.map((asset) => asset.object_key));
+  await markAssetsDeleted(db, assets.map((asset) => asset.id), now);
+  return assets.length;
+}
+
+export async function deleteSourceAssets(
+  db: D1Database,
+  media: R2Bucket,
+  tripId: string,
+  now: number,
+): Promise<number> {
+  return deleteAssetsByKind(db, media, tripId, "source_photo", now);
+}
+
+export async function deleteGeneratedAssets(
+  db: D1Database,
+  media: R2Bucket,
+  tripId: string,
+  now: number,
+): Promise<number> {
+  return deleteAssetsByKind(db, media, tripId, "generated_image", now);
 }
 
 export async function deleteTripData(
@@ -200,7 +342,7 @@ export async function purgeExpiredData(
   db: D1Database,
   media: R2Bucket,
   now: number,
-): Promise<{ sourceAssetsDeleted: number; tripsExpired: number; tripAssetsDeleted: number }> {
+): Promise<{ sourceAssetsDeleted: number; tripsExpired: number; tripAssetsDeleted: number; quotasDeleted: number }> {
   const sourceAssets = await db.prepare(
     `SELECT id, object_key
        FROM trip_assets
@@ -229,9 +371,15 @@ export async function purgeExpiredData(
     tripAssetsDeleted += await deleteTripData(db, media, trip, "expired", now);
   }
 
+  const quotaCutoff = new Date(now - 31 * 24 * 60 * 60 * 1_000).toISOString().slice(0, 10);
+  const quotaPurge = await db.prepare(
+    "DELETE FROM daily_quotas WHERE bucket_date < ?1",
+  ).bind(quotaCutoff).run();
+
   return {
     sourceAssetsDeleted: sourceAssets.results.length,
     tripsExpired: expiredTrips.results.length,
     tripAssetsDeleted,
+    quotasDeleted: quotaPurge.meta.changes,
   };
 }
