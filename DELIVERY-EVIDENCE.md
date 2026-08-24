@@ -6,14 +6,16 @@ des archives historiques ; la section Cloudflare porte la migration courante.
 ## Génération asynchrone fermée déployée, 2026-08-24
 
 La PR [#22](https://github.com/nclsppr/monflorian/pull/22) câble le parcours
-Responses puis Image Edits dans le Workflow Cloudflare. La version est publique,
-mais tous les appels payants et la création de voyage restent fermés.
+Responses puis Image Edits dans le Workflow Cloudflare. La PR
+[#23](https://github.com/nclsppr/monflorian/pull/23) ajoute Turnstile. La version
+est publique, mais tous les appels payants et la création de voyage restent
+fermés.
 
 | Preuve | Résultat |
 | --- | --- |
-| Source runtime | `191507a08e6683ece4082ae3ecc411b765f66133` |
-| Version active | `4e6f4adf-cc7d-4c51-86d2-cf510834b90b` |
-| CI du SHA | runs `32764310234` et `32764310127` verts |
+| Source runtime | `de029d02f5a27976893e82f2e2b16d032d3b0316` |
+| Version active | `ff2bc6e7-6bc2-4a6f-968c-3862ed060534` |
+| CI du SHA | runs `32765104823` et `32765104771` verts |
 | D1 distant | migrations à jour, zéro voyage, zéro asset et zéro quota |
 | Quotas | plafond global `10`, plafond client `2`, débit atomique |
 | OpenAI Responses | `store: false`, schéma strict, identifiant de sûreté pseudonymisé |
