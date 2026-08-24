@@ -93,7 +93,9 @@ Un test avec fake ne termine pas cette phase.
 
 Le domaine Cloudflare Email Service est actif et le binding restreint à
 `voyage@monflorian.com` est déployé derrière
-`MONFLORIAN_EMAIL_ENABLED=false`. Aucun courriel n'a encore été envoyé.
+`MONFLORIAN_EMAIL_ENABLED=false`. La notice publique explique les traitements,
+les destinataires, les durées et le retrait anticipé. Aucun courriel n'a encore
+été envoyé et le canal complémentaire de droits reste à ouvrir.
 
 - Rendre `/voyages/{jeton}` depuis D1 et R2 avec `noindex` et `no-store`.
 - Ne pas enregistrer une copie HTML par voyage ; utiliser le template commun.

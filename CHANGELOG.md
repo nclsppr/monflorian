@@ -4,6 +4,9 @@ Git reste la source du diff technique. Les ADR expliquent les décisions importa
 
 ## Non publié
 
+- Publication d'une page de confidentialité qui nomme les données, Cloudflare,
+  OpenAI, les durées maximales et la suppression depuis le lien privé, sans
+  masquer l'absence actuelle de canal de droits complémentaire.
 - Ajout du parcours asynchrone unique : demande, photos facultatives, page
   privée à jeton, états d'attente, d'échec et de suppression, sans stocker une
   page HTML par voyage.

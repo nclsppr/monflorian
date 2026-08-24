@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#f4f7ff" />
+    <meta name="robots" content="noindex,nofollow,noarchive" />
+    <meta name="referrer" content="no-referrer" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; img-src 'self'; style-src 'self'; object-src 'none'; base-uri 'none'; form-action 'self'"
+    />
+    <meta
+      name="description"
+      content="Données utilisées, durées de conservation et suppression dans Mon Florian."
+    />
+    <title>Confidentialité et données · Mon Florian</title>
+    <link rel="icon" href="/assets/florian-original.png?v=2" type="image/png" />
+    <link rel="stylesheet" href="/styles.css?v=privacy-1" />
+  </head>
+  <body class="private-trip-page">
+    <a class="skip-link" href="#privacy-main">Aller au contenu</a>
+    <header class="private-trip-brand">
+      <a href="/" aria-label="Revenir à l’accueil de Mon Florian">
+        <img src="/assets/monflorian-logo.png" alt="Mon Florian" width="2172" height="724" />
+      </a>
+    </header>
+    <main id="privacy-main" class="private-trip-shell privacy-shell">
+      <header class="privacy-hero">
+        <p class="result-kicker">Confidentialité</p>
+        <h1>Tes données, sans détour.</h1>
+        <p>
+          Mon Florian utilise ce que tu envoies pour préparer un seul voyage et te donner accès à
+          une page privée. Le service est encore fermé. Cette page décrit le parcours prévu avant
+          sa première ouverture.
+        </p>
+      </header>
+
+      <section class="privacy-section" aria-labelledby="privacy-data">
+        <h2 id="privacy-data">Ce qui est utilisé</h2>
+        <ul>
+          <li>ton brief, tes dates, le nombre de voyageurs et le rythme choisi ;</li>
+          <li>ton adresse de courriel pour envoyer le lien privé ;</li>
+          <li>jusqu’à quatre portraits, seulement si tu les ajoutes et confirmes les accords ;</li>
+          <li>des données techniques pseudonymisées pour limiter les abus.</li>
+        </ul>
+        <p>Ne joins ni document d’identité, ni donnée médicale, ni moyen de paiement.</p>
+      </section>
+
+      <section class="privacy-section" aria-labelledby="privacy-services">
+        <h2 id="privacy-services">Les services concernés</h2>
+        <p>
+          Cloudflare exécute le site, stocke les données chiffrées dans D1, garde les images dans
+          un bucket R2 privé et envoie le lien par courriel. OpenAI reçoit le brief pour composer
+          l’itinéraire et, si tu ajoutes des portraits, les images préparées pour créer une
+          projection dessinée.
+        </p>
+        <p>
+          Les liens d’hébergement ouvrent Booking.com uniquement quand tu les sélectionnes. Le
+          brief et les portraits ne sont pas envoyés à Booking.com par Mon Florian.
+        </p>
+      </section>
+
+      <section class="privacy-section" aria-labelledby="privacy-retention">
+        <h2 id="privacy-retention">Quand les données sont supprimées</h2>
+        <dl class="privacy-retention">
+          <div>
+            <dt>Portraits dans R2</dt>
+            <dd>Après la création de l’illustration, au plus tard sous 24 heures.</dd>
+          </div>
+          <div>
+            <dt>Données envoyées à OpenAI</dt>
+            <dd>
+              Selon les réglages de conservation du projet OpenAI. Ils seront vérifiés et publiés
+              ici avant l’ouverture.
+            </dd>
+          </div>
+          <div>
+            <dt>Proposition et illustrations</dt>
+            <dd>Après 30 jours au plus tard, ou dès la suppression depuis la page privée.</dd>
+          </div>
+          <div>
+            <dt>Adresse de courriel</dt>
+            <dd>Après l’envoi confirmé du lien, au plus tard avec l’expiration du voyage.</dd>
+          </div>
+          <div>
+            <dt>Compteurs anti-abus</dt>
+            <dd>
+              Après 31 jours. Ils conservent une empreinte non réversible de l’adresse réseau, pas
+              l’adresse en clair.
+            </dd>
+          </div>
+        </dl>
+      </section>
+
+      <section class="privacy-section" aria-labelledby="privacy-control">
+        <h2 id="privacy-control">Garder le contrôle</h2>
+        <p>
+          Le lien reçu est un secret : ne le transfère pas. Depuis cette page privée, le bouton
+          « Supprimer cette proposition » efface le voyage et ses images sans attendre la fin des
+          30 jours.
+        </p>
+        <p>
+          Un canal de contact sera publié avant l’ouverture pour les demandes qui ne peuvent pas
+          être traitées avec ce bouton. Tant qu’il manque, aucune donnée réelle ne doit être
+          envoyée.
+        </p>
+      </section>
+
+      <footer class="privacy-footer">
+        <p>Dernière mise à jour : 24 août 2026.</p>
+        <a class="primary-button privacy-home" href="/">Revenir au formulaire</a>
+      </footer>
+    </main>
+  </body>
+</html>

@@ -18,7 +18,7 @@
     <link rel="icon" href="/assets/florian-original.png?v=2" type="image/png" />
     <link rel="manifest" href="/manifest.webmanifest" />
     <script src="/avatar.js?v=1"></script>
-    <link rel="stylesheet" href="/styles.css?v=private-trip-1" />
+    <link rel="stylesheet" href="/styles.css?v=privacy-1" />
     <script src="/app.js?v=async-trip-1" defer></script>
   </head>
   <body>
@@ -184,6 +184,9 @@
                 </span>
               </label>
               <p id="trip-consent-error" class="field-error" aria-live="polite"></p>
+              <p class="privacy-inline">
+                <a href="/confidentialite">Lire comment tes données sont utilisées et supprimées</a>
+              </p>
 
               <div id="access-field" class="field-group access-field" hidden>
                 <label for="access-code">Code d'accès</label>
@@ -278,7 +281,10 @@
 
       <footer class="site-footer">
         <img src="/assets/monflorian-wordmark.png?v=1" alt="Mon Florian" width="676" height="362" />
-        <p>Aperçu public. Aucun paiement ni réservation sur ce site.</p>
+        <div class="site-footer-copy">
+          <p>Aperçu public. Aucun paiement ni réservation sur ce site.</p>
+          <a href="/confidentialite">Confidentialité et données</a>
+        </div>
       </footer>
     </div>
   </body>
