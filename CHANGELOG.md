@@ -4,6 +4,16 @@ Git reste la source du diff technique. Les ADR expliquent les décisions importa
 
 ## Non publié
 
+- Ajout du parcours asynchrone unique : demande, photos facultatives, page
+  privée à jeton, états d'attente, d'échec et de suppression, sans stocker une
+  page HTML par voyage.
+- Chiffrement AES-GCM du brief et du courriel dans D1, jetons privés hachés,
+  idempotence des créations et purge planifiée des données expirées.
+- Activation d'un bucket R2 privé en juridiction UE, sans `r2.dev` ni domaine
+  personnalisé, avec expiration de secours des sources à 24 heures et des
+  images générées à 30 jours.
+- Ajout du binding R2, de la seconde migration D1 et des secrets de fondation.
+  La création, OpenAI et le courriel restent fermés.
 - Suppression du padding natif des champs de date qui faisait dépasser leur
   largeur sur WebKit iOS, avec renouvellement de l'URL de la feuille CSS.
 - Activation publique vérifiée de `monflorian.com` et `www.monflorian.com` sur

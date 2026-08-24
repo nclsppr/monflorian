@@ -11,7 +11,7 @@ modifier un compte, un secret, un domaine ou une production.
 | Runtime | Cloudflare Workers avec Static Assets |
 | Métadonnées | D1 `monflorian-production` |
 | Traitement durable | Workflow `monflorian-trip` |
-| Images | bucket R2 privé futur |
+| Images | bucket R2 privé `monflorian-media-production`, juridiction `eu` |
 | Domaine cible | `monflorian.com` et `www.monflorian.com` |
 | État sûr | générations texte et image fermées |
 
@@ -92,11 +92,26 @@ briefs dans une preuve.
 
 ## R2
 
-L'activation initiale du compte se fait dans le Dashboard. Si elle demande un
-moyen de paiement ou un engagement nouveau, arrêter et faire valider ce point.
+Le bucket `monflorian-media-production` existe en juridiction `eu`. Il reste
+privé, sans domaine personnalisé ni URL `r2.dev`. Vérifier son état avec :
 
-Créer ensuite un bucket privé à juridiction UE. Ajouter son binding `MEDIA` à
-`wrangler.jsonc`, régénérer les types et déployer. Vérifier :
+```bash
+npx wrangler r2 bucket info monflorian-media-production --jurisdiction eu
+npx wrangler r2 bucket domain list monflorian-media-production --jurisdiction eu
+npx wrangler r2 bucket dev-url get monflorian-media-production --jurisdiction eu
+npx wrangler r2 bucket lifecycle list monflorian-media-production --jurisdiction eu
+```
+
+Les règles cibles sont `source-photo-backstop` sur `source/` à un jour et
+`generated-image-expiration` sur `generated/` à 30 jours. Les recréer seulement
+si elles manquent, après avoir vérifié qu'une règle homonyme n'existe pas :
+
+```bash
+npx wrangler r2 bucket lifecycle add monflorian-media-production source-photo-backstop source/ --expire-days 1 --jurisdiction eu
+npx wrangler r2 bucket lifecycle add monflorian-media-production generated-image-expiration generated/ --expire-days 30 --jurisdiction eu
+```
+
+Le binding `MEDIA` est versionné dans `wrangler.jsonc`. Vérifier :
 
 - juridiction `eu` ;
 - domaine `r2.dev` désactivé ;
@@ -110,10 +125,12 @@ Worker dans les limites prévues, puis le Worker les écrit en flux.
 
 ## Secrets
 
-Les secrets cibles sont ajoutés seulement quand leur consommateur est prêt :
+Les secrets cibles sont ajoutés seulement quand leur consommateur est prêt.
+`TRIP_DATA_KEY` et `TRIP_QUOTA_HASH_KEY` sont installés. Restent à installer ou
+à relier avant ouverture :
 
 - `OPENAI_API_KEY` ;
-- `DATA_ENCRYPTION_KEY` ;
+- `MONFLORIAN_ACCESS_CODE` ;
 - `TURNSTILE_SECRET_KEY` ;
 - secret du fournisseur de courriel ;
 - `STRIPE_RESTRICTED_KEY` et `STRIPE_WEBHOOK_SECRET`, plus tard.

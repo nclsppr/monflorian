@@ -42,6 +42,8 @@ client et le Voyage vivant restent des hypothèses non livrées.
 - Worker TypeScript qui sert les assets et les routes API publiques.
 - Contrats OpenAPI, validateurs métier et adaptateurs OpenAI testés avec fakes.
 - D1 en juridiction UE avec schéma de cycle de vie vide.
+- Bucket R2 privé en juridiction UE, sans URL publique, avec expirations de
+  secours à 24 heures et 30 jours.
 - Workflow Cloudflare déployé mais fermé.
 - Booking en mode `external`, sans affiliation annoncée.
 - Aperçu Cloudflare public qui refuse toute génération.
@@ -49,9 +51,9 @@ client et le Voyage vivant restent des hypothèses non livrées.
 
 ### À livrer avant une génération réelle
 
-- R2 privé en juridiction UE.
-- Création asynchrone du voyage et page privée à jeton.
-- Chiffrement du brief et de l'adresse de courriel.
+- Déployer puis éprouver la création asynchrone et la page privée à jeton.
+- Prouver le chiffrement, la suppression anticipée et la purge sur des données
+  synthétiques.
 - Turnstile, quotas persistants et budget fournisseur.
 - Appels OpenAI depuis le Workflow.
 - Courriel transactionnel et nettoyage automatique.
@@ -77,7 +79,7 @@ client et le Voyage vivant restent des hypothèses non livrées.
 | Coeur métier | Validation des briefs, photos, résultats et liens | `app/core.mjs` | réutilisé, tests locaux |
 | Adaptateur OpenAI | Responses et Image Edits sans SDK | `app/openai.mjs` | non appelé en production |
 | D1 | États, quotas, données chiffrées et jetons hachés | `migrations/` | base vide, schéma appliqué |
-| R2 | Photos d'entrée et illustrations | binding futur `MEDIA` | bloqué par l'activation du compte |
+| R2 | Photos d'entrée et illustrations | binding `MEDIA` | bucket privé UE créé, vide, binding candidat |
 | Workflows | Traitement durable et notification | `src/workflows/` | déployé, garde-fou fermé |
 | Turnstile | Réduction de l'abus gratuit | binding futur | non configuré |
 | Courriel | Envoi du lien privé | fournisseur HTTP à choisir | non configuré |

@@ -251,7 +251,7 @@ function parseWebp(buffer) {
   return { width, height };
 }
 
-function decodePhoto(dataUrl) {
+export function decodePhoto(dataUrl) {
   if (typeof dataUrl !== "string") {
     throw new AppError(400, "INVALID_PHOTO", "Chaque photo doit être une image réencodée par le navigateur.");
   }

@@ -11,7 +11,8 @@ répondent en HTTPS avec la version
 
 La zone est volontairement web-only. Aucun MX, SPF ou DMARC n'a été recréé.
 La génération reste fermée avec `generationReady: false`, `serviceReady: false`
-et `POST /api/itineraries` en `503`.
+et `POST /api/itineraries` en `503`. Le nouveau parcours asynchrone reste un
+candidat local tant que sa branche n'est pas fusionnée et déployée.
 
 ## Ressources Cloudflare vérifiées
 
@@ -19,12 +20,12 @@ et `POST /api/itineraries` en `503`.
 | --- | --- | --- |
 | Worker `monflorian` | déployé | version `f5a18f77-3f32-466e-a3d4-35fa4218ee97` |
 | Static Assets | actifs | interface et visuels servis par l'apex et `www` |
-| D1 `monflorian-production` | actif, juridiction `eu`, région d'exécution `EEUR` | migration `0001_trip_lifecycle.sql` appliquée |
+| D1 `monflorian-production` | actif, juridiction `eu`, région d'exécution `EEUR` | migrations `0001` et `0002` appliquées |
 | Tables D1 | vides et prêtes | `trips`, `trip_assets`, `daily_quotas` |
 | Workflow `monflorian-trip` | déployé | classe `TripWorkflow`, garde-fou fermé |
-| R2 | bloqué | activation initiale du compte requise dans le Dashboard |
+| R2 `monflorian-media-production` | actif, privé, juridiction `eu`, région `EEUR`, vide | aucun domaine, `r2.dev` désactivé, règles 24 h et 30 jours |
 | Turnstile | absent | requis avant génération gratuite |
-| Secrets Worker | absents | aucun secret requis par l'aperçu fermé |
+| Secrets Worker | fondation installée | `TRIP_DATA_KEY` et `TRIP_QUOTA_HASH_KEY`, valeurs jamais consignées |
 | Domaines Cloudflare | actifs | `monflorian.com` et `www.monflorian.com` comme Custom Domains |
 
 ## Preuves publiques Cloudflare
@@ -66,7 +67,9 @@ Cloudflare peut faire évoluer ses adresses anycast. Les deux résolveurs public
 
 ## Limites
 
-Cette tranche prouve le runtime Cloudflare fermé et son domaine web. Elle ne
-prouve ni R2, ni génération OpenAI, ni page privée, ni courriel transactionnel,
-ni Turnstile, ni affiliation, ni paiement. Aucun utilisateur ne doit envoyer de
-brief ou de photo tant que les gates de `RESTE-A-FAIRE.md` ne sont pas terminées.
+Cette tranche prouve le runtime Cloudflare fermé, son domaine web et la
+configuration privée du bucket R2 vide. Elle ne prouve ni traitement de photo,
+ni génération OpenAI, ni page privée déployée, ni purge applicative, ni courriel
+transactionnel, ni Turnstile, ni affiliation, ni paiement. Aucun utilisateur ne
+doit envoyer de brief ou de photo tant que les gates de `RESTE-A-FAIRE.md` ne
+sont pas terminées.

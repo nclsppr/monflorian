@@ -3,6 +3,32 @@
 Chaque section nomme son environnement et ses limites. Les sections Atlas sont
 des archives historiques ; la section Cloudflare porte la migration courante.
 
+## Fondation du voyage privé, candidat du 2026-08-24
+
+Cette tranche prépare le stockage privé et le contrat asynchrone sans ouvrir la
+création. Elle ne contient aucune donnée personnelle et ne lance aucun appel
+OpenAI ni courriel.
+
+| Preuve | Résultat |
+| --- | --- |
+| R2 | `monflorian-media-production`, juridiction `eu`, région `EEUR`, 0 objet |
+| Exposition R2 | aucun domaine personnalisé, `r2.dev` désactivé |
+| Cycle de vie R2 | `source/` expire après 1 jour, `generated/` après 30 jours |
+| D1 distant | migration `0002_trip_idempotency.sql` appliquée |
+| Secrets | `TRIP_DATA_KEY` et `TRIP_QUOTA_HASH_KEY` présents, valeurs non affichées |
+| Contrat candidat | `POST /api/trips`, page `/voyages/{jeton}`, retrait et purge planifiée |
+| Protection des champs | AES-GCM avec contexte, jeton SHA-256, idempotence hachée |
+| Garde-fou | `MONFLORIAN_TRIP_CREATION_ENABLED=false` |
+
+Les contrôles locaux ciblés couvrent la validation de la demande combinée,
+l'idempotence, le chiffrement lié au contexte, les en-têtes privés et les routes
+de jeton normalisées. Le rendu a été contrôlé à `430 × 932` et `1440 × 900` :
+aucun débordement horizontal, aucune erreur console et états du formulaire
+lisibles. Le candidat n'est pas une capacité livrée avant fusion, déploiement et
+preuve publique. La purge applicative reste à prouver avec des données
+synthétiques ; Turnstile, quotas, OpenAI, illustration privée et courriel restent
+fermés.
+
 ## Champs de date contenus sur iOS, 2026-08-24
 
 La PR [#17](https://github.com/nclsppr/monflorian/pull/17) retire le padding des

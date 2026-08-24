@@ -73,7 +73,7 @@ revue.
 | ID | Menace | Impact | Contrôles actuels ou requis | Risque résiduel |
 | --- | --- | --- | --- | --- |
 | T01 | Secret publié ou journalisé | coût et accès fournisseur | Worker Secrets, Git public sans valeur, logs structurés, rotation | un administrateur du compte peut lire ou remplacer un secret |
-| T02 | Jeton de voyage deviné | accès au contenu privé | 256 bits aléatoires, SHA-256 en D1, comparaison constante, aucune liste publique | partage volontaire ou historique navigateur |
+| T02 | Jeton de voyage deviné | accès au contenu privé | 256 bits aléatoires, SHA-256 en D1, routes normalisées et journaux d'invocation désactivés | partage volontaire ou historique navigateur |
 | T03 | Jeton présent dans logs ou referer | fuite durable | URL exclue des logs, `Referrer-Policy: no-referrer` sur page privée, liens externes nettoyés | extension ou capture locale |
 | T04 | CSRF ou origine tierce | génération et coût | origine exacte, `Sec-Fetch-Site`, aucune CORS, jeton Turnstile | client non navigateur automatisé |
 | T05 | Bot contourne le MVP gratuit | budget épuisé | Turnstile, quota D1 global et pseudonymisé, limite du projet OpenAI | fermes de navigateurs et identifiants tournants |
@@ -89,7 +89,7 @@ revue.
 | T15 | État partiel entre D1 et R2 | page cassée ou donnée orpheline | statuts explicites, clés déterministes, écritures idempotentes, purge des orphelins | panne entre deux écritures |
 | T16 | Bucket ou objet public | fuite de photos | pas de `r2.dev`, binding Worker uniquement, noms opaques, contrôle périodique | erreur d'administration Cloudflare |
 | T17 | D1 lu sans clé | contenu personnel exposé | AES-GCM, clé distincte, nonces uniques, métadonnées minimales | clé et base compromises ensemble |
-| T18 | Purge non exécutée | rétention excessive | échéances D1/R2, tâche planifiée, preuve synthétique, alerte d'objets expirés | panne prolongée du nettoyage |
+| T18 | Purge non exécutée | rétention excessive | échéances D1/R2, tâche planifiée et règles R2 de secours à 24 heures et 30 jours | panne prolongée du nettoyage |
 | T19 | Courriel envoyé au mauvais destinataire | lien privé divulgué | validation, confirmation visible, envoi unique, contenu minimal | faute de saisie de l'utilisateur |
 | T20 | Logs contiennent du contenu | fuite durable | allowlist de champs, pas de query string, tests négatifs | logs propres aux fournisseurs |
 | T21 | Bundle ou action compromis | code malveillant | lockfiles, actions par SHA, dry-run Wrangler, PR protégée | vulnérabilité inconnue d'une dépendance |

@@ -3,7 +3,7 @@
   "info": {
     "title": "API Mon Florian",
     "version": "0.1.0",
-    "description": "Contrat du candidat privé. Le service ne réserve rien, ne persiste aucune donnée utilisateur et traite toute sortie générée comme une projection à vérifier."
+    "description": "Contrat de migration vers un voyage privé asynchrone. La création reste fermée tant que Turnstile, quotas et génération ne sont pas prêts."
   },
   "jsonSchemaDialect": "https://json-schema.org/draft/2020-12/schema",
   "servers": [
@@ -23,6 +23,9 @@
     },
     {
       "name": "Génération"
+    },
+    {
+      "name": "Voyages privés"
     }
   ],
   "paths": {
@@ -65,11 +68,136 @@
         }
       }
     },
+    "/api/trips": {
+      "post": {
+        "operationId": "createTrip",
+        "summary": "Créer un voyage asynchrone",
+        "description": "Cette route exige une origine approuvée, un code d’accès en lancement privé, une clé Idempotency-Key et un jeton Turnstile. Elle répond avant la génération.",
+        "tags": ["Voyages privés"],
+        "security": [
+          {
+            "launchCode": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 16,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9._:-]+$"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TripCreationRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Voyage enregistré et traitement accepté.",
+            "headers": {
+              "Location": {
+                "schema": {
+                  "type": "string",
+                  "format": "uri"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TripAccepted"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/AccessRequired"
+          },
+          "403": {
+            "$ref": "#/components/responses/OriginRejected"
+          },
+          "413": {
+            "$ref": "#/components/responses/RequestTooLarge"
+          },
+          "415": {
+            "$ref": "#/components/responses/UnsupportedMediaType"
+          },
+          "503": {
+            "$ref": "#/components/responses/Unavailable"
+          }
+        }
+      }
+    },
+    "/api/trips/{token}": {
+      "parameters": [
+        {
+          "name": "token",
+          "in": "path",
+          "required": true,
+          "description": "Jeton privé de 256 bits. Seul son condensat est indexé dans D1.",
+          "schema": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9_-]{43}$"
+          }
+        }
+      ],
+      "get": {
+        "operationId": "getTrip",
+        "summary": "Lire l’état ou le résultat d’un voyage privé",
+        "tags": ["Voyages privés"],
+        "responses": {
+          "200": {
+            "description": "État courant, avec résultat seulement lorsque le voyage est prêt.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TripStatus"
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      },
+      "delete": {
+        "operationId": "deleteTrip",
+        "summary": "Supprimer un voyage avant son échéance",
+        "tags": ["Voyages privés"],
+        "responses": {
+          "204": {
+            "description": "Données D1 et objets R2 supprimés ou déjà absents."
+          },
+          "403": {
+            "$ref": "#/components/responses/OriginRejected"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      }
+    },
     "/api/itineraries": {
       "post": {
         "operationId": "createItinerary",
         "summary": "Composer une proposition de voyage",
-        "description": "Le code de lancement est requis en mode private. Il peut être envoyé par l'en-tête X-Monflorian-Access-Code ou par accessCode dans le JSON. L'origine configurée est obligatoire en production.",
+        "description": "Ancienne route synchrone conservée fermée pendant la migration.",
+        "deprecated": true,
         "tags": ["Génération"],
         "security": [
           {
@@ -135,7 +263,8 @@
       "post": {
         "operationId": "createIllustration",
         "summary": "Créer une projection dessinée",
-        "description": "Le navigateur envoie d'une à quatre images PNG ou WebP réencodées. consent doit être true. Le code de lancement suit la même règle que pour l'itinéraire.",
+        "description": "Ancienne route synchrone conservée fermée pendant la migration.",
+        "deprecated": true,
         "tags": ["Génération"],
         "security": [
           {
@@ -208,6 +337,102 @@
       }
     },
     "schemas": {
+      "TripCreationRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["brief", "travelers", "pace", "email", "photos", "photoConsent", "turnstileToken"],
+        "properties": {
+          "brief": {
+            "type": "string",
+            "minLength": 20,
+            "maxLength": 2000
+          },
+          "startDate": {
+            "type": ["string", "null"],
+            "format": "date"
+          },
+          "endDate": {
+            "type": ["string", "null"],
+            "format": "date"
+          },
+          "travelers": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 8
+          },
+          "pace": {
+            "type": "string",
+            "enum": ["calm", "balanced", "intense"]
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "maxLength": 254
+          },
+          "photos": {
+            "type": "array",
+            "maxItems": 4,
+            "items": {
+              "type": "string",
+              "pattern": "^data:image/(?:png|webp);base64,"
+            }
+          },
+          "photoConsent": {
+            "type": "boolean",
+            "description": "Doit être true dès qu’une photo est présente."
+          },
+          "turnstileToken": {
+            "type": "string",
+            "minLength": 10,
+            "maxLength": 2048,
+            "writeOnly": true
+          }
+        },
+        "dependentRequired": {
+          "startDate": ["endDate"],
+          "endDate": ["startDate"]
+        }
+      },
+      "TripAccepted": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["tripId", "status", "privateUrl", "expiresAt"],
+        "properties": {
+          "tripId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "status": {
+            "type": "string"
+          },
+          "privateUrl": {
+            "type": "string",
+            "format": "uri"
+          },
+          "expiresAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "TripStatus": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["status", "expiresAt"],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": ["pending", "queued", "generating_itinerary", "generating_images", "ready", "failed", "deleted", "expired"]
+          },
+          "expiresAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "result": {
+            "type": ["object", "null"]
+          }
+        }
+      },
       "Health": {
         "type": "object",
         "additionalProperties": false,
@@ -227,13 +452,19 @@
       "PublicConfig": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["serviceReady", "illustrationEnabled", "accessMode", "bookingMode", "bookingAllowedHosts", "limits"],
+        "required": ["serviceReady", "tripCreationEnabled", "illustrationEnabled", "turnstileSiteKey", "accessMode", "bookingMode", "bookingAllowedHosts", "limits"],
         "properties": {
           "serviceReady": {
             "type": "boolean"
           },
+          "tripCreationEnabled": {
+            "type": "boolean"
+          },
           "illustrationEnabled": {
             "type": "boolean"
+          },
+          "turnstileSiteKey": {
+            "type": ["string", "null"]
           },
           "accessMode": {
             "type": "string",
@@ -673,6 +904,16 @@
       },
       "OriginRejected": {
         "description": "Origine absente en production ou différente de l'origine configurée.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
+      },
+      "NotFound": {
+        "description": "Jeton privé inconnu, invalide ou déjà purgé.",
         "content": {
           "application/json": {
             "schema": {

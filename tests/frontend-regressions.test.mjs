@@ -90,3 +90,19 @@ test("les champs mobiles ne dependent pas de la largeur intrinseque de Safari", 
     "le champ date ne doit pas cumuler width 100% et padding sur WebKit iOS",
   );
 });
+
+test("le formulaire public suit un seul parcours asynchrone", () => {
+  const html = source("app/public/index.html");
+  const app = source("app/public/app.js");
+
+  assert.match(html, /id="email"[^>]*type="email"/u);
+  assert.match(html, /id="trip-photo-input"[^>]*type="file"/u);
+  assert.match(html, /id="trip-photo-consent"[^>]*type="checkbox"/u);
+  assert.match(html, /id="turnstile-widget"/u);
+  assert.doesNotMatch(html, /id="illustration-form"/u);
+  assert.doesNotMatch(html, /id="trip-result"/u);
+  assert.match(app, /requestJson\("\/api\/trips"/u);
+  assert.match(app, /"Idempotency-Key": state\.idempotencyKey/u);
+  assert.doesNotMatch(app, /\/api\/itineraries/u);
+  assert.doesNotMatch(app, /\/api\/illustrations/u);
+});
