@@ -7,7 +7,7 @@ Dernière vérification : 2026-08-24 sur Cloudflare, GitHub et le DNS public.
 `https://monflorian.com`, `https://www.monflorian.com` et la surface de
 diagnostic `workers.dev` servent le même Worker Cloudflare. L'apex et `www`
 répondent en HTTPS avec la version
-`ff2bc6e7-6bc2-4a6f-968c-3862ed060534`.
+`621217cf-3033-4144-8f74-be1cd7c3ff4b`.
 
 La zone ne reçoit aucun courriel humain. Cloudflare Email Service est activé
 avec ses seuls DNS d'envoi, de signature et de gestion des bounces.
@@ -21,14 +21,14 @@ réelle.
 
 | Ressource | État | Preuve |
 | --- | --- | --- |
-| Worker `monflorian` | déployé | version `ff2bc6e7-6bc2-4a6f-968c-3862ed060534` |
+| Worker `monflorian` | déployé | version `621217cf-3033-4144-8f74-be1cd7c3ff4b` |
 | Static Assets | actifs | interface et visuels servis par l'apex et `www` |
 | D1 `monflorian-production` | actif, juridiction `eu`, région d'exécution `EEUR` | migrations `0001`, `0002` et `0003` appliquées |
 | Tables D1 | vides et prêtes | `trips`, `trip_assets`, `daily_quotas` |
 | Workflow `monflorian-trip` | déployé | Responses et Image Edits sans retry, garde-fou fermé |
 | R2 `monflorian-media-production` | actif, privé, juridiction `eu`, région `EEUR`, vide | aucun domaine, `r2.dev` désactivé, règles 24 h et 30 jours |
 | Turnstile | widget géré configuré | apex, `www` et `workers.dev`, parcours encore fermé |
-| Email Service | domaine activé, quota initial de 200 envois par jour | binding candidat restreint à `voyage@monflorian.com`, drapeau fermé |
+| Email Service | domaine activé, quota initial de 200 envois par jour | binding déployé restreint à `voyage@monflorian.com`, drapeau fermé |
 | Secrets Worker | trois secrets installés | chiffrement, quota et Turnstile, valeurs jamais consignées |
 | Domaines Cloudflare | actifs | `monflorian.com` et `www.monflorian.com` comme Custom Domains |
 
@@ -51,10 +51,11 @@ réelle.
 
 ## État du dépôt et de la livraison
 
-- Source runtime : `main` à `de029d02f5a27976893e82f2e2b16d032d3b0316`,
-  issue des PR [#22](https://github.com/nclsppr/monflorian/pull/22) et
-  [#23](https://github.com/nclsppr/monflorian/pull/23).
-- Les runs `32765104823` (`Cloudflare release`) et `32765104771` (`Verify`) du
+- Source runtime : `main` à `ab852a55d5dcd8095b445cdc5dd7e868b95a20fa`,
+  issue des PR [#22](https://github.com/nclsppr/monflorian/pull/22),
+  [#23](https://github.com/nclsppr/monflorian/pull/23) et
+  [#25](https://github.com/nclsppr/monflorian/pull/25).
+- Les runs `32767377995` (`Cloudflare release`) et `32767378027` (`Verify`) du
   SHA fusionné sont verts.
 - Le dépôt GitHub ne possède actuellement aucun secret Actions Cloudflare.
 - Le déploiement du SHA fusionné a donc été réalisé depuis la session Wrangler
