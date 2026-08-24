@@ -57,7 +57,7 @@ SHA fusionné répond et la preuve est consignée.
 ## F04, stockage privé et cycle de vie
 
 Le bucket privé UE, ses règles de cycle de vie, les secrets de chiffrement et
-la migration d'idempotence sont en place. Le candidat ajoute l'écriture R2, le
+la migration d'idempotence sont en place. Le Worker déployé ajoute l'écriture R2, le
 chiffrement AES-GCM, le jeton haché, la suppression anticipée et la tâche de
 purge. La phase reste ouverte jusqu'à une preuve synthétique après déploiement.
 
