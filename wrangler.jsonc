@@ -56,7 +56,8 @@
   "secrets": {
     "required": [
       "TRIP_DATA_KEY",
-      "TRIP_QUOTA_HASH_KEY"
+      "TRIP_QUOTA_HASH_KEY",
+      "TURNSTILE_SECRET_KEY"
     ]
   },
   "vars": {
@@ -72,7 +73,7 @@
 		"MONFLORIAN_RELEASE": "cloudflare",
 		"OPENAI_TEXT_MODEL": "gpt-5.4-mini-2026-03-17",
 		"OPENAI_IMAGE_MODEL": "gpt-image-2",
-		"TURNSTILE_SITE_KEY": ""
+		"TURNSTILE_SITE_KEY": "0x4AAAAAAEaeGxBrM4uuFfHx"
 	},
 	"triggers": {
 		"crons": [

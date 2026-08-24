@@ -16,6 +16,8 @@ Git reste la source du diff technique. Les ADR expliquent les décisions importa
   La création, OpenAI et le courriel restent fermés.
 - Les secrets du code d'accès et de Turnstile restent facultatifs tant que la
   création est fermée ; leur absence ne bloque plus un déploiement sûr.
+- Création du widget Turnstile géré `monflorian-production` pour l'apex, `www`
+  et `workers.dev`, avec secret installé directement dans le Worker.
 - Ajout des quotas D1 atomiques, globaux et par client pseudonymisé, avec
   rollback complet quand une limite est atteinte et purge après 31 jours.
 - Portage des adaptateurs Responses et Image Edits dans le Workflow, sans retry
