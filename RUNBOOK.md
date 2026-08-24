@@ -26,13 +26,12 @@ ne retire aucun de ses secrets, services ou routes.
 | Migrer D1 | migration relue, sauvegarde ou base vide, rollback compris | ne pas appliquer |
 | Activer R2 | compte autorisé, coût et juridiction compris | laisser les photos fermées |
 | Installer un secret | propriétaire présent ou canal local sûr | ne jamais demander la valeur dans le chat |
-| Changer le DNS | inventaire complet et rollback préparé | conserver les serveurs de noms actuels |
+| Changer le DNS | inventaire relevé, services non web décidés et rollback préparé | conserver l'état courant |
 | Ouvrir OpenAI | toutes les gates de données et coût prouvées | conserver les drapeaux à `false` |
 | Activer Stripe | décision séparée, test et fiscalité | ne créer aucune ressource réelle |
 
 Arrêter immédiatement si une valeur secrète apparaît dans Git ou les logs, si
-R2 devient public, si le mail diffère du relevé, ou si une route coûteuse est
-ouverte sans tous ses contrôles.
+R2 devient public, ou si une route coûteuse est ouverte sans tous ses contrôles.
 
 ## Préparation locale
 
@@ -156,22 +155,18 @@ Avant toute mutation, relever depuis les serveurs autoritaires :
 - sous-domaines et services hors web ;
 - TTL.
 
-Le relevé du 2026-08-24 contient trois MX OVHcloud et un SPF qui inclut
-`mx.ovh.com` et `_spf.tem.scaleway.com`. Il doit être relu, pas recopié de
-mémoire.
+Le relevé du 2026-08-24 contient trois MX OVHcloud, un SPF qui inclut
+`mx.ovh.com` et `_spf.tem.scaleway.com`, ainsi qu'un DMARC `p=none`. L'ADR-0008
+confirme qu'ils n'étaient pas utilisés et ne doivent pas être recréés.
 
 ### Bascule
 
-1. Ajouter la zone dans Cloudflare sans changer les serveurs de noms.
-2. Recopier chaque enregistrement et comparer l'inventaire.
-3. Lier le Worker à l'apex et à `www`.
-4. Tester la route Cloudflare avant la délégation quand le fournisseur le
-   permet.
-5. Changer uniquement les serveurs de noms chez le registrar.
-6. Sonder plusieurs résolveurs, TLS, apex, `www`, release et en-têtes.
-7. Vérifier la résolution des MX et envoyer un test mail entrant et sortant sans
-   contenu sensible.
-8. Observer au moins un TTL.
+1. Vérifier que la délégation Cloudflare est active.
+2. Vérifier l'absence de conflit A, AAAA ou CNAME sur l'apex et `www`.
+3. Lier le Worker à l'apex et à `www` avec deux Custom Domains.
+4. Sonder plusieurs résolveurs, TLS, apex, `www`, release et en-têtes.
+5. Vérifier que l'absence de MX reste intentionnelle.
+6. Observer au moins un TTL.
 
 ## Livraison continue
 

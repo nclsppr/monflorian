@@ -8,6 +8,16 @@
 	],
 	"workers_dev": true,
 	"preview_urls": false,
+	"routes": [
+		{
+			"pattern": "monflorian.com",
+			"custom_domain": true
+		},
+		{
+			"pattern": "www.monflorian.com",
+			"custom_domain": true
+		}
+	],
 	"assets": {
 		"directory": "./dist",
 		"binding": "ASSETS",

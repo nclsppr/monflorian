@@ -4,6 +4,9 @@ Git reste la source du diff technique. Les ADR expliquent les décisions importa
 
 ## Non publié
 
+- Rattachement versionné de `monflorian.com` et `www.monflorian.com` au Worker
+  comme Custom Domains Cloudflare, avec maintien de `workers.dev` comme surface
+  de diagnostic.
 - Suppression du double rendu de Florian au rechargement : le portrait choisi
   est chargé avant d'être révélé et le portrait original reste le repli sans
   JavaScript ou en cas d'échec.
