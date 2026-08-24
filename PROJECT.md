@@ -79,7 +79,7 @@ client et le Voyage vivant restent des hypothèses non livrées.
 | Coeur métier | Validation des briefs, photos, résultats et liens | `app/core.mjs` | réutilisé, tests locaux |
 | Adaptateur OpenAI | Responses et Image Edits sans SDK | `app/openai.mjs` | non appelé en production |
 | D1 | États, quotas, données chiffrées et jetons hachés | `migrations/` | base vide, schéma appliqué |
-| R2 | Photos d'entrée et illustrations | binding `MEDIA` | bucket privé UE créé, vide, binding candidat |
+| R2 | Photos d'entrée et illustrations | binding `MEDIA` | bucket privé UE créé, vide, binding déployé |
 | Workflows | Traitement durable et notification | `src/workflows/` | déployé, garde-fou fermé |
 | Turnstile | Réduction de l'abus gratuit | binding futur | non configuré |
 | Courriel | Envoi du lien privé | fournisseur HTTP à choisir | non configuré |

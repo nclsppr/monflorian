@@ -3,7 +3,7 @@
 Chaque section nomme son environnement et ses limites. Les sections Atlas sont
 des archives historiques ; la section Cloudflare porte la migration courante.
 
-## Fondation du voyage privé, candidat du 2026-08-24
+## Fondation du voyage privé déployée, 2026-08-24
 
 Cette tranche prépare le stockage privé et le contrat asynchrone sans ouvrir la
 création. Elle ne contient aucune donnée personnelle et ne lance aucun appel
@@ -11,23 +11,32 @@ OpenAI ni courriel.
 
 | Preuve | Résultat |
 | --- | --- |
+| Source runtime | `e8718a4507ca3e491f9b4d8eadc469c21fdf14a5` |
+| PR | [#19](https://github.com/nclsppr/monflorian/pull/19) et [#20](https://github.com/nclsppr/monflorian/pull/20) fusionnées |
+| CI du SHA | runs `32762468302` et `32762468303` verts |
+| Version active | `e0a0dae3-7330-4912-afe0-679608886323` |
 | R2 | `monflorian-media-production`, juridiction `eu`, région `EEUR`, 0 objet |
 | Exposition R2 | aucun domaine personnalisé, `r2.dev` désactivé |
 | Cycle de vie R2 | `source/` expire après 1 jour, `generated/` après 30 jours |
 | D1 distant | migration `0002_trip_idempotency.sql` appliquée |
 | Secrets | `TRIP_DATA_KEY` et `TRIP_QUOTA_HASH_KEY` présents, valeurs non affichées |
-| Contrat candidat | `POST /api/trips`, page `/voyages/{jeton}`, retrait et purge planifiée |
+| Contrat déployé | `POST /api/trips`, page `/voyages/{jeton}`, retrait et purge planifiée |
 | Protection des champs | AES-GCM avec contexte, jeton SHA-256, idempotence hachée |
 | Garde-fou | `MONFLORIAN_TRIP_CREATION_ENABLED=false` |
+
+Les sondes publiques prouvent `/api/health` et `/api/config` en `200`, le même
+identifiant de version sur l'apex, `www` et `workers.dev`, ainsi que
+`POST /api/trips` en `503 TRIP_CREATION_UNAVAILABLE`. Un jeton synthétique
+inconnu répond `404` avec `no-store`, `noindex`, `nofollow` et `no-referrer`. D1
+contient zéro voyage, zéro asset et zéro quota ; R2 contient zéro objet.
 
 Les contrôles locaux ciblés couvrent la validation de la demande combinée,
 l'idempotence, le chiffrement lié au contexte, les en-têtes privés et les routes
 de jeton normalisées. Le rendu a été contrôlé à `430 × 932` et `1440 × 900` :
 aucun débordement horizontal, aucune erreur console et états du formulaire
-lisibles. Le candidat n'est pas une capacité livrée avant fusion, déploiement et
-preuve publique. La purge applicative reste à prouver avec des données
-synthétiques ; Turnstile, quotas, OpenAI, illustration privée et courriel restent
-fermés.
+lisibles. La fondation privée est livrée, mais pas la création de voyage. La
+purge applicative reste à prouver avec des données synthétiques ; Turnstile,
+quotas, OpenAI, illustration privée et courriel restent fermés.
 
 ## Champs de date contenus sur iOS, 2026-08-24
 

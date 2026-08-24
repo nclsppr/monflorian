@@ -10,9 +10,9 @@ personne réelle.
 L'aperçu public ne reçoit aucun brief ni photo : l'interface désactive l'action,
 `/api/config` annonce `serviceReady: false` et les routes de génération répondent
 `503`. D1 contient le schéma mais aucun voyage. Le bucket R2 privé est vide, sans
-URL publique, avec des règles d'expiration de secours. Le candidat relie D1 et
-R2 au Worker, mais la création reste fermée. OpenAI, Turnstile et le courriel ne
-sont pas activés.
+URL publique, avec des règles d'expiration de secours. Le Worker déployé relie
+D1 et R2, mais la création reste fermée. OpenAI, Turnstile et le courriel ne sont
+pas activés.
 
 ## Parcours cible
 
