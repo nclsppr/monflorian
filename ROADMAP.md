@@ -74,8 +74,8 @@ purge. La phase reste ouverte jusqu'à une preuve synthétique après déploieme
 
 Le quota transactionnel, les étapes Responses et Image Edits sans retry, le
 stockage R2 et la lecture privée de l'image sont codés. La phase reste ouverte :
-Turnstile et la clé OpenAI ne sont pas installés sur le Worker, les drapeaux sont
-à `false` et aucun coût fournisseur n'a été engagé.
+Turnstile est configuré, mais la clé OpenAI n'est pas installée sur le Worker,
+les drapeaux sont à `false` et aucun coût fournisseur n'a été engagé.
 
 - Vérifier Turnstile avant création.
 - Débiter les quotas D1 de façon atomique.

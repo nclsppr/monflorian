@@ -34,7 +34,7 @@ Dernière mise à jour : 2026-08-24.
   valide et sans cache.
 - [ ] Installer et appeler OpenAI depuis le Workflow.
 - [x] Ajouter les quotas D1 persistants et atomiques.
-- [ ] Créer Turnstile et installer son secret.
+- [x] Créer Turnstile et installer son secret.
 - [ ] Choisir et configurer le fournisseur de courriel transactionnel.
 - [ ] Prouver le nettoyage des photos sous 24 heures et des voyages sous 30
   jours.

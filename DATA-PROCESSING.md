@@ -11,9 +11,9 @@ L'aperçu public ne reçoit aucun brief ni photo : l'interface désactive l'acti
 `/api/config` annonce `serviceReady: false` et les routes de génération répondent
 `503`. D1 contient le schéma mais aucun voyage. Le bucket R2 privé est vide, sans
 URL publique, avec des règles d'expiration de secours. Le Worker déployé relie
-D1 et R2, et le Workflow candidat contient les appels OpenAI sans retry
+D1 et R2, et le Workflow déployé contient les appels OpenAI sans retry
 automatique. La création reste fermée : aucun appel OpenAI n'est exécuté,
-Turnstile et le courriel ne sont pas activés.
+le widget Turnstile reste masqué et le courriel n'est pas activé.
 
 ## Parcours cible
 

@@ -3,6 +3,39 @@
 Chaque section nomme son environnement et ses limites. Les sections Atlas sont
 des archives historiques ; la section Cloudflare porte la migration courante.
 
+## Génération asynchrone fermée déployée, 2026-08-24
+
+La PR [#22](https://github.com/nclsppr/monflorian/pull/22) câble le parcours
+Responses puis Image Edits dans le Workflow Cloudflare. La version est publique,
+mais tous les appels payants et la création de voyage restent fermés.
+
+| Preuve | Résultat |
+| --- | --- |
+| Source runtime | `191507a08e6683ece4082ae3ecc411b765f66133` |
+| Version active | `4e6f4adf-cc7d-4c51-86d2-cf510834b90b` |
+| CI du SHA | runs `32764310234` et `32764310127` verts |
+| D1 distant | migrations à jour, zéro voyage, zéro asset et zéro quota |
+| Quotas | plafond global `10`, plafond client `2`, débit atomique |
+| OpenAI Responses | `store: false`, schéma strict, identifiant de sûreté pseudonymisé |
+| OpenAI Image Edits | source lue depuis R2 privé, sortie WebP privée |
+| Reprise | aucun retry automatique d'un appel OpenAI au résultat incertain |
+| Route d'image | `/api/trips/{jeton}/media/{position}`, liée au jeton et `no-store` |
+| Turnstile | widget géré pour l'apex, `www` et `workers.dev`, secret Worker installé |
+| Secrets présents | chiffrement, quota et Turnstile, valeurs non affichées |
+| Garde-fous | création, texte, image et courriel à `false` |
+
+Les sondes de l'apex, de `www` et de `workers.dev` renvoient la même version et
+`generationReady: false`. `POST /api/trips` répond `503` avant de lire la
+demande. Une route d'image inconnue répond `404` avec `no-store`, `same-origin`
+et `no-referrer`. Le contrôle ciblé du quota provoque l'erreur attendue quand un
+plafond est dépassé et confirme le rollback des deux compteurs.
+
+`./scripts/verify.sh` passe avec 31 tests. Aucun appel OpenAI, aucun courriel,
+aucune photo réelle et aucun coût fournisseur n'ont été déclenchés. L'ouverture
+attend encore la clé OpenAI, le fournisseur de courriel, le secret du code
+d'accès, la validation Turnstile de bout en bout et un unique essai synthétique
+observé.
+
 ## Fondation du voyage privé déployée, 2026-08-24
 
 Cette tranche prépare le stockage privé et le contrat asynchrone sans ouvrir la

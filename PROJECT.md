@@ -54,7 +54,7 @@ client et le Voyage vivant restent des hypothèses non livrées.
 - Déployer puis éprouver la création asynchrone et la page privée à jeton.
 - Prouver le chiffrement, la suppression anticipée et la purge sur des données
   synthétiques.
-- Turnstile, secrets d'ouverture et budget fournisseur.
+- Secret OpenAI, code d'accès, courriel et budget fournisseur.
 - Premier appel OpenAI synthétique avec coût et journaux inspectés.
 - Courriel transactionnel et preuve synthétique du nettoyage automatique.
 - Notice de traitement et canal de droits.
@@ -81,7 +81,7 @@ client et le Voyage vivant restent des hypothèses non livrées.
 | D1 | États, quotas, données chiffrées et jetons hachés | `migrations/` | base vide, schéma appliqué |
 | R2 | Photos d'entrée et illustrations | binding `MEDIA` | bucket privé UE créé, vide, binding déployé |
 | Workflows | Traitement durable et notification | `src/workflows/` | texte et image câblés, garde-fous fermés |
-| Turnstile | Réduction de l'abus gratuit | binding futur | non configuré |
+| Turnstile | Réduction de l'abus gratuit | clé publique et Worker Secret | widget géré configuré, parcours fermé |
 | Courriel | Envoi du lien privé | fournisseur HTTP à choisir | non configuré |
 | Stripe | Paiement ponctuel futur | Checkout Sessions et webhook | hors tranche |
 | Documentation Nimbus | Rendu des contrats | `docs-nimbus/` | local et CI |
