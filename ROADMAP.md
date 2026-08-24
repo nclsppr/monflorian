@@ -27,8 +27,8 @@ de ce parcours.
 | 0 | F00 | Prototype reproductible | done | concept local, Compose et CI |
 | 1 | F01 | Contrats métier et OpenAI simulé | done | validateurs, OpenAPI et fakes fournisseur |
 | 2 | F02 | Aperçu historique sans génération | done | interface publique fermée sur l'ancienne cible |
-| 3 | F03 | Runtime Cloudflare fermé | in_progress | Worker, D1, Workflow, PR, CI et preuve publique |
-| 4 | F04 | Stockage privé et cycle de vie | planned | R2 UE, chiffrement, jetons et purge prouvés |
+| 3 | F03 | Runtime Cloudflare fermé | done | Worker, D1, Workflow, PR, CI et preuve publique |
+| 4 | F04 | Stockage privé et cycle de vie | blocked | R2 UE, chiffrement, jetons et purge prouvés |
 | 5 | F05 | Génération synthétique asynchrone | planned | texte, images, quotas, reprise et coûts observés |
 | 6 | F06 | Page privée et courriel | planned | rendu, suppression, notification et notice validés |
 | 7 | F07 | Domaine Cloudflare | planned | zone copiée, mail préservé, apex et `www` vérifiés |

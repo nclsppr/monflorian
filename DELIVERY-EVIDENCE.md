@@ -5,21 +5,23 @@ des archives historiques ; la section Cloudflare porte la migration courante.
 
 ## Bootstrap Cloudflare fermé, 2026-08-24
 
-Cette preuve ouvre la migration décidée par l'ADR-0007. Elle ne remplace pas
-encore une release issue de `main` : le code correspondant se trouve sur la
-branche `codex/cloudflare-migration` au moment du relevé.
+Cette preuve ouvre la migration décidée par l'ADR-0007. La PR
+[#12](https://github.com/nclsppr/monflorian/pull/12) est fusionnée sur `main` et
+la version Worker ci-dessous a été redéployée depuis ce SHA.
 
 | Preuve | Résultat |
 | --- | --- |
 | URL | `https://monflorian.nclsppr.workers.dev` |
 | Worker | `monflorian` |
-| Version active | `91251c60-c62d-4eb0-93fb-1594d64b3942` |
+| Source runtime | `6d7029877c9acb098feecea029337d427d0aedd6` |
+| Version active | `70b89e6c-e5ce-4e57-a74e-a3bd4186a0ab` |
 | Bundle | 9,05 KiB avant compression, 3,13 KiB gzip |
 | Static Assets | 13 fichiers lus, 11 objets initiaux chargés |
 | D1 | `monflorian-production`, juridiction `eu`, exécution `EEUR` |
 | Migration | `0001_trip_lifecycle.sql`, 9 commandes appliquées |
 | Workflow | `monflorian-trip`, classe `TripWorkflow` |
 | R2 | non activé sur le compte, aucun bucket créé |
+| CI du SHA | runs `32742064604` et `32742064568` verts |
 
 Les sondes publiques prouvent : page `200`, en-têtes de sécurité, santé `200`,
 configuration fermée, marqueur de release cohérent et itinéraire refusé en
@@ -30,10 +32,10 @@ Le dry-run Wrangler a validé les bindings Static Assets, D1, Workflow et versio
 metadata. La base contient seulement `trips`, `trip_assets`, `daily_quotas` et
 les tables internes D1 ; aucune ligne utilisateur n'a été créée.
 
-Limites : le domaine reste hors Cloudflare ; R2, Turnstile, OpenAI, courriel,
-page privée, affiliation et Stripe ne font pas partie de cette preuve. La CI et
-la protection de branche doivent encore être migrées avant de considérer cette
-tranche livrée depuis Git.
+La protection de `main` exige désormais `verify` et
+`Validate Cloudflare release`. Limites : le domaine reste hors Cloudflare ; R2,
+Turnstile, OpenAI, courriel, page privée, affiliation et Stripe ne font pas
+partie de cette preuve. Le déploiement automatique depuis Git reste à connecter.
 
 ## Avatars transparents en production, 2026-08-24
 

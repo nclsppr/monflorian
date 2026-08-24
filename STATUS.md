@@ -17,7 +17,7 @@ précédent. Cette migration n'a modifié aucun DNS ni aucune ressource Atlas.
 
 | Ressource | État | Preuve |
 | --- | --- | --- |
-| Worker `monflorian` | déployé | version `91251c60-c62d-4eb0-93fb-1594d64b3942` |
+| Worker `monflorian` | déployé | version `70b89e6c-e5ce-4e57-a74e-a3bd4186a0ab` |
 | Static Assets | actifs | 13 fichiers lus, page et sept PNG servis |
 | D1 `monflorian-production` | actif, juridiction `eu`, région d'exécution `EEUR` | migration `0001_trip_lifecycle.sql` appliquée |
 | Tables D1 | vides et prêtes | `trips`, `trip_assets`, `daily_quotas` |
@@ -40,11 +40,13 @@ précédent. Cette migration n'a modifié aucun DNS ni aucune ressource Atlas.
 
 ## État du dépôt et de la livraison
 
-- Branche de travail : `codex/cloudflare-migration`.
-- Le runtime Worker, l'ADR, la migration et la CI Cloudflare ne sont pas encore
-  fusionnés dans `main` au moment de ce relevé.
+- Source runtime : `main` à `6d7029877c9acb098feecea029337d427d0aedd6`,
+  fusionné par la PR [#12](https://github.com/nclsppr/monflorian/pull/12).
+- Les runs `32742064604` (`Cloudflare release`) et `32742064568` (`Verify`) du
+  SHA fusionné sont verts.
 - Le dépôt GitHub ne possède actuellement aucun secret Actions Cloudflare.
-- Le déploiement initial a donc été réalisé depuis la session Wrangler locale.
+- Le déploiement du SHA fusionné a donc été réalisé depuis la session Wrangler
+  locale.
 - La protection de branche exige `verify` et `Validate Cloudflare release` ;
   l'ancien contrôle Atlas a été retiré de la règle.
 
