@@ -45,8 +45,8 @@ précédent. Cette migration n'a modifié aucun DNS ni aucune ressource Atlas.
   fusionnés dans `main` au moment de ce relevé.
 - Le dépôt GitHub ne possède actuellement aucun secret Actions Cloudflare.
 - Le déploiement initial a donc été réalisé depuis la session Wrangler locale.
-- La protection de branche demande encore l'ancien contrôle
-  `Validate application release` jusqu'à la migration de la règle.
+- La protection de branche exige `verify` et `Validate Cloudflare release` ;
+  l'ancien contrôle Atlas a été retiré de la règle.
 
 ## DNS observé avant migration
 
