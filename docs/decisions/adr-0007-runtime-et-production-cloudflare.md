@@ -4,6 +4,9 @@
 
 Acceptée le 2026-08-24. Implémentation en cours.
 
+La reprise de la messagerie pendant la migration du domaine est remplacée par
+[l'ADR-0008](adr-0008-domaine-web-only-cloudflare.md).
+
 Cette décision remplace l'ADR-0002 pour le runtime et la production, ainsi que
 l'ADR-0004 pour la cible de l'aperçu. L'ADR-0003 reste applicable uniquement à
 l'ancien environnement Atlas tant qu'il existe. La migration Cloudflare ne le

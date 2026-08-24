@@ -15,8 +15,8 @@ de ce parcours.
 - Aucune photo réelle avant R2 privé, rétention et suppression prouvées.
 - Aucun appel payant avant quotas persistants, Turnstile et budget.
 - Aucun retry aveugle d'une étape OpenAI au résultat incertain.
-- Aucun déplacement DNS avant preuve sur `workers.dev` et copie complète de la
-  messagerie.
+- Aucun déplacement DNS avant preuve sur `workers.dev` et décision explicite sur
+  les services non web de la zone.
 - Aucun paiement avant la preuve du parcours gratuit.
 - Une ressource provisionnée ne vaut pas capacité livrée.
 
@@ -31,7 +31,7 @@ de ce parcours.
 | 4 | F04 | Stockage privé et cycle de vie | blocked | R2 UE, chiffrement, jetons et purge prouvés |
 | 5 | F05 | Génération synthétique asynchrone | planned | texte, images, quotas, reprise et coûts observés |
 | 6 | F06 | Page privée et courriel | planned | rendu, suppression, notification et notice validés |
-| 7 | F07 | Domaine Cloudflare | planned | zone copiée, mail préservé, apex et `www` vérifiés |
+| 7 | F07 | Domaine Cloudflare | in_progress | zone web-only décidée, apex et `www` à vérifier |
 | 8 | F08 | MVP gratuit limité | planned | Turnstile, budget et premier utilisateur informé |
 | 9 | F09 | Attribution Booking.com | blocked | partenariat et liens approuvés |
 | 10 | F10 | Paiement Stripe | planned | Checkout, webhook signé, fiscalité et remboursement décidés |
@@ -90,12 +90,12 @@ Un test avec fake ne termine pas cette phase.
 
 ## F07, domaine Cloudflare
 
-- Exporter ou relever toute la zone OVHcloud.
-- Ajouter la zone Cloudflare et recopier A, CNAME, MX, TXT et sous-domaines.
-- Préserver les trois MX et le SPF observés.
-- Vérifier le Worker sur l'apex et `www` avant la bascule des serveurs de noms.
+- Relever l'ancienne zone OVHcloud avant toute mutation.
+- Garder la zone Cloudflare web-only selon l'ADR-0008, sans recréer les anciens
+  MX, SPF et DMARC inutilisés.
+- Attacher le Worker à l'apex et `www` comme Custom Domains.
 - Conserver les valeurs précédentes et le TTL pour rollback.
-- Sonder DNS, TLS, page, configuration, release et messagerie après propagation.
+- Sonder DNS, TLS, page, configuration et release après propagation.
 
 ## F08, MVP gratuit limité
 
