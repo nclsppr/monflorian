@@ -7,7 +7,7 @@
 | Nom | Mon Florian |
 | Propriétaire | `nclsppr` |
 | Classe | Critique |
-| Surface de production | DNS public sur Atlas, aucune application Mon Florian active au 2026-08-23 |
+| Surface de production | Aperçu public actif sur Atlas, générations désactivées |
 | Socle adopté | [`FOUNDATION.md`](FOUNDATION.md) |
 | Licence | Aucune licence de réutilisation accordée |
 
@@ -109,7 +109,7 @@ L'offre cible reste un voyage prêt à 50 €, livré en mini-site privé et PDF
 | Image OCI | Emballer le serveur sans privilège | publiée | Docker et Atlas | base Node épinglée par digest | `Dockerfile` | Digest, scan distant et attestation consignés | `nclsppr` |
 | Prototype F00 | Conserver le concept qui a précédé l'application | expérience | navigateur local | HTML autonome | `prototype/index.html` | Run CI `32637925764` | `nclsppr` |
 | Documentation Nimbus | Classer et rendre les contrats | actuel | local et CI | lockfile dédié | `docs-nimbus/` | `./scripts/verify.sh` | `nclsppr` |
-| Intégration Atlas | Décrire le service, le réseau, les sondes et la route Caddy | admise, inactive | VPS | release immuable et profil central désactivé | `deployment/vps/` | PR Atlas 96, contrôleur `891a898`, aucun runtime Mon Florian | `nclsppr` |
+| Intégration Atlas | Décrire le service, le réseau, les sondes et la route Caddy | active pour l'aperçu public | VPS | release immuable et profil central actif | `deployment/vps/` | Preuves publiques et runtime consignées dans `STATUS.md` | `nclsppr` |
 
 ### Flux d'itinéraire
 

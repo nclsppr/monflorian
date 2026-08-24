@@ -42,6 +42,24 @@ Mon Florian est un produit de voyage grand public. Il ne doit ressembler ni au s
 
 Ce contrat s'appuie sur `prototype/index.html`, le master `assets/brand/monflorian-logo.png` et la capture principale. La capture alternative reste une archive. Elle ne justifie aucun composant, avis ou argument commercial.
 
+## Logo modulable
+
+Le lockup fourni reste le master de référence. L'application sépare désormais
+son personnage et son mot-symbole. Le mot "Mon Florian" et l'avion ne changent
+jamais. Le navigateur choisit un seul portrait de Florian au chargement et
+l'utilise partout pendant cette visite. Si le script ou le portrait choisi
+échoue, il conserve le personnage original.
+
+Les variantes gardent le même visage, les lunettes rondes dorées, les yeux
+bruns, la barbe, le sourire et le rendu 3D doux du master. Seuls les cheveux,
+le couvre-chef et un petit accessoire de voyage peuvent changer. Le portrait
+reste cadré dans le même médaillon bleu pâle. Il ne reçoit ni texte, ni décor,
+ni second personnage.
+
+Le changement se produit au chargement. Il ne tourne pas en boucle et ne doit
+pas détourner l'attention du composeur. Florian reste un repère de marque dans
+l'en-tête et un conseiller ponctuel dans le contenu.
+
 ## Colors
 
 L'encre structure les titres, le texte et le cadre du téléphone. Le bleu profond porte l'action principale quand du texte blanc doit atteindre le contraste AA. Le bleu électrique sert aux traits, liens et accents, pas aux longs textes.
@@ -97,6 +115,7 @@ Une nouvelle évaluation devient utile pour un futur back-office avec navigation
 ## Do's and Don'ts
 
 - Utiliser le logo master comme référence de marque jusqu'à la validation d'une version vectorielle.
+- Garder le mot-symbole fixe et limiter les variantes au portrait de Florian.
 - Garder une seule action commerciale sur la page d'entrée. Voyage vivant arrive après la première livraison.
 - Respecter le clavier, le focus visible, les cibles tactiles, le contraste AA et le mouvement réduit.
 - Signaler les exemples synthétiques et les projections personnalisées.

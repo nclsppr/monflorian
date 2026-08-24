@@ -10,7 +10,7 @@ RUN rm -rf /usr/local/lib/node_modules/npm \
     && rm -f /usr/local/bin/npm /usr/local/bin/npx
 
 COPY --chown=10001:10001 app ./app
-COPY --chown=10001:10001 assets/brand/monflorian-logo.png ./assets/brand/monflorian-logo.png
+COPY --chown=10001:10001 assets/brand ./assets/brand
 
 USER 10001:10001
 EXPOSE 8080

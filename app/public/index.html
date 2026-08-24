@@ -15,10 +15,10 @@
       content="Mon Florian prépare une première proposition de voyage à partir de ton envie."
     />
     <title>Mon Florian · Prépare ton voyage</title>
-    <link rel="icon" href="/assets/monflorian-logo.png" type="image/png" />
+    <link rel="icon" href="/assets/florian-original.png?v=1" type="image/png" />
     <link rel="manifest" href="/manifest.webmanifest" />
-    <link rel="stylesheet" href="/styles.css" />
-    <script src="/app.js" defer></script>
+    <link rel="stylesheet" href="/styles.css?v=logo-1" />
+    <script src="/app.js?v=logo-1" defer></script>
   </head>
   <body>
     <a class="skip-link" href="#main">Aller au contenu</a>
@@ -26,11 +26,26 @@
     <div class="page-shell">
       <header class="site-header" aria-label="En-tête">
         <a class="brand" href="#main" aria-label="Mon Florian, revenir au début">
-          <img src="/assets/monflorian-logo.png" alt="Mon Florian" width="2172" height="724" />
+          <span class="brand-character" aria-hidden="true">
+            <img
+              data-florian-variant
+              src="/assets/florian-original.png?v=1"
+              alt=""
+              width="780"
+              height="724"
+            />
+          </span>
+          <img
+            class="brand-wordmark"
+            src="/assets/monflorian-wordmark.png?v=1"
+            alt=""
+            width="676"
+            height="362"
+          />
         </a>
         <div class="launch-state" aria-label="Statut du service">
           <span class="launch-dot" aria-hidden="true"></span>
-          Lancement privé
+          Vérification du service
         </div>
       </header>
 
@@ -188,7 +203,13 @@
               </div>
             </article>
             <div class="florian-card">
-              <img src="/assets/monflorian-logo.png" alt="" width="2172" height="724" />
+              <img
+                data-florian-variant
+                src="/assets/florian-original.png?v=1"
+                alt=""
+                width="780"
+                height="724"
+              />
               <p><strong>Le conseil de Florian</strong>Garde une soirée libre après chaque changement de ville.</p>
             </div>
           </aside>
@@ -331,8 +352,8 @@
       </main>
 
       <footer class="site-footer">
-        <img src="/assets/monflorian-logo.png" alt="Mon Florian" width="2172" height="724" />
-        <p>Lancement privé. Aucun paiement ni réservation sur ce site.</p>
+        <img src="/assets/monflorian-wordmark.png?v=1" alt="Mon Florian" width="676" height="362" />
+        <p>Aperçu public. Aucun paiement ni réservation sur ce site.</p>
       </footer>
     </div>
   </body>

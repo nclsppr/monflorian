@@ -9,7 +9,7 @@ Moteur déclaré : `nimbus`.
 | Collection | Visibilité | Fichiers |
 | --- | --- | ---: |
 | Documentation du projet | `internal` | 19 |
-| Décisions | `internal` | 4 |
+| Décisions | `internal` | 5 |
 | Socle vendorisé | `reference` | 10 |
 | Maintenance Nimbus | `reference` | 1 |
 
@@ -41,6 +41,7 @@ Moteur déclaré : `nimbus`.
 - [docs/decisions/adr-0002-runtime-openai-photos-booking-atlas.md](docs/decisions/adr-0002-runtime-openai-photos-booking-atlas.md)
 - [docs/decisions/adr-0003-registre-canonique-secrets-atlas.md](docs/decisions/adr-0003-registre-canonique-secrets-atlas.md)
 - [docs/decisions/adr-0004-apercu-public-sans-generation.md](docs/decisions/adr-0004-apercu-public-sans-generation.md)
+- [docs/decisions/adr-0005-logo-modulable.md](docs/decisions/adr-0005-logo-modulable.md)
 
 ## Socle vendorisé
 
