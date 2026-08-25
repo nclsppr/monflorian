@@ -1,3 +1,11 @@
+@font-face {
+  font-family: "Kalam";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/fonts/kalam-latin-400.woff2") format("woff2");
+}
+
 :root {
   color-scheme: light;
   --ink: #061a3b;
@@ -10,6 +18,7 @@
   --cream: #fff8eb;
   --paper: #fffefb;
   --surface: #f4f7ff;
+  --pencil: #454950;
   --surface-blue: #eaf2ff;
   --line: rgba(6, 26, 59, 0.14);
   --line-strong: rgba(6, 26, 59, 0.25);
@@ -214,8 +223,9 @@ html.has-intro-swap .brand-intro {
   display: grid;
   justify-items: center;
   gap: clamp(18px, 2vw, 28px);
-  width: 100%;
+  width: min(1240px, calc(100% - 40px));
   min-width: 0;
+  margin-inline: auto;
 }
 
 .brand-intro-lockup {
@@ -231,12 +241,13 @@ html.has-intro-swap .brand-intro {
   display: grid;
   min-width: min(310px, calc(100vw - 48px));
   padding: 12px 26px 14px;
-  color: var(--blue);
+  color: var(--pencil);
+  font-family: "Kalam", "Bradley Hand", "Segoe Print", cursive;
   font-size: clamp(18px, 1.8vw, 25px);
-  font-style: italic;
-  font-weight: 750;
-  letter-spacing: -0.02em;
-  line-height: 1.15;
+  font-style: normal;
+  font-weight: 400;
+  letter-spacing: 0.005em;
+  line-height: 1.05;
   place-items: center;
   text-align: center;
   transform: rotate(-1.1deg);
@@ -2168,8 +2179,33 @@ textarea:disabled {
     padding-block: 24px clamp(72px, 12svh, 110px);
   }
 
+  .brand-intro-content {
+    width: min(100% - 28px, 1240px);
+  }
+
   .brand-intro-lockup {
     width: 100%;
+  }
+
+  .brand-intro-tagline {
+    min-width: min(278px, calc(100vw - 72px));
+    padding: 8px 20px 10px;
+    font-size: 17px;
+    transform: rotate(-0.8deg);
+  }
+
+  .brand-intro-tagline-paper {
+    inset: -6px -11px;
+    width: calc(100% + 22px);
+    height: calc(100% + 12px);
+  }
+
+  .brand-intro-tagline-paper path {
+    stroke-width: 24px;
+  }
+
+  .brand-intro-tagline-paper path:nth-child(2) {
+    stroke-width: 27px;
   }
 
   .brand {

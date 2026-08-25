@@ -47,6 +47,12 @@ Source canonique des visuels de marque et des références importées depuis le 
 | `references/concepts/landing-primary.png` | Capture de la direction retenue | Référence non éditable | 1440 x 1100, RGB | `78497298fa76359524fdbb384ef7bffb3dae835939c2bcbaadafacce5040e2f7` | Fourni sous le nom `concet01.png` |
 | `references/concepts/landing-alternative.png` | Exploration plus dense de type agence | Archive non canonique | 1448 x 1086, RGB | `c6f37af3934b8bb0ab92e13904b3d6c6be729e76c2cc6721e7f5d8500f2c3216` | Fourni sous le nom `monflorian-concept-utopie.png` |
 
+## Police d'accent
+
+| Fichier | Rôle | Format | Taille | SHA-256 | Provenance et licence |
+| --- | --- | --- | --- | --- | --- |
+| `app/public/fonts/kalam-latin-400.woff2` | Note manuscrite de l'introduction | WOFF2 latin, graisse 400 | 22 336 octets | `954410601a823f37e219f7930b7446f86afa15621326a7078d56fb9c910135cb` | Kalam v18, Latin servi par Google Fonts, copyright Indian Type Foundry, SIL Open Font License 1.1 conservée dans `app/public/fonts/Kalam-OFL.txt` |
+
 ## Frontières
 
 - Le logo PNG est le master actuel. Une future vectorisation doit être validée visuellement contre ce fichier et faire l'objet d'une provenance propre.
