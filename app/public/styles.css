@@ -18,7 +18,7 @@
   --cream: #fff8eb;
   --paper: #fffefb;
   --surface: #f4f7ff;
-  --pencil: #454950;
+  --pencil-sage: #85897a;
   --surface-blue: #eaf2ff;
   --line: rgba(6, 26, 59, 0.14);
   --line-strong: rgba(6, 26, 59, 0.25);
@@ -239,9 +239,9 @@ html.has-intro-swap .brand-intro {
 .brand-intro-tagline {
   position: relative;
   display: grid;
-  min-width: min(310px, calc(100vw - 48px));
+  width: min(310px, calc(100vw - 48px));
   padding: 12px 26px 14px;
-  color: var(--pencil);
+  color: var(--pencil-sage);
   font-family: "Kalam", "Bradley Hand", "Segoe Print", cursive;
   font-size: clamp(18px, 1.8vw, 25px);
   font-style: normal;
@@ -250,6 +250,7 @@ html.has-intro-swap .brand-intro {
   line-height: 1.05;
   place-items: center;
   text-align: center;
+  text-wrap: balance;
   transform: rotate(-1.1deg);
 }
 
@@ -2188,7 +2189,7 @@ textarea:disabled {
   }
 
   .brand-intro-tagline {
-    min-width: min(278px, calc(100vw - 72px));
+    width: min(278px, calc(100vw - 72px));
     padding: 8px 20px 10px;
     font-size: 17px;
     transform: rotate(-0.8deg);

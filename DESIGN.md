@@ -18,7 +18,7 @@ colors:
   cream: "#fff8eb"
   paper: "#fffefb"
   surface: "#f4f7ff"
-  pencil: "#454950"
+  pencilSage: "#85897a"
   line: "rgba(6, 26, 59, 0.12)"
   muted: "#66738b"
 typography:
@@ -52,7 +52,7 @@ Le lockup fourni reste le master de référence. L'application sépare désormai
 son personnage et son mot-symbole. Le mot "Mon Florian" et l'avion ne changent
 jamais. Le navigateur choisit un seul portrait de Florian au chargement et
 l'utilise partout pendant cette visite. Si le script ou le portrait choisi
-échoue, il conserve le personnage original.
+échoue, il conserve le personnage original de la famille V2.
 
 Les variantes gardent le même visage, les lunettes rondes dorées, les yeux
 bruns, la barbe, le sourire et le rendu 3D doux du master. Seuls les cheveux,
@@ -62,15 +62,14 @@ personnage reste transparent. Aucun fichier ni composant ne peint de fond, de
 médaillon, de halo ou d'ombre derrière lui. Le portrait ne reçoit ni texte, ni
 décor, ni second personnage.
 
-Deux familles de cinq portraits permettent une comparaison visuelle sans
-modifier le reste de l'accueil. La route `/` utilise la famille d'origine et la
-route `/v2` la nouvelle famille. Elles partagent les variantes sémantiques
-`original`, `wind`, `beanie`, `summer` et `flower`. Le paramètre facultatif
-`?avatar=` fixe la même variante dans les deux familles pour un test apparié.
-Sans ce paramètre, chaque visite en choisit une au hasard. `/v2` reste hors
-index et le portrait original de la première famille reste le repli commun sans
-JavaScript ou en cas d'échec. Une nouvelle variante doit respecter le contrat
-de transparence automatisé avant d'entrer dans une famille.
+La famille V2 a remporté la comparaison visuelle et devient la famille active
+sur `/`. Elle conserve les variantes sémantiques `original`, `wind`, `beanie`,
+`summer` et `flower`. Le paramètre facultatif `?avatar=` fixe une variante ;
+sans lui, chaque visite en choisit une au hasard. `/v2` redirige vers l'accueil
+en conservant la requête. Le portrait `florian-v2-original` reste le repli sans
+JavaScript ou en cas d'échec. La première famille reste archivée pour un retour
+explicite, mais n'est plus servie par l'interface. Une nouvelle variante doit
+respecter le contrat de transparence automatisé avant d'entrer dans la famille.
 
 Le changement se produit au chargement. Il ne tourne pas en boucle et ne doit
 pas détourner l'attention du composeur. Florian reste un repère de marque dans
@@ -92,14 +91,15 @@ compatibles peuvent ajouter une profondeur courte avec leur timeline de vue
 native. La préférence de réduction des mouvements supprime cette profondeur et
 les transitions.
 
-La note « Alors, on part où ? » accompagne uniquement le grand lockup. Trois
-traits blancs, irréguliers et légèrement transparents donnent l'impression que
-Florian l'a écrite sur la page. Le texte utilise Kalam en gris graphite, comme
-un trait de crayon, et reste statique : aucun effet de saisie, aucune boucle et
-aucun mouvement ne sont nécessaires. La fonte latine WOFF2 est auto-hébergée,
-préchargée et limitée à ce seul rôle. Sur mobile, la note et son papier se
-resserrent sans descendre sous `17 px`. Le même traitement apparaît sur `/` et
-`/v2` afin que la comparaison porte seulement sur le portrait.
+Une note choisie parmi dix phrases courtes accompagne uniquement le grand
+lockup. Le tirage change à chaque chargement et évite de répéter immédiatement
+la phrase précédente dans le même onglet. Trois traits blancs, irréguliers et
+légèrement transparents donnent l'impression que Florian l'a écrite sur la
+page. Le texte utilise Kalam en crayon sauge `#85897a` et reste statique : aucun
+effet de saisie, aucune boucle et aucun mouvement ne sont nécessaires. La fonte
+latine WOFF2 est auto-hébergée, préchargée et limitée à ce seul rôle. La surface
+garde une largeur fixe pour éviter qu'une phrase déplace le lockup. Sur mobile,
+la note et son papier se resserrent sans descendre sous `17 px`.
 
 ## Colors
 

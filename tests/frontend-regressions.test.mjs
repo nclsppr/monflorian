@@ -23,14 +23,15 @@ test("le portrait choisi est charge avant de remplacer le repli visible", async 
   const classes = new Set();
   const portraits = [
     {
-      src: "/assets/florian-original-web.webp",
+      src: "/assets/florian-v2-original-web.webp",
       hasAttribute: () => false,
     },
     {
-      src: "/assets/florian-original-intro.webp",
+      src: "/assets/florian-v2-original-intro.webp",
       hasAttribute: (name) => name === "data-florian-intro",
     },
   ];
+  const tagline = { textContent: "Alors, on part où ?" };
 
   class CandidateImage {
     set src(value) {
@@ -51,6 +52,7 @@ test("le portrait choisi est charge avant de remplacer le repli visible", async 
         },
       },
       readyState: "complete",
+      querySelector: () => tagline,
       querySelectorAll: () => portraits,
     },
     Image: CandidateImage,
@@ -61,9 +63,10 @@ test("le portrait choisi est charge avant de remplacer le repli visible", async 
 
   assert.equal(classes.has("is-florian-loading"), true);
   assert.deepEqual(portraits.map(({ src }) => src), [
-    "/assets/florian-original-web.webp",
-    "/assets/florian-original-intro.webp",
+    "/assets/florian-v2-original-web.webp",
+    "/assets/florian-v2-original-intro.webp",
   ]);
+  assert.equal(tagline.textContent, "Tu rêves de partir où ?");
 
   finishDecode();
   await decode;
@@ -71,13 +74,13 @@ test("le portrait choisi est charge avant de remplacer le repli visible", async 
   await Promise.resolve();
 
   assert.deepEqual(portraits.map(({ src }) => src), [
-    "/assets/florian-wind-web.webp",
-    "/assets/florian-wind-intro.webp",
+    "/assets/florian-v2-wind-web.webp",
+    "/assets/florian-v2-wind-intro.webp",
   ]);
   assert.equal(classes.has("is-florian-loading"), false);
 });
 
-test("les deux routes gardent la meme variante dans leur famille de portraits", async () => {
+test("la famille v2 devient la famille principale sur toutes les routes", async () => {
   const bootSource = source("app/public/avatar.js");
 
   async function sourcesFor(pathname) {
@@ -102,6 +105,7 @@ test("les deux routes gardent la meme variante dans leur famille de portraits", 
           classList: { add: () => {}, remove: () => {} },
         },
         readyState: "complete",
+        querySelector: () => ({ textContent: "" }),
         querySelectorAll: () => portraits,
       },
       Image: CandidateImage,
@@ -116,13 +120,65 @@ test("les deux routes gardent la meme variante dans leur famille de portraits", 
   }
 
   assert.deepEqual(await sourcesFor("/"), [
-    "/assets/florian-flower-web.webp",
-    "/assets/florian-flower-intro.webp",
+    "/assets/florian-v2-flower-web.webp",
+    "/assets/florian-v2-flower-intro.webp",
   ]);
   assert.deepEqual(await sourcesFor("/v2"), [
     "/assets/florian-v2-flower-web.webp",
     "/assets/florian-v2-flower-intro.webp",
   ]);
+});
+
+test("l’introduction choisit parmi dix notes sans répéter la précédente", () => {
+  const bootSource = source("app/public/avatar.js");
+  const expectedTaglines = [
+    "Alors, on part où ?",
+    "On met le cap où ?",
+    "Tu rêves de partir où ?",
+    "On prépare la valise ?",
+    "On change d’air ?",
+    "Tu m’emmènes où ?",
+    "Un coin en tête ?",
+    "On part bientôt ?",
+    "On vise quelle escale ?",
+    "C’est où, la prochaine ?",
+  ];
+
+  function taglineFor(random, previous = null) {
+    const tagline = { textContent: "repli" };
+    const storage = {
+      getItem: () => previous,
+      setItem: () => {},
+    };
+    class CandidateImage {
+      set src(value) {
+        this.currentSource = value;
+      }
+
+      decode() {
+        return Promise.resolve();
+      }
+    }
+
+    runInNewContext(bootSource, {
+      document: {
+        documentElement: { classList: { add: () => {}, remove: () => {} } },
+        readyState: "complete",
+        querySelector: () => tagline,
+        querySelectorAll: () => [],
+      },
+      Image: CandidateImage,
+      location: { pathname: "/", search: "?avatar=original" },
+      Math: { floor: Math.floor, random: () => random },
+      Promise,
+      sessionStorage: storage,
+    });
+    return tagline.textContent;
+  }
+
+  const observed = expectedTaglines.map((_, index) => taglineFor((index + 0.01) / 10));
+  assert.deepEqual(observed, expectedTaglines);
+  assert.equal(taglineFor(0, "0"), expectedTaglines[1]);
 });
 
 test("les champs mobiles ne dependent pas de la largeur intrinseque de Safari", () => {
@@ -182,7 +238,7 @@ test("le grand logo utilise une surface réelle et un mot-symbole haute définit
     html,
     /class="brand-intro-lockup"[\s\S]*src="\/assets\/monflorian-wordmark-intro\.webp"[\s\S]*width="1352"[\s\S]*height="724"/u,
   );
-  assert.match(html, /data-florian-intro[\s\S]*src="\/assets\/florian-original-intro\.webp"[\s\S]*width="1024"[\s\S]*height="1024"/u);
+  assert.match(html, /data-florian-intro[\s\S]*src="\/assets\/florian-v2-original-intro\.webp"[\s\S]*width="1024"[\s\S]*height="1024"/u);
   assert.match(html, /class="site-header-surface" aria-hidden="true"/u);
   assert.match(html, /class="preview-phone-depth"/u);
   assert.match(introRule, /width:\s*100%;/u);
@@ -205,15 +261,16 @@ test("l’accroche du logo ressemble à une note fixe de Florian", () => {
 
   assert.match(
     html,
-    /class="brand-intro-tagline">[\s\S]*class="brand-intro-tagline-paper"[\s\S]*Alors, on part où&nbsp;\?[\s\S]*<\/span>/u,
+    /class="brand-intro-tagline">[\s\S]*class="brand-intro-tagline-paper"[\s\S]*data-florian-tagline>Alors, on part où&nbsp;\?[\s\S]*<\/span>/u,
   );
   assert.equal((html.match(/class="brand-intro-tagline-paper"/gu) || []).length, 1);
   assert.equal((html.match(/<path d="M/gu) || []).length, 3);
   assert.match(html, /rel="preload"[\s\S]*href="\/fonts\/kalam-latin-400\.woff2"[\s\S]*type="font\/woff2"/u);
   assert.match(css, /@font-face\s*\{[^}]*font-family:\s*"Kalam";[^}]*font-display:\s*swap;[^}]*kalam-latin-400\.woff2/s);
-  assert.match(css, /\.brand-intro-tagline\s*\{[^}]*color:\s*var\(--pencil\);[^}]*font-family:\s*"Kalam"[^;]*;[^}]*font-style:\s*normal;[^}]*font-weight:\s*400;[^}]*transform:\s*rotate\(-1\.1deg\);/s);
+  assert.match(css, /--pencil-sage:\s*#85897a;/u);
+  assert.match(css, /\.brand-intro-tagline\s*\{[^}]*width:\s*min\(310px, calc\(100vw - 48px\)\);[^}]*color:\s*var\(--pencil-sage\);[^}]*font-family:\s*"Kalam"[^;]*;[^}]*font-style:\s*normal;[^}]*font-weight:\s*400;[^}]*text-wrap:\s*balance;[^}]*transform:\s*rotate\(-1\.1deg\);/s);
   assert.match(css, /\.brand-intro-tagline-paper path\s*\{[^}]*stroke:\s*var\(--paper\);[^}]*stroke-linecap:\s*round;[^}]*opacity:\s*0\.74;/s);
-  assert.match(css, /@media \(max-width: 620px\)[\s\S]*\.brand-intro-tagline\s*\{[^}]*min-width:\s*min\(278px, calc\(100vw - 72px\)\);[^}]*font-size:\s*17px;/s);
+  assert.match(css, /@media \(max-width: 620px\)[\s\S]*\.brand-intro-tagline\s*\{[^}]*width:\s*min\(278px, calc\(100vw - 72px\)\);[^}]*font-size:\s*17px;/s);
   assert.equal(font.subarray(0, 4).toString("ascii"), "wOF2");
   assert.ok(font.length < 24_000, "la police manuscrite doit rester légère");
   assert.match(license, /SIL OPEN FONT LICENSE Version 1\.1/u);

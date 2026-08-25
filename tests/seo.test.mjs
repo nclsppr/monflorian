@@ -54,6 +54,7 @@ test("les aperçus sociaux utilisent une image absolue aux dimensions annoncées
   assert.deepEqual([...card.subarray(0, 8)], [137, 80, 78, 71, 13, 10, 26, 10]);
   assert.equal(card.readUInt32BE(16), 1200);
   assert.equal(card.readUInt32BE(20), 630);
+  assert.ok(card.length < 300 * 1024, "la carte sociale doit rester sous 300 Kio");
 });
 
 test("robots et sitemap ne publient que l’accueil canonique", () => {
@@ -91,7 +92,8 @@ test("les redirections canoniques produisent de vraies réponses HTTP", () => {
     ["https://www.monflorian.com:8443/guide", "https://monflorian.com/guide"],
     ["https://monflorian.com/index.html?ref=test", "https://monflorian.com/?ref=test"],
     ["https://www.monflorian.com/index.html?ref=test", "https://monflorian.com/?ref=test"],
-    ["https://monflorian.com/v2/?avatar=wind", "https://monflorian.com/v2?avatar=wind"],
+    ["https://monflorian.com/v2?avatar=wind", "https://monflorian.com/?avatar=wind"],
+    ["https://monflorian.com/v2/?avatar=wind", "https://monflorian.com/?avatar=wind"],
     ["https://monflorian.com/confidentialite.html", "https://monflorian.com/confidentialite"],
   ];
 
@@ -138,10 +140,7 @@ test("les routes HTML publiques sont réécrites sans redirection interne", () =
   const asset = new Request("https://monflorian.com/styles.css");
 
   assert.equal(staticAssetRequest(home).url, "http://127.0.0.1:8787/index.html?ref=test");
-  assert.equal(
-    staticAssetRequest(avatarTest).url,
-    "https://monflorian.com/index.html?avatar=wind",
-  );
+  assert.equal(staticAssetRequest(avatarTest), avatarTest);
   assert.equal(
     staticAssetRequest(privacy).url,
     "https://monflorian.com/confidentialite.html?ref=test",
@@ -153,11 +152,8 @@ test("les routes HTML publiques sont réécrites sans redirection interne", () =
   );
 });
 
-test("la variante d’avatar reste hors index sans masquer l’accueil", () => {
-  assert.equal(
-    shouldNoIndexStaticAsset(new Request("https://monflorian.com/v2?avatar=flower")),
-    true,
-  );
+test("seule la surface workers.dev reste hors index parmi les assets publics", () => {
+  assert.equal(shouldNoIndexStaticAsset(new Request("https://monflorian.com/v2")), false);
   assert.equal(shouldNoIndexStaticAsset(new Request("https://monflorian.com/")), false);
   assert.equal(
     shouldNoIndexStaticAsset(new Request("https://monflorian.nclsppr.workers.dev/")),

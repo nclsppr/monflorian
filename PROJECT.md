@@ -48,8 +48,8 @@ client et le Voyage vivant restent des hypothèses non livrées.
 - Booking en mode `external`, sans affiliation annoncée.
 - Aperçu Cloudflare public qui refuse toute génération.
 - Custom Domains `monflorian.com` et `www.monflorian.com` actifs en HTTPS.
-- Variante visuelle `/v2` hors index pour comparer deux familles de cinq
-  portraits, sans modifier le parcours ni ses garde-fous.
+- Famille validée de cinq portraits V2 sur l'accueil, avec rotation aléatoire
+  et choix facultatif par `?avatar=`. L'ancienne route `/v2` redirige vers `/`.
 
 ### À livrer avant une génération réelle
 
