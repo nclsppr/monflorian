@@ -7,17 +7,18 @@ publiques. Le relevé DNS de fond date du 2026-08-24.
 
 `https://monflorian.com`, `https://www.monflorian.com` et la surface de
 diagnostic `workers.dev` servent le même Worker Cloudflare. L'apex répond en
-HTTPS avec la version `711148f5-3f4f-4f44-81ae-235e729f9595`. `www`, HTTP et
+HTTPS avec la version `621a7fce-64cf-4759-a538-a873025a3346`. `www`, HTTP et
 les suffixes HTML publics redirigent désormais en `308` vers leur URL HTTPS
 canonique.
 
 L'accueil indexable présente désormais le service comme étant en préparation.
-Le logo occupe le premier écran puis rejoint l'en-tête au défilement. L'exemple
-de voyage dans le téléphone gagne une profondeur légère. La copie visible dit
-« Ton voyage, à ton rythme » et explique que le formulaire n'envoie encore
-aucune donnée. Les API, les voyages privés, leurs médias et `workers.dev`
-restent hors index. Les redirections privées et techniques restent en
-`no-store`.
+Le grand logo occupe le premier écran et défile avec la page ; sa version
+compacte apparaît ensuite dans l'en-tête sans calcul continu du défilement.
+L'exemple de voyage reste fixe sur écran tactile et gagne une profondeur légère
+sur pointeur précis compatible. La copie visible dit « Ton voyage, à ton
+rythme » et explique que le formulaire n'envoie encore aucune donnée. Les API,
+les voyages privés, leurs médias et `workers.dev` restent hors index. Les
+redirections privées et techniques restent en `no-store`.
 
 La zone ne reçoit aucun courriel humain. Cloudflare Email Service est activé
 avec ses seuls DNS d'envoi, de signature et de gestion des bounces.
@@ -33,7 +34,7 @@ manquants.
 
 | Ressource | État | Preuve |
 | --- | --- | --- |
-| Worker `monflorian` | déployé | version `711148f5-3f4f-4f44-81ae-235e729f9595` |
+| Worker `monflorian` | déployé | version `621a7fce-64cf-4759-a538-a873025a3346` |
 | Static Assets | actifs | interface et visuels servis par l'apex et `www` |
 | D1 `monflorian-production` | actif, juridiction `eu`, région d'exécution `EEUR` | migrations `0001`, `0002` et `0003` appliquées |
 | Tables D1 | vides et prêtes | `trips`, `trip_assets`, `daily_quotas` |
@@ -69,19 +70,22 @@ manquants.
   `same-origin` et `no-referrer`.
 - Un jeton synthétique inconnu sous `/voyages/` répond `404`, `no-store`,
   `noindex`, `nofollow` et `no-referrer`.
-- Le navigateur public à `1280 × 720` mesure un dépassement horizontal nul et
-  un logo centré de `520 × 188 px` avant le défilement. À `390 × 844`, le logo
-  rejoint l'en-tête à `158 × 57 px`, l'état « En préparation » reste lisible et
-  l'aperçu du Portugal conserve un parallaxe borné sans débordement.
-- La réduction des mouvements supprime les transformations et garde directement
-  le logo compact. Cette règle est couverte par la régression frontend.
+- Le navigateur public à `1280 × 720` mesure un dépassement horizontal nul, un
+  lockup centré de `520 px` et un mot-symbole PNG `676 × 362` rendu à
+  `325 × 174 px` en DPR 1, sans transformation. À `390 × 844`, le lockup mesure
+  `304 px`, puis le logo compact apparaît dans l'en-tête sans débordement.
+- Les appareils tactiles gardent l'aperçu du Portugal fixe. La profondeur CSS
+  native est limitée aux pointeurs précis ; la réduction des mouvements la
+  supprime aussi. Ces règles sont couvertes par les régressions frontend.
+- Le contrôle public a été effectué dans Chromium. Aucun iPhone Safari ni poste
+  Windows 11 physique n'était disponible pendant cette tranche.
 - Aucun secret, brief, courriel ou photo n'a été envoyé pendant ces sondes.
 
 ## État du dépôt et de la livraison
 
-- Source runtime : `main` à `41aed05b94122c51bf6eaffc4561359cb1d57abe`,
-  issue de la PR [#31](https://github.com/nclsppr/monflorian/pull/31).
-- Les runs `32835924931` (`Cloudflare release`) et `32835924933` (`Verify`) du
+- Source runtime : `main` à `d9ea2e5599c3b3b9625a29c61f7635a808b57b1f`,
+  issue de la PR [#33](https://github.com/nclsppr/monflorian/pull/33).
+- Les runs `32841075336` (`Cloudflare release`) et `32841075379` (`Verify`) du
   SHA fusionné sont verts.
 - Le dépôt GitHub ne possède actuellement aucun secret Actions Cloudflare.
 - Le déploiement du SHA fusionné a donc été réalisé depuis la session Wrangler
