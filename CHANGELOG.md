@@ -4,6 +4,10 @@ Git reste la source du diff technique. Les ADR expliquent les décisions importa
 
 ## Non publié
 
+- Alignement du grand logo et de toute l'introduction sur les gouttières du
+  contenu, avec une largeur maximale commune de `1240 px`.
+- Passage de la note « Alors, on part où ? » en Kalam auto-hébergée et gris
+  graphite, avec un papier et une empreinte resserrés sur mobile.
 - Ajout de la variante publique `/v2`, hors index, pour comparer cinq nouveaux
   portraits de Florian à la famille d'origine sans dupliquer l'accueil.
 - Ajout du paramètre facultatif `?avatar=` pour comparer la même variante dans

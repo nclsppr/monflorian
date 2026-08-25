@@ -188,10 +188,11 @@ test("le grand logo utilise une surface réelle et un mot-symbole haute définit
   assert.match(introRule, /width:\s*100%;/u);
   assert.doesNotMatch(introRule, /(?:scale\(|will-change)/u);
   assert.doesNotMatch(headerSwapRules, /(?:scale\(|will-change)/u);
-  assert.match(css, /\.brand-intro-content\s*\{[^}]*width:\s*100%;/s);
+  assert.match(css, /\.brand-intro-content\s*\{[^}]*width:\s*min\(1240px, calc\(100% - 40px\)\);[^}]*margin-inline:\s*auto;/s);
   assert.match(css, /html\.has-intro-swap \.brand-intro\s*\{[^}]*grid-template-columns:\s*minmax\(0, 1fr\);/s);
   assert.match(css, /html\.has-intro-swap \.brand-intro\s*\{[^}]*min-height:\s*calc\(100svh - 92px\);[^}]*padding-block:[^;]*18svh/s);
   assert.match(css, /@media \(max-width: 620px\)[\s\S]*\.brand-intro-lockup\s*\{[^}]*width:\s*100%;/s);
+  assert.match(css, /@media \(max-width: 620px\)[\s\S]*\.brand-intro-content\s*\{[^}]*width:\s*min\(100% - 28px, 1240px\);/s);
   assert.match(css, /html\.has-intro-swap \.site-header\s*\{[^}]*position:\s*sticky;/s);
   assert.match(css, /@media print[\s\S]*\.site-header-surface,[\s\S]*\.brand-intro,/s);
 });
@@ -199,6 +200,8 @@ test("le grand logo utilise une surface réelle et un mot-symbole haute définit
 test("l’accroche du logo ressemble à une note fixe de Florian", () => {
   const html = source("app/public/index.html");
   const css = source("app/public/styles.css");
+  const license = source("app/public/fonts/Kalam-OFL.txt");
+  const font = readFileSync(new URL("../app/public/fonts/kalam-latin-400.woff2", import.meta.url));
 
   assert.match(
     html,
@@ -206,8 +209,14 @@ test("l’accroche du logo ressemble à une note fixe de Florian", () => {
   );
   assert.equal((html.match(/class="brand-intro-tagline-paper"/gu) || []).length, 1);
   assert.equal((html.match(/<path d="M/gu) || []).length, 3);
-  assert.match(css, /\.brand-intro-tagline\s*\{[^}]*color:\s*var\(--blue\);[^}]*font-style:\s*italic;[^}]*transform:\s*rotate\(-1\.1deg\);/s);
+  assert.match(html, /rel="preload"[\s\S]*href="\/fonts\/kalam-latin-400\.woff2"[\s\S]*type="font\/woff2"/u);
+  assert.match(css, /@font-face\s*\{[^}]*font-family:\s*"Kalam";[^}]*font-display:\s*swap;[^}]*kalam-latin-400\.woff2/s);
+  assert.match(css, /\.brand-intro-tagline\s*\{[^}]*color:\s*var\(--pencil\);[^}]*font-family:\s*"Kalam"[^;]*;[^}]*font-style:\s*normal;[^}]*font-weight:\s*400;[^}]*transform:\s*rotate\(-1\.1deg\);/s);
   assert.match(css, /\.brand-intro-tagline-paper path\s*\{[^}]*stroke:\s*var\(--paper\);[^}]*stroke-linecap:\s*round;[^}]*opacity:\s*0\.74;/s);
+  assert.match(css, /@media \(max-width: 620px\)[\s\S]*\.brand-intro-tagline\s*\{[^}]*min-width:\s*min\(278px, calc\(100vw - 72px\)\);[^}]*font-size:\s*17px;/s);
+  assert.equal(font.subarray(0, 4).toString("ascii"), "wOF2");
+  assert.ok(font.length < 24_000, "la police manuscrite doit rester légère");
+  assert.match(license, /SIL OPEN FONT LICENSE Version 1\.1/u);
   assert.doesNotMatch(css, /intro-tagline-type/u);
 });
 

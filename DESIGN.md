@@ -18,6 +18,7 @@ colors:
   cream: "#fff8eb"
   paper: "#fffefb"
   surface: "#f4f7ff"
+  pencil: "#454950"
   line: "rgba(6, 26, 59, 0.12)"
   muted: "#66738b"
 typography:
@@ -28,6 +29,9 @@ typography:
     fontWeight: 800
     lineHeight: 0.99
     letterSpacing: -0.064em
+  note:
+    fontFamily: '"Kalam", "Bradley Hand", "Segoe Print", cursive'
+    fontWeight: 400
 rounded:
   xl: 34px
   lg: 26px
@@ -73,25 +77,29 @@ pas détourner l'attention du composeur. Florian reste un repère de marque dans
 l'en-tête et un conseiller ponctuel dans le contenu.
 
 Sur l'accueil, un grand lockup modulable occupe d'abord le centre du premier
-écran à sa taille de rendu réelle. Le lockup complet prend `100 %` de la largeur
-disponible, sur grand écran comme sur mobile. Les sources d'introduction à
-`1024 px` pour le portrait et `1352 px` pour le mot-symbole préservent sa
-netteté sans charger les PNG masters. Sur grand écran, l'introduction occupe au
-moins la hauteur visible sous l'en-tête et réserve un espace volontairement
-généreux avant le hero. Elle défile avec la page, puis le logo compact apparaît
-dans l'en-tête quand l'introduction est passée. Ce basculement repose sur un
-seuil d'intersection, sans lecture continue du défilement, changement d'échelle
-ni boucle d'animation. L'aperçu du téléphone reste fixe sur les appareils
-tactiles. Sur un pointeur précis, les navigateurs compatibles peuvent ajouter
-une profondeur courte avec leur timeline de vue native. La préférence de
-réduction des mouvements supprime cette profondeur et les transitions.
+écran à sa taille de rendu réelle. Son conteneur reprend exactement les
+gouttières du contenu et ne dépasse jamais `1240 px`. Le lockup complet prend
+`100 %` de ce conteneur, sur grand écran comme sur mobile. Les sources
+d'introduction à `1024 px` pour le portrait et `1352 px` pour le mot-symbole
+préservent sa netteté sans charger les PNG masters. Sur grand écran,
+l'introduction occupe au moins la hauteur visible sous l'en-tête et réserve un
+espace volontairement généreux avant le hero. Elle défile avec la page, puis le
+logo compact apparaît dans l'en-tête quand l'introduction est passée. Ce
+basculement repose sur un seuil d'intersection, sans lecture continue du
+défilement, changement d'échelle ni boucle d'animation. L'aperçu du téléphone
+reste fixe sur les appareils tactiles. Sur un pointeur précis, les navigateurs
+compatibles peuvent ajouter une profondeur courte avec leur timeline de vue
+native. La préférence de réduction des mouvements supprime cette profondeur et
+les transitions.
 
 La note « Alors, on part où ? » accompagne uniquement le grand lockup. Trois
 traits blancs, irréguliers et légèrement transparents donnent l'impression que
-Florian l'a écrite sur la page. Le texte bleu électrique est incliné et reste
-statique : aucun effet de saisie, aucune boucle et aucun mouvement ne sont
-nécessaires. Le même traitement apparaît sur `/` et `/v2` afin que la
-comparaison porte seulement sur le portrait.
+Florian l'a écrite sur la page. Le texte utilise Kalam en gris graphite, comme
+un trait de crayon, et reste statique : aucun effet de saisie, aucune boucle et
+aucun mouvement ne sont nécessaires. La fonte latine WOFF2 est auto-hébergée,
+préchargée et limitée à ce seul rôle. Sur mobile, la note et son papier se
+resserrent sans descendre sous `17 px`. Le même traitement apparaît sur `/` et
+`/v2` afin que la comparaison porte seulement sur le portrait.
 
 ## Colors
 
@@ -101,9 +109,9 @@ Le ciel et le cyan appartiennent aux aperçus de destination. Le citron signale 
 
 ## Typography
 
-Le produit utilise la pile système du prototype. Les grands titres sont lourds, courts et serrés. Ils portent une idée par bloc. Le corps de texte garde une largeur de lecture modérée et un rythme plus ouvert.
+Le produit utilise la pile système du prototype. Les grands titres sont lourds, courts et serrés. Ils portent une idée par bloc. Le corps de texte garde une largeur de lecture modérée et un rythme plus ouvert. Kalam est réservée à la seule note manuscrite de l'introduction.
 
-Les capitales espacées sont réservées aux petits repères, jours et métadonnées. Les libellés d'action restent en casse naturelle. Une future police de marque exige une décision et une preuve de chargement, de performance et de droits.
+Les capitales espacées sont réservées aux petits repères, jours et métadonnées. Les libellés d'action restent en casse naturelle. Toute autre police de marque exige une décision et une preuve de chargement, de performance et de droits.
 
 ## Layout
 
