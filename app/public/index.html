@@ -57,9 +57,9 @@
     <link rel="apple-touch-icon" href="/assets/florian-icon-192.png" />
     <link rel="manifest" href="/manifest.webmanifest" />
     <script src="/avatar.js?v=1"></script>
-    <script src="/motion.js?v=1"></script>
-    <link rel="stylesheet" href="/styles.css?v=motion-home-1" />
-    <script src="/app.js?v=motion-home-1" defer></script>
+    <script src="/motion.js?v=2"></script>
+    <link rel="stylesheet" href="/styles.css?v=motion-stable-1" />
+    <script src="/app.js?v=motion-stable-1" defer></script>
   </head>
   <body itemscope itemtype="https://schema.org/WebSite">
     <meta itemprop="name" content="Mon Florian" />
@@ -88,8 +88,6 @@
           <img
             class="brand-wordmark"
             src="/assets/monflorian-wordmark-web.webp"
-            srcset="/assets/monflorian-wordmark-web.webp 338w, /assets/monflorian-wordmark.png 676w"
-            sizes="(max-width: 620px) 50vw, 330px"
             alt=""
             width="338"
             height="181"
@@ -102,7 +100,27 @@
         </div>
       </header>
 
-      <div class="brand-intro-space" aria-hidden="true"></div>
+      <div class="brand-intro" aria-hidden="true">
+        <span class="brand-intro-lockup">
+          <span class="brand-character">
+            <img
+              data-florian-variant
+              src="/assets/florian-original-web.webp"
+              alt=""
+              width="384"
+              height="384"
+            />
+          </span>
+          <img
+            class="brand-wordmark"
+            src="/assets/monflorian-wordmark.png"
+            alt=""
+            width="676"
+            height="362"
+          />
+        </span>
+        <span class="brand-intro-trigger"></span>
+      </div>
 
       <main id="main">
         <section class="hero" aria-labelledby="hero-title">
