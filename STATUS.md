@@ -7,16 +7,17 @@ publiques. Le relevé DNS de fond date du 2026-08-24.
 
 `https://monflorian.com`, `https://www.monflorian.com` et la surface de
 diagnostic `workers.dev` servent le même Worker Cloudflare. L'apex répond en
-HTTPS avec la version `2dafd61a-0980-4332-9251-3bb54788001f`. `www`, HTTP et
+HTTPS avec la version `a5ea6451-debb-40d9-9f5d-00c8cedfdeb3`. `www`, HTTP et
 les suffixes HTML publics redirigent désormais en `308` vers leur URL HTTPS
 canonique.
 
 L'accueil indexable présente désormais le service comme étant en préparation.
-Le lockup complet occupe `860 px` sur grand écran et `88 %` de la largeur sur
-mobile. L'accroche « Ton voyage commence avec une envie. » apparaît une fois
-sous le logo, puis la version compacte prend place dans l'en-tête sans calcul
-continu du défilement. L'exemple de voyage reste fixe sur écran tactile et
-gagne une profondeur légère sur pointeur précis compatible. La copie visible
+Le lockup complet occupe toute la largeur disponible sur grand écran comme sur
+mobile. Sur bureau, l'introduction réserve un grand espace avant le hero.
+L'accroche bleu profond « Ton voyage commence avec une envie. » s'écrit une
+fois sous le logo, puis la version compacte prend place dans l'en-tête sans
+calcul continu du défilement. L'exemple de voyage reste fixe sur écran tactile
+et gagne une profondeur légère sur pointeur précis compatible. La copie visible
 dit aussi « Ton voyage, à ton rythme » et explique que le formulaire n'envoie
 encore aucune donnée. Les API, les voyages privés, leurs médias et
 `workers.dev` restent hors index. Les redirections privées et techniques
@@ -36,7 +37,7 @@ manquants.
 
 | Ressource | État | Preuve |
 | --- | --- | --- |
-| Worker `monflorian` | déployé | version `2dafd61a-0980-4332-9251-3bb54788001f` |
+| Worker `monflorian` | déployé | version `a5ea6451-debb-40d9-9f5d-00c8cedfdeb3` |
 | Static Assets | actifs | interface et visuels servis par l'apex et `www` |
 | D1 `monflorian-production` | actif, juridiction `eu`, région d'exécution `EEUR` | migrations `0001`, `0002` et `0003` appliquées |
 | Tables D1 | vides et prêtes | `trips`, `trip_assets`, `daily_quotas` |
@@ -72,13 +73,14 @@ manquants.
   `same-origin` et `no-referrer`.
 - Un jeton synthétique inconnu sous `/voyages/` répond `404`, `no-store`,
   `noindex`, `nofollow` et `no-referrer`.
-- Le candidat fusionné relu à `1440 × 900` mesure un dépassement horizontal
-  nul, un lockup centré de `860 px` et un mot-symbole PNG `676 × 362` rendu à
-  `540 × 289 px`, sans transformation. À `390 × 844`, le lockup mesure
-  `343 px`, soit `88 %` du viewport, puis le logo compact apparaît dans
-  l'en-tête sans débordement.
-- L'accroche entre une seule fois en `800 ms` avec `opacity` et `transform`.
-  Elle reste statique lorsque la réduction des mouvements est demandée.
+- Le runtime public relu à `1440 × 900` mesure un dépassement horizontal nul,
+  un lockup de `1440 px`, un avatar de `526 px` et un mot-symbole WebP rendu à
+  `907 × 486 px`. Le hero commence à `900 px`, environ `170 px` après la fin de
+  l'accroche. À `390 × 844`, le lockup mesure `390 px`, le mot-symbole arrive
+  exactement au bord droit et le hero commence à `596 px`, sans débordement.
+- L'accroche bleu profond est révélée une seule fois en `1 400 ms`, par
+  `clip-path` et `35` pas. Elle reste immédiatement lisible lorsque la
+  réduction des mouvements est demandée.
 - Les appareils tactiles gardent l'aperçu du Portugal fixe. La profondeur CSS
   native est limitée aux pointeurs précis ; la réduction des mouvements la
   supprime aussi. Ces règles sont couvertes par les régressions frontend.
@@ -88,9 +90,9 @@ manquants.
 
 ## État du dépôt et de la livraison
 
-- Source runtime : `main` à `d49f40db8adb951b8b999cbab4071c799234bb49`,
-  issue de la PR [#35](https://github.com/nclsppr/monflorian/pull/35).
-- Les runs `32870479571` (`Cloudflare release`) et `32870479667` (`Verify`) du
+- Source runtime : `main` à `030d675d59e84da81c14a001aab0161f0fb06e71`,
+  issue de la PR [#37](https://github.com/nclsppr/monflorian/pull/37).
+- Les runs `32872922049` (`Cloudflare release`) et `32872922188` (`Verify`) du
   SHA fusionné sont verts.
 - Le dépôt GitHub ne possède actuellement aucun secret Actions Cloudflare.
 - Le déploiement du SHA fusionné a donc été réalisé depuis la session Wrangler
