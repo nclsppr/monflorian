@@ -7,15 +7,17 @@ publiques. Le relevé DNS de fond date du 2026-08-24.
 
 `https://monflorian.com`, `https://www.monflorian.com` et la surface de
 diagnostic `workers.dev` servent le même Worker Cloudflare. L'apex répond en
-HTTPS avec la version `36448047-c74a-4e92-b0f5-913bf3ca8212`. `www`, HTTP et
+HTTPS avec la version `711148f5-3f4f-4f44-81ae-235e729f9595`. `www`, HTTP et
 les suffixes HTML publics redirigent désormais en `308` vers leur URL HTTPS
 canonique.
 
-L'accueil indexable présente le service comme s'il était ouvert sur
-invitation : code d'accès avant le brief, informations réelles, limites
-visibles, FAQ, titre, description, canonical, carte sociale, `robots.txt` et
-sitemap. Les API, les voyages privés, leurs médias et `workers.dev` restent
-hors index. Les redirections privées et techniques restent en `no-store`.
+L'accueil indexable présente désormais le service comme étant en préparation.
+Le logo occupe le premier écran puis rejoint l'en-tête au défilement. L'exemple
+de voyage dans le téléphone gagne une profondeur légère. La copie visible dit
+« Ton voyage, à ton rythme » et explique que le formulaire n'envoie encore
+aucune donnée. Les API, les voyages privés, leurs médias et `workers.dev`
+restent hors index. Les redirections privées et techniques restent en
+`no-store`.
 
 La zone ne reçoit aucun courriel humain. Cloudflare Email Service est activé
 avec ses seuls DNS d'envoi, de signature et de gestion des bounces.
@@ -31,7 +33,7 @@ manquants.
 
 | Ressource | État | Preuve |
 | --- | --- | --- |
-| Worker `monflorian` | déployé | version `36448047-c74a-4e92-b0f5-913bf3ca8212` |
+| Worker `monflorian` | déployé | version `711148f5-3f4f-4f44-81ae-235e729f9595` |
 | Static Assets | actifs | interface et visuels servis par l'apex et `www` |
 | D1 `monflorian-production` | actif, juridiction `eu`, région d'exécution `EEUR` | migrations `0001`, `0002` et `0003` appliquées |
 | Tables D1 | vides et prêtes | `trips`, `trip_assets`, `daily_quotas` |
@@ -45,8 +47,8 @@ manquants.
 ## Preuves publiques Cloudflare
 
 - `/` répond `200` sur l'apex avec le titre
-  `Itinéraire de voyage personnalisé | Mon Florian`, sa canonical et les
-  en-têtes de sécurité.
+  `Préparer un voyage à ton rythme | Mon Florian`, sa canonical, le script
+  local `/motion.js` et les en-têtes de sécurité.
 - HTTP, `www`, `/index.html` et `/confidentialite.html` répondent `308` vers
   l'URL HTTPS canonique en conservant la requête utile.
 - `/robots.txt`, `/sitemap.xml`, la carte sociale PNG et les portraits WebP
@@ -67,16 +69,19 @@ manquants.
   `same-origin` et `no-referrer`.
 - Un jeton synthétique inconnu sous `/voyages/` répond `404`, `no-store`,
   `noindex`, `nofollow` et `no-referrer`.
-- Le navigateur public à `1280 × 720` mesure un dépassement horizontal nul,
-  un champ de code à `52 px` avec `13 px` de padding vertical et un bouton à
-  `52 px`. Les sections éditoriales et la FAQ ont aussi été contrôlées.
+- Le navigateur public à `1280 × 720` mesure un dépassement horizontal nul et
+  un logo centré de `520 × 188 px` avant le défilement. À `390 × 844`, le logo
+  rejoint l'en-tête à `158 × 57 px`, l'état « En préparation » reste lisible et
+  l'aperçu du Portugal conserve un parallaxe borné sans débordement.
+- La réduction des mouvements supprime les transformations et garde directement
+  le logo compact. Cette règle est couverte par la régression frontend.
 - Aucun secret, brief, courriel ou photo n'a été envoyé pendant ces sondes.
 
 ## État du dépôt et de la livraison
 
-- Source runtime : `main` à `344c26e9d01dfd872cd8b39f96ff0f84098dcb52`,
-  issue de la PR [#29](https://github.com/nclsppr/monflorian/pull/29).
-- Les runs `32828870730` (`Cloudflare release`) et `32828870752` (`Verify`) du
+- Source runtime : `main` à `41aed05b94122c51bf6eaffc4561359cb1d57abe`,
+  issue de la PR [#31](https://github.com/nclsppr/monflorian/pull/31).
+- Les runs `32835924931` (`Cloudflare release`) et `32835924933` (`Verify`) du
   SHA fusionné sont verts.
 - Le dépôt GitHub ne possède actuellement aucun secret Actions Cloudflare.
 - Le déploiement du SHA fusionné a donc été réalisé depuis la session Wrangler
@@ -108,6 +113,8 @@ positionnement dans les moteurs, ni Core Web Vitals réels, ni appel OpenAI, ni
 coût fournisseur, ni purge applicative distante sur des données synthétiques,
 ni validation Turnstile de bout en bout, ni envoi synthétique de courriel, ni
 affiliation, ni paiement. La trace spécialisée Chrome DevTools n'a pas été
-exécutée car son serveur MCP n'est pas encore activé dans Codex. Aucun
-utilisateur ne doit envoyer de brief ou de photo tant que les gates de
-`RESTE-A-FAIRE.md` ne sont pas terminées.
+exécutée car son serveur MCP n'est pas encore activé dans Codex. La suppression
+du masque tactile est couverte par le CSS et les tests, sans contrôle sur un
+iPhone Safari physique pendant cette tranche. Aucun utilisateur ne doit envoyer
+de brief ou de photo tant que les gates de `RESTE-A-FAIRE.md` ne sont pas
+terminées.
