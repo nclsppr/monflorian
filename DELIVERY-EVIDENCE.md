@@ -3,6 +3,47 @@
 Chaque section nomme son environnement et ses limites. Les sections Atlas sont
 des archives historiques ; la section Cloudflare porte la migration courante.
 
+## Correctif de fluidité mobile et de netteté du logo, 2026-08-25
+
+La PR [#33](https://github.com/nclsppr/monflorian/pull/33) remplace le mouvement
+continu du logo par un basculement ponctuel et corrige sa source sur grand
+écran. Cette livraison annule les choix de mouvement documentés dans la section
+« Accueil animé et état de préparation » ci-dessous. Elle ne modifie ni le
+runtime privé, ni les secrets, ni les garde-fous d'ouverture.
+
+| Preuve | Résultat |
+| --- | --- |
+| Source runtime | `d9ea2e5599c3b3b9625a29c61f7635a808b57b1f` |
+| Version active | `621a7fce-64cf-4759-a538-a873025a3346` |
+| CI du SHA | runs `32841075336` et `32841075379` verts |
+| Bundle Worker | 99,73 Kio avant compression, 24,68 Kio gzip, 27 assets lus |
+| Défilement | aucun écouteur `scroll`, accès à `scrollY` ou `requestAnimationFrame` dans les scripts publics |
+| Premier écran | grand lockup en mise en page réelle, puis apparition du logo compact par `IntersectionObserver` |
+| Logo Windows | mot-symbole PNG `676 × 362`, rendu à `325 × 174 px` en DPR 1, sans `scale()` ni `will-change` |
+| Téléphone | fixe sur écran tactile ; profondeur CSS native réservée aux pointeurs précis compatibles |
+| Bureau public | viewport `1280 × 720`, lockup `520 px`, dépassement `0` |
+| Mobile public | viewport `390 × 844`, lockup `304 px`, dépassement `0` |
+| Console publique | aucune erreur ni alerte |
+| Garde-fous | `generationReady: false`, `serviceReady: false`, création `false`, `POST /api/trips` en `503` |
+
+`./scripts/verify.sh` passe avec 48 tests, le typage TypeScript, le dry-run
+Wrangler, l'image Docker, les sondes Compose ainsi que le build et le lint de
+46 fichiers Nimbus. Les régressions interdisent désormais tout mouvement lié
+au défilement dans les scripts publics, contrôlent la source haute définition
+et conservent la suppression de la surbrillance tactile iOS.
+
+Les sondes publiques confirment `/motion.js?v=2`, la feuille
+`motion-stable-1`, le PNG haute définition, la version Worker cohérente sur la
+santé et le marqueur de release, `www` en `308` et `workers.dev` en `noindex`.
+Le rendu public a été relu dans Chromium aux deux viewports indiqués. Aucun
+iPhone Safari ni poste Windows 11 physique n'était disponible pendant cette
+tranche ; le comportement tactile statique repose sur la media query de
+capacités et sa régression automatisée.
+
+Aucun brief, portrait, courriel, secret ni appel OpenAI n'a été envoyé. Le corps
+synthétique vide utilisé pour la sonde de création a été refusé en `503` avant
+tout traitement.
+
 ## Accueil animé et état de préparation, 2026-08-25
 
 La PR [#31](https://github.com/nclsppr/monflorian/pull/31) met en scène le logo,
