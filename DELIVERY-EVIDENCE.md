@@ -3,6 +3,44 @@
 Chaque section nomme son environnement et ses limites. Les sections Atlas sont
 des archives historiques ; la section Cloudflare porte la migration courante.
 
+## Accueil animé et état de préparation, 2026-08-25
+
+La PR [#31](https://github.com/nclsppr/monflorian/pull/31) met en scène le logo,
+ajoute une profondeur courte à l'exemple de voyage et retire le vocabulaire qui
+présentait les demandes comme « fermées ». Elle ne modifie ni le runtime privé,
+ni les secrets, ni les garde-fous d'ouverture.
+
+| Preuve | Résultat |
+| --- | --- |
+| Source runtime | `41aed05b94122c51bf6eaffc4561359cb1d57abe` |
+| Version active | `711148f5-3f4f-4f44-81ae-235e729f9595` |
+| CI du SHA | runs `32835924931` et `32835924933` verts |
+| Bundle Worker | 99,73 Kio avant compression, 24,68 Kio gzip, 27 assets lus |
+| Premier écran | logo centré, puis réduction continue vers l'en-tête |
+| Exemple de voyage | téléphone, soleil et montagnes déplacés séparément, sans mouvement du texte |
+| Copie | « Ton voyage, à ton rythme », état « En préparation » et limite d'envoi explicite |
+| Tactile iOS | surbrillance native retirée des boutons, libellés et questions ; focus clavier conservé |
+| Bureau public | viewport `1280 × 720`, logo `520 × 188 px`, dépassement `0` |
+| Mobile public | viewport `390 × 844`, logo compact `158 × 57 px`, parallaxe actif, dépassement `0` |
+| Console publique | aucune erreur ni alerte |
+| Garde-fous | `generationReady: false`, `serviceReady: false`, création `false`, `POST /api/trips` en `503` |
+
+`./scripts/verify.sh` passe avec 47 tests, le typage TypeScript, le dry-run
+Wrangler, l'image Docker, les sondes Compose ainsi que le build et le lint de
+46 fichiers Nimbus. Les tests couvrent aussi l'ordre d'initialisation du
+mouvement, le repli `prefers-reduced-motion`, l'impression, le focus clavier et
+la surbrillance tactile.
+
+Les sondes publiques confirment le nouveau titre, `/motion.js` en `200`, la
+version Worker cohérente sur la santé et le marqueur de release, `www` en `308`
+et `workers.dev` en `noindex`. Le rendu public a été relu sur ordinateur et
+mobile. Le masque tactile n'a pas été contrôlé sur un iPhone Safari physique
+pendant cette tranche.
+
+Aucun brief, portrait, courriel, secret ni appel OpenAI n'a été envoyé. Le corps
+synthétique vide utilisé pour la sonde de création a été refusé en `503` avant
+tout traitement.
+
 ## Accueil indexable et formulaire public, 2026-08-25
 
 La PR [#29](https://github.com/nclsppr/monflorian/pull/29) publie l'accueil
