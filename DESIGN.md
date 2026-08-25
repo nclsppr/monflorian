@@ -66,6 +66,15 @@ Le changement se produit au chargement. Il ne tourne pas en boucle et ne doit
 pas détourner l'attention du composeur. Florian reste un repère de marque dans
 l'en-tête et un conseiller ponctuel dans le contenu.
 
+Sur l'accueil, le logo modulable occupe d'abord le centre du premier écran. Le
+défilement le réduit puis le ramène dans l'en-tête, sans changer de fichier ni
+de portrait pendant la visite. Le même mouvement révèle l'aperçu du voyage dans
+le téléphone avec une profondeur courte entre le cadre, le soleil et les
+montagnes. Ces transformations restent liées au défilement, s'arrêtent hors du
+champ et disparaissent quand la préférence de réduction des mouvements est
+active. Dans ce cas, le logo garde directement sa taille compacte dans
+l'en-tête et l'aperçu reste fixe.
+
 ## Colors
 
 L'encre structure les titres, le texte et le cadre du téléphone. Le bleu profond porte l'action principale quand du texte blanc doit atteindre le contraste AA. Le bleu électrique sert aux traits, liens et accents, pas aux longs textes.

@@ -4,6 +4,15 @@ Git reste la source du diff technique. Les ADR expliquent les décisions importa
 
 ## Non publié
 
+- Mise en scène du logo au premier écran, puis réduction continue vers
+  l'en-tête pendant le défilement. Le mouvement est supprimé quand la préférence
+  de réduction des animations est active.
+- Ajout d'une profondeur légère sur l'aperçu du voyage dans le téléphone, sans
+  déplacer le texte ni ajouter de dépendance d'animation.
+- Remplacement du vocabulaire « demandes fermées » par un état de préparation
+  factuel, et de l'accroche générique par « Ton voyage, à ton rythme ».
+- Suppression de la surbrillance rectangulaire native de Safari iOS sur les
+  libellés tactiles et les questions de la FAQ, sans retirer le focus clavier.
 - Ouverture de l'indexation de la seule page d'accueil avec titre, description,
   canonical, métadonnées sociales, nom de site structuré, `robots.txt` et
   sitemap limité à l'URL publique canonique. Les pages privées et les API

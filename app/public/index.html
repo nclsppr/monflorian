@@ -12,18 +12,18 @@
     />
     <meta
       name="description"
-      content="Mon Florian prépare un itinéraire de voyage personnalisé à partir de ton envie. Accès gratuit sur invitation, sans réservation sur le site."
+      content="Raconte ton envie à Mon Florian pour préparer un voyage à ton rythme. Accès gratuit sur invitation, sans réservation sur le site."
     />
-    <title>Itinéraire de voyage personnalisé | Mon Florian</title>
+    <title>Préparer un voyage à ton rythme | Mon Florian</title>
     <link rel="canonical" href="https://monflorian.com/" />
 
     <meta property="og:type" content="website" />
     <meta property="og:locale" content="fr_FR" />
     <meta property="og:site_name" content="Mon Florian" />
-    <meta property="og:title" content="Ton itinéraire de voyage personnalisé | Mon Florian" />
+    <meta property="og:title" content="Un voyage à ton rythme | Mon Florian" />
     <meta
       property="og:description"
-      content="Itinéraire de voyage personnalisé à partir de ton envie. Accès gratuit sur invitation, sans réservation sur le site."
+      content="Raconte ton envie à Mon Florian pour préparer un voyage à ton rythme. Accès gratuit sur invitation, sans réservation sur le site."
     />
     <meta property="og:url" content="https://monflorian.com/" />
     <meta
@@ -39,10 +39,10 @@
     />
 
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Ton itinéraire de voyage personnalisé | Mon Florian" />
+    <meta name="twitter:title" content="Un voyage à ton rythme | Mon Florian" />
     <meta
       name="twitter:description"
-      content="Itinéraire de voyage personnalisé à partir de ton envie. Accès gratuit sur invitation, sans réservation sur le site."
+      content="Raconte ton envie à Mon Florian pour préparer un voyage à ton rythme. Accès gratuit sur invitation, sans réservation sur le site."
     />
     <meta
       name="twitter:image"
@@ -57,8 +57,9 @@
     <link rel="apple-touch-icon" href="/assets/florian-icon-192.png" />
     <link rel="manifest" href="/manifest.webmanifest" />
     <script src="/avatar.js?v=1"></script>
-    <link rel="stylesheet" href="/styles.css?v=seo-home-1" />
-    <script src="/app.js?v=seo-home-1" defer></script>
+    <script src="/motion.js?v=1"></script>
+    <link rel="stylesheet" href="/styles.css?v=motion-home-1" />
+    <script src="/app.js?v=motion-home-1" defer></script>
   </head>
   <body itemscope itemtype="https://schema.org/WebSite">
     <meta itemprop="name" content="Mon Florian" />
@@ -66,14 +67,15 @@
     <meta itemprop="inLanguage" content="fr-FR" />
     <meta
       itemprop="description"
-      content="Mon Florian prépare un itinéraire de voyage personnalisé à partir de ton envie. Accès gratuit sur invitation, sans réservation sur le site."
+      content="Raconte ton envie à Mon Florian pour préparer un voyage à ton rythme. Accès gratuit sur invitation, sans réservation sur le site."
     />
     <link itemprop="url" href="https://monflorian.com/" />
     <a class="skip-link" href="#main">Aller au contenu</a>
 
-    <div class="page-shell">
+    <div id="top" class="page-shell">
+      <div class="site-header-surface" aria-hidden="true"></div>
       <header class="site-header" aria-label="En-tête">
-        <a class="brand" href="#main" aria-label="Mon Florian, revenir au début">
+        <a class="brand" href="#top" aria-label="Mon Florian, revenir au début">
           <span class="brand-character" aria-hidden="true">
             <img
               data-florian-variant
@@ -86,6 +88,8 @@
           <img
             class="brand-wordmark"
             src="/assets/monflorian-wordmark-web.webp"
+            srcset="/assets/monflorian-wordmark-web.webp 338w, /assets/monflorian-wordmark.png 676w"
+            sizes="(max-width: 620px) 50vw, 330px"
             alt=""
             width="338"
             height="181"
@@ -94,14 +98,16 @@
         <div class="launch-state" data-nosnippet>
           <span class="sr-only">Statut du service :</span>
           <span class="launch-dot" aria-hidden="true"></span>
-          <span id="launch-state-label">Vérification des demandes</span>
+          <span id="launch-state-label">Vérification de l’accès</span>
         </div>
       </header>
+
+      <div class="brand-intro-space" aria-hidden="true"></div>
 
       <main id="main">
         <section class="hero" aria-labelledby="hero-title">
           <div class="hero-copy">
-            <p class="service-label">Itinéraire de voyage personnalisé</p>
+            <p class="service-label">Ton voyage, à ton rythme</p>
             <h1 id="hero-title">Raconte-moi ton envie.<br /><span>Je prépare ton itinéraire.</span></h1>
             <p class="hero-lead">
               Décris la destination, les dates si tu les connais et le rythme souhaité. Tu recevras
@@ -116,8 +122,8 @@
             <div id="config-status" class="notice notice-loading" role="status" aria-live="polite" data-nosnippet>
               <span class="notice-spinner" aria-hidden="true"></span>
               <div>
-                <strong>Vérification des demandes</strong>
-                <p>Je vérifie si la création d’une proposition est ouverte.</p>
+                <strong>Vérification de l’accès</strong>
+                <p>Je vérifie si le formulaire peut envoyer une proposition.</p>
               </div>
             </div>
 
@@ -328,43 +334,45 @@
             <div class="preview-shape preview-shape-blue" aria-hidden="true"></div>
             <div class="preview-shape preview-shape-lime" aria-hidden="true"></div>
             <div class="paper-plane" aria-hidden="true">➤</div>
-            <article class="preview-phone">
-              <div class="phone-notch" aria-hidden="true"></div>
-              <div class="preview-cover">
-                <div class="preview-cover-top">
-                  <span>EXEMPLE DE PROPOSITION</span>
-                  <span>8 JOURS</span>
+            <div class="preview-phone-depth">
+              <article class="preview-phone">
+                <div class="phone-notch" aria-hidden="true"></div>
+                <div class="preview-cover">
+                  <div class="preview-cover-top">
+                    <span>EXEMPLE DE PROPOSITION</span>
+                    <span>8 JOURS</span>
+                  </div>
+                  <div class="preview-sun" aria-hidden="true"></div>
+                  <div class="preview-mountain back" aria-hidden="true"></div>
+                  <div class="preview-mountain front" aria-hidden="true"></div>
+                  <div class="preview-cover-copy">
+                    <small>APERÇU INDICATIF</small>
+                    <strong>Le Portugal<br />en train</strong>
+                  </div>
                 </div>
-                <div class="preview-sun" aria-hidden="true"></div>
-                <div class="preview-mountain back" aria-hidden="true"></div>
-                <div class="preview-mountain front" aria-hidden="true"></div>
-                <div class="preview-cover-copy">
-                  <small>APERÇU INDICATIF</small>
-                  <strong>Le Portugal<br />en train</strong>
+                <div class="preview-route">
+                  <div class="preview-route-head">
+                    <strong>Une proposition à vérifier</strong>
+                    <span>aucune réservation</span>
+                  </div>
+                  <div class="preview-day active">
+                    <span class="preview-day-number">J1</span>
+                    <span><strong>Premiers pas à Lisbonne</strong><small>Baixa · Alfama · miradouros</small></span>
+                    <span class="preview-thumbnail sea" aria-hidden="true"></span>
+                  </div>
+                  <div class="preview-day">
+                    <span class="preview-day-number">J3</span>
+                    <span><strong>Train vers Coimbra</strong><small>Trajet calme · vieille ville</small></span>
+                    <span class="preview-thumbnail lime" aria-hidden="true"></span>
+                  </div>
+                  <div class="preview-day">
+                    <span class="preview-day-number">J6</span>
+                    <span><strong>Deux jours à Porto</strong><small>Ribeira · jardins · océan</small></span>
+                    <span class="preview-thumbnail ink" aria-hidden="true"></span>
+                  </div>
                 </div>
-              </div>
-              <div class="preview-route">
-                <div class="preview-route-head">
-                  <strong>Une proposition à vérifier</strong>
-                  <span>aucune réservation</span>
-                </div>
-                <div class="preview-day active">
-                  <span class="preview-day-number">J1</span>
-                  <span><strong>Premiers pas à Lisbonne</strong><small>Baixa · Alfama · miradouros</small></span>
-                  <span class="preview-thumbnail sea" aria-hidden="true"></span>
-                </div>
-                <div class="preview-day">
-                  <span class="preview-day-number">J3</span>
-                  <span><strong>Train vers Coimbra</strong><small>Trajet calme · vieille ville</small></span>
-                  <span class="preview-thumbnail lime" aria-hidden="true"></span>
-                </div>
-                <div class="preview-day">
-                  <span class="preview-day-number">J6</span>
-                  <span><strong>Deux jours à Porto</strong><small>Ribeira · jardins · océan</small></span>
-                  <span class="preview-thumbnail ink" aria-hidden="true"></span>
-                </div>
-              </div>
-            </article>
+              </article>
+            </div>
             <div class="florian-card">
               <img
                 data-florian-variant

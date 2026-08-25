@@ -98,9 +98,9 @@ function hideStatus(element) {
   clearElement(element);
 }
 
-function setLaunchLabel(label, available) {
+function setLaunchLabel(label, tone = "default") {
   elements.launchStateLabel.textContent = label;
-  elements.launchState.classList.toggle("is-unavailable", !available);
+  elements.launchState.classList.toggle("is-unavailable", tone === "error");
 }
 
 function accessCodeIsRequired() {
@@ -203,8 +203,8 @@ function friendlyError(error) {
     }
     if (error.status === 503) {
       return {
-        title: "Demandes temporairement fermées",
-        message: "Rien n’a été envoyé. Recharge la page plus tard pour vérifier si les demandes sont ouvertes.",
+        title: "Service indisponible",
+        message: "Rien n’a été envoyé. Reviens plus tard pour vérifier l’accès.",
       };
     }
   }
@@ -215,16 +215,16 @@ function friendlyError(error) {
 }
 
 function renderClosedConfiguration() {
-  setLaunchLabel("Demandes fermées", false);
-  elements.configStatus.className = "notice notice-unavailable";
-  elements.configStatus.innerHTML = "<div><strong>Demandes fermées</strong><p>Le formulaire présente le service, mais aucun brief, courriel ou portrait ne sera envoyé tant que les essais ne sont pas terminés.</p></div>";
+  setLaunchLabel("En préparation", "preview");
+  elements.configStatus.className = "notice notice-preview";
+  elements.configStatus.innerHTML = "<div><strong>Le service est en préparation</strong><p>Tu peux déjà parcourir l’exemple. Pour le moment, ce formulaire n’envoie aucune donnée.</p></div>";
   elements.photoInput.disabled = true;
   elements.turnstileField.hidden = true;
   updateSubmitState();
 }
 
 function renderOpenConfiguration() {
-  setLaunchLabel("Accès sur invitation", true);
+  setLaunchLabel("Accès sur invitation", "available");
   elements.configStatus.className = "notice notice-ready";
   elements.configStatus.innerHTML = "<div><strong>Les demandes sont ouvertes</strong><p>Saisis ton code pour créer une proposition privée. La page s’ouvre après l’envoi et le lien part par courriel quand le voyage est prêt.</p></div>";
   elements.photoInput.disabled = false;
@@ -246,7 +246,7 @@ async function loadConfig() {
     state.config = normalizeConfig(null);
     elements.accessField.hidden = false;
     elements.accessCode.required = true;
-    setLaunchLabel("État inconnu", false);
+    setLaunchLabel("État inconnu", "error");
     elements.configStatus.className = "notice notice-unavailable";
     elements.configStatus.innerHTML = "<div><strong>État du service inconnu</strong><p>Je n’ai pas pu vérifier si les demandes sont ouvertes. Rien ne sera envoyé.</p></div>";
     elements.photoInput.disabled = true;

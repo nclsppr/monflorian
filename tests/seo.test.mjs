@@ -20,7 +20,7 @@ test("l’accueil expose une seule URL canonique indexable", () => {
   assert.match(html, /<html lang="fr">/u);
   assert.match(
     html,
-    /<title>Itinéraire de voyage personnalisé \| Mon Florian<\/title>/u,
+    /<title>Préparer un voyage à ton rythme \| Mon Florian<\/title>/u,
   );
   assert.match(
     html,
