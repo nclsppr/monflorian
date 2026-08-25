@@ -58,9 +58,15 @@ personnage reste transparent. Aucun fichier ni composant ne peint de fond, de
 médaillon, de halo ou d'ombre derrière lui. Le portrait ne reçoit ni texte, ni
 décor, ni second personnage.
 
-La rotation comprend le Florian original, les cheveux au vent, le bonnet, le
-bob bleu et le chapeau de paille fleuri. Une nouvelle variante doit respecter
-le contrat de transparence automatisé avant d'entrer dans cette liste.
+Deux familles de cinq portraits permettent une comparaison visuelle sans
+modifier le reste de l'accueil. La route `/` utilise la famille d'origine et la
+route `/v2` la nouvelle famille. Elles partagent les variantes sémantiques
+`original`, `wind`, `beanie`, `summer` et `flower`. Le paramètre facultatif
+`?avatar=` fixe la même variante dans les deux familles pour un test apparié.
+Sans ce paramètre, chaque visite en choisit une au hasard. `/v2` reste hors
+index et le portrait original de la première famille reste le repli commun sans
+JavaScript ou en cas d'échec. Une nouvelle variante doit respecter le contrat
+de transparence automatisé avant d'entrer dans une famille.
 
 Le changement se produit au chargement. Il ne tourne pas en boucle et ne doit
 pas détourner l'attention du composeur. Florian reste un repère de marque dans
@@ -80,12 +86,12 @@ tactiles. Sur un pointeur précis, les navigateurs compatibles peuvent ajouter
 une profondeur courte avec leur timeline de vue native. La préférence de
 réduction des mouvements supprime cette profondeur et les transitions.
 
-La phrase « Ton voyage commence avec une envie. » accompagne uniquement le
-grand lockup. Elle utilise le bleu profond et se révèle une fois, en étapes,
-comme une phrase saisie au clavier. Le masque ne modifie ni la largeur ni la
-position du texte. L'accroche reste ensuite en place, défile avec l'introduction,
-ne boucle pas et devient immédiatement visible quand la réduction des
-mouvements est active.
+La note « Alors, on part où ? » accompagne uniquement le grand lockup. Trois
+traits blancs, irréguliers et légèrement transparents donnent l'impression que
+Florian l'a écrite sur la page. Le texte bleu électrique est incliné et reste
+statique : aucun effet de saisie, aucune boucle et aucun mouvement ne sont
+nécessaires. Le même traitement apparaît sur `/` et `/v2` afin que la
+comparaison porte seulement sur le portrait.
 
 ## Colors
 

@@ -4,13 +4,15 @@ Git reste la source du diff technique. Les ADR expliquent les décisions importa
 
 ## Non publié
 
+- Ajout de la variante publique `/v2`, hors index, pour comparer cinq nouveaux
+  portraits de Florian à la famille d'origine sans dupliquer l'accueil.
+- Ajout du paramètre facultatif `?avatar=` pour comparer la même variante dans
+  les deux familles et conserver la rotation aléatoire en son absence.
+- Remplacement de l'accroche par la note « Alors, on part où ? », en bleu
+  électrique sur trois traits blancs irréguliers et translucides, sans animation.
 - Passage du lockup complet d'introduction à toute la largeur disponible,
   ajout d'une respiration verticale avant le hero sur grand écran et nouvelles
   sources WebP haute définition dédiées à cette surface.
-- Passage de l'accroche en bleu profond avec une écriture au clavier ponctuelle
-  par masque CSS, sans boucle ni recalcul de mise en page.
-- Ajout de l'accroche « Ton voyage commence avec une envie. » sous le grand
-  logo, avec une arrivée flottante courte et un repli sans mouvement.
 - Agrandissement du lockup d'introduction sur les écrans larges et mobiles,
   sans agrandir le logo par transformation pendant le défilement.
 - Correction de la régression de fluidité sur iPhone : suppression du calcul

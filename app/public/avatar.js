@@ -2,14 +2,15 @@
 
 (() => {
   const root = document.documentElement;
-  const variants = [
-    { compact: "/assets/florian-original-web.webp", intro: "/assets/florian-original-intro.webp" },
-    { compact: "/assets/florian-wind-web.webp", intro: "/assets/florian-wind-intro.webp" },
-    { compact: "/assets/florian-beanie-web.webp", intro: "/assets/florian-beanie-intro.webp" },
-    { compact: "/assets/florian-summer-web.webp", intro: "/assets/florian-summer-intro.webp" },
-    { compact: "/assets/florian-flower-web.webp", intro: "/assets/florian-flower-intro.webp" },
-  ];
-  const sources = variants[Math.floor(Math.random() * variants.length)];
+  const variants = ["original", "wind", "beanie", "summer", "flower"];
+  const requestedVariant = /(?:^|[?&])avatar=(original|wind|beanie|summer|flower)(?:&|$)/u
+    .exec(globalThis.location?.search ?? "")?.[1];
+  const selectedVariant = requestedVariant ?? variants[Math.floor(Math.random() * variants.length)];
+  const prefix = globalThis.location?.pathname === "/v2" ? "florian-v2" : "florian";
+  const sources = {
+    compact: `/assets/${prefix}-${selectedVariant}-web.webp`,
+    intro: `/assets/${prefix}-${selectedVariant}-intro.webp`,
+  };
 
   root.classList.add("is-florian-loading");
 
