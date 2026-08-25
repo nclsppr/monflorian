@@ -3,6 +3,41 @@
 Chaque section nomme son environnement et ses limites. Les sections Atlas sont
 des archives historiques ; la section Cloudflare porte la migration courante.
 
+## Introduction bornée et note au crayon, 2026-08-25
+
+La PR [#41](https://github.com/nclsppr/monflorian/pull/41) aligne
+l'introduction et son grand logo sur le conteneur de contenu plafonné à
+`1240 px`. Elle remplace la typographie de la note par Kalam auto-hébergée en
+gris graphite et resserre légèrement son empreinte sur mobile.
+
+| Preuve | Résultat |
+| --- | --- |
+| Source runtime | `85529c9da16a92ad08a6c2bdb13e13410f259309` |
+| Version active | `9e0e0c78-beb7-4c5b-a84c-422f11b97346` |
+| CI du SHA | runs `32878314291` et `32878314253` verts |
+| Bundle Worker | 99,98 Kio avant compression, 24,73 Kio gzip, 51 assets lus, dont 37 visuels de marque |
+| Fonte | Kalam latin 400 auto-hébergée, WOFF2 public de 22 336 octets, licence OFL publique |
+| Bureau | `/v2?avatar=flower`, viewport `1920 × 1000`, introduction, lockup et hero à `1240 px`, note à `311 px` en `25 px`, dépassement `0` |
+| Mobile | `/v2?avatar=flower`, viewport `390 × 844`, introduction, lockup et hero à `362 px`, note à `278 px`, papier à `301 px`, texte en `17 px`, dépassement `0` |
+| Note | Kalam chargée, graphite `rgb(69, 73, 80)`, trois traits blancs translucides, aucun mouvement |
+| Route de test | `/v2` en `200` et `noindex`; `/v2/` en `308` vers `/v2` |
+| Garde-fous | `generationReady: false`, `serviceReady: false`, création `false`, `POST /api/trips` en `503` |
+
+`./scripts/verify.sh` passe avec 51 tests, le typage TypeScript, le dry-run
+Wrangler, l'image Docker, les sondes Compose ainsi que le build et le lint de
+46 fichiers Nimbus. Les régressions contrôlent la largeur maximale de
+l'introduction, ses gouttières mobiles, le préchargement de Kalam, le format
+WOFF2, sa taille et la présence de la licence OFL.
+
+Les sondes publiques confirment la feuille `intro-pencil-1`, la fonte WOFF2 et
+sa licence en `200`, la version Worker cohérente sur la santé et le marqueur de
+release, ainsi que `/v2` en `noindex`. Le runtime public a été relu dans
+Chromium aux deux viewports indiqués.
+
+Aucun brief, portrait personnel, courriel, secret ni appel OpenAI n'a été
+envoyé. Le corps synthétique vide utilisé pour la sonde de création a été refusé
+en `503` avant tout traitement.
+
 ## Comparaison des avatars et note de Florian, 2026-08-25
 
 La PR [#39](https://github.com/nclsppr/monflorian/pull/39) ajoute une seconde
