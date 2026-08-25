@@ -7,14 +7,15 @@ publiques. Le relevé DNS de fond date du 2026-08-24.
 
 `https://monflorian.com`, `https://www.monflorian.com` et la surface de
 diagnostic `workers.dev` servent le même Worker Cloudflare. L'apex répond en
-HTTPS avec la version `f9702f56-0fc3-4809-8789-6f9eb9928f31`. `www`, HTTP et
+HTTPS avec la version `9e0e0c78-beb7-4c5b-a84c-422f11b97346`. `www`, HTTP et
 les suffixes HTML publics redirigent désormais en `308` vers leur URL HTTPS
 canonique.
 
 L'accueil indexable présente désormais le service comme étant en préparation.
-Le lockup complet occupe toute la largeur disponible sur grand écran comme sur
-mobile. La note fixe « Alors, on part où ? » apparaît en bleu électrique sur
-trois traits blancs irréguliers et translucides. `/` conserve la première
+Le lockup complet reprend les gouttières du contenu et ne dépasse jamais
+`1240 px` sur grand écran. La note fixe « Alors, on part où ? » utilise Kalam
+auto-hébergée en gris graphite sur trois traits blancs irréguliers et
+translucides. Son empreinte est resserrée sur mobile. `/` conserve la première
 famille de cinq portraits ; `/v2`, hors index, présente cinq nouveaux Florian
 sur le même accueil. Le paramètre `?avatar=` permet de comparer la même variante
 sur les deux routes. La copie visible dit aussi « Ton voyage, à ton rythme » et
@@ -36,7 +37,7 @@ manquants.
 
 | Ressource | État | Preuve |
 | --- | --- | --- |
-| Worker `monflorian` | déployé | version `f9702f56-0fc3-4809-8789-6f9eb9928f31` |
+| Worker `monflorian` | déployé | version `9e0e0c78-beb7-4c5b-a84c-422f11b97346` |
 | Static Assets | actifs | interface et visuels servis par l'apex et `www` |
 | D1 `monflorian-production` | actif, juridiction `eu`, région d'exécution `EEUR` | migrations `0001`, `0002` et `0003` appliquées |
 | Tables D1 | vides et prêtes | `trips`, `trip_assets`, `daily_quotas` |
@@ -77,12 +78,14 @@ manquants.
   `same-origin` et `no-referrer`.
 - Un jeton synthétique inconnu sous `/voyages/` répond `404`, `no-store`,
   `noindex`, `nofollow` et `no-referrer`.
-- Le runtime `/v2?avatar=original` relu à `1440 × 900` mesure un dépassement
-  horizontal nul, un avatar de `526 px` et une note de `311 px` en `25 px`. À
-  `390 × 844`, `/v2?avatar=flower` garde un dépassement nul, un avatar de
-  `141 px` et la même note de `311 px` en `18 px`.
-- La note utilise le bleu électrique `rgb(23, 114, 255)` et reste statique. Le
-  même texte et le même traitement sont servis sur `/` et `/v2`.
+- Le runtime `/v2?avatar=flower` relu à `1920 × 1000` mesure un dépassement
+  horizontal nul et aligne l'introduction, le lockup et le hero à `1240 px`.
+  La note mesure `311 px` en `25 px`. À `390 × 844`, les trois surfaces font
+  `362 px`, la note `278 px` et son papier `301 px`, en `17 px`, sans
+  dépassement.
+- La note utilise Kalam chargée depuis le WOFF2 public de `22 336` octets et le
+  gris graphite `rgb(69, 73, 80)`. Elle reste statique et conserve le même
+  traitement sur `/` et `/v2`.
 - Les appareils tactiles gardent l'aperçu du Portugal fixe. La profondeur CSS
   native est limitée aux pointeurs précis ; la réduction des mouvements la
   supprime aussi. Ces règles sont couvertes par les régressions frontend.
@@ -92,9 +95,9 @@ manquants.
 
 ## État du dépôt et de la livraison
 
-- Source runtime déployée : `123aa956394d86a0d58059b41b53fb23c2116512`,
-  issue de la PR [#39](https://github.com/nclsppr/monflorian/pull/39).
-- Les runs `32876057692` (`Cloudflare release`) et `32876057635` (`Verify`) du
+- Source runtime déployée : `85529c9da16a92ad08a6c2bdb13e13410f259309`,
+  issue de la PR [#41](https://github.com/nclsppr/monflorian/pull/41).
+- Les runs `32878314291` (`Cloudflare release`) et `32878314253` (`Verify`) du
   SHA fusionné sont verts.
 - Le dépôt GitHub ne possède actuellement aucun secret Actions Cloudflare.
 - Le déploiement du SHA fusionné a donc été réalisé depuis la session Wrangler
