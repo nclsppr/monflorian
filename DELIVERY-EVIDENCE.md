@@ -3,6 +3,44 @@
 Chaque section nomme son environnement et ses limites. Les sections Atlas sont
 des archives historiques ; la section Cloudflare porte la migration courante.
 
+## Comparaison des avatars et note de Florian, 2026-08-25
+
+La PR [#39](https://github.com/nclsppr/monflorian/pull/39) ajoute une seconde
+famille de cinq portraits sur `/v2`, sans dupliquer l'accueil. La note
+« Alors, on part où ? » remplace la précédente accroche sur les deux routes afin
+que la comparaison porte seulement sur Florian.
+
+| Preuve | Résultat |
+| --- | --- |
+| Source runtime | `123aa956394d86a0d58059b41b53fb23c2116512` |
+| Version active | `f9702f56-0fc3-4809-8789-6f9eb9928f31` |
+| CI du SHA | runs `32876057692` et `32876057635` verts |
+| Bundle Worker | 99,98 Kio avant compression, 24,73 Kio gzip, 48 assets lus, dont 37 visuels de marque |
+| Route de test | `/v2` en `200` et `noindex`; `/v2/` en `308` vers `/v2` avec la requête conservée |
+| Test apparié | `?avatar=original`, `wind`, `beanie`, `summer` ou `flower` choisit la même variante dans chaque famille |
+| Nouveaux assets | dix WebP publics en `200`, compacts de 25 818 à 36 052 octets et introductions de 104 784 à 162 212 octets |
+| Note | bleu électrique `rgb(23, 114, 255)`, trois traits blancs translucides, aucun mouvement |
+| Bureau | `/v2?avatar=original`, viewport `1440 × 900`, avatar `526 px`, note `311 px` en `25 px`, dépassement `0` |
+| Mobile | `/v2?avatar=flower`, viewport `390 × 844`, avatar `141 px`, note `311 px` en `18 px`, dépassement `0` |
+| Console | aucune erreur ni alerte pendant les contrôles Chromium |
+| Garde-fous | `generationReady: false`, `serviceReady: false`, création `false`, `POST /api/trips` en `503` |
+
+`./scripts/verify.sh` passe avec 51 tests, le typage TypeScript, le dry-run
+Wrangler, l'image Docker, les sondes Compose ainsi que le build et le lint de
+46 fichiers Nimbus. Les régressions contrôlent les deux familles de portraits,
+le paramètre apparié, la route hors index, les dérivés transparents et la note
+statique.
+
+Les sondes publiques confirment la feuille `intro-note-2`, le script
+`avatar.js?v=3`, la version Worker cohérente sur la santé et le marqueur de
+release, les dix nouveaux WebP et la redirection canonique de `/v2/`. Le runtime
+a été relu dans Chromium aux deux viewports indiqués. Aucun iPhone Safari ni
+poste Windows 11 physique n'était disponible pendant cette tranche.
+
+Aucun brief, portrait personnel, courriel, secret ni appel OpenAI n'a été
+envoyé. Le corps synthétique vide utilisé pour la sonde de création a été refusé
+en `503` avant tout traitement.
+
 ## Logo pleine largeur et accroche saisie, 2026-08-25
 
 La PR [#37](https://github.com/nclsppr/monflorian/pull/37) donne toute la
