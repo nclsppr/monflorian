@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
+import { readFileSync, readdirSync } from "node:fs";
 import { runInNewContext } from "node:vm";
 import { test } from "node:test";
 
@@ -91,29 +91,49 @@ test("les champs mobiles ne dependent pas de la largeur intrinseque de Safari", 
   );
 });
 
-test("le logo rejoint l’en-tête et l’aperçu du voyage garde un mouvement réduit", () => {
+test("le rendu public ne pilote aucun mouvement depuis le défilement en JavaScript", () => {
   const html = source("app/public/index.html");
   const css = source("app/public/styles.css");
   const motion = source("app/public/motion.js");
+  const publicScripts = readdirSync(new URL("../app/public/", import.meta.url), { withFileTypes: true })
+    .filter((entry) => entry.isFile() && entry.name.endsWith(".js"))
+    .map((entry) => source(`app/public/${entry.name}`))
+    .join("\n");
   const motionScriptIndex = html.indexOf('src="/motion.js');
   const stylesheetIndex = html.indexOf('rel="stylesheet"');
 
-  assert.ok(motionScriptIndex >= 0, "le mouvement doit être initialisé depuis un script local");
-  assert.ok(motionScriptIndex < stylesheetIndex, "l’état initial du logo doit précéder la feuille de style");
+  assert.ok(motionScriptIndex >= 0, "le basculement du logo doit rester local");
+  assert.ok(motionScriptIndex < stylesheetIndex, "l’état initial doit précéder la feuille de style");
+  assert.doesNotMatch(publicScripts, /\b(?:requestAnimationFrame|cancelAnimationFrame|scrollY|pageYOffset|onscroll)\b/u);
+  assert.doesNotMatch(publicScripts, /\.addEventListener\s*\(\s*["']scroll["']/u);
+  assert.doesNotMatch(`${motion}\n${css}`, /is-parallax-active/u);
+  assert.match(motion, /new IntersectionObserver/u);
+  assert.match(css, /@media \(hover: hover\) and \(pointer: fine\) and \(prefers-reduced-motion: no-preference\)/u);
+  assert.match(css, /@media \(prefers-reduced-motion: reduce\)[\s\S]*\.preview-phone-depth,[\s\S]*animation:\s*none !important;/s);
+});
+
+test("le grand logo utilise une surface réelle et un mot-symbole haute définition", () => {
+  const html = source("app/public/index.html");
+  const css = source("app/public/styles.css");
+  const introRule = /\.brand-intro-lockup\s*\{([^}]*)\}/su.exec(css)?.[1] ?? "";
+  const headerSwapRules = [...css.matchAll(/html\.has-intro-swap[^\{]*\.brand[^\{]*\{([^}]*)\}/gsu)]
+    .map((match) => match[1])
+    .join("\n");
+
   assert.match(html, /id="top" class="page-shell"/u);
   assert.match(html, /class="brand" href="#top"/u);
-  assert.match(html, /class="brand-wordmark"[\s\S]*srcset="[^"]*monflorian-wordmark\.png 676w"/u);
-  assert.match(html, /class="brand-intro-space" aria-hidden="true"/u);
+  assert.match(html, /class="brand-intro" aria-hidden="true"[\s\S]*class="brand-intro-lockup"/u);
+  assert.match(
+    html,
+    /class="brand-intro-lockup"[\s\S]*src="\/assets\/monflorian-wordmark\.png"[\s\S]*width="676"[\s\S]*height="362"/u,
+  );
   assert.match(html, /class="site-header-surface" aria-hidden="true"/u);
   assert.match(html, /class="preview-phone-depth"/u);
-  assert.match(motion, /matchMedia\("\(prefers-reduced-motion: reduce\)"\)/u);
-  assert.match(motion, /window\.requestAnimationFrame\(render\)/u);
-  assert.match(motion, /window\.addEventListener\("scroll", scheduleRender, \{ passive: true \}\)/u);
-  assert.match(motion, /new IntersectionObserver/u);
-  assert.match(css, /html\.has-scroll-motion \.site-header\s*\{[^}]*position:\s*sticky;/s);
-  assert.match(css, /html\.has-scroll-motion \.brand-intro-space\s*\{[^}]*display:\s*block;/s);
-  assert.match(css, /@media \(prefers-reduced-motion: reduce\)[\s\S]*html\.has-scroll-motion \.brand[\s\S]*transform:\s*none !important;/s);
-  assert.match(css, /@media print[\s\S]*\.site-header-surface,[\s\S]*\.brand-intro-space,/s);
+  assert.match(introRule, /width:\s*min\(520px, 78vw\);/u);
+  assert.doesNotMatch(introRule, /(?:scale\(|will-change)/u);
+  assert.doesNotMatch(headerSwapRules, /(?:scale\(|will-change)/u);
+  assert.match(css, /html\.has-intro-swap \.site-header\s*\{[^}]*position:\s*sticky;/s);
+  assert.match(css, /@media print[\s\S]*\.site-header-surface,[\s\S]*\.brand-intro,/s);
 });
 
 test("les contrôles tactiles iOS n’affichent pas de masque rectangulaire", () => {

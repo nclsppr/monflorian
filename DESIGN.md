@@ -66,14 +66,14 @@ Le changement se produit au chargement. Il ne tourne pas en boucle et ne doit
 pas détourner l'attention du composeur. Florian reste un repère de marque dans
 l'en-tête et un conseiller ponctuel dans le contenu.
 
-Sur l'accueil, le logo modulable occupe d'abord le centre du premier écran. Le
-défilement le réduit puis le ramène dans l'en-tête, sans changer de fichier ni
-de portrait pendant la visite. Le même mouvement révèle l'aperçu du voyage dans
-le téléphone avec une profondeur courte entre le cadre, le soleil et les
-montagnes. Ces transformations restent liées au défilement, s'arrêtent hors du
-champ et disparaissent quand la préférence de réduction des mouvements est
-active. Dans ce cas, le logo garde directement sa taille compacte dans
-l'en-tête et l'aperçu reste fixe.
+Sur l'accueil, un grand lockup modulable occupe d'abord le centre du premier
+écran à sa taille de rendu réelle. Il défile avec la page, puis le logo compact
+apparaît dans l'en-tête quand l'introduction est passée. Ce basculement repose
+sur un seuil d'intersection, sans lecture continue du défilement, changement
+d'échelle ni boucle d'animation. L'aperçu du téléphone reste fixe sur les
+appareils tactiles. Sur un pointeur précis, les navigateurs compatibles peuvent
+ajouter une profondeur courte avec leur timeline de vue native. La préférence
+de réduction des mouvements supprime cette profondeur et les transitions.
 
 ## Colors
 

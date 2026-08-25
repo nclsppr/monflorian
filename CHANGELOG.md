@@ -4,11 +4,17 @@ Git reste la source du diff technique. Les ADR expliquent les décisions importa
 
 ## Non publié
 
-- Mise en scène du logo au premier écran, puis réduction continue vers
-  l'en-tête pendant le défilement. Le mouvement est supprimé quand la préférence
-  de réduction des animations est active.
-- Ajout d'une profondeur légère sur l'aperçu du voyage dans le téléphone, sans
-  déplacer le texte ni ajouter de dépendance d'animation.
+- Correction de la régression de fluidité sur iPhone : suppression du calcul
+  JavaScript continu pendant le défilement, parallaxe désactivé sur les
+  appareils tactiles et apparition ponctuelle du logo compact.
+- Correction du logo flou sous Chrome Windows : le grand lockup utilise le
+  mot-symbole PNG haute définition à sa taille de rendu, sans agrandissement
+  d'une petite couche rasterisée.
+- Mise en scène du logo au premier écran, puis apparition du lockup compact dans
+  l'en-tête après l'introduction.
+- Ajout d'une profondeur légère sur l'aperçu du voyage dans le téléphone pour
+  les pointeurs précis et les navigateurs compatibles, sans déplacer le texte
+  ni ajouter de dépendance d'animation.
 - Remplacement du vocabulaire « demandes fermées » par un état de préparation
   factuel, et de l'accroche générique par « Ton voyage, à ton rythme ».
 - Suppression de la surbrillance rectangulaire native de Safari iOS sur les

@@ -33,7 +33,10 @@ Source canonique des visuels de marque et des références importées le 2026-08
 - La carte de partage réutilise le mot-symbole et le portrait original sans les redessiner. Le SVG est sa source éditable ; seul le PNG est publié pour les plateformes sociales.
 - `prototype/index.html` est la source éditable de l'expérience. Sa capture principale n'est jamais modifiée pour simuler un changement du produit.
 - Le prototype contient encore deux WebP embarqués en base64. Ils sont des dérivés propres au prototype, pas des masters concurrents.
-- L'application active conserve les PNG comme sources de référence. L'en-tête charge les dérivés légers `monflorian-wordmark-web.webp` et `florian-*-web.webp`.
+- L'application active conserve les PNG comme sources de référence. L'en-tête
+  compact charge les dérivés légers `monflorian-wordmark-web.webp` et
+  `florian-*-web.webp`. Le grand lockup d'introduction charge directement
+  `monflorian-wordmark.png` à sa taille de rendu, sans agrandir le dérivé Web.
 - Une visite utilise une seule variante de Florian. `florian-original-web.webp` reste le repli sans JavaScript ou en cas d'échec de chargement.
 - Les cinq portraits sont des PNG RGBA carrés de même taille. Leurs quatre coins et au moins 30 % de leur canevas sont totalement transparents. Les composants d'accueil ne leur ajoutent aucun fond.
 - La capture alternative contient des promesses non prouvées, dont avis, paiement sécurisé et annulation. Elle ne doit pas guider la copie ni être publiée comme preuve.

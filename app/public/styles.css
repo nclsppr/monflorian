@@ -151,7 +151,7 @@ img {
   overflow: clip;
 }
 
-.brand-intro-space {
+.brand-intro {
   display: none;
 }
 
@@ -159,7 +159,7 @@ img {
   display: none;
 }
 
-html.has-scroll-motion .site-header-surface {
+html.has-intro-swap .site-header-surface {
   display: block;
   position: fixed;
   z-index: 8;
@@ -169,6 +169,11 @@ html.has-scroll-motion .site-header-surface {
   background: var(--surface);
   opacity: 0;
   pointer-events: none;
+  transition: opacity 160ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+html.has-intro-swap.is-intro-past .site-header-surface {
+  opacity: 1;
 }
 
 .site-header,
@@ -188,16 +193,35 @@ html.has-scroll-motion .site-header-surface {
   gap: 24px;
 }
 
-html.has-scroll-motion .site-header {
+html.has-intro-swap .site-header {
   position: sticky;
   z-index: 10;
   inset-block-start: 0;
 }
 
-html.has-scroll-motion .brand-intro-space {
-  display: block;
-  height: clamp(360px, calc(78vh - 92px), 680px);
-  height: clamp(360px, calc(78svh - 92px), 680px);
+html.has-intro-swap .brand-intro {
+  position: relative;
+  display: grid;
+  height: clamp(340px, calc(72vh - 92px), 560px);
+  height: clamp(340px, calc(72svh - 92px), 560px);
+  place-items: center;
+}
+
+.brand-intro-lockup {
+  display: grid;
+  grid-template-columns: minmax(0, 0.58fr) minmax(0, 1fr);
+  align-items: center;
+  gap: 7px;
+  width: min(520px, 78vw);
+}
+
+.brand-intro-trigger {
+  position: absolute;
+  inset-block-start: 70%;
+  inset-inline-start: 50%;
+  width: 1px;
+  height: 1px;
+  pointer-events: none;
 }
 
 .brand {
@@ -209,30 +233,22 @@ html.has-scroll-motion .brand-intro-space {
   flex: 0 0 auto;
 }
 
-html.has-scroll-motion .brand {
-  z-index: 1;
-  transform: translate3d(
-      calc(50vw - max(20px, calc((100vw - 1240px) / 2)) - 109px),
-      calc(42vh - 46px),
-      0
-    )
-    scale(2.38);
-  transform: translate3d(
-      calc(50vw - max(20px, calc((100vw - 1240px) / 2)) - 109px),
-      calc(42svh - 46px),
-      0
-    )
-    scale(2.38);
-  transform-origin: center;
-  will-change: transform;
+html.has-intro-swap .site-header > .brand,
+html.has-intro-swap .launch-state {
+  opacity: 0;
+  pointer-events: none;
+  transform: translate3d(0, -6px, 0);
+  transition:
+    opacity 160ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 160ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-html.is-brand-measuring .brand {
-  transform: none !important;
-}
-
-html.is-brand-settled .brand {
-  will-change: auto;
+html.has-intro-swap.is-intro-past .site-header > .brand,
+html.has-intro-swap.is-intro-past .launch-state,
+html.has-intro-swap .site-header > .brand:focus-visible {
+  opacity: 1;
+  pointer-events: auto;
+  transform: none;
 }
 
 .brand-character {
@@ -265,11 +281,6 @@ html.is-brand-settled .brand {
   background: rgba(255, 255, 255, 0.76);
   font-size: 13px;
   font-weight: 800;
-}
-
-html.has-scroll-motion .launch-state {
-  opacity: 0;
-  transform: translate3d(0, -8px, 0);
 }
 
 .launch-dot {
@@ -928,7 +939,6 @@ textarea:disabled {
   position: relative;
   z-index: 2;
   width: min(400px, 92%);
-  transform: translate3d(0, 0, 0);
 }
 
 .preview-phone {
@@ -990,7 +1000,6 @@ textarea:disabled {
   border-radius: 50%;
   background: var(--lime);
   box-shadow: 0 0 0 12px rgba(223, 255, 85, 0.2);
-  transform: translate3d(0, 0, 0);
 }
 
 .preview-mountain {
@@ -1005,7 +1014,6 @@ textarea:disabled {
 .preview-mountain.back {
   inset-inline-start: 44px;
   background: #82baff;
-  transform: translate3d(0, 0, 0);
 }
 
 .preview-mountain.front {
@@ -1015,13 +1023,55 @@ textarea:disabled {
   height: 158px;
   background: var(--blue-deep);
   clip-path: polygon(0 100%, 21% 35%, 38% 76%, 58% 18%, 78% 66%, 100% 34%, 100% 100%);
-  transform: translate3d(0, 0, 0);
 }
 
-.travel-preview.is-parallax-active .preview-phone-depth,
-.travel-preview.is-parallax-active .preview-sun,
-.travel-preview.is-parallax-active .preview-mountain {
-  will-change: transform;
+@keyframes preview-phone-scroll {
+  from { transform: translate3d(0, -12px, 0); }
+  to { transform: translate3d(0, 12px, 0); }
+}
+
+@keyframes preview-sun-scroll {
+  from { transform: translate3d(0, 6px, 0); }
+  to { transform: translate3d(0, -6px, 0); }
+}
+
+@keyframes preview-mountain-back-scroll {
+  from { transform: translate3d(0, 8px, 0); }
+  to { transform: translate3d(0, -8px, 0); }
+}
+
+@keyframes preview-mountain-front-scroll {
+  from { transform: translate3d(0, 12px, 0); }
+  to { transform: translate3d(0, -12px, 0); }
+}
+
+@supports (animation-timeline: view()) {
+  @media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+    .preview-phone-depth,
+    .preview-sun,
+    .preview-mountain {
+      animation-timeline: view();
+      animation-range: entry 0% exit 100%;
+      animation-timing-function: linear;
+      animation-fill-mode: both;
+    }
+
+    .preview-phone-depth {
+      animation-name: preview-phone-scroll;
+    }
+
+    .preview-sun {
+      animation-name: preview-sun-scroll;
+    }
+
+    .preview-mountain.back {
+      animation-name: preview-mountain-back-scroll;
+    }
+
+    .preview-mountain.front {
+      animation-name: preview-mountain-front-scroll;
+    }
+  }
 }
 
 .preview-cover-copy {
@@ -2052,22 +2102,17 @@ textarea:disabled {
     min-height: 76px;
   }
 
-  html.has-scroll-motion .site-header-surface {
+  html.has-intro-swap .site-header-surface {
     height: 76px;
   }
 
-  html.has-scroll-motion .brand-intro-space {
-    height: clamp(300px, calc(75vh - 76px), 560px);
-    height: clamp(300px, calc(75svh - 76px), 560px);
+  html.has-intro-swap .brand-intro {
+    height: clamp(300px, calc(72vh - 76px), 520px);
+    height: clamp(300px, calc(72svh - 76px), 520px);
   }
 
   .brand {
     width: 158px;
-  }
-
-  html.has-scroll-motion .brand {
-    transform: translate3d(calc(50vw - 93px), calc(39vh - 38px), 0) scale(1.9);
-    transform: translate3d(calc(50vw - 93px), calc(39svh - 38px), 0) scale(1.9);
   }
 
   .launch-state {
@@ -2644,23 +2689,17 @@ textarea:disabled {
     transition-duration: 0.01ms !important;
   }
 
-  html.has-scroll-motion .site-header-surface,
-  html.has-scroll-motion .brand-intro-space {
-    display: none;
+  html.has-intro-swap .site-header-surface,
+  html.has-intro-swap .site-header > .brand,
+  html.has-intro-swap .launch-state {
+    transition: none;
   }
 
-  html.has-scroll-motion .site-header {
-    position: static;
-  }
-
-  html.has-scroll-motion .brand,
-  html.has-scroll-motion .launch-state,
   .preview-phone-depth,
   .preview-sun,
   .preview-mountain {
-    opacity: 1;
+    animation: none !important;
     transform: none !important;
-    will-change: auto;
   }
 }
 
@@ -2690,7 +2729,7 @@ textarea:disabled {
 
   .skip-link,
   .site-header-surface,
-  .brand-intro-space,
+  .brand-intro,
   .site-header,
   .hero,
   .site-footer,

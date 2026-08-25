@@ -129,4 +129,9 @@ test("les dérivés servis au navigateur restent légers et les icônes ont les 
     assert.equal(png.readUInt32BE(16), size, `${file}: largeur`);
     assert.equal(png.readUInt32BE(20), size, `${file}: hauteur`);
   }
+
+  const wordmark = readFileSync(new URL("../assets/brand/monflorian-wordmark.png", import.meta.url));
+  assert.equal(wordmark.subarray(0, 8).compare(PNG_SIGNATURE), 0, "mot-symbole PNG invalide");
+  assert.equal(wordmark.readUInt32BE(16), 676, "largeur haute définition du mot-symbole");
+  assert.equal(wordmark.readUInt32BE(20), 362, "hauteur haute définition du mot-symbole");
 });
