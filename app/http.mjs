@@ -3,12 +3,12 @@ const PUBLIC_WWW = "www.monflorian.com";
 const NO_INDEX = "noindex, nofollow, nosnippet, noimageindex";
 const PUBLIC_HTML_ROUTES = new Map([
   ["/", "/index.html"],
-  ["/v2", "/index.html"],
   ["/confidentialite", "/confidentialite.html"],
 ]);
 const PUBLIC_HTML_ALIASES = new Map([
   ["/index.html", "/"],
-  ["/v2/", "/v2"],
+  ["/v2", "/"],
+  ["/v2/", "/"],
   ["/confidentialite.html", "/confidentialite"],
 ]);
 
@@ -74,7 +74,7 @@ export function staticAssetRequest(request) {
 
 export function shouldNoIndexStaticAsset(request) {
   const url = new URL(request.url);
-  return url.hostname.endsWith(".workers.dev") || url.pathname === "/v2";
+  return url.hostname.endsWith(".workers.dev");
 }
 
 export function noIndexResponse(response) {

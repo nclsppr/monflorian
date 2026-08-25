@@ -148,6 +148,13 @@ test("les portraits de Florian gardent un vrai fond transparent", () => {
 });
 
 test("les dérivés servis au navigateur restent légers et les icônes ont les bonnes tailles", () => {
+  const socialCardSource = readFileSync(
+    new URL("../assets/brand/monflorian-social-card.svg", import.meta.url),
+    "utf8",
+  );
+  assert.match(socialCardSource, /href="florian-v2-original\.png"/u);
+  assert.doesNotMatch(socialCardSource, /href="florian-original\.png"/u);
+
   for (const file of WEB_ASSETS) {
     const webp = readFileSync(new URL(`../assets/brand/${file}`, import.meta.url));
     assert.equal(webp.toString("ascii", 0, 4), "RIFF", `${file}: conteneur RIFF attendu`);
@@ -155,11 +162,15 @@ test("les dérivés servis au navigateur restent légers et les icônes ont les 
     assert.ok(webp.length < 100 * 1024, `${file}: le dérivé doit rester sous 100 Kio`);
   }
 
-  for (const [file, size] of [["florian-icon-192.png", 192], ["florian-icon-512.png", 512]]) {
+  for (const [file, size, maxBytes] of [
+    ["florian-icon-192.png", 192, 30 * 1024],
+    ["florian-icon-512.png", 512, 150 * 1024],
+  ]) {
     const png = readFileSync(new URL(`../assets/brand/${file}`, import.meta.url));
     assert.equal(png.subarray(0, 8).compare(PNG_SIGNATURE), 0, `${file}: signature PNG invalide`);
     assert.equal(png.readUInt32BE(16), size, `${file}: largeur`);
     assert.equal(png.readUInt32BE(20), size, `${file}: hauteur`);
+    assert.ok(png.length < maxBytes, `${file}: poids maximal`);
   }
 
   const wordmark = readFileSync(new URL("../assets/brand/monflorian-wordmark.png", import.meta.url));
