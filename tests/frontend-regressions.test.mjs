@@ -91,6 +91,42 @@ test("les champs mobiles ne dependent pas de la largeur intrinseque de Safari", 
   );
 });
 
+test("le logo rejoint l’en-tête et l’aperçu du voyage garde un mouvement réduit", () => {
+  const html = source("app/public/index.html");
+  const css = source("app/public/styles.css");
+  const motion = source("app/public/motion.js");
+  const motionScriptIndex = html.indexOf('src="/motion.js');
+  const stylesheetIndex = html.indexOf('rel="stylesheet"');
+
+  assert.ok(motionScriptIndex >= 0, "le mouvement doit être initialisé depuis un script local");
+  assert.ok(motionScriptIndex < stylesheetIndex, "l’état initial du logo doit précéder la feuille de style");
+  assert.match(html, /id="top" class="page-shell"/u);
+  assert.match(html, /class="brand" href="#top"/u);
+  assert.match(html, /class="brand-wordmark"[\s\S]*srcset="[^"]*monflorian-wordmark\.png 676w"/u);
+  assert.match(html, /class="brand-intro-space" aria-hidden="true"/u);
+  assert.match(html, /class="site-header-surface" aria-hidden="true"/u);
+  assert.match(html, /class="preview-phone-depth"/u);
+  assert.match(motion, /matchMedia\("\(prefers-reduced-motion: reduce\)"\)/u);
+  assert.match(motion, /window\.requestAnimationFrame\(render\)/u);
+  assert.match(motion, /window\.addEventListener\("scroll", scheduleRender, \{ passive: true \}\)/u);
+  assert.match(motion, /new IntersectionObserver/u);
+  assert.match(css, /html\.has-scroll-motion \.site-header\s*\{[^}]*position:\s*sticky;/s);
+  assert.match(css, /html\.has-scroll-motion \.brand-intro-space\s*\{[^}]*display:\s*block;/s);
+  assert.match(css, /@media \(prefers-reduced-motion: reduce\)[\s\S]*html\.has-scroll-motion \.brand[\s\S]*transform:\s*none !important;/s);
+  assert.match(css, /@media print[\s\S]*\.site-header-surface,[\s\S]*\.brand-intro-space,/s);
+});
+
+test("les contrôles tactiles iOS n’affichent pas de masque rectangulaire", () => {
+  const css = source("app/public/styles.css");
+
+  assert.match(
+    css,
+    /button,\s*a,\s*input,\s*select,\s*textarea,\s*label,\s*summary\s*\{[^}]*-webkit-tap-highlight-color:\s*transparent;/s,
+  );
+  assert.match(css, /:where\(a, button, input, select, textarea, summary\):focus-visible\s*\{[^}]*outline:\s*3px solid var\(--blue-deep\);/s);
+  assert.match(css, /\.segmented-control input:focus-visible \+ span\s*\{[^}]*outline:\s*3px solid var\(--blue-deep\);/s);
+});
+
 test("les champs et le bouton principal gardent leur texte centre", () => {
   const css = source("app/public/styles.css");
 
@@ -133,7 +169,7 @@ test("le formulaire annonce ses groupes, aides et erreurs aux technologies d’a
   assert.match(html, /id="access-code"[\s\S]*required[\s\S]*aria-describedby="access-hint access-error"/u);
   assert.match(html, /class="launch-state"[^>]*data-nosnippet/u);
   assert.match(html, /<span class="sr-only">Statut du service :<\/span>/u);
-  assert.match(html, /id="launch-state-label">Vérification des demandes<\/span>/u);
+  assert.match(html, /id="launch-state-label">Vérification de l’accès<\/span>/u);
   assert.match(html, /id="config-status"[^>]*data-nosnippet/u);
   assert.match(html, /<h2 id="trip-form-title" class="sr-only">/u);
   assert.match(html, /id="start-date"[\s\S]*aria-describedby="dates-hint dates-error"/u);
@@ -158,6 +194,7 @@ test("le formulaire annonce ses groupes, aides et erreurs aux technologies d’a
   assert.match(app, /for \(const file of files\)[\s\S]*state\.photos\.length >= state\.config\.limits\.maxPhotos[\s\S]*ignoredCount \+= 1/u);
   assert.match(app, /elements\.photoError\.textContent = "";[\s\S]*renderPhotos\(\)/u);
   assert.match(app, /if \(!event\.persisted\) clearPhotos\(\)/u);
+  assert.doesNotMatch(app, /Demandes (?:temporairement )?fermées/u);
 });
 
 test("le formulaire public suit un seul parcours asynchrone", () => {

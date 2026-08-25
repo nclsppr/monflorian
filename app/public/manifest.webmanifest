@@ -1,7 +1,7 @@
 {
   "name": "Mon Florian",
   "short_name": "Mon Florian",
-  "description": "Service privé de préparation d’itinéraires de voyage personnalisés.",
+  "description": "Une proposition de voyage privée, préparée à partir de ton envie.",
   "lang": "fr",
   "id": "/",
   "start_url": "/",

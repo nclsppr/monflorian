@@ -73,7 +73,7 @@ port = os.environ["MONFLORIAN_PORT"]
 base = f"http://127.0.0.1:{port}"
 with urlopen(f"{base}/", timeout=5) as response:
     home = response.read()
-if b"<title>Itin\xc3\xa9raire de voyage personnalis\xc3\xa9 | Mon Florian</title>" not in home:
+if b"<title>Pr\xc3\xa9parer un voyage \xc3\xa0 ton rythme | Mon Florian</title>" not in home:
     raise SystemExit("L’application servie ne contient pas le titre attendu.")
 
 with urlopen(f"{base}/api/health", timeout=5) as response:
