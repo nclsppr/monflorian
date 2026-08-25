@@ -5,6 +5,7 @@ import test from "node:test";
 import {
   canonicalPublicRedirect,
   noIndexResponse,
+  shouldNoIndexStaticAsset,
   staticAssetRequest,
 } from "../app/http.mjs";
 
@@ -74,7 +75,7 @@ test("les surfaces privées et techniques restent explicitement hors index", () 
 
   assert.equal(config.assets.run_worker_first, true);
   assert.match(worker, /canonicalPublicRedirect\(request\)/u);
-  assert.match(worker, /url\.hostname\.endsWith\("\.workers\.dev"\) \? noIndexResponse/u);
+  assert.match(worker, /shouldNoIndexStaticAsset\(request\) \? noIndexResponse/u);
   assert.match(worker, /"X-Robots-Tag": "noindex, nofollow, nosnippet, noimageindex"/u);
   assert.match(privatePage, /"X-Robots-Tag": "noindex, nofollow, noarchive, nosnippet, noimageindex"/u);
   assert.match(privatePage, /<meta name="robots" content="noindex,nofollow,noarchive,nosnippet,noimageindex">/u);
@@ -90,6 +91,7 @@ test("les redirections canoniques produisent de vraies réponses HTTP", () => {
     ["https://www.monflorian.com:8443/guide", "https://monflorian.com/guide"],
     ["https://monflorian.com/index.html?ref=test", "https://monflorian.com/?ref=test"],
     ["https://www.monflorian.com/index.html?ref=test", "https://monflorian.com/?ref=test"],
+    ["https://monflorian.com/v2/?avatar=wind", "https://monflorian.com/v2?avatar=wind"],
     ["https://monflorian.com/confidentialite.html", "https://monflorian.com/confidentialite"],
   ];
 
@@ -131,10 +133,15 @@ test("les redirections privées et techniques ne sont jamais mises en cache", ()
 
 test("les routes HTML publiques sont réécrites sans redirection interne", () => {
   const home = new Request("http://127.0.0.1:8787/?ref=test");
+  const avatarTest = new Request("https://monflorian.com/v2?avatar=wind");
   const privacy = new Request("https://monflorian.com/confidentialite?ref=test");
   const asset = new Request("https://monflorian.com/styles.css");
 
   assert.equal(staticAssetRequest(home).url, "http://127.0.0.1:8787/index.html?ref=test");
+  assert.equal(
+    staticAssetRequest(avatarTest).url,
+    "https://monflorian.com/index.html?avatar=wind",
+  );
   assert.equal(
     staticAssetRequest(privacy).url,
     "https://monflorian.com/confidentialite.html?ref=test",
@@ -143,6 +150,18 @@ test("les routes HTML publiques sont réécrites sans redirection interne", () =
   assert.equal(
     staticAssetRequest(new Request("https://monflorian.com/", { method: "POST" })).url,
     "https://monflorian.com/",
+  );
+});
+
+test("la variante d’avatar reste hors index sans masquer l’accueil", () => {
+  assert.equal(
+    shouldNoIndexStaticAsset(new Request("https://monflorian.com/v2?avatar=flower")),
+    true,
+  );
+  assert.equal(shouldNoIndexStaticAsset(new Request("https://monflorian.com/")), false);
+  assert.equal(
+    shouldNoIndexStaticAsset(new Request("https://monflorian.nclsppr.workers.dev/")),
+    true,
   );
 });
 

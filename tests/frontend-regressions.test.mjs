@@ -54,6 +54,7 @@ test("le portrait choisi est charge avant de remplacer le repli visible", async 
       querySelectorAll: () => portraits,
     },
     Image: CandidateImage,
+    location: { pathname: "/", search: "" },
     Math: { floor: Math.floor, random: () => 0.25 },
     Promise,
   });
@@ -74,6 +75,54 @@ test("le portrait choisi est charge avant de remplacer le repli visible", async 
     "/assets/florian-wind-intro.webp",
   ]);
   assert.equal(classes.has("is-florian-loading"), false);
+});
+
+test("les deux routes gardent la meme variante dans leur famille de portraits", async () => {
+  const bootSource = source("app/public/avatar.js");
+
+  async function sourcesFor(pathname) {
+    const portraits = [
+      { src: "fallback-compact", hasAttribute: () => false },
+      { src: "fallback-intro", hasAttribute: (name) => name === "data-florian-intro" },
+    ];
+
+    class CandidateImage {
+      set src(value) {
+        this.currentSource = value;
+      }
+
+      decode() {
+        return Promise.resolve();
+      }
+    }
+
+    runInNewContext(bootSource, {
+      document: {
+        documentElement: {
+          classList: { add: () => {}, remove: () => {} },
+        },
+        readyState: "complete",
+        querySelectorAll: () => portraits,
+      },
+      Image: CandidateImage,
+      location: { pathname, search: "?avatar=flower" },
+      Math,
+      Promise,
+    });
+
+    await Promise.resolve();
+    await Promise.resolve();
+    return portraits.map(({ src }) => src);
+  }
+
+  assert.deepEqual(await sourcesFor("/"), [
+    "/assets/florian-flower-web.webp",
+    "/assets/florian-flower-intro.webp",
+  ]);
+  assert.deepEqual(await sourcesFor("/v2"), [
+    "/assets/florian-v2-flower-web.webp",
+    "/assets/florian-v2-flower-intro.webp",
+  ]);
 });
 
 test("les champs mobiles ne dependent pas de la largeur intrinseque de Safari", () => {
@@ -147,19 +196,19 @@ test("le grand logo utilise une surface réelle et un mot-symbole haute définit
   assert.match(css, /@media print[\s\S]*\.site-header-surface,[\s\S]*\.brand-intro,/s);
 });
 
-test("l’accroche du logo s’écrit une fois sans modifier la mise en page", () => {
+test("l’accroche du logo ressemble à une note fixe de Florian", () => {
   const html = source("app/public/index.html");
   const css = source("app/public/styles.css");
-  const keyframes = /@keyframes intro-tagline-type\s*\{([\s\S]*?)\n\}/u.exec(css)?.[1] ?? "";
 
   assert.match(
     html,
-    /class="brand-intro-tagline">Ton voyage commence avec une envie\.<\/span>/u,
+    /class="brand-intro-tagline">[\s\S]*class="brand-intro-tagline-paper"[\s\S]*Alors, on part où&nbsp;\?[\s\S]*<\/span>/u,
   );
-  assert.match(css, /\.brand-intro-tagline\s*\{[^}]*color:\s*var\(--blue-deep\);[^}]*animation:\s*intro-tagline-type 1400ms steps\(35, end\) 280ms both;/s);
-  assert.match(keyframes, /clip-path:\s*inset\(0 100% 0 0\);[\s\S]*clip-path:\s*inset\(0\);/s);
-  assert.doesNotMatch(keyframes, /\b(?:width|height|margin|padding|top|left|filter)\s*:/u);
-  assert.match(css, /@media \(prefers-reduced-motion: reduce\)[\s\S]*\.brand-intro-tagline\s*\{[^}]*animation:\s*none !important;[^}]*clip-path:\s*none !important;/s);
+  assert.equal((html.match(/class="brand-intro-tagline-paper"/gu) || []).length, 1);
+  assert.equal((html.match(/<path d="M/gu) || []).length, 3);
+  assert.match(css, /\.brand-intro-tagline\s*\{[^}]*color:\s*var\(--blue\);[^}]*font-style:\s*italic;[^}]*transform:\s*rotate\(-1\.1deg\);/s);
+  assert.match(css, /\.brand-intro-tagline-paper path\s*\{[^}]*stroke:\s*var\(--paper\);[^}]*stroke-linecap:\s*round;[^}]*opacity:\s*0\.74;/s);
+  assert.doesNotMatch(css, /intro-tagline-type/u);
 });
 
 test("les contrôles tactiles iOS n’affichent pas de masque rectangulaire", () => {

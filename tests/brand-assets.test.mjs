@@ -9,6 +9,11 @@ const AVATARS = [
   "florian-beanie.png",
   "florian-summer.png",
   "florian-flower.png",
+  "florian-v2-original.png",
+  "florian-v2-wind.png",
+  "florian-v2-beanie.png",
+  "florian-v2-summer.png",
+  "florian-v2-flower.png",
 ];
 
 const WEB_ASSETS = [
@@ -17,6 +22,11 @@ const WEB_ASSETS = [
   "florian-beanie-web.webp",
   "florian-summer-web.webp",
   "florian-flower-web.webp",
+  "florian-v2-original-web.webp",
+  "florian-v2-wind-web.webp",
+  "florian-v2-beanie-web.webp",
+  "florian-v2-summer-web.webp",
+  "florian-v2-flower-web.webp",
   "monflorian-wordmark-web.webp",
 ];
 
@@ -26,6 +36,11 @@ const INTRO_ASSETS = [
   ["florian-beanie-intro.webp", 1024, 1024],
   ["florian-summer-intro.webp", 1024, 1024],
   ["florian-flower-intro.webp", 1024, 1024],
+  ["florian-v2-original-intro.webp", 1024, 1024],
+  ["florian-v2-wind-intro.webp", 1024, 1024],
+  ["florian-v2-beanie-intro.webp", 1024, 1024],
+  ["florian-v2-summer-intro.webp", 1024, 1024],
+  ["florian-v2-flower-intro.webp", 1024, 1024],
   ["monflorian-wordmark-intro.webp", 1352, 724],
 ];
 

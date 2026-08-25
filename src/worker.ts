@@ -7,6 +7,7 @@ import {
 import {
   canonicalPublicRedirect,
   noIndexResponse,
+  shouldNoIndexStaticAsset,
   staticAssetRequest,
 } from "../app/http.mjs";
 import {
@@ -631,7 +632,7 @@ const worker = {
 
       const response = await env.ASSETS.fetch(staticAssetRequest(request));
       status = response.status;
-      return url.hostname.endsWith(".workers.dev") ? noIndexResponse(response) : response;
+      return shouldNoIndexStaticAsset(request) ? noIndexResponse(response) : response;
     } catch (error) {
       const appError = error instanceof AppError
         ? error
