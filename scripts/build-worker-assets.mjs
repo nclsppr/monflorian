@@ -12,7 +12,7 @@ await cp(publicDirectory, outputDirectory, { recursive: true });
 await mkdir(outputAssetsDirectory, { recursive: true });
 
 const brandAssets = (await readdir(brandDirectory, { withFileTypes: true }))
-  .filter((entry) => entry.isFile() && entry.name.endsWith(".png"))
+  .filter((entry) => entry.isFile() && /\.(?:png|webp)$/u.test(entry.name))
   .map((entry) => entry.name)
   .sort();
 

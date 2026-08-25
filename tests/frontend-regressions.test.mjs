@@ -22,8 +22,8 @@ test("le portrait choisi est charge avant de remplacer le repli visible", async 
   const decode = new Promise((resolve) => { finishDecode = resolve; });
   const classes = new Set();
   const portraits = [
-    { src: "/assets/florian-original.png?v=2" },
-    { src: "/assets/florian-original.png?v=2" },
+    { src: "/assets/florian-original-web.webp" },
+    { src: "/assets/florian-original-web.webp" },
   ];
 
   class CandidateImage {
@@ -54,8 +54,8 @@ test("le portrait choisi est charge avant de remplacer le repli visible", async 
 
   assert.equal(classes.has("is-florian-loading"), true);
   assert.deepEqual(portraits.map(({ src }) => src), [
-    "/assets/florian-original.png?v=2",
-    "/assets/florian-original.png?v=2",
+    "/assets/florian-original-web.webp",
+    "/assets/florian-original-web.webp",
   ]);
 
   finishDecode();
@@ -64,8 +64,8 @@ test("le portrait choisi est charge avant de remplacer le repli visible", async 
   await Promise.resolve();
 
   assert.deepEqual(portraits.map(({ src }) => src), [
-    "/assets/florian-wind.png?v=2",
-    "/assets/florian-wind.png?v=2",
+    "/assets/florian-wind-web.webp",
+    "/assets/florian-wind-web.webp",
   ]);
   assert.equal(classes.has("is-florian-loading"), false);
 });
@@ -76,7 +76,7 @@ test("les champs mobiles ne dependent pas de la largeur intrinseque de Safari", 
 
   assert.match(
     css,
-    /input,\s*select,\s*textarea\s*\{[^}]*min-width:\s*0;[^}]*max-width:\s*100%;/s,
+    /input:not\(\[type="checkbox"\]\):not\(\[type="radio"\]\):not\(\[type="file"\]\),\s*select,\s*textarea\s*\{[^}]*min-width:\s*0;[^}]*max-width:\s*100%;/s,
     "les champs doivent pouvoir retrecir dans leur conteneur",
   );
   assert.match(
@@ -86,9 +86,78 @@ test("les champs mobiles ne dependent pas de la largeur intrinseque de Safari", 
   );
   assert.match(
     css,
-    /input\[type="date"\]\s*\{[^}]*padding-inline:\s*0;/s,
+    /@supports selector\(input\[type="date"\]::-webkit-date-and-time-value\)\s*\{[\s\S]*input\[type="date"\]\s*\{[^}]*padding-inline:\s*0;/s,
     "le champ date ne doit pas cumuler width 100% et padding sur WebKit iOS",
   );
+});
+
+test("les champs et le bouton principal gardent leur texte centre", () => {
+  const css = source("app/public/styles.css");
+
+  assert.match(
+    css,
+    /input:not\(\[type="checkbox"\]\):not\(\[type="radio"\]\):not\(\[type="file"\]\),\s*select\s*\{[^}]*min-height:\s*52px;[^}]*padding:\s*13px 14px;[^}]*line-height:\s*24px;/s,
+    "les champs sur une ligne doivent avoir une hauteur et une ligne de texte explicites",
+  );
+  assert.match(
+    css,
+    /input\[type="date"\]\s*\{[^}]*padding-block:\s*0;[^}]*padding-inline:\s*13px;/s,
+  );
+  assert.match(
+    css,
+    /input\[type="date"\]::-webkit-date-and-time-value\s*\{[^}]*padding-inline-start:\s*13px;/s,
+  );
+  assert.match(
+    css,
+    /\.primary-button\s*\{[^}]*display:\s*inline-flex;[^}]*align-items:\s*center;[^}]*justify-content:\s*center;/s,
+  );
+  assert.match(css, /#trip-submit\s*\{[^}]*display:\s*inline-grid;[^}]*grid-template-columns:\s*22px minmax\(0, auto\) 22px;/s);
+  assert.match(css, /\.button-label\s*\{[^}]*grid-column:\s*2;/s);
+  assert.match(css, /\.button-arrow\s*\{[^}]*grid-column:\s*3;/s);
+  assert.match(css, /\.segmented-control input\s*\{[^}]*padding:\s*0;[^}]*border:\s*0;/s);
+  assert.match(css, /\.consent-row input\s*\{[^}]*width:\s*20px;[^}]*height:\s*20px;[^}]*padding:\s*0;/s);
+  const tablet = css.slice(css.indexOf("@media (max-width: 900px)"), css.indexOf("@media (max-width: 620px)"));
+  assert.match(tablet, /\.outcome-list,\s*\.process-list\s*\{[^}]*grid-template-columns:\s*1fr;/s);
+});
+
+test("le formulaire annonce ses groupes, aides et erreurs aux technologies d’assistance", () => {
+  const html = source("app/public/index.html");
+  const app = source("app/public/app.js");
+  const submitState = app.slice(
+    app.indexOf("function updateSubmitState()"),
+    app.indexOf("function updateBriefCount()"),
+  );
+
+  assert.match(html, /<form[\s\S]*aria-labelledby="trip-form-title"/u);
+  assert.match(html, /id="access-field" class="field-group access-field">/u);
+  assert.match(html, /id="access-code"[\s\S]*required[\s\S]*aria-describedby="access-hint access-error"/u);
+  assert.match(html, /class="launch-state"[^>]*data-nosnippet/u);
+  assert.match(html, /<span class="sr-only">Statut du service :<\/span>/u);
+  assert.match(html, /id="launch-state-label">Vérification des demandes<\/span>/u);
+  assert.match(html, /id="config-status"[^>]*data-nosnippet/u);
+  assert.match(html, /<h2 id="trip-form-title" class="sr-only">/u);
+  assert.match(html, /id="start-date"[\s\S]*aria-describedby="dates-hint dates-error"/u);
+  assert.match(html, /<fieldset class="photo-field">/u);
+  assert.match(html, /<legend class="sr-only">Portraits pour les projections<\/legend>/u);
+  assert.match(html, /id="trip-photo-input"[\s\S]*aria-describedby="trip-photo-help trip-photo-status trip-photo-error"/u);
+  assert.match(html, /id="trip-photo-status"[^>]*role="status"/u);
+  assert.match(html, /id="trip-photo-error"[^>]*role="alert"/u);
+  assert.match(html, /id="turnstile-field"[\s\S]*aria-describedby="turnstile-error"[\s\S]*tabindex="-1"/u);
+  assert.doesNotMatch(submitState, /turnstileToken/u);
+  assert.match(
+    app.slice(
+      app.indexOf("function renderOpenConfiguration()"),
+      app.indexOf("async function loadConfig()"),
+    ),
+    /updateSubmitState\(\)/u,
+  );
+  assert.match(app, /Choisis un voyage de \$\{state\.config\.limits\.maxTripDays\} jours au plus/u);
+  assert.match(app, /const shouldRestoreFocus = document\.activeElement === elements\.photoInput/u);
+  assert.match(app, /if \(shouldRestoreFocus\) elements\.photoInput\.focus\(\)/u);
+  assert.match(app, /la limite est de \$\{state\.config\.limits\.maxPhotos\}/u);
+  assert.match(app, /for \(const file of files\)[\s\S]*state\.photos\.length >= state\.config\.limits\.maxPhotos[\s\S]*ignoredCount \+= 1/u);
+  assert.match(app, /elements\.photoError\.textContent = "";[\s\S]*renderPhotos\(\)/u);
+  assert.match(app, /if \(!event\.persisted\) clearPhotos\(\)/u);
 });
 
 test("le formulaire public suit un seul parcours asynchrone", () => {
@@ -116,9 +185,10 @@ test("la notice publique explique les destinataires, la rétention et la suppres
   assert.match(privacy, /Cloudflare/u);
   assert.match(privacy, /OpenAI/u);
   assert.match(privacy, /au plus tard sous 24 heures/u);
-  assert.match(privacy, /réglages de conservation du projet OpenAI/u);
+  assert.match(privacy, /store:false/u);
+  assert.match(privacy, /aucune durée\s+plus courte n’est promise/u);
   assert.match(privacy, /Après 30 jours au plus tard/u);
   assert.match(privacy, /Supprimer cette proposition/u);
-  assert.match(privacy, /canal de contact sera publié avant l’ouverture/u);
+  assert.match(privacy, /Aucun canal complémentaire n’est publié aujourd’hui/u);
   assert.match(privatePage, /href="\/confidentialite"/u);
 });

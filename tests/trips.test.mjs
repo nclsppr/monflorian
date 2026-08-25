@@ -102,7 +102,7 @@ test("la configuration R2 reste privee et les routes masquent les jetons", () =>
     name: "EMAIL",
     allowed_sender_addresses: ["voyage@monflorian.com"],
   }]);
-  assert.ok(config.assets.run_worker_first.includes("/voyages/*"));
+  assert.equal(config.assets.run_worker_first, true);
   assert.equal(config.observability.logs.invocation_logs, false);
   assert.equal(config.vars.MONFLORIAN_TRIP_CREATION_ENABLED, "false");
   assert.equal(config.vars.MONFLORIAN_EMAIL_ENABLED, "false");

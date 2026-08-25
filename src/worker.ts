@@ -5,6 +5,11 @@ import {
   parseBookingConfiguration,
 } from "../app/core.mjs";
 import {
+  canonicalPublicRedirect,
+  noIndexResponse,
+  staticAssetRequest,
+} from "../app/http.mjs";
+import {
   SOURCE_RETENTION_MS,
   TRIP_RETENTION_MS,
   decryptJson,
@@ -42,6 +47,7 @@ const API_HEADERS = {
   "Cross-Origin-Resource-Policy": "same-origin",
   "Permissions-Policy": "camera=(), geolocation=(), microphone=(), payment=(), usb=()",
   "Referrer-Policy": "no-referrer",
+  "X-Robots-Tag": "noindex, nofollow, nosnippet, noimageindex",
   "X-Content-Type-Options": "nosniff",
   "X-Frame-Options": "DENY",
 } as const;
@@ -484,6 +490,7 @@ async function privateTripMedia(env: Env, token: string, rawPosition: string): P
       "Content-Type": asset.content_type,
       "Cross-Origin-Resource-Policy": "same-origin",
       "Referrer-Policy": "no-referrer",
+      "X-Robots-Tag": "noindex, nofollow, nosnippet, noimageindex",
       "X-Content-Type-Options": "nosniff",
     },
   });
@@ -512,6 +519,7 @@ async function deletePrivateTrip(
       Location: `/voyages/${token}`,
       "Cache-Control": "no-store",
       "Referrer-Policy": "no-referrer",
+      "X-Robots-Tag": "noindex, nofollow, nosnippet, noimageindex",
       "X-Request-Id": requestId,
     },
   });
@@ -534,6 +542,12 @@ const worker = {
     let errorCode: string | null = null;
 
     try {
+      const canonicalRedirect = canonicalPublicRedirect(request);
+      if (canonicalRedirect) {
+        status = canonicalRedirect.status;
+        return canonicalRedirect;
+      }
+
       if (request.method === "GET" && url.pathname === "/api/health") {
         status = 200;
         return jsonResponse(env, status, {
@@ -615,9 +629,9 @@ const worker = {
         return response;
       }
 
-      const response = await env.ASSETS.fetch(request);
+      const response = await env.ASSETS.fetch(staticAssetRequest(request));
       status = response.status;
-      return response;
+      return url.hostname.endsWith(".workers.dev") ? noIndexResponse(response) : response;
     } catch (error) {
       const appError = error instanceof AppError
         ? error

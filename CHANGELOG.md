@@ -4,6 +4,29 @@ Git reste la source du diff technique. Les ADR expliquent les décisions importa
 
 ## Non publié
 
+- Ouverture de l'indexation de la seule page d'accueil avec titre, description,
+  canonical, métadonnées sociales, nom de site structuré, `robots.txt` et
+  sitemap limité à l'URL publique canonique. Les pages privées et les API
+  restent explicitement exclues des moteurs.
+- Réécriture de l'accueil autour de l'itinéraire personnalisé, de la page
+  privée, des limites de réservation et d'une FAQ visible, sans avis, prix,
+  disponibilité ou autre preuve non sourcée.
+- Présentation du code d'accès avant le brief, alignement stable des champs et
+  du bouton, erreurs de dates reliées aux contrôles et validation locale de la
+  limite de 14 jours.
+- Ajout d'une carte sociale 1200 x 630 composée depuis les assets de marque
+  canoniques, sans reprendre les promesses non livrées des captures de concept.
+- Ajout de portraits, mot-symbole et icônes Web redimensionnés pour alléger le
+  premier affichage sans modifier les masters de marque.
+- Redirection permanente de `www` vers l'apex et exclusion des surfaces
+  `workers.dev`, API, pages privées et médias privés de l'indexation. Les
+  redirections privées et techniques restent en `no-store`.
+- Passage de toutes les requêtes statiques par le Worker afin d'appliquer la
+  canonisation HTTPS et les directives d'indexation sur chaque hôte public.
+- Protection des extraits contre les statuts dynamiques fermés, canonisation de
+  `/index.html` et métadonnées génériques sur les liens de voyage privés.
+- Routage explicite des deux documents HTML publics pour éviter les variantes
+  et boucles liées au traitement automatique des suffixes par Static Assets.
 - Publication d'une page de confidentialité qui nomme les données, Cloudflare,
   OpenAI, les durées maximales et la suppression depuis le lien privé, sans
   masquer l'absence actuelle de canal de droits complémentaire.
