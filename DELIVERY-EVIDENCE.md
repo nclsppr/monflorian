@@ -3,6 +3,37 @@
 Chaque section nomme son environnement et ses limites. Les sections Atlas sont
 des archives historiques ; la section Cloudflare porte la migration courante.
 
+## Accueil indexable et formulaire public, 2026-08-25
+
+La PR [#29](https://github.com/nclsppr/monflorian/pull/29) publie l'accueil
+canonique, sa présentation réelle du produit sur invitation et la correction
+des champs. Elle n'ouvre aucune demande et ne modifie aucun secret.
+
+| Preuve | Résultat |
+| --- | --- |
+| Source runtime | `344c26e9d01dfd872cd8b39f96ff0f84098dcb52` |
+| Version active | `36448047-c74a-4e92-b0f5-913bf3ca8212` |
+| CI du SHA | runs `32828870730` et `32828870752` verts |
+| Bundle Worker | 99,72 Kio avant compression, 24,68 Kio gzip, 26 assets lus |
+| Indexation | accueil `index,follow`, canonical apex, sitemap à une URL |
+| Partage | carte PNG `1200 × 630` servie en `image/png` |
+| Canonisation | HTTP, `www` et suffixes HTML publics en `308` vers l'apex HTTPS |
+| Surfaces privées | API, voyages, médias et `workers.dev` en `noindex` ; redirections privées en `no-store` |
+| Bureau public | viewport `1280 × 720`, dépassement `0`, champ et bouton à `52 px` |
+| Mobile local du même candidat | viewport `375 × 812`, dépassement `0`, formulaire et sections stables |
+| Garde-fous | `serviceReady: false`, création `false`, `POST /api/trips` en `503` |
+
+`./scripts/verify.sh` passe avec 45 tests, le typage TypeScript, le dry-run
+Wrangler, l'image Docker, les sondes Compose ainsi que le build et le lint
+Nimbus. Les états fermé réel et ouvert simulé ont été relus sur ordinateur et
+mobile. Les sondes publiques confirment le titre, la canonical, les
+redirections, `robots.txt`, le sitemap, les types d'assets et l'exclusion des
+surfaces privées.
+
+Aucun brief, portrait, courriel, secret ni appel OpenAI n'a été envoyé. Cette
+preuve ne constitue pas un score Lighthouse ni une mesure de Core Web Vitals :
+le serveur MCP Chrome DevTools spécialisé n'était pas activé pendant la tranche.
+
 ## Notice de confidentialité publique, 2026-08-24
 
 La PR [#27](https://github.com/nclsppr/monflorian/pull/27) publie la notice et
