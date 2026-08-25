@@ -3,6 +3,46 @@
 Chaque section nomme son environnement et ses limites. Les sections Atlas sont
 des archives historiques ; la section Cloudflare porte la migration courante.
 
+## Logo pleine largeur et accroche saisie, 2026-08-25
+
+La PR [#37](https://github.com/nclsppr/monflorian/pull/37) donne toute la
+largeur disponible au lockup d'introduction et réserve davantage d'air avant
+le hero sur grand écran. L'accroche passe en bleu profond et se révèle comme
+une courte saisie au clavier, sans mouvement continu ni changement des
+capacités fermées du service.
+
+| Preuve | Résultat |
+| --- | --- |
+| Source runtime | `030d675d59e84da81c14a001aab0161f0fb06e71` |
+| Version active | `a5ea6451-debb-40d9-9f5d-00c8cedfdeb3` |
+| CI du SHA | runs `32872922049` et `32872922188` verts |
+| Bundle Worker | 99,72 Kio avant compression, 24,68 Kio gzip, 33 assets lus, dont 22 visuels de marque |
+| Bureau | viewport `1440 × 900`, lockup `1440 px`, avatar `526 px`, mot-symbole `907 × 486 px`, hero à `900 px`, dépassement `0` |
+| Mobile | viewport `390 × 844`, lockup `390 px`, mot-symbole au bord droit, hero à `596 px`, dépassement `0` |
+| Accroche | bleu profond, révélation unique de `1 400 ms` en `35` pas sur `clip-path`, sans boucle ni JavaScript |
+| Mouvement réduit | animation et masque désactivés, accroche immédiatement lisible |
+| Assets d'introduction | portraits WebP `1024 × 1024` de 112 à 160 Kio, mot-symbole WebP `1352 × 724` de 111 Kio |
+| Passage à l'en-tête | apparition du logo compact après l'introduction, sans calcul continu du défilement |
+| Application | aucune exception applicative pendant les contrôles Chromium |
+| Garde-fous | `generationReady: false`, `serviceReady: false`, création `false`, `POST /api/trips` en `503` |
+
+`./scripts/verify.sh` passe avec 49 tests, le typage TypeScript, le dry-run
+Wrangler, l'image Docker, les sondes Compose ainsi que le build et le lint de
+46 fichiers Nimbus. Les régressions contrôlent les sources d'introduction, la
+largeur du lockup, la saisie ponctuelle et son repli sans mouvement.
+
+Les sondes publiques confirment les nouveaux WebP, la feuille
+`intro-full-1`, la version Worker cohérente sur la santé et le marqueur de
+release, `www` en `308` et `workers.dev` en `noindex`. Le runtime public a été
+relu dans Chromium aux deux viewports indiqués. Le beacon injecté par
+Cloudflare reste bloqué par la politique CSP existante ; aucun script
+applicatif n'en dépend. Aucun iPhone Safari ni poste Windows 11 physique
+n'était disponible pendant cette tranche.
+
+Aucun brief, portrait, courriel, secret ni appel OpenAI n'a été envoyé. Le
+corps synthétique vide utilisé pour la sonde de création a été refusé en `503`
+avant tout traitement.
+
 ## Accroche et échelle du logo d'introduction, 2026-08-25
 
 La PR [#35](https://github.com/nclsppr/monflorian/pull/35) donne plus de place au
