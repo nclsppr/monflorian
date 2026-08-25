@@ -67,9 +67,12 @@ pas détourner l'attention du composeur. Florian reste un repère de marque dans
 l'en-tête et un conseiller ponctuel dans le contenu.
 
 Sur l'accueil, un grand lockup modulable occupe d'abord le centre du premier
-écran à sa taille de rendu réelle. Sa largeur peut atteindre `860 px` sur grand
-écran et `88vw` sur mobile afin de garder une présence comparable à la
-composition principale. Il défile avec la page, puis le logo compact apparaît
+écran à sa taille de rendu réelle. Le lockup complet prend `100 %` de la largeur
+disponible, sur grand écran comme sur mobile. Les sources d'introduction à
+`1024 px` pour le portrait et `1352 px` pour le mot-symbole préservent sa
+netteté sans charger les PNG masters. Sur grand écran, l'introduction occupe au
+moins la hauteur visible sous l'en-tête et réserve un espace volontairement
+généreux avant le hero. Elle défile avec la page, puis le logo compact apparaît
 dans l'en-tête quand l'introduction est passée. Ce basculement repose sur un
 seuil d'intersection, sans lecture continue du défilement, changement d'échelle
 ni boucle d'animation. L'aperçu du téléphone reste fixe sur les appareils
@@ -78,9 +81,11 @@ une profondeur courte avec leur timeline de vue native. La préférence de
 réduction des mouvements supprime cette profondeur et les transitions.
 
 La phrase « Ton voyage commence avec une envie. » accompagne uniquement le
-grand lockup. Son arrivée courte la fait remonter de quelques pixels, puis elle
-reste en place et défile avec l'introduction. Elle ne suit pas le défilement, ne
-boucle pas et devient statique quand la réduction des mouvements est active.
+grand lockup. Elle utilise le bleu profond et se révèle une fois, en étapes,
+comme une phrase saisie au clavier. Le masque ne modifie ni la largeur ni la
+position du texte. L'accroche reste ensuite en place, défile avec l'introduction,
+ne boucle pas et devient immédiatement visible quand la réduction des
+mouvements est active.
 
 ## Colors
 

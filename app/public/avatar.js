@@ -3,20 +3,20 @@
 (() => {
   const root = document.documentElement;
   const variants = [
-    "/assets/florian-original-web.webp",
-    "/assets/florian-wind-web.webp",
-    "/assets/florian-beanie-web.webp",
-    "/assets/florian-summer-web.webp",
-    "/assets/florian-flower-web.webp",
+    { compact: "/assets/florian-original-web.webp", intro: "/assets/florian-original-intro.webp" },
+    { compact: "/assets/florian-wind-web.webp", intro: "/assets/florian-wind-intro.webp" },
+    { compact: "/assets/florian-beanie-web.webp", intro: "/assets/florian-beanie-intro.webp" },
+    { compact: "/assets/florian-summer-web.webp", intro: "/assets/florian-summer-intro.webp" },
+    { compact: "/assets/florian-flower-web.webp", intro: "/assets/florian-flower-intro.webp" },
   ];
-  const source = variants[Math.floor(Math.random() * variants.length)];
+  const sources = variants[Math.floor(Math.random() * variants.length)];
 
   root.classList.add("is-florian-loading");
 
   const reveal = () => root.classList.remove("is-florian-loading");
   const applyVariant = () => {
     document.querySelectorAll("[data-florian-variant]").forEach((image) => {
-      image.src = source;
+      image.src = image.hasAttribute("data-florian-intro") ? sources.intro : sources.compact;
     });
     reveal();
   };
@@ -29,6 +29,6 @@
   };
 
   const candidate = new Image();
-  candidate.src = source;
+  candidate.src = sources.intro;
   candidate.decode().then(applyWhenReady, reveal);
 })();

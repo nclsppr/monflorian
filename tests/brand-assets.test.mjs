@@ -20,6 +20,15 @@ const WEB_ASSETS = [
   "monflorian-wordmark-web.webp",
 ];
 
+const INTRO_ASSETS = [
+  ["florian-original-intro.webp", 1024, 1024],
+  ["florian-wind-intro.webp", 1024, 1024],
+  ["florian-beanie-intro.webp", 1024, 1024],
+  ["florian-summer-intro.webp", 1024, 1024],
+  ["florian-flower-intro.webp", 1024, 1024],
+  ["monflorian-wordmark-intro.webp", 1352, 724],
+];
+
 const PNG_SIGNATURE = Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]);
 
 function paeth(left, above, upperLeft) {
@@ -91,6 +100,14 @@ function decodeRgbaPng(file) {
   return { ...metadata, pixels };
 }
 
+function webpDimensions(webp, file) {
+  assert.equal(webp.toString("ascii", 12, 16), "VP8X", `${file}: en-tête VP8X attendu`);
+  return {
+    width: webp.readUIntLE(24, 3) + 1,
+    height: webp.readUIntLE(27, 3) + 1,
+  };
+}
+
 test("les portraits de Florian gardent un vrai fond transparent", () => {
   for (const file of AVATARS) {
     const { width, height, pixels } = decodeRgbaPng(file);
@@ -134,4 +151,12 @@ test("les dérivés servis au navigateur restent légers et les icônes ont les 
   assert.equal(wordmark.subarray(0, 8).compare(PNG_SIGNATURE), 0, "mot-symbole PNG invalide");
   assert.equal(wordmark.readUInt32BE(16), 676, "largeur haute définition du mot-symbole");
   assert.equal(wordmark.readUInt32BE(20), 362, "hauteur haute définition du mot-symbole");
+
+  for (const [file, width, height] of INTRO_ASSETS) {
+    const webp = readFileSync(new URL(`../assets/brand/${file}`, import.meta.url));
+    assert.equal(webp.toString("ascii", 0, 4), "RIFF", `${file}: conteneur RIFF attendu`);
+    assert.equal(webp.toString("ascii", 8, 12), "WEBP", `${file}: signature WebP attendue`);
+    assert.ok(webp.length < 200 * 1024, `${file}: le dérivé d’introduction doit rester sous 200 Kio`);
+    assert.deepEqual(webpDimensions(webp, file), { width, height }, `${file}: dimensions d’introduction`);
+  }
 });
