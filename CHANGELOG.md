@@ -4,6 +4,11 @@ Git reste la source du diff technique. Les ADR expliquent les décisions importa
 
 ## Non publié
 
+- Passage du lockup complet d'introduction à toute la largeur disponible,
+  ajout d'une respiration verticale avant le hero sur grand écran et nouvelles
+  sources WebP haute définition dédiées à cette surface.
+- Passage de l'accroche en bleu profond avec une écriture au clavier ponctuelle
+  par masque CSS, sans boucle ni recalcul de mise en page.
 - Ajout de l'accroche « Ton voyage commence avec une envie. » sous le grand
   logo, avec une arrivée flottante courte et un repli sans mouvement.
 - Agrandissement du lockup d'introduction sur les écrans larges et mobiles,

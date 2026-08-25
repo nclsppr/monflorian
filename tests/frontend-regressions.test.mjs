@@ -22,8 +22,14 @@ test("le portrait choisi est charge avant de remplacer le repli visible", async 
   const decode = new Promise((resolve) => { finishDecode = resolve; });
   const classes = new Set();
   const portraits = [
-    { src: "/assets/florian-original-web.webp" },
-    { src: "/assets/florian-original-web.webp" },
+    {
+      src: "/assets/florian-original-web.webp",
+      hasAttribute: () => false,
+    },
+    {
+      src: "/assets/florian-original-intro.webp",
+      hasAttribute: (name) => name === "data-florian-intro",
+    },
   ];
 
   class CandidateImage {
@@ -55,7 +61,7 @@ test("le portrait choisi est charge avant de remplacer le repli visible", async 
   assert.equal(classes.has("is-florian-loading"), true);
   assert.deepEqual(portraits.map(({ src }) => src), [
     "/assets/florian-original-web.webp",
-    "/assets/florian-original-web.webp",
+    "/assets/florian-original-intro.webp",
   ]);
 
   finishDecode();
@@ -65,7 +71,7 @@ test("le portrait choisi est charge avant de remplacer le repli visible", async 
 
   assert.deepEqual(portraits.map(({ src }) => src), [
     "/assets/florian-wind-web.webp",
-    "/assets/florian-wind-web.webp",
+    "/assets/florian-wind-intro.webp",
   ]);
   assert.equal(classes.has("is-florian-loading"), false);
 });
@@ -125,31 +131,35 @@ test("le grand logo utilise une surface réelle et un mot-symbole haute définit
   assert.match(html, /class="brand-intro" aria-hidden="true"[\s\S]*class="brand-intro-lockup"/u);
   assert.match(
     html,
-    /class="brand-intro-lockup"[\s\S]*src="\/assets\/monflorian-wordmark\.png"[\s\S]*width="676"[\s\S]*height="362"/u,
+    /class="brand-intro-lockup"[\s\S]*src="\/assets\/monflorian-wordmark-intro\.webp"[\s\S]*width="1352"[\s\S]*height="724"/u,
   );
+  assert.match(html, /data-florian-intro[\s\S]*src="\/assets\/florian-original-intro\.webp"[\s\S]*width="1024"[\s\S]*height="1024"/u);
   assert.match(html, /class="site-header-surface" aria-hidden="true"/u);
   assert.match(html, /class="preview-phone-depth"/u);
-  assert.match(introRule, /width:\s*min\(860px, 78vw\);/u);
+  assert.match(introRule, /width:\s*100%;/u);
   assert.doesNotMatch(introRule, /(?:scale\(|will-change)/u);
   assert.doesNotMatch(headerSwapRules, /(?:scale\(|will-change)/u);
-  assert.match(css, /@media \(max-width: 620px\)[\s\S]*\.brand-intro-lockup\s*\{[^}]*width:\s*min\(360px, 88vw\);/s);
+  assert.match(css, /\.brand-intro-content\s*\{[^}]*width:\s*100%;/s);
+  assert.match(css, /html\.has-intro-swap \.brand-intro\s*\{[^}]*grid-template-columns:\s*minmax\(0, 1fr\);/s);
+  assert.match(css, /html\.has-intro-swap \.brand-intro\s*\{[^}]*min-height:\s*calc\(100svh - 92px\);[^}]*padding-block:[^;]*18svh/s);
+  assert.match(css, /@media \(max-width: 620px\)[\s\S]*\.brand-intro-lockup\s*\{[^}]*width:\s*100%;/s);
   assert.match(css, /html\.has-intro-swap \.site-header\s*\{[^}]*position:\s*sticky;/s);
   assert.match(css, /@media print[\s\S]*\.site-header-surface,[\s\S]*\.brand-intro,/s);
 });
 
-test("l’accroche du logo flotte une fois sans mouvement persistant", () => {
+test("l’accroche du logo s’écrit une fois sans modifier la mise en page", () => {
   const html = source("app/public/index.html");
   const css = source("app/public/styles.css");
-  const keyframes = /@keyframes intro-tagline-arrive\s*\{([\s\S]*?)\n\}/u.exec(css)?.[1] ?? "";
+  const keyframes = /@keyframes intro-tagline-type\s*\{([\s\S]*?)\n\}/u.exec(css)?.[1] ?? "";
 
   assert.match(
     html,
     /class="brand-intro-tagline">Ton voyage commence avec une envie\.<\/span>/u,
   );
-  assert.match(css, /\.brand-intro-tagline\s*\{[^}]*animation:\s*intro-tagline-arrive 800ms var\(--ease-intro\) both;/s);
-  assert.match(keyframes, /opacity:\s*0;[\s\S]*translate3d\(0, 8px, 0\)[\s\S]*opacity:\s*1;[\s\S]*translate3d\(0, -2px, 0\)/s);
+  assert.match(css, /\.brand-intro-tagline\s*\{[^}]*color:\s*var\(--blue-deep\);[^}]*animation:\s*intro-tagline-type 1400ms steps\(35, end\) 280ms both;/s);
+  assert.match(keyframes, /clip-path:\s*inset\(0 100% 0 0\);[\s\S]*clip-path:\s*inset\(0\);/s);
   assert.doesNotMatch(keyframes, /\b(?:width|height|margin|padding|top|left|filter)\s*:/u);
-  assert.match(css, /@media \(prefers-reduced-motion: reduce\)[\s\S]*\.brand-intro-tagline\s*\{[^}]*animation:\s*none !important;[^}]*transform:\s*none !important;/s);
+  assert.match(css, /@media \(prefers-reduced-motion: reduce\)[\s\S]*\.brand-intro-tagline\s*\{[^}]*animation:\s*none !important;[^}]*clip-path:\s*none !important;/s);
 });
 
 test("les contrôles tactiles iOS n’affichent pas de masque rectangulaire", () => {
