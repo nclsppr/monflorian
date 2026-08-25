@@ -129,11 +129,27 @@ test("le grand logo utilise une surface réelle et un mot-symbole haute définit
   );
   assert.match(html, /class="site-header-surface" aria-hidden="true"/u);
   assert.match(html, /class="preview-phone-depth"/u);
-  assert.match(introRule, /width:\s*min\(520px, 78vw\);/u);
+  assert.match(introRule, /width:\s*min\(860px, 78vw\);/u);
   assert.doesNotMatch(introRule, /(?:scale\(|will-change)/u);
   assert.doesNotMatch(headerSwapRules, /(?:scale\(|will-change)/u);
+  assert.match(css, /@media \(max-width: 620px\)[\s\S]*\.brand-intro-lockup\s*\{[^}]*width:\s*min\(360px, 88vw\);/s);
   assert.match(css, /html\.has-intro-swap \.site-header\s*\{[^}]*position:\s*sticky;/s);
   assert.match(css, /@media print[\s\S]*\.site-header-surface,[\s\S]*\.brand-intro,/s);
+});
+
+test("l’accroche du logo flotte une fois sans mouvement persistant", () => {
+  const html = source("app/public/index.html");
+  const css = source("app/public/styles.css");
+  const keyframes = /@keyframes intro-tagline-arrive\s*\{([\s\S]*?)\n\}/u.exec(css)?.[1] ?? "";
+
+  assert.match(
+    html,
+    /class="brand-intro-tagline">Ton voyage commence avec une envie\.<\/span>/u,
+  );
+  assert.match(css, /\.brand-intro-tagline\s*\{[^}]*animation:\s*intro-tagline-arrive 800ms var\(--ease-intro\) both;/s);
+  assert.match(keyframes, /opacity:\s*0;[\s\S]*translate3d\(0, 8px, 0\)[\s\S]*opacity:\s*1;[\s\S]*translate3d\(0, -2px, 0\)/s);
+  assert.doesNotMatch(keyframes, /\b(?:width|height|margin|padding|top|left|filter)\s*:/u);
+  assert.match(css, /@media \(prefers-reduced-motion: reduce\)[\s\S]*\.brand-intro-tagline\s*\{[^}]*animation:\s*none !important;[^}]*transform:\s*none !important;/s);
 });
 
 test("les contrôles tactiles iOS n’affichent pas de masque rectangulaire", () => {

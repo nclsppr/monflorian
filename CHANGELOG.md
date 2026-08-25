@@ -4,6 +4,10 @@ Git reste la source du diff technique. Les ADR expliquent les décisions importa
 
 ## Non publié
 
+- Ajout de l'accroche « Ton voyage commence avec une envie. » sous le grand
+  logo, avec une arrivée flottante courte et un repli sans mouvement.
+- Agrandissement du lockup d'introduction sur les écrans larges et mobiles,
+  sans agrandir le logo par transformation pendant le défilement.
 - Correction de la régression de fluidité sur iPhone : suppression du calcul
   JavaScript continu pendant le défilement, parallaxe désactivé sur les
   appareils tactiles et apparition ponctuelle du logo compact.
