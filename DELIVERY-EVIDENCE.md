@@ -3,6 +3,46 @@
 Chaque section nomme son environnement et ses limites. Les sections Atlas sont
 des archives historiques ; la section Cloudflare porte la migration courante.
 
+## Florian V2 principal et notes variables, 2026-08-25
+
+La PR [#43](https://github.com/nclsppr/monflorian/pull/43) promeut les cinq
+portraits Florian V2 sur l'accueil. La note manuscrite choisit indépendamment
+parmi dix formulations et exclut la phrase vue au chargement précédent. Sa
+teinte devient le crayon sauge `#85897a`. Les icônes et la carte sociale suivent
+la même famille visuelle, tandis que `/v2` devient une redirection vers
+l'accueil canonique.
+
+| Preuve | Résultat |
+| --- | --- |
+| Source runtime | `8609565b66fd61ac9b087680bc1d8468ac631386` |
+| Version active | `53adda80-16a4-40fe-869b-26e5d16a46d2` |
+| CI du SHA fusionné | runs `32881682239` et `32881682196` verts |
+| Bundle Worker | 99,94 Kio avant compression, 24,72 Kio gzip, 51 assets lus, dont 37 visuels de marque |
+| Portraits | les variantes `original`, `wind`, `beanie`, `summer` et `flower` utilisent toutes Florian V2 |
+| Notes | dix formulations testées, tirage aléatoire indépendant et exclusion de la précédente via la session |
+| Bureau | `/` à `1280 × 720`, introduction, lockup et hero à `1240 px`, note à `311 px`, dépassement `0` |
+| Mobile | `/` à `390 × 844`, introduction, lockup et hero à `362 px`, note à `278 px` en `17 px`, dépassement `0` |
+| Couleur | Kalam en crayon sauge `rgb(133, 137, 122)` sur trois traits blancs translucides |
+| Rotation publique | 20 chargements, 9 phrases observées et aucune répétition consécutive ; les 10 choix sont couverts par le test déterministe |
+| Route de test | `/v2` et `/v2/` en `308` vers `/` avec la requête conservée |
+| Garde-fous | `generationReady: false`, `serviceReady: false`, création `false`, `POST /api/trips` en `503` |
+
+`./scripts/verify.sh` passe avec 52 tests, le typage TypeScript, le dry-run
+Wrangler, l'image Docker, les sondes Compose ainsi que le build et le lint de
+46 fichiers Nimbus. Les régressions couvrent les dix phrases, l'absence de
+répétition immédiate, la famille V2, la redirection canonique, la teinte, les
+dimensions des icônes et le poids de la carte sociale.
+
+Les sondes publiques confirment `/avatar.js?v=6`, la feuille
+`intro-sage-1`, les portraits V2, les nouveaux fichiers de marque, la version
+Worker cohérente sur la santé et le marqueur de release, ainsi que les deux
+redirections `/v2`. Le runtime public a été relu dans Chromium aux deux
+viewports indiqués.
+
+Aucun brief, portrait personnel, courriel, secret ni appel OpenAI n'a été
+envoyé. Le corps synthétique vide utilisé pour la sonde de création a été
+refusé en `503` avant tout traitement.
+
 ## Introduction bornée et note au crayon, 2026-08-25
 
 La PR [#41](https://github.com/nclsppr/monflorian/pull/41) aligne
