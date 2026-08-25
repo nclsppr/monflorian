@@ -3,6 +3,42 @@
 Chaque section nomme son environnement et ses limites. Les sections Atlas sont
 des archives historiques ; la section Cloudflare porte la migration courante.
 
+## Accroche et échelle du logo d'introduction, 2026-08-25
+
+La PR [#35](https://github.com/nclsppr/monflorian/pull/35) donne plus de place au
+lockup complet avant son remplacement par l'en-tête compact. Elle ajoute
+l'accroche « Ton voyage commence avec une envie. » sous le logo, sans rétablir
+de mouvement continu ni modifier les capacités fermées du service.
+
+| Preuve | Résultat |
+| --- | --- |
+| Source runtime | `d49f40db8adb951b8b999cbab4071c799234bb49` |
+| Version active | `2dafd61a-0980-4332-9251-3bb54788001f` |
+| CI du SHA | runs `32870479571` et `32870479667` verts |
+| Bundle Worker | 99,73 Kio avant compression, 24,68 Kio gzip, 27 assets lus |
+| Bureau | viewport `1440 × 900`, lockup `860 px`, mot-symbole `540 × 289 px`, dépassement `0` |
+| Mobile | viewport `390 × 844`, lockup `343 px` soit `88 %` de la largeur, dépassement `0` |
+| Accroche | arrivée unique de `800 ms` sur `opacity` et `transform`, sans boucle ni JavaScript |
+| Mouvement réduit | animation et décalage désactivés, accroche immédiatement lisible |
+| Passage à l'en-tête | apparition du logo compact après l'introduction, sans calcul continu du défilement |
+| Console | aucune erreur ni alerte pendant les contrôles Chromium |
+| Garde-fous | `generationReady: false`, `serviceReady: false`, création `false`, `POST /api/trips` en `503` |
+
+`./scripts/verify.sh` passe avec 49 tests, le typage TypeScript, le dry-run
+Wrangler, l'image Docker, les sondes Compose ainsi que le build et le lint de
+46 fichiers Nimbus. Les régressions contrôlent l'échelle sur grand écran et
+mobile, la copie, l'animation ponctuelle et son repli sans mouvement.
+
+Les sondes publiques confirment la feuille `motion-stable-2`, l'accroche, les
+deux dimensions CSS, la version Worker cohérente sur la santé et le marqueur de
+release, `www` en `308` et `workers.dev` en `noindex`. Le candidat fusionné a
+été relu dans Chromium aux deux viewports indiqués. Aucun iPhone Safari ni
+poste Windows 11 physique n'était disponible pendant cette tranche.
+
+Aucun brief, portrait, courriel, secret ni appel OpenAI n'a été envoyé. Le corps
+synthétique vide utilisé pour la sonde de création a été refusé en `503` avant
+tout traitement.
+
 ## Correctif de fluidité mobile et de netteté du logo, 2026-08-25
 
 La PR [#33](https://github.com/nclsppr/monflorian/pull/33) remplace le mouvement
