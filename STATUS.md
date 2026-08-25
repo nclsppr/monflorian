@@ -7,18 +7,20 @@ publiques. Le relevé DNS de fond date du 2026-08-24.
 
 `https://monflorian.com`, `https://www.monflorian.com` et la surface de
 diagnostic `workers.dev` servent le même Worker Cloudflare. L'apex répond en
-HTTPS avec la version `621a7fce-64cf-4759-a538-a873025a3346`. `www`, HTTP et
+HTTPS avec la version `2dafd61a-0980-4332-9251-3bb54788001f`. `www`, HTTP et
 les suffixes HTML publics redirigent désormais en `308` vers leur URL HTTPS
 canonique.
 
 L'accueil indexable présente désormais le service comme étant en préparation.
-Le grand logo occupe le premier écran et défile avec la page ; sa version
-compacte apparaît ensuite dans l'en-tête sans calcul continu du défilement.
-L'exemple de voyage reste fixe sur écran tactile et gagne une profondeur légère
-sur pointeur précis compatible. La copie visible dit « Ton voyage, à ton
-rythme » et explique que le formulaire n'envoie encore aucune donnée. Les API,
-les voyages privés, leurs médias et `workers.dev` restent hors index. Les
-redirections privées et techniques restent en `no-store`.
+Le lockup complet occupe `860 px` sur grand écran et `88 %` de la largeur sur
+mobile. L'accroche « Ton voyage commence avec une envie. » apparaît une fois
+sous le logo, puis la version compacte prend place dans l'en-tête sans calcul
+continu du défilement. L'exemple de voyage reste fixe sur écran tactile et
+gagne une profondeur légère sur pointeur précis compatible. La copie visible
+dit aussi « Ton voyage, à ton rythme » et explique que le formulaire n'envoie
+encore aucune donnée. Les API, les voyages privés, leurs médias et
+`workers.dev` restent hors index. Les redirections privées et techniques
+restent en `no-store`.
 
 La zone ne reçoit aucun courriel humain. Cloudflare Email Service est activé
 avec ses seuls DNS d'envoi, de signature et de gestion des bounces.
@@ -34,7 +36,7 @@ manquants.
 
 | Ressource | État | Preuve |
 | --- | --- | --- |
-| Worker `monflorian` | déployé | version `621a7fce-64cf-4759-a538-a873025a3346` |
+| Worker `monflorian` | déployé | version `2dafd61a-0980-4332-9251-3bb54788001f` |
 | Static Assets | actifs | interface et visuels servis par l'apex et `www` |
 | D1 `monflorian-production` | actif, juridiction `eu`, région d'exécution `EEUR` | migrations `0001`, `0002` et `0003` appliquées |
 | Tables D1 | vides et prêtes | `trips`, `trip_assets`, `daily_quotas` |
@@ -70,10 +72,13 @@ manquants.
   `same-origin` et `no-referrer`.
 - Un jeton synthétique inconnu sous `/voyages/` répond `404`, `no-store`,
   `noindex`, `nofollow` et `no-referrer`.
-- Le navigateur public à `1280 × 720` mesure un dépassement horizontal nul, un
-  lockup centré de `520 px` et un mot-symbole PNG `676 × 362` rendu à
-  `325 × 174 px` en DPR 1, sans transformation. À `390 × 844`, le lockup mesure
-  `304 px`, puis le logo compact apparaît dans l'en-tête sans débordement.
+- Le candidat fusionné relu à `1440 × 900` mesure un dépassement horizontal
+  nul, un lockup centré de `860 px` et un mot-symbole PNG `676 × 362` rendu à
+  `540 × 289 px`, sans transformation. À `390 × 844`, le lockup mesure
+  `343 px`, soit `88 %` du viewport, puis le logo compact apparaît dans
+  l'en-tête sans débordement.
+- L'accroche entre une seule fois en `800 ms` avec `opacity` et `transform`.
+  Elle reste statique lorsque la réduction des mouvements est demandée.
 - Les appareils tactiles gardent l'aperçu du Portugal fixe. La profondeur CSS
   native est limitée aux pointeurs précis ; la réduction des mouvements la
   supprime aussi. Ces règles sont couvertes par les régressions frontend.
@@ -83,9 +88,9 @@ manquants.
 
 ## État du dépôt et de la livraison
 
-- Source runtime : `main` à `d9ea2e5599c3b3b9625a29c61f7635a808b57b1f`,
-  issue de la PR [#33](https://github.com/nclsppr/monflorian/pull/33).
-- Les runs `32841075336` (`Cloudflare release`) et `32841075379` (`Verify`) du
+- Source runtime : `main` à `d49f40db8adb951b8b999cbab4071c799234bb49`,
+  issue de la PR [#35](https://github.com/nclsppr/monflorian/pull/35).
+- Les runs `32870479571` (`Cloudflare release`) et `32870479667` (`Verify`) du
   SHA fusionné sont verts.
 - Le dépôt GitHub ne possède actuellement aucun secret Actions Cloudflare.
 - Le déploiement du SHA fusionné a donc été réalisé depuis la session Wrangler
