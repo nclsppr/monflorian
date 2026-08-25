@@ -22,5 +22,11 @@
 /manifest.webmanifest
   Cache-Control: public, max-age=300
 
+/robots.txt
+  Cache-Control: public, max-age=3600
+
+/sitemap.xml
+  Cache-Control: public, max-age=3600
+
 /assets/*
   Cache-Control: public, max-age=86400

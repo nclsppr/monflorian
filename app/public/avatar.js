@@ -3,11 +3,11 @@
 (() => {
   const root = document.documentElement;
   const variants = [
-    "/assets/florian-original.png?v=2",
-    "/assets/florian-wind.png?v=2",
-    "/assets/florian-beanie.png?v=2",
-    "/assets/florian-summer.png?v=2",
-    "/assets/florian-flower.png?v=2",
+    "/assets/florian-original-web.webp",
+    "/assets/florian-wind-web.webp",
+    "/assets/florian-beanie-web.webp",
+    "/assets/florian-summer-web.webp",
+    "/assets/florian-flower-web.webp",
   ];
   const source = variants[Math.floor(Math.random() * variants.length)];
 

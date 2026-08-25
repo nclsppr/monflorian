@@ -6,7 +6,7 @@ const PRIVATE_PAGE_HEADERS = {
   "Cross-Origin-Resource-Policy": "same-origin",
   "Permissions-Policy": "camera=(), geolocation=(), microphone=(), payment=(), usb=()",
   "Referrer-Policy": "no-referrer",
-  "Robots-Tag": "noindex, nofollow, noarchive",
+  "X-Robots-Tag": "noindex, nofollow, noarchive, nosnippet, noimageindex",
   "X-Content-Type-Options": "nosniff",
   "X-Frame-Options": "DENY",
 } as const;
@@ -185,10 +185,16 @@ export function renderPrivateTripPage(options: PrivateTripPageOptions): Response
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="robots" content="noindex,nofollow,noarchive">
+    <meta name="robots" content="noindex,nofollow,noarchive,nosnippet,noimageindex">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Voyage privé · Mon Florian">
+    <meta property="og:description" content="Ce lien ouvre une proposition privée Mon Florian. Ne le transfère pas.">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="Voyage privé · Mon Florian">
+    <meta name="twitter:description" content="Ce lien ouvre une proposition privée Mon Florian. Ne le transfère pas.">
     ${refresh}
-    <title>${escapeHtml(isReady ? text(objectValue(objectValue(options.result)?.itinerary)?.title, "Ton voyage") : state.title)} · Mon Florian</title>
-    <link rel="stylesheet" href="/styles.css?v=privacy-1">
+    <title>Voyage privé · Mon Florian</title>
+    <link rel="stylesheet" href="/styles.css?v=seo-home-1">
   </head>
   <body class="private-trip-page">
     <header class="private-trip-brand"><a href="/" aria-label="Revenir à l’accueil de Mon Florian"><img src="/assets/monflorian-logo.png" alt="Mon Florian"></a></header>
@@ -206,7 +212,7 @@ export function renderPrivateTripPage(options: PrivateTripPageOptions): Response
 }
 
 export function renderUnknownTripPage(): Response {
-  return new Response(`<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="noindex,nofollow,noarchive"><title>Voyage introuvable · Mon Florian</title><link rel="stylesheet" href="/styles.css?v=privacy-1"></head><body class="private-trip-page"><main class="private-trip-shell"><section class="private-trip-state"><p class="result-kicker">Lien privé</p><h1>Ce voyage est introuvable.</h1><p>Le lien est incorrect, expiré ou la proposition a été supprimée.</p><a class="primary-button private-trip-home" href="/">Revenir à l’accueil</a></section></main></body></html>`, {
+  return new Response(`<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="noindex,nofollow,noarchive,nosnippet,noimageindex"><title>Voyage introuvable · Mon Florian</title><link rel="stylesheet" href="/styles.css?v=seo-home-1"></head><body class="private-trip-page"><main class="private-trip-shell"><section class="private-trip-state"><p class="result-kicker">Lien privé</p><h1>Ce voyage est introuvable.</h1><p>Le lien est incorrect, expiré ou la proposition a été supprimée.</p><a class="primary-button private-trip-home" href="/">Revenir à l’accueil</a></section></main></body></html>`, {
     status: 404,
     headers: PRIVATE_PAGE_HEADERS,
   });

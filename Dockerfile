@@ -20,4 +20,4 @@ RUN npm run build:assets
 USER 10001:10001
 EXPOSE 8080
 
-CMD ["npx", "wrangler", "dev", "--local", "--ip", "0.0.0.0", "--port", "8080", "--var", "MONFLORIAN_RELEASE:local-compose"]
+CMD ["npx", "wrangler", "dev", "--local", "--local-upstream", "127.0.0.1", "--ip", "0.0.0.0", "--port", "8080", "--var", "MONFLORIAN_RELEASE:local-compose"]

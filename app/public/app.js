@@ -20,6 +20,7 @@ const state = {
 const elements = {
   configStatus: document.querySelector("#config-status"),
   launchState: document.querySelector(".launch-state"),
+  launchStateLabel: document.querySelector("#launch-state-label"),
   tripForm: document.querySelector("#trip-form"),
   tripSubmit: document.querySelector("#trip-submit"),
   tripStatus: document.querySelector("#trip-status"),
@@ -37,6 +38,7 @@ const elements = {
   photoInput: document.querySelector("#trip-photo-input"),
   photoHelp: document.querySelector("#trip-photo-help"),
   photoList: document.querySelector("#trip-photo-list"),
+  photoStatus: document.querySelector("#trip-photo-status"),
   photoError: document.querySelector("#trip-photo-error"),
   photoConsent: document.querySelector("#trip-photo-consent"),
   consentError: document.querySelector("#trip-consent-error"),
@@ -97,7 +99,7 @@ function hideStatus(element) {
 }
 
 function setLaunchLabel(label, available) {
-  elements.launchState.lastChild.textContent = ` ${label}`;
+  elements.launchStateLabel.textContent = label;
   elements.launchState.classList.toggle("is-unavailable", !available);
 }
 
@@ -113,8 +115,7 @@ function updateSubmitState() {
   elements.tripSubmit.disabled =
     !serviceIsReady() ||
     state.pending ||
-    state.photoProcessing ||
-    !state.turnstileToken;
+    state.photoProcessing;
   elements.tripSubmit.setAttribute("aria-busy", String(state.pending));
 }
 
@@ -180,8 +181,8 @@ function friendlyError(error) {
   if (error instanceof RequestError) {
     if (error.status === 401) {
       return {
-        title: "Code d’accès refusé",
-        message: "Vérifie le code reçu avec ton invitation.",
+        title: "Code d’accès incorrect",
+        message: "Vérifie le code de ton invitation et réessaie.",
         accessError: "Le code d’accès est absent ou incorrect.",
       };
     }
@@ -202,8 +203,8 @@ function friendlyError(error) {
     }
     if (error.status === 503) {
       return {
-        title: "Préparation indisponible",
-        message: "La demande n’a pas été envoyée. Réessaie lorsque le service sera ouvert.",
+        title: "Demandes temporairement fermées",
+        message: "Rien n’a été envoyé. Recharge la page plus tard pour vérifier si les demandes sont ouvertes.",
       };
     }
   }
@@ -214,20 +215,21 @@ function friendlyError(error) {
 }
 
 function renderClosedConfiguration() {
-  setLaunchLabel("Préparation fermée", false);
+  setLaunchLabel("Demandes fermées", false);
   elements.configStatus.className = "notice notice-unavailable";
-  elements.configStatus.innerHTML = "<div><strong>Préparation temporairement indisponible</strong><p>Le formulaire reste visible, mais aucune demande ni photo ne sera envoyée pour le moment.</p></div>";
+  elements.configStatus.innerHTML = "<div><strong>Demandes fermées</strong><p>Le formulaire présente le service, mais aucun brief, courriel ou portrait ne sera envoyé tant que les essais ne sont pas terminés.</p></div>";
   elements.photoInput.disabled = true;
   elements.turnstileField.hidden = true;
   updateSubmitState();
 }
 
 function renderOpenConfiguration() {
-  setLaunchLabel("Préparation ouverte", true);
+  setLaunchLabel("Accès sur invitation", true);
   elements.configStatus.className = "notice notice-ready";
-  elements.configStatus.innerHTML = "<div><strong>Préparation disponible</strong><p>Tu recevras un lien privé dès que le voyage sera prêt.</p></div>";
+  elements.configStatus.innerHTML = "<div><strong>Les demandes sont ouvertes</strong><p>Saisis ton code pour créer une proposition privée. La page s’ouvre après l’envoi et le lien part par courriel quand le voyage est prêt.</p></div>";
   elements.photoInput.disabled = false;
   elements.turnstileField.hidden = false;
+  updateSubmitState();
   loadTurnstile();
 }
 
@@ -237,16 +239,16 @@ async function loadConfig() {
     state.config = normalizeConfig(response);
     elements.accessField.hidden = !accessCodeIsRequired();
     elements.accessCode.required = accessCodeIsRequired();
-    elements.photoHelp.textContent = `Jusqu’à ${state.config.limits.maxPhotos} photos. JPEG, PNG ou WebP, ${formatBytes(state.config.limits.maxPhotoBytes)} après préparation.`;
+    elements.photoHelp.textContent = `Ajoute 1 à ${state.config.limits.maxPhotos} portraits si tu veux apparaître dans une projection dessinée. JPEG, PNG ou WebP, ${formatBytes(state.config.limits.maxPhotoBytes)} maximum après réduction dans ton navigateur.`;
     if (serviceIsReady()) renderOpenConfiguration();
     else renderClosedConfiguration();
   } catch {
     state.config = normalizeConfig(null);
     elements.accessField.hidden = false;
     elements.accessCode.required = true;
-    setLaunchLabel("Service non vérifié", false);
+    setLaunchLabel("État inconnu", false);
     elements.configStatus.className = "notice notice-unavailable";
-    elements.configStatus.innerHTML = "<div><strong>Service non vérifié</strong><p>La configuration ne répond pas. Aucune demande ne sera envoyée.</p></div>";
+    elements.configStatus.innerHTML = "<div><strong>État du service inconnu</strong><p>Je n’ai pas pu vérifier si les demandes sont ouvertes. Rien ne sera envoyé.</p></div>";
     elements.photoInput.disabled = true;
     updateSubmitState();
   }
@@ -379,15 +381,15 @@ async function reencodePhoto(file, maxBytes) {
 
 function photoErrorMessage(error) {
   const messages = {
-    unsupported_type: "Choisis un fichier JPEG, PNG ou WebP.",
-    source_too_large: "Une photo source dépasse 30 Mo. Choisis un fichier plus léger.",
-    decode_failed: "Une photo ne peut pas être lue. Essaie avec un autre fichier.",
-    canvas_unavailable: "Ce navigateur ne peut pas préparer les photos.",
+    unsupported_type: "Choisis un portrait au format JPEG, PNG ou WebP.",
+    source_too_large: "Un fichier source dépasse 30 Mo. Choisis un portrait plus léger.",
+    decode_failed: "Un portrait ne peut pas être lu. Essaie avec un autre fichier.",
+    canvas_unavailable: "Ce navigateur ne peut pas préparer les portraits.",
     webp_unavailable: "Ce navigateur ne peut pas créer le WebP requis.",
-    encoded_too_large: "Une photo reste trop lourde après préparation.",
-    read_failed: "Une photo préparée ne peut pas être relue.",
+    encoded_too_large: "Un portrait reste trop lourd après préparation.",
+    read_failed: "Un portrait préparé ne peut pas être relu.",
   };
-  return messages[error.message] || "Une photo n’a pas pu être préparée.";
+  return messages[error.message] || "Un portrait n’a pas pu être préparé.";
 }
 
 function clearConsentError() {
@@ -395,10 +397,15 @@ function clearConsentError() {
   elements.photoConsent.removeAttribute("aria-invalid");
 }
 
+function setPhotoStatus(message, ready = false) {
+  elements.photoStatus.textContent = message;
+  elements.photoStatus.classList.toggle("is-ready", ready);
+}
+
 function renderPhotos() {
   clearElement(elements.photoList);
   if (state.photos.length === 0) {
-    elements.photoList.append(textElement("p", "photo-empty", "Aucune photo ajoutée."));
+    elements.photoList.append(textElement("p", "photo-empty", "Aucun portrait ajouté. L’itinéraire peut être préparé sans photo."));
     return;
   }
   state.photos.forEach((photo, index) => {
@@ -415,9 +422,14 @@ function renderPhotos() {
       state.photos.splice(index, 1);
       state.idempotencyKey = null;
       elements.photoConsent.checked = false;
+      elements.photoError.textContent = "";
       clearConsentError();
       renderPhotos();
-      elements.photoError.textContent = `${state.photos.length} photo${state.photos.length > 1 ? "s" : ""} prête${state.photos.length > 1 ? "s" : ""}.`;
+      setPhotoStatus(state.photos.length
+        ? `${state.photos.length} portrait${state.photos.length > 1 ? "s" : ""} prêt${state.photos.length > 1 ? "s" : ""}.`
+        : "Aucun portrait ajouté.", state.photos.length > 0);
+      const nextRemove = elements.photoList.querySelectorAll(".photo-remove")[Math.min(index, state.photos.length - 1)];
+      (nextRemove || elements.photoInput).focus();
     });
     item.append(image, remove);
     elements.photoList.append(item);
@@ -430,34 +442,50 @@ async function addPhotos(fileList) {
   if (!files.length) return;
   const remaining = state.config.limits.maxPhotos - state.photos.length;
   if (remaining <= 0) {
-    elements.photoError.textContent = `La limite de ${state.config.limits.maxPhotos} photos est atteinte.`;
+    elements.photoError.textContent = `La limite de ${state.config.limits.maxPhotos} portraits est atteinte.`;
     elements.photoInput.value = "";
     return;
   }
+  const shouldRestoreFocus = document.activeElement === elements.photoInput;
   state.photoProcessing = true;
   state.idempotencyKey = null;
   elements.photoInput.disabled = true;
-  elements.photoError.textContent = "Préparation des photos sur cet appareil…";
+  elements.photoInput.setAttribute("aria-busy", "true");
+  elements.photoError.textContent = "";
+  setPhotoStatus("Préparation des portraits sur cet appareil…");
   updateSubmitState();
   const errors = [];
-  for (const file of files.slice(0, remaining)) {
+  let ignoredCount = 0;
+  for (const file of files) {
+    if (state.photos.length >= state.config.limits.maxPhotos) {
+      ignoredCount += 1;
+      continue;
+    }
     try {
       state.photos.push(await reencodePhoto(file, state.config.limits.maxPhotoBytes));
     } catch (error) {
       errors.push(photoErrorMessage(error));
     }
   }
+  if (ignoredCount > 0) {
+    errors.push(
+      `${ignoredCount} portrait${ignoredCount > 1 ? "s" : ""} ignoré${ignoredCount > 1 ? "s" : ""} : la limite est de ${state.config.limits.maxPhotos}.`,
+    );
+  }
   elements.photoConsent.checked = false;
   clearConsentError();
   renderPhotos();
   const prepared = state.photos.length
-    ? `${state.photos.length} photo${state.photos.length > 1 ? "s" : ""} prête${state.photos.length > 1 ? "s" : ""}.`
+    ? `${state.photos.length} portrait${state.photos.length > 1 ? "s" : ""} prêt${state.photos.length > 1 ? "s" : ""}.`
     : "";
-  elements.photoError.textContent = [prepared, ...new Set(errors)].filter(Boolean).join(" ");
+  setPhotoStatus(prepared, Boolean(prepared));
+  elements.photoError.textContent = [...new Set(errors)].join(" ");
   state.photoProcessing = false;
   elements.photoInput.disabled = false;
+  elements.photoInput.removeAttribute("aria-busy");
   elements.photoInput.value = "";
   updateSubmitState();
+  if (shouldRestoreFocus) elements.photoInput.focus();
 }
 
 function validateForm() {
@@ -495,12 +523,22 @@ function validateForm() {
   } else if (elements.startDate.value && elements.endDate.value < elements.startDate.value) {
     elements.startDate.setAttribute("aria-invalid", "true");
     elements.endDate.setAttribute("aria-invalid", "true");
-    elements.datesError.textContent = "La date de retour doit suivre la date de départ.";
+    elements.datesError.textContent = "La date de retour ne peut pas précéder la date de départ.";
     firstInvalid ||= elements.endDate;
+  } else if (elements.startDate.value && elements.endDate.value) {
+    const start = Date.parse(`${elements.startDate.value}T00:00:00Z`);
+    const end = Date.parse(`${elements.endDate.value}T00:00:00Z`);
+    const requestedDays = Math.round((end - start) / 86_400_000) + 1;
+    if (requestedDays > state.config.limits.maxTripDays) {
+      elements.startDate.setAttribute("aria-invalid", "true");
+      elements.endDate.setAttribute("aria-invalid", "true");
+      elements.datesError.textContent = `Choisis un voyage de ${state.config.limits.maxTripDays} jours au plus.`;
+      firstInvalid ||= elements.endDate;
+    }
   }
   if (state.photos.length > 0 && !elements.photoConsent.checked) {
     elements.photoConsent.setAttribute("aria-invalid", "true");
-    elements.consentError.textContent = "Confirme les droits et les accords avant l’envoi des photos.";
+    elements.consentError.textContent = "Confirme les droits et les accords avant l’envoi des portraits.";
     firstInvalid ||= elements.photoConsent;
   }
   if (accessCodeIsRequired() && !elements.accessCode.value.trim()) {
@@ -510,7 +548,7 @@ function validateForm() {
   }
   if (!state.turnstileToken) {
     elements.turnstileError.textContent = "Confirme que la demande vient bien de toi.";
-    firstInvalid ||= elements.turnstileWidget;
+    firstInvalid ||= elements.turnstileField;
   }
   if (firstInvalid?.focus) firstInvalid.focus();
   return firstInvalid === null;
@@ -532,13 +570,13 @@ async function submitTrip() {
   state.pending = true;
   state.idempotencyKey ||= crypto.randomUUID();
   const label = elements.tripSubmit.querySelector(".button-label");
-  if (label) label.textContent = "J’enregistre la demande…";
+  if (label) label.textContent = "Création de la page privée…";
   updateSubmitState();
   renderStatus(
     elements.tripStatus,
     "loading",
     "Enregistrement en cours",
-    "Les photos sont stockées en privé avant le démarrage de la préparation.",
+    "J’enregistre la demande avant de lancer la préparation.",
   );
 
   const formData = new FormData(elements.tripForm);
@@ -570,8 +608,8 @@ async function submitTrip() {
     renderStatus(
       elements.tripStatus,
       "success",
-      "Demande enregistrée",
-      "La page privée va s’ouvrir. Tu pourras la fermer et revenir avec le même lien.",
+      "Page privée créée",
+      "Elle va s’ouvrir. Garde son lien secret pour y revenir.",
     );
     window.location.assign(privateUrl);
   } catch (error) {
@@ -585,7 +623,7 @@ async function submitTrip() {
     resetTurnstile();
   } finally {
     state.pending = false;
-    if (label) label.textContent = "Préparer mon voyage";
+    if (label) label.textContent = "Préparer mon itinéraire";
     updateSubmitState();
   }
 }
@@ -626,7 +664,9 @@ elements.tripForm.addEventListener("submit", (event) => {
   event.preventDefault();
   submitTrip();
 });
-window.addEventListener("pagehide", clearPhotos, { once: true });
+window.addEventListener("pagehide", (event) => {
+  if (!event.persisted) clearPhotos();
+});
 
 renderPhotos();
 loadConfig();

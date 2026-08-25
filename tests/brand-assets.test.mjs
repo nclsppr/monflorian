@@ -11,6 +11,15 @@ const AVATARS = [
   "florian-flower.png",
 ];
 
+const WEB_ASSETS = [
+  "florian-original-web.webp",
+  "florian-wind-web.webp",
+  "florian-beanie-web.webp",
+  "florian-summer-web.webp",
+  "florian-flower-web.webp",
+  "monflorian-wordmark-web.webp",
+];
+
 const PNG_SIGNATURE = Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]);
 
 function paeth(left, above, upperLeft) {
@@ -103,5 +112,21 @@ test("les portraits de Florian gardent un vrai fond transparent", () => {
       [0, 0, 0, 0],
       `${file}: les quatre coins doivent être transparents`,
     );
+  }
+});
+
+test("les dérivés servis au navigateur restent légers et les icônes ont les bonnes tailles", () => {
+  for (const file of WEB_ASSETS) {
+    const webp = readFileSync(new URL(`../assets/brand/${file}`, import.meta.url));
+    assert.equal(webp.toString("ascii", 0, 4), "RIFF", `${file}: conteneur RIFF attendu`);
+    assert.equal(webp.toString("ascii", 8, 12), "WEBP", `${file}: signature WebP attendue`);
+    assert.ok(webp.length < 100 * 1024, `${file}: le dérivé doit rester sous 100 Kio`);
+  }
+
+  for (const [file, size] of [["florian-icon-192.png", 192], ["florian-icon-512.png", 512]]) {
+    const png = readFileSync(new URL(`../assets/brand/${file}`, import.meta.url));
+    assert.equal(png.subarray(0, 8).compare(PNG_SIGNATURE), 0, `${file}: signature PNG invalide`);
+    assert.equal(png.readUInt32BE(16), size, `${file}: largeur`);
+    assert.equal(png.readUInt32BE(20), size, `${file}: hauteur`);
   }
 });
