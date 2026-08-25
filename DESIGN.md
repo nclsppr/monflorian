@@ -67,13 +67,20 @@ pas détourner l'attention du composeur. Florian reste un repère de marque dans
 l'en-tête et un conseiller ponctuel dans le contenu.
 
 Sur l'accueil, un grand lockup modulable occupe d'abord le centre du premier
-écran à sa taille de rendu réelle. Il défile avec la page, puis le logo compact
-apparaît dans l'en-tête quand l'introduction est passée. Ce basculement repose
-sur un seuil d'intersection, sans lecture continue du défilement, changement
-d'échelle ni boucle d'animation. L'aperçu du téléphone reste fixe sur les
-appareils tactiles. Sur un pointeur précis, les navigateurs compatibles peuvent
-ajouter une profondeur courte avec leur timeline de vue native. La préférence
-de réduction des mouvements supprime cette profondeur et les transitions.
+écran à sa taille de rendu réelle. Sa largeur peut atteindre `860 px` sur grand
+écran et `88vw` sur mobile afin de garder une présence comparable à la
+composition principale. Il défile avec la page, puis le logo compact apparaît
+dans l'en-tête quand l'introduction est passée. Ce basculement repose sur un
+seuil d'intersection, sans lecture continue du défilement, changement d'échelle
+ni boucle d'animation. L'aperçu du téléphone reste fixe sur les appareils
+tactiles. Sur un pointeur précis, les navigateurs compatibles peuvent ajouter
+une profondeur courte avec leur timeline de vue native. La préférence de
+réduction des mouvements supprime cette profondeur et les transitions.
+
+La phrase « Ton voyage commence avec une envie. » accompagne uniquement le
+grand lockup. Son arrivée courte la fait remonter de quelques pixels, puis elle
+reste en place et défile avec l'introduction. Elle ne suit pas le défilement, ne
+boucle pas et devient statique quand la réduction des mouvements est active.
 
 ## Colors
 
