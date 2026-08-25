@@ -1,13 +1,21 @@
 # État courant
 
-Dernière vérification : 2026-08-24 sur Cloudflare, GitHub et le DNS public.
+Dernière vérification : 2026-08-25 sur Cloudflare, GitHub et les réponses
+publiques. Le relevé DNS de fond date du 2026-08-24.
 
 ## Résultat
 
 `https://monflorian.com`, `https://www.monflorian.com` et la surface de
-diagnostic `workers.dev` servent le même Worker Cloudflare. L'apex et `www`
-répondent en HTTPS avec la version
-`0d1b0955-6b73-41ba-abc7-43ea9d4679c0`.
+diagnostic `workers.dev` servent le même Worker Cloudflare. L'apex répond en
+HTTPS avec la version `36448047-c74a-4e92-b0f5-913bf3ca8212`. `www`, HTTP et
+les suffixes HTML publics redirigent désormais en `308` vers leur URL HTTPS
+canonique.
+
+L'accueil indexable présente le service comme s'il était ouvert sur
+invitation : code d'accès avant le brief, informations réelles, limites
+visibles, FAQ, titre, description, canonical, carte sociale, `robots.txt` et
+sitemap. Les API, les voyages privés, leurs médias et `workers.dev` restent
+hors index. Les redirections privées et techniques restent en `no-store`.
 
 La zone ne reçoit aucun courriel humain. Cloudflare Email Service est activé
 avec ses seuls DNS d'envoi, de signature et de gestion des bounces.
@@ -23,7 +31,7 @@ manquants.
 
 | Ressource | État | Preuve |
 | --- | --- | --- |
-| Worker `monflorian` | déployé | version `0d1b0955-6b73-41ba-abc7-43ea9d4679c0` |
+| Worker `monflorian` | déployé | version `36448047-c74a-4e92-b0f5-913bf3ca8212` |
 | Static Assets | actifs | interface et visuels servis par l'apex et `www` |
 | D1 `monflorian-production` | actif, juridiction `eu`, région d'exécution `EEUR` | migrations `0001`, `0002` et `0003` appliquées |
 | Tables D1 | vides et prêtes | `trips`, `trip_assets`, `daily_quotas` |
@@ -36,13 +44,21 @@ manquants.
 
 ## Preuves publiques Cloudflare
 
-- `/` répond `200` sur l'apex et `www`, avec le titre attendu et les en-têtes de
-  sécurité.
+- `/` répond `200` sur l'apex avec le titre
+  `Itinéraire de voyage personnalisé | Mon Florian`, sa canonical et les
+  en-têtes de sécurité.
+- HTTP, `www`, `/index.html` et `/confidentialite.html` répondent `308` vers
+  l'URL HTTPS canonique en conservant la requête utile.
+- `/robots.txt`, `/sitemap.xml`, la carte sociale PNG et les portraits WebP
+  répondent `200` avec leur type attendu. Le sitemap contient seulement
+  l'accueil canonique.
 - `/api/health` répond `200`, version Worker exacte et
   `generationReady: false`.
 - `/api/config` répond `200`, `serviceReady: false` et Booking `external`.
-- `/confidentialite` répond `200` sur les trois hôtes et reste contenue à
-  `430 px` sans débordement horizontal.
+- `workers.dev` répond avec `X-Robots-Tag: noindex, nofollow, nosnippet,
+  noimageindex`.
+- Une redirection HTTP synthétique sous `/voyages/` répond `308`, `no-store`,
+  `no-referrer` et `noindex` vers l'apex HTTPS.
 - `/.well-known/monflorian-release` annonce `cloudflare-workers` et la même
   version.
 - `POST /api/trips` répond `503 TRIP_CREATION_UNAVAILABLE` avant de lire une
@@ -51,16 +67,16 @@ manquants.
   `same-origin` et `no-referrer`.
 - Un jeton synthétique inconnu sous `/voyages/` répond `404`, `no-store`,
   `noindex`, `nofollow` et `no-referrer`.
+- Le navigateur public à `1280 × 720` mesure un dépassement horizontal nul,
+  un champ de code à `52 px` avec `13 px` de padding vertical et un bouton à
+  `52 px`. Les sections éditoriales et la FAQ ont aussi été contrôlées.
 - Aucun secret, brief, courriel ou photo n'a été envoyé pendant ces sondes.
 
 ## État du dépôt et de la livraison
 
-- Source runtime : `main` à `7ff50daa26e4d3a06ae1b780e66929ac07ca23db`,
-  issue des PR [#22](https://github.com/nclsppr/monflorian/pull/22),
-  [#23](https://github.com/nclsppr/monflorian/pull/23) et
-  [#25](https://github.com/nclsppr/monflorian/pull/25), puis de la PR
-  [#27](https://github.com/nclsppr/monflorian/pull/27).
-- Les runs `32768890646` (`Cloudflare release`) et `32768890626` (`Verify`) du
+- Source runtime : `main` à `344c26e9d01dfd872cd8b39f96ff0f84098dcb52`,
+  issue de la PR [#29](https://github.com/nclsppr/monflorian/pull/29).
+- Les runs `32828870730` (`Cloudflare release`) et `32828870752` (`Verify`) du
   SHA fusionné sont verts.
 - Le dépôt GitHub ne possède actuellement aucun secret Actions Cloudflare.
 - Le déploiement du SHA fusionné a donc été réalisé depuis la session Wrangler
@@ -85,11 +101,13 @@ Cloudflare peut faire évoluer ses adresses anycast. Les deux résolveurs public
 
 ## Limites
 
-Cette tranche prouve le runtime Cloudflare fermé, son domaine web, le quota D1
-atomique, la configuration privée du bucket R2 vide, le rendu fermé de la page
-privée et la notice publique. Elle ne prouve ni appel OpenAI réel, ni coût
-fournisseur, ni purge
-applicative distante sur des données synthétiques, ni validation Turnstile de
-bout en bout, ni envoi synthétique de courriel, ni affiliation, ni paiement. Aucun
+Cette tranche prouve le runtime Cloudflare fermé, son domaine web, l'accueil
+indexable, le quota D1 atomique, la configuration privée du bucket R2 vide, le
+rendu fermé de la page privée et la notice publique. Elle ne prouve ni
+positionnement dans les moteurs, ni Core Web Vitals réels, ni appel OpenAI, ni
+coût fournisseur, ni purge applicative distante sur des données synthétiques,
+ni validation Turnstile de bout en bout, ni envoi synthétique de courriel, ni
+affiliation, ni paiement. La trace spécialisée Chrome DevTools n'a pas été
+exécutée car son serveur MCP n'est pas encore activé dans Codex. Aucun
 utilisateur ne doit envoyer de brief ou de photo tant que les gates de
 `RESTE-A-FAIRE.md` ne sont pas terminées.
