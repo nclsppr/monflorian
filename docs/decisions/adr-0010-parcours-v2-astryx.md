@@ -23,7 +23,8 @@ voyageurs.
 - Conserver `/` et son JavaScript natif sans migration.
 - Construire `/v2` comme une île React 19 produite par Vite.
 - Utiliser les composants Astryx `0.5.0` avec le thème Matcha adapté aux tokens
-  Mon Florian et Outfit auto-hébergée.
+  Mon Florian. Conserver la pile système de la racine pour l'interface et
+  réserver Outfit auto-hébergée aux titres superposés aux photos.
 - Faire aboutir toute saisie au même carnet « Le Japon à deux », dix jours entre
   Tokyo, Hakone et Kyoto. Aucun formulaire V2 n'appelle `/api/trips`.
 - Versionner trois scènes du couple fictif et trois couvertures d'exemples en
@@ -44,6 +45,11 @@ La V2 peut être parcourue de bout en bout sans activer OpenAI, D1, R2, Email
 Service ou le Workflow. Elle ajoute React, Vite, Astryx, StyleX et Outfit au
 seul bundle `/v2`. Le mot de passe côté navigateur convient à ce parcours
 éditorial mais ne remplace pas la page privée à jeton prévue par F06.
+
+L'isolation technique ne crée pas une seconde identité visuelle. La V2 reprend
+la typographie, les couleurs, les halos, les formes et les prises de parole de
+Florian déjà présents à la racine. Les composants Astryx s'insèrent dans ce
+système au lieu d'imposer les choix éditoriaux de Matcha.
 
 Les futures photos de voyageurs réels restent destinées au bucket R2 privé et
 au cycle de rétention existant. Cette règle ne requalifie pas les six fixtures

@@ -159,10 +159,12 @@ fictif ni aux scènes synthétiques versionnées de la V2.
 
 L'accueil historique `/` reste natif. `/v2` constitue une île React 19 isolée
 qui adopte Astryx `0.5.0` et son thème Matcha, repris avec la palette Mon Florian
-et Outfit auto-hébergée. Les boutons, cartes sélectionnables, champs, stepper,
-progression, badges et dialogues viennent réellement d'Astryx. Ce choix évite
-une migration du runtime historique et concentre la nouvelle dépendance sur le
-parcours qui en tire profit.
+et la pile système du produit. Outfit reste auto-hébergée mais se limite aux
+titres blancs superposés aux photos. Les boutons, cartes sélectionnables,
+champs, stepper, progression, badges et dialogues viennent réellement
+d'Astryx. Ils reprennent les rayons, les contrastes, les fonds cyan et citron,
+et la hiérarchie de la racine. Ce choix évite une migration du runtime
+historique sans isoler la V2 du langage visuel Mon Florian.
 
 Le changement d'étape reste court et respecte la réduction des mouvements. La
 confirmation de génération reprend la transition Success check de

@@ -67,3 +67,22 @@ test("les six images V2 partagent le format éditorial 1440 par 960", () => {
     assert.ok(webp.length < 220 * 1024, `${file}: le visuel reste sous 220 Kio`);
   }
 });
+
+test("la V2 reprend la grammaire de marque et stabilise le formulaire mobile", () => {
+  const application = source("app/v2/src/main.jsx");
+  const styles = source("app/v2/src/v2.css");
+
+  assert.match(application, /className="hero-florian-cue"/u);
+  assert.match(application, /className="brief-field"/u);
+  assert.doesNotMatch(application, /hasNumberSteppers/u);
+  assert.match(styles, /--mf-font:\s*"Avenir Next"/u);
+  assert.match(styles, /font-family:\s*"Kalam"/u);
+  assert.match(styles, /\.v2-shell\s*\{[^}]*radial-gradient/su);
+  assert.match(styles, /\.photo-city[^{]*\{[^}]*"Outfit Variable"/su);
+  assert.match(styles, /\.brief-field\s+\.astryx-field-label/u);
+  assert.match(styles, /\.composer-card\s+\.astryx-step\s*>\s*button/u);
+  assert.match(
+    styles,
+    /@media \(max-width: 440px\)[\s\S]*?\.form-actions\s*\{[^}]*flex-direction:\s*column-reverse/su,
+  );
+});
