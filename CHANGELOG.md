@@ -4,6 +4,8 @@ Git reste la source du diff technique. Les ADR expliquent les décisions importa
 
 ## Non publié
 
+- Déploiement public du lockup d'introduction V2 au SHA `99440d5`, avec
+  validation du basculement vers l'en-tête compact et des ancres du formulaire.
 - Réutilisation sur `/v2` du lockup d'introduction pleine largeur, de la note
   manuscrite sur trois traits blancs et de sa composition en en-tête compact
   après le premier scroll.
