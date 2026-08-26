@@ -4,6 +4,12 @@ Git reste la source du diff technique. Les ADR expliquent les décisions importa
 
 ## Non publié
 
+- Réalignement visuel de `/v2` sur l'accueil historique : pile système, halos
+  cyan et citron, surfaces, rayons, présence de Florian et note manuscrite.
+  Outfit reste réservée aux titres blancs posés sur les photos.
+- Correction du questionnaire V2 sur mobile : libellé facultatif stable,
+  contrôles numériques sans steppers natifs, étapes plus compactes et actions
+  empilées sans débordement à la troisième étape.
 - Déploiement public de la V2 au SHA `6672048` et contrôle de `/v2`, du carnet
   Japon, des six médias, des redirections canoniques et des garde-fous fermés.
 - Création de `/v2` comme parcours autonome React 19 et Astryx : accueil,

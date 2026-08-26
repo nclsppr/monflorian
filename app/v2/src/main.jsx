@@ -206,6 +206,15 @@ function Hero() {
   return (
     <section className="home-hero">
       <div className="hero-copy">
+        <div className="hero-florian-cue">
+          <img
+            alt="Florian"
+            height="384"
+            src="/assets/florian-v2-original-web.webp"
+            width="384"
+          />
+          <p className="hero-handwritten-note">Tu m’emmènes où&nbsp;?</p>
+        </div>
         <p className="eyebrow">TON VOYAGE, À TON RYTHME</p>
         <h1>Tu donnes l’envie.<br />Je construis le chemin.</h1>
         <p className="hero-intro">
@@ -309,18 +318,20 @@ function TripQuestionnaire({ onGenerate }) {
               {step === 0 ? (
                 <div className="field-stack">
                   <div className="step-kicker">01 · RACONTE-MOI</div>
-                  <TextArea
-                    description="Une destination, une saison, une sensation ou simplement une envie de partir."
-                    isOptional
-                    label="À quoi ressemble le voyage que tu imagines ?"
-                    maxLength={2000}
-                    onChange={setBrief}
-                    placeholder="Dix jours au Japon à deux, entre quartiers vivants, sources chaudes et temples. On veut voir beaucoup sans courir…"
-                    rows={7}
-                    size="lg"
-                    value={brief}
-                    width="100%"
-                  />
+                  <div className="brief-field">
+                    <TextArea
+                      description="Une destination, une saison, une sensation ou simplement une envie de partir."
+                      isOptional
+                      label="À quoi ressemble le voyage que tu imagines ?"
+                      maxLength={2000}
+                      onChange={setBrief}
+                      placeholder="Dix jours au Japon à deux, entre quartiers vivants, sources chaudes et temples. On veut voir beaucoup sans courir…"
+                      rows={7}
+                      size="lg"
+                      value={brief}
+                      width="100%"
+                    />
+                  </div>
                   <p className="field-hint">Tu pourras ajuster le détail après avoir vu la première proposition.</p>
                 </div>
               ) : null}
@@ -330,7 +341,6 @@ function TripQuestionnaire({ onGenerate }) {
                   <div className="step-kicker">02 · DONNE LE TEMPO</div>
                   <div className="number-grid">
                     <NumberInput
-                      hasNumberSteppers
                       isIntegerOnly
                       label="Nombre de jours"
                       max={30}
@@ -341,7 +351,6 @@ function TripQuestionnaire({ onGenerate }) {
                       width="100%"
                     />
                     <NumberInput
-                      hasNumberSteppers
                       isIntegerOnly
                       label="Voyageurs"
                       max={8}
@@ -438,7 +447,15 @@ function TripQuestionnaire({ onGenerate }) {
         </Card>
 
         <aside className="composer-aside">
-          <p className="aside-label">CE QUE FLORIAN PRÉPARE</p>
+          <div className="composer-aside-signature">
+            <img
+              alt=""
+              height="384"
+              src="/assets/florian-v2-original-web.webp"
+              width="384"
+            />
+            <p className="aside-label">CE QUE FLORIAN PRÉPARE</p>
+          </div>
           <div className="route-line" aria-hidden="true">
             <span>Départ</span><i /><span>Respirer</span><i /><span>S’émerveiller</span>
           </div>
