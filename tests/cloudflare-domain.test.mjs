@@ -21,7 +21,7 @@ test("le Worker porte les deux domaines publics exacts", () => {
     true,
     "le Worker doit voir les requêtes statiques pour canoniser les hôtes",
   );
-  assert.equal(config.assets.html_handling, "none");
+  assert.equal(config.assets.html_handling, "drop-trailing-slash");
 });
 
 test("les lanceurs locaux gardent un hôte distinct des domaines publics", () => {

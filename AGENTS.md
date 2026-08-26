@@ -57,5 +57,4 @@ Le dépôt utilise un contexte unique, avec `CONTEXT.md` à la racine et les ADR
 - Documentation technique en français ; code, identifiants et logs structurés en anglais.
 - Tutoiement cohérent dans le produit.
 - Florian est un conseiller ponctuel, pas une décoration omniprésente ni un chatbot.
-- Les projections personnalisées sont signalées et ne remplacent pas les vraies photos de lieux.
 - Aucune preuve sociale, garantie, disponibilité ou promesse commerciale sans source.

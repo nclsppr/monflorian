@@ -8,7 +8,6 @@ import {
   canonicalPublicRedirect,
   noIndexResponse,
   shouldNoIndexStaticAsset,
-  staticAssetRequest,
 } from "../app/http.mjs";
 import {
   SOURCE_RETENTION_MS,
@@ -630,7 +629,7 @@ const worker = {
         return response;
       }
 
-      const response = await env.ASSETS.fetch(staticAssetRequest(request));
+      const response = await env.ASSETS.fetch(request);
       status = response.status;
       return shouldNoIndexStaticAsset(request) ? noIndexResponse(response) : response;
     } catch (error) {

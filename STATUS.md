@@ -5,6 +5,17 @@ publiques. Le relevé DNS de fond date du 2026-08-24.
 
 ## Résultat
 
+### Candidat local du 2026-08-26
+
+La branche `codex/v2-japan-demo` remplace localement la redirection `/v2` par
+un parcours React 19 et Astryx hors index. Tout formulaire mène au carnet fixe
+« Le Japon à deux » : dix jours entre Tokyo, Hakone et Kyoto, trois recherches
+Booking.com par ville, six visuels Fuji, trois voyages d'inspiration et un
+partage public ou privé dont le mot de passe est vérifié côté navigateur. Le
+couple des trois scènes Japon est entièrement fictif. Ce candidat n'est pas
+encore une preuve de déploiement public ; les relevés ci-dessous décrivent la
+version Cloudflare vérifiée le 2026-08-25.
+
 `https://monflorian.com`, `https://www.monflorian.com` et la surface de
 diagnostic `workers.dev` servent le même Worker Cloudflare. L'apex répond en
 HTTPS avec la version `53adda80-16a4-40fe-869b-26e5d16a46d2`. `www`, HTTP et

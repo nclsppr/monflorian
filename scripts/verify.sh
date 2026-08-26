@@ -76,6 +76,17 @@ with urlopen(f"{base}/", timeout=5) as response:
 if b"<title>Pr\xc3\xa9parer un voyage \xc3\xa0 ton rythme | Mon Florian</title>" not in home:
     raise SystemExit("L’application servie ne contient pas le titre attendu.")
 
+with urlopen(f"{base}/v2", timeout=5) as response:
+    v2_url = response.geturl()
+    v2_headers = response.headers
+    v2 = response.read()
+if v2_url != f"{base}/v2":
+    raise SystemExit(f"URL V2 locale inattendue : {v2_url!r}")
+if b"<title>Ton voyage \xc3\xa0 ton rythme \xc2\xb7 Mon Florian</title>" not in v2:
+    raise SystemExit("La V2 servie ne contient pas le titre attendu.")
+if "noindex" not in v2_headers.get("X-Robots-Tag", ""):
+    raise SystemExit("La V2 servie doit rester hors index.")
+
 with urlopen(f"{base}/api/health", timeout=5) as response:
     health = __import__("json").load(response)
 if health != {"status": "ok", "release": "local-compose", "generationReady": False}:

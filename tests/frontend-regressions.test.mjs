@@ -80,7 +80,7 @@ test("le portrait choisi est charge avant de remplacer le repli visible", async 
   assert.equal(classes.has("is-florian-loading"), false);
 });
 
-test("la famille v2 devient la famille principale sur toutes les routes", async () => {
+test("la famille v2 reste la famille principale de l’accueil", async () => {
   const bootSource = source("app/public/avatar.js");
 
   async function sourcesFor(pathname) {
@@ -120,10 +120,6 @@ test("la famille v2 devient la famille principale sur toutes les routes", async 
   }
 
   assert.deepEqual(await sourcesFor("/"), [
-    "/assets/florian-v2-flower-web.webp",
-    "/assets/florian-v2-flower-intro.webp",
-  ]);
-  assert.deepEqual(await sourcesFor("/v2"), [
     "/assets/florian-v2-flower-web.webp",
     "/assets/florian-v2-flower-intro.webp",
   ]);

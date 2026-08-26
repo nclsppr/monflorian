@@ -6,7 +6,6 @@ import {
   canonicalPublicRedirect,
   noIndexResponse,
   shouldNoIndexStaticAsset,
-  staticAssetRequest,
 } from "../app/http.mjs";
 
 const rootUrl = new URL("../", import.meta.url);
@@ -92,8 +91,8 @@ test("les redirections canoniques produisent de vraies réponses HTTP", () => {
     ["https://www.monflorian.com:8443/guide", "https://monflorian.com/guide"],
     ["https://monflorian.com/index.html?ref=test", "https://monflorian.com/?ref=test"],
     ["https://www.monflorian.com/index.html?ref=test", "https://monflorian.com/?ref=test"],
-    ["https://monflorian.com/v2?avatar=wind", "https://monflorian.com/?avatar=wind"],
-    ["https://monflorian.com/v2/?avatar=wind", "https://monflorian.com/?avatar=wind"],
+    ["https://monflorian.com/v2/?ref=test", "https://monflorian.com/v2?ref=test"],
+    ["https://monflorian.com/v2/index.html", "https://monflorian.com/v2"],
     ["https://monflorian.com/confidentialite.html", "https://monflorian.com/confidentialite"],
   ];
 
@@ -103,6 +102,7 @@ test("les redirections canoniques produisent de vraies réponses HTTP", () => {
     assert.equal(response?.headers.get("Location"), expected);
   }
   assert.equal(canonicalPublicRedirect(new Request("https://monflorian.com/guide?ref=test")), null);
+  assert.equal(canonicalPublicRedirect(new Request("https://monflorian.com/v2?ref=test")), null);
   assert.equal(canonicalPublicRedirect(new Request("https://monflorian.example/index.html")), null);
   assert.equal(
     canonicalPublicRedirect(new Request("https://monflorian.com/index.html", { method: "POST" })),
@@ -133,27 +133,21 @@ test("les redirections privées et techniques ne sont jamais mises en cache", ()
   assert.equal(publicResponse?.headers.get("X-Robots-Tag"), null);
 });
 
-test("les routes HTML publiques sont réécrites sans redirection interne", () => {
-  const home = new Request("http://127.0.0.1:8787/?ref=test");
-  const avatarTest = new Request("https://monflorian.com/v2?avatar=wind");
-  const privacy = new Request("https://monflorian.com/confidentialite?ref=test");
-  const asset = new Request("https://monflorian.com/styles.css");
+test("Cloudflare sert les routes HTML canoniques sans réécriture interne", () => {
+  const config = JSON.parse(source("wrangler.jsonc"));
+  const worker = source("src/worker.ts");
 
-  assert.equal(staticAssetRequest(home).url, "http://127.0.0.1:8787/index.html?ref=test");
-  assert.equal(staticAssetRequest(avatarTest), avatarTest);
-  assert.equal(
-    staticAssetRequest(privacy).url,
-    "https://monflorian.com/confidentialite.html?ref=test",
-  );
-  assert.equal(staticAssetRequest(asset), asset);
-  assert.equal(
-    staticAssetRequest(new Request("https://monflorian.com/", { method: "POST" })).url,
-    "https://monflorian.com/",
-  );
+  assert.equal(config.assets.html_handling, "drop-trailing-slash");
+  assert.match(worker, /env\.ASSETS\.fetch\(request\)/u);
+  assert.doesNotMatch(worker, /staticAssetRequest/u);
 });
 
-test("seule la surface workers.dev reste hors index parmi les assets publics", () => {
-  assert.equal(shouldNoIndexStaticAsset(new Request("https://monflorian.com/v2")), false);
+test("la V2 et la surface workers.dev restent hors index", () => {
+  assert.equal(shouldNoIndexStaticAsset(new Request("https://monflorian.com/v2")), true);
+  assert.equal(
+    shouldNoIndexStaticAsset(new Request("https://monflorian.com/v2/assets/index.js")),
+    true,
+  );
   assert.equal(shouldNoIndexStaticAsset(new Request("https://monflorian.com/")), false);
   assert.equal(
     shouldNoIndexStaticAsset(new Request("https://monflorian.nclsppr.workers.dev/")),

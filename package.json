@@ -7,18 +7,29 @@
     "node": ">=24.0.0"
   },
   "scripts": {
-    "build:assets": "node scripts/build-worker-assets.mjs",
+    "build:assets": "node scripts/build-worker-assets.mjs && npm run build:v2",
+    "build:v2": "vite build --config vite.v2.config.js",
     "check:worker": "npm run build:assets && wrangler types && tsc --noEmit && wrangler deploy --dry-run --outdir .wrangler/dry-run",
     "deploy": "npm run build:assets && wrangler deploy",
     "dev": "npm run build:assets && wrangler dev --local-upstream 127.0.0.1",
     "start": "npm run dev",
     "test": "node --test tests/*.test.mjs",
-    "check": "node --check app/core.mjs && node --check app/email.mjs && node --check app/http.mjs && node --check app/openai.mjs && node --check app/trips.mjs && node --check app/public/avatar.js && node --check app/public/motion.js && node --check app/public/app.js && node --check scripts/build-worker-assets.mjs && node --check scripts/smoke_openai.mjs && npm test && npm run check:worker",
+    "check": "node --check app/core.mjs && node --check app/email.mjs && node --check app/http.mjs && node --check app/openai.mjs && node --check app/trips.mjs && node --check app/public/avatar.js && node --check app/public/motion.js && node --check app/public/app.js && node --check scripts/build-worker-assets.mjs && node --check scripts/smoke_openai.mjs && node --check vite.v2.config.js && npm test && npm run check:worker",
     "smoke:openai": "node scripts/smoke_openai.mjs"
   },
   "devDependencies": {
     "@types/node": "24.13.3",
+    "@vitejs/plugin-react": "6.1.0",
     "typescript": "7.0.2",
+    "vite": "8.2.2",
     "wrangler": "4.125.0"
+  },
+  "dependencies": {
+    "@astryxdesign/core": "0.5.0",
+    "@astryxdesign/theme-matcha": "0.5.0",
+    "@fontsource-variable/outfit": "5.3.0",
+    "@stylexjs/stylex": "0.19.0",
+    "react": "19.2.8",
+    "react-dom": "19.2.8"
   }
 }
