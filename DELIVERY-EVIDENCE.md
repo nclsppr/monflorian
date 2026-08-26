@@ -3,6 +3,40 @@
 Chaque section nomme son environnement et ses limites. Les sections Atlas sont
 des archives historiques ; la section Cloudflare porte la migration courante.
 
+## Lockup d'introduction partagé avec la V2, 2026-08-26
+
+La PR [#49](https://github.com/nclsppr/monflorian/pull/49) reprend sur `/v2`
+le grand lockup canonique de la racine, la note Kalam sur trois traits blancs et
+le seuil d'intersection qui fait apparaître sa composition compacte dans
+l'en-tête. Les ancres du questionnaire réservent aussi la hauteur de cet
+en-tête.
+
+| Preuve | Résultat |
+| --- | --- |
+| Source runtime | `99440d5808e8d11a4c7d4a80efed08074fe7e3a6` |
+| Version active | `fce98697-262d-4351-89c9-9346c5d0a18a` |
+| CI du SHA fusionné | runs `32980857522` et `32980857606` verts |
+| CI de la PR | runs `32980683184` et `32980683123` verts sur `a381735` |
+| Bundle Worker | 99,59 Kio avant compression, 24,64 Kio gzip, 66 assets lus |
+| Publication | 4 assets nouveaux ou modifiés envoyés, 56 assets réutilisés |
+| Assets V2 actifs | `index-Ez4flX5B.css` et `index-BkZh_n4F.js` |
+| Route V2 | `/v2` en `200`, avec `noindex` |
+| Bureau | introduction et étapes 1 à 3 à `1440 × 900`, dépassement horizontal `0` |
+| Mobile | introduction et étapes 1 à 3 à `390 × 844`, dépassement horizontal `0` |
+| Garde-fous | `generationReady: false`, `serviceReady: false`, création `false`, `POST /api/trips` en `503` |
+
+`./scripts/verify.sh` passe avec 57 tests, le typage TypeScript, le dry-run
+Wrangler, l'image Docker, les sondes Compose ainsi que le build et le lint de
+46 fichiers Nimbus. Le runtime public a ensuite été relu dans Chromium aux deux
+viewports indiqués. L'introduction, le passage au header et l'arrivée du
+questionnaire à `16 px` sous celui-ci sont visibles sur le domaine actif. Aucun
+iPhone Safari physique n'était disponible pendant cette tranche.
+
+Les sondes publiques retrouvent les deux assets hachés et la version active sur
+`/api/health`. Aucun brief, courriel, photo, secret ni appel OpenAI n'a été
+envoyé. Le corps synthétique vide utilisé pour la sonde de création a été
+refusé en `503` avant tout traitement.
+
 ## Identité V2 et questionnaire mobile, 2026-08-26
 
 La PR [#47](https://github.com/nclsppr/monflorian/pull/47) réintègre dans
