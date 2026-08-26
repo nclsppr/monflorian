@@ -4,6 +4,8 @@ Git reste la source du diff technique. Les ADR expliquent les décisions importa
 
 ## Non publié
 
+- Déploiement public de la V2 au SHA `6672048` et contrôle de `/v2`, du carnet
+  Japon, des six médias, des redirections canoniques et des garde-fous fermés.
 - Création de `/v2` comme parcours autonome React 19 et Astryx : accueil,
   questionnaire en trois étapes, génération déterministe et carnet de dix jours
   au Japon, sans appel au backend fermé.

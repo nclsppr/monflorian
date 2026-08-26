@@ -1,24 +1,22 @@
 # État courant
 
-Dernière vérification : 2026-08-25 sur Cloudflare, GitHub et les réponses
-publiques. Le relevé DNS de fond date du 2026-08-24.
+Dernier déploiement et dernière vérification : 2026-08-26 sur Cloudflare,
+GitHub et les réponses publiques. Le relevé DNS de fond date du 2026-08-24.
 
 ## Résultat
 
-### Candidat local du 2026-08-26
+### Parcours V2 public du 2026-08-26
 
-La branche `codex/v2-japan-demo` remplace localement la redirection `/v2` par
-un parcours React 19 et Astryx hors index. Tout formulaire mène au carnet fixe
-« Le Japon à deux » : dix jours entre Tokyo, Hakone et Kyoto, trois recherches
-Booking.com par ville, six visuels Fuji, trois voyages d'inspiration et un
-partage public ou privé dont le mot de passe est vérifié côté navigateur. Le
-couple des trois scènes Japon est entièrement fictif. Ce candidat n'est pas
-encore une preuve de déploiement public ; les relevés ci-dessous décrivent la
-version Cloudflare vérifiée le 2026-08-25.
+La PR [#45](https://github.com/nclsppr/monflorian/pull/45) remplace la
+redirection `/v2` par un parcours React 19 et Astryx hors index. Tout formulaire
+mène au carnet fixe « Le Japon à deux » : dix jours entre Tokyo, Hakone et
+Kyoto, trois recherches Booking.com par ville, six visuels Fuji, trois voyages
+d'inspiration et un partage public ou privé dont le mot de passe est vérifié
+côté navigateur. Le couple des trois scènes Japon est entièrement fictif.
 
 `https://monflorian.com`, `https://www.monflorian.com` et la surface de
 diagnostic `workers.dev` servent le même Worker Cloudflare. L'apex répond en
-HTTPS avec la version `53adda80-16a4-40fe-869b-26e5d16a46d2`. `www`, HTTP et
+HTTPS avec la version `b7fbef1e-b0d4-4524-94c2-0a0a283eaa3e`. `www`, HTTP et
 les suffixes HTML publics redirigent désormais en `308` vers leur URL HTTPS
 canonique.
 
@@ -28,9 +26,8 @@ Le lockup complet reprend les gouttières du contenu et ne dépasse jamais
 sans répéter immédiatement la précédente. Elle utilise Kalam auto-hébergée en
 crayon sauge `#85897a` sur trois traits blancs irréguliers et translucides. Son
 empreinte est fixe et resserrée sur mobile. Les cinq portraits Florian V2 sont
-devenus la famille principale de l'accueil ; `/v2` redirige en `308` vers `/`
-en conservant le paramètre `?avatar=`. Les icônes et la carte sociale reprennent
-elles aussi Florian V2. La copie visible dit « Ton voyage, à ton rythme » et
+devenus la famille principale de l'accueil. Les icônes et la carte sociale
+reprennent elles aussi Florian V2. La copie visible dit « Ton voyage, à ton rythme » et
 explique que le formulaire n'envoie encore aucune donnée. Les API, les voyages
 privés, leurs médias et `workers.dev` restent hors index. Les redirections
 privées et techniques restent en `no-store`.
@@ -49,7 +46,7 @@ manquants.
 
 | Ressource | État | Preuve |
 | --- | --- | --- |
-| Worker `monflorian` | déployé | version `53adda80-16a4-40fe-869b-26e5d16a46d2` |
+| Worker `monflorian` | déployé | version `b7fbef1e-b0d4-4524-94c2-0a0a283eaa3e` |
 | Static Assets | actifs | interface et visuels servis par l'apex et `www` |
 | D1 `monflorian-production` | actif, juridiction `eu`, région d'exécution `EEUR` | migrations `0001`, `0002` et `0003` appliquées |
 | Tables D1 | vides et prêtes | `trips`, `trip_assets`, `daily_quotas` |
@@ -65,8 +62,14 @@ manquants.
 - `/` répond `200` sur l'apex avec le titre
   `Préparer un voyage à ton rythme | Mon Florian`, sa canonical, le script
   local `/motion.js` et les en-têtes de sécurité.
-- `/v2` et `/v2/` répondent `308` vers l'accueil canonique en conservant la
-  requête, par exemple `?avatar=flower`.
+- `/v2` répond `200` avec son titre, ses assets React, sa police Outfit et
+  `X-Robots-Tag: noindex, nofollow, nosnippet, noimageindex`.
+- `/v2/` et `/v2/index.html` répondent `308` vers `/v2`. `www` redirige vers
+  la même URL canonique sur l'apex.
+- Les six WebP du parcours V2 répondent `200` avec le type `image/webp`.
+- Le questionnaire public aboutit au carnet « Le Japon à deux », avec dix
+  jours, les trois villes, les trois liens Booking.com et le dialogue de
+  partage privé affichant le mot de passe de démonstration.
 - Les cinq couples WebP de la seconde famille répondent `200` avec le type
   `image/webp`. Les portraits compacts pèsent de 25 818 à 36 052 octets et les
   portraits d'introduction de 104 784 à 162 212 octets.
@@ -90,6 +93,9 @@ manquants.
   `same-origin` et `no-referrer`.
 - Un jeton synthétique inconnu sous `/voyages/` répond `404`, `no-store`,
   `noindex`, `nofollow` et `no-referrer`.
+- Le runtime `/v2` relu dans Chromium à `1440 × 900` et `390 × 844` ne
+  présente aucun dépassement horizontal ni erreur console. Les scènes Tokyo,
+  Hakone et Kyoto sont visibles dans le carnet.
 - Le runtime `/` relu à `1280 × 720` mesure un dépassement horizontal nul et
   aligne l'introduction, le lockup et le hero à `1240 px`. La note mesure
   `311 px`. À `390 × 844`, les trois surfaces font `362 px`, la note `278 px`
@@ -107,9 +113,9 @@ manquants.
 
 ## État du dépôt et de la livraison
 
-- Source runtime déployée : `8609565b66fd61ac9b087680bc1d8468ac631386`,
-  issue de la PR [#43](https://github.com/nclsppr/monflorian/pull/43).
-- Les runs `32881682239` (`Cloudflare release`) et `32881682196` (`Verify`) du
+- Source runtime déployée : `6672048100346562af8d9efbee045b10cbb4b6a0`,
+  issue de la PR [#45](https://github.com/nclsppr/monflorian/pull/45).
+- Les runs `32936664672` (`Cloudflare release`) et `32936664685` (`Verify`) du
   SHA fusionné sont verts.
 - Le dépôt GitHub ne possède actuellement aucun secret Actions Cloudflare.
 - Le déploiement du SHA fusionné a donc été réalisé depuis la session Wrangler
