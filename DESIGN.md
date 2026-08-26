@@ -65,8 +65,8 @@ décor, ni second personnage.
 La famille V2 a remporté la comparaison visuelle et devient la famille active
 sur `/`. Elle conserve les variantes sémantiques `original`, `wind`, `beanie`,
 `summer` et `flower`. Le paramètre facultatif `?avatar=` fixe une variante ;
-sans lui, chaque visite en choisit une au hasard. `/v2` redirige vers l'accueil
-en conservant la requête. Le portrait `florian-v2-original` reste le repli sans
+sans lui, chaque visite en choisit une au hasard. Le portrait
+`florian-v2-original` reste le repli sans
 JavaScript ou en cas d'échec. La première famille reste archivée pour un retour
 explicite, mais n'est plus servie par l'interface. Une nouvelle variante doit
 respecter le contrat de transparence automatisé avant d'entrer dans la famille.
@@ -133,8 +133,8 @@ Le téléphone, l'avion en papier et les montagnes sont des repères propres à 
 
 ## Components
 
-Le composeur réunit dans un seul envoi la phrase libre, les dates, le rythme,
-l'adresse de courriel et l'ajout facultatif de photos. Il garde un nom
+Le composeur de l'accueil réunit dans un seul envoi la phrase libre, les dates,
+le rythme, l'adresse de courriel et l'ajout facultatif de photos. Il garde un nom
 accessible, un focus visible et une erreur lisible. Une information manquante
 déclenche au plus une ou deux questions de Florian, pas une nouvelle suite
 d'écrans. Après acceptation, le navigateur ouvre la page privée : elle annonce
@@ -144,19 +144,31 @@ L'action principale reste unique. Dans le prototype, elle doit annoncer qu'aucun
 
 Une note de Florian explique un choix concret du parcours. Elle n'est ni une bulle de discussion, ni une mascotte décorative. Le retour dynamique utilise un statut annoncé aux technologies d'assistance et ne dépend pas du mouvement.
 
-Les photos des voyageurs peuvent alimenter une couverture ou un moment fort. Le rendu reste un dessin éditorial, jamais une fausse photographie de voyage. Chaque image créée avant le départ porte la mention "Projection personnalisée · image générée". L'interface explique l'envoi à OpenAI avant le consentement. Elle ne présente pas cette projection comme une preuve du lieu, du trajet ou de la présence des personnes.
+La V2 utilise un couple fictif et des scènes synthétiques comme distribution
+éditoriale stable. Ses images adoptent une photographie naturelle de type Fuji,
+une colorimétrie contenue, un grain fin et le nom de la ville ou de l'activité
+centré en blanc avec Outfit. Les trois scènes Japon et les couvertures d'exemple
+partagent ce même traitement. Aucune mention technique n'est superposée à ces
+fixtures fictives.
 
-## Evaluation Astryx
+Les futures photos envoyées par des voyageurs suivent le contrat de traitement
+et le stockage privé Cloudflare. Cette frontière ne s'applique pas au couple
+fictif ni aux scènes synthétiques versionnées de la V2.
 
-L'évaluation du 2026-08-23 n'adopte pas Astryx pour l'interface publique. Le système officiel est en bêta, repose sur React et StyleX et vise d'abord les outils internes riches en composants. Mon Florian possède une page grand public courte, une composition de marque spécifique et aucun framework côté navigateur. Une migration réécrirait le rendu sans ajouter de capacité au voyageur.
+## Astryx sur la V2
 
-Le projet retient trois disciplines d'Astryx sans ajouter sa dépendance :
+L'accueil historique `/` reste natif. `/v2` constitue une île React 19 isolée
+qui adopte Astryx `0.5.0` et son thème Matcha, repris avec la palette Mon Florian
+et Outfit auto-hébergée. Les boutons, cartes sélectionnables, champs, stepper,
+progression, badges et dialogues viennent réellement d'Astryx. Ce choix évite
+une migration du runtime historique et concentre la nouvelle dépendance sur le
+parcours qui en tire profit.
 
-- nommer une échelle d'espacement avant le prochain écran partagé ;
-- documenter ensemble les états repos, focus, chargement, erreur et désactivation des champs, boutons et statuts ;
-- reprendre une checklist d'accessibilité couvrant nom, rôle, état, clavier, focus, annonces, mouvement réduit, couleurs forcées, traduction et taille de cible.
-
-Une nouvelle évaluation devient utile pour un futur back-office avec navigation, tableaux, réglages et composants répétés. Elle doit alors mesurer le bundle réel et isoler le thème Mon Florian. Sources de la décision : [dépôt officiel Astryx](https://github.com/facebook/astryx) et [checklist d'accessibilité officielle](https://github.com/facebook/astryx/wiki/Accessibility-Checklist).
+Le changement d'étape reste court et respecte la réduction des mouvements. La
+confirmation de génération reprend la transition Success check de
+Transitions.dev. Les composants gardent un nom, un rôle, un focus et un état
+lisibles au clavier. Sources : [Astryx](https://github.com/facebook/astryx) et
+[Transitions.dev](https://transitions.dev/).
 
 ## Do's and Don'ts
 
@@ -165,8 +177,9 @@ Une nouvelle évaluation devient utile pour un futur back-office avec navigation
 - Garder tous les portraits sur fond transparent, dans les fichiers comme dans leurs composants d'accueil.
 - Garder une seule action commerciale sur la page d'entrée. Voyage vivant arrive après la première livraison.
 - Respecter le clavier, le focus visible, les cibles tactiles, le contraste AA et le mouvement réduit.
-- Signaler les exemples synthétiques et les projections personnalisées.
+- Garder le mot `Exemple` sur les trois itinéraires d'inspiration.
 - Ne pas ajouter d'étoiles, de halo ou de copie qui présente le service comme une IA magique.
 - Ne pas utiliser d'avis, de note Trustpilot, de garantie, de paiement sécurisé ou d'annulation sans preuve.
 - Ne pas insérer les voyageurs devant chaque monument. Quelques moments forts suffisent.
-- Ne pas transformer la page d'entrée en questionnaire, catalogue de cartes ou navigation d'agence.
+- Garder le composeur historique `/` compact. La progression en trois étapes
+  appartient uniquement à `/v2`.

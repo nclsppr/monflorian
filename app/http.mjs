@@ -1,14 +1,10 @@
 const PUBLIC_APEX = "monflorian.com";
 const PUBLIC_WWW = "www.monflorian.com";
 const NO_INDEX = "noindex, nofollow, nosnippet, noimageindex";
-const PUBLIC_HTML_ROUTES = new Map([
-  ["/", "/index.html"],
-  ["/confidentialite", "/confidentialite.html"],
-]);
 const PUBLIC_HTML_ALIASES = new Map([
   ["/index.html", "/"],
-  ["/v2", "/"],
-  ["/v2/", "/"],
+  ["/v2/", "/v2"],
+  ["/v2/index.html", "/v2"],
   ["/confidentialite.html", "/confidentialite"],
 ]);
 
@@ -17,6 +13,8 @@ function isPrivateOrTechnicalRequest(request, url) {
     !["GET", "HEAD"].includes(request.method) ||
     url.pathname === "/api" ||
     url.pathname.startsWith("/api/") ||
+    url.pathname === "/v2" ||
+    url.pathname.startsWith("/v2/") ||
     url.pathname === "/voyages" ||
     url.pathname.startsWith("/voyages/") ||
     url.pathname === "/.well-known/monflorian-release"
@@ -63,18 +61,13 @@ export function canonicalPublicRedirect(request) {
   });
 }
 
-export function staticAssetRequest(request) {
-  if (!["GET", "HEAD"].includes(request.method)) return request;
-  const url = new URL(request.url);
-  const assetPath = PUBLIC_HTML_ROUTES.get(url.pathname);
-  if (!assetPath) return request;
-  url.pathname = assetPath;
-  return new Request(url, request);
-}
-
 export function shouldNoIndexStaticAsset(request) {
   const url = new URL(request.url);
-  return url.hostname.endsWith(".workers.dev");
+  return (
+    url.hostname.endsWith(".workers.dev") ||
+    url.pathname === "/v2" ||
+    url.pathname.startsWith("/v2/")
+  );
 }
 
 export function noIndexResponse(response) {

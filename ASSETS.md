@@ -44,6 +44,12 @@ Source canonique des visuels de marque et des références importées depuis le 
 | `assets/brand/florian-icon-512.png` | Icône d'installation Web | Dérivé Web de production | 512 x 512, RGBA | `04cfec237871e0786809932bbff36e78423fb36c55bb9d5efa1ef64c18bd3448` | Redimensionné depuis `florian-v2-original.png`, sans retouche du dessin |
 | `assets/brand/monflorian-social-card.svg` | Source éditable de la carte de partage de l'accueil | Dérivé vectoriel de production | 1200 x 630, SVG | `827d5a33936fa4bd80fd5e305ed8d78a6cc0c1f9004f870c0ef48956517f456b` | Composé dans le dépôt avec le mot-symbole et `florian-v2-original.png`, sans retouche de ces deux fichiers |
 | `assets/brand/monflorian-social-card.png` | Image Open Graph et carte de partage de l'accueil | Dérivé raster de production | 1200 x 630, RGB | `530f2127e049c37c88370ed81d67ff7e027076346b41a7f6815317d374e48061` | Rendu local de la source SVG précédente après contrôle visuel, sans génération d'image |
+| `app/public/v2/media/japan-tokyo-couple.webp` | Chapitre Tokyo du carnet V2 | Fixture éditoriale synthétique | 1440 x 960, WebP | `fb724703ab5c8885630c40a8b6c0e8577e0179dcc5c70d1ac996cd60808db8eb` | Généré le 2026-08-26 avec l'outil d'image OpenAI intégré depuis les deux personnages fictifs fournis par le propriétaire, puis converti en WebP qualité 82 |
+| `app/public/v2/media/japan-hakone-couple.webp` | Chapitre Hakone du carnet V2 | Fixture éditoriale synthétique | 1440 x 960, WebP | `ee50b5a6cb8c4e2d987eeb8bf978534a341e96541204ff5fc698c78ca3a99db8` | Généré le 2026-08-26 avec l'outil d'image OpenAI intégré depuis les deux personnages fictifs fournis par le propriétaire, puis converti en WebP qualité 82 |
+| `app/public/v2/media/japan-kyoto-couple.webp` | Chapitre Kyoto du carnet V2 | Fixture éditoriale synthétique | 1440 x 960, WebP | `2f45e720be30706e09c87bbf4bf90648e6be0663cdeaf43296b8f680da01faea` | Généré le 2026-08-26 avec l'outil d'image OpenAI intégré depuis les deux personnages fictifs fournis par le propriétaire, puis converti en WebP qualité 82 |
+| `app/public/v2/media/example-portugal-train.webp` | Couverture de l'exemple Portugal | Fixture éditoriale synthétique | 1440 x 960, WebP | `832575d766c79b322b10efadd2ca5be85d4e2f10d8b1b3c1bfa960c75477319e` | Généré le 2026-08-26 avec l'outil d'image OpenAI intégré sans personne de référence, puis converti en WebP qualité 82 |
+| `app/public/v2/media/example-sicily-table.webp` | Couverture de l'exemple Sicile | Fixture éditoriale synthétique | 1440 x 960, WebP | `f2c6b01e2d03daa10c85163803aaa1d627ba755cf3662f04aa5098cacfe05d70` | Généré le 2026-08-26 avec l'outil d'image OpenAI intégré sans personne de référence, puis converti en WebP qualité 82 |
+| `app/public/v2/media/example-norway-fjords.webp` | Couverture de l'exemple Norvège | Fixture éditoriale synthétique | 1440 x 960, WebP | `e0365deeb82e7a4a73fcb7498c04249256a9f0b79e5ec6dcbd12d1e54b1647f5` | Généré le 2026-08-26 avec l'outil d'image OpenAI intégré sans personne de référence, puis converti en WebP qualité 82 |
 | `references/concepts/landing-primary.png` | Capture de la direction retenue | Référence non éditable | 1440 x 1100, RGB | `78497298fa76359524fdbb384ef7bffb3dae835939c2bcbaadafacce5040e2f7` | Fourni sous le nom `concet01.png` |
 | `references/concepts/landing-alternative.png` | Exploration plus dense de type agence | Archive non canonique | 1448 x 1086, RGB | `c6f37af3934b8bb0ab92e13904b3d6c6be729e76c2cc6721e7f5d8500f2c3216` | Fourni sous le nom `monflorian-concept-utopie.png` |
 
@@ -52,6 +58,16 @@ Source canonique des visuels de marque et des références importées depuis le 
 | Fichier | Rôle | Format | Taille | SHA-256 | Provenance et licence |
 | --- | --- | --- | --- | --- | --- |
 | `app/public/fonts/kalam-latin-400.woff2` | Note manuscrite de l'introduction | WOFF2 latin, graisse 400 | 22 336 octets | `954410601a823f37e219f7930b7446f86afa15621326a7078d56fb9c910135cb` | Kalam v18, Latin servi par Google Fonts, copyright Indian Type Foundry, SIL Open Font License 1.1 conservée dans `app/public/fonts/Kalam-OFL.txt` |
+
+## Direction des images V2
+
+Les six images partagent le même prompt de production : photographie de voyage
+éditoriale naturelle, rendu Fuji X-Pro, teinte Classic Chrome ou Pro Neg,
+saturation contenue, grain fin, légère halation, anatomie réaliste, format 3:2
+et zone centrale lisible pour le titre HTML. Le prompt exclut texte, logo,
+filigrane et interface dans le bitmap. Les scènes Japon reprennent les deux
+personnages fictifs fournis ; les trois couvertures d'exemple sont créées sans
+personne de référence.
 
 ## Frontières
 
@@ -67,7 +83,7 @@ Source canonique des visuels de marque et des références importées depuis le 
   `florian-v2-*-intro.webp`, issus des mêmes masters à une définition adaptée à
   sa largeur complète.
 - Une visite utilise une seule variante de Florian dans la famille V2, désormais
-  active sur `/`. `/v2` redirige vers l'accueil. Les fichiers de la première
+  active sur `/`. Les fichiers de la première
   famille restent une archive de retour, mais l'interface ne les sert plus.
   `florian-v2-original-web.webp` reste le repli sans JavaScript ou en cas
   d'échec de chargement.
@@ -81,16 +97,15 @@ Source canonique des visuels de marque et des références importées depuis le 
 
 Les visuels ont été fournis par le propriétaire pour ce dépôt. Aucun fichier de licence ni preuve de droits distincte n'accompagne actuellement les sources. Toute diffusion hors de ce projet ou utilisation commerciale doit confirmer les droits, l'auteur et les éventuelles conditions du générateur d'origine.
 
-Aucune photo personnelle réelle ne doit être ajoutée au dépôt. Dans
-l'application candidate, le navigateur les réencode avant l'envoi au Worker,
-qui les garde dans le bucket R2 privé jusqu'à la génération ou pendant 24 heures
-au maximum. Elles ne deviennent pas des artefacts versionnés. Le détail de ce
-flux vit dans [`DATA-PROCESSING.md`](DATA-PROCESSING.md).
+Les personnages du carnet Japon sont entièrement fictifs et peuvent être
+versionnés avec les autres fixtures éditoriales. Ils ne doivent pas être
+requalifiés comme des photos personnelles réelles dans les contrôles du dépôt.
 
-Les projections créées par l'API sont destinées à la page privée du voyage et
-portent la mention "Projection personnalisée · image générée". Le stockage cible
-est R2 privé pendant 30 jours au maximum, avec suppression anticipée depuis la
-page. Cette capacité reste fermée tant que sa preuve synthétique manque.
+Les futures photos envoyées par des voyageurs réels suivent un autre flux : le
+navigateur les réencode avant l'envoi au Worker, puis R2 privé les conserve
+jusqu'à la génération ou pendant 24 heures au maximum. Les résultats du parcours
+réel restent destinés à la page privée pendant 30 jours au maximum. Le détail de
+ce flux vit dans [`DATA-PROCESSING.md`](DATA-PROCESSING.md).
 
 ## Retrait
 

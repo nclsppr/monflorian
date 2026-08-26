@@ -139,8 +139,10 @@ pas déployée et testée, aucune donnée réelle n'est autorisée.
 ## Tests autorisés
 
 - Brief fictif sans identité ni réservation réelle.
-- Images produites par code, sans visage réel.
-- Aucune photo personnelle dans Git, CI, ticket, capture ou log.
+- Personnages entièrement fictifs produits par génération d'image et scènes
+  synthétiques versionnés comme fixtures éditoriales.
+- Les futures photos de voyageurs réels suivent le flux R2 privé ; elles ne sont
+  pas confondues avec les fixtures fictives du dépôt.
 - Un seul parcours fournisseur contrôlé avant ouverture.
 
 ## Changements qui imposent une nouvelle décision

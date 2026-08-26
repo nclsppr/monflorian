@@ -8,7 +8,7 @@ ENV NODE_ENV=development \
 COPY --chown=10001:10001 package.json package-lock.json ./
 RUN npm ci --ignore-scripts --no-audit --no-fund
 
-COPY --chown=10001:10001 tsconfig.json wrangler.jsonc worker-configuration.d.ts ./
+COPY --chown=10001:10001 tsconfig.json wrangler.jsonc worker-configuration.d.ts vite.v2.config.js ./
 COPY --chown=10001:10001 migrations ./migrations
 COPY --chown=10001:10001 src ./src
 COPY --chown=10001:10001 app ./app

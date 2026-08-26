@@ -3,6 +3,7 @@
 !package.json
 !package-lock.json
 !tsconfig.json
+!vite.v2.config.js
 !wrangler.jsonc
 !worker-configuration.d.ts
 !migrations/

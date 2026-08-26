@@ -49,7 +49,10 @@ client et le Voyage vivant restent des hypothèses non livrées.
 - Aperçu Cloudflare public qui refuse toute génération.
 - Custom Domains `monflorian.com` et `www.monflorian.com` actifs en HTTPS.
 - Famille validée de cinq portraits V2 sur l'accueil, avec rotation aléatoire
-  et choix facultatif par `?avatar=`. L'ancienne route `/v2` redirige vers `/`.
+  et choix facultatif par `?avatar=`.
+- Parcours éditorial isolé sous `/v2`, hors index, avec questionnaire Astryx,
+  génération déterministe d'un voyage de dix jours au Japon, trois exemples,
+  liens Booking.com et partage public ou privé par mot de passe.
 
 ### À livrer avant une génération réelle
 

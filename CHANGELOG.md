@@ -4,16 +4,29 @@ Git reste la source du diff technique. Les ADR expliquent les décisions importa
 
 ## Non publié
 
-- Promotion des cinq portraits V2 sur l'accueil, les replis, les icônes et la
-  carte sociale. `/v2` redirige désormais vers la page principale.
+- Création de `/v2` comme parcours autonome React 19 et Astryx : accueil,
+  questionnaire en trois étapes, génération déterministe et carnet de dix jours
+  au Japon, sans appel au backend fermé.
+- Ajout de trois scènes Fuji du couple fictif à Tokyo, Hakone et Kyoto, avec le
+  nom du lieu centré en Outfit, ainsi que trois couvertures pour le Portugal, la
+  Sicile et la Norvège.
+- Ajout des recherches Booking.com par ville, de l'itinéraire jour par jour, des
+  listes pratiques et du partage public ou privé. Le lien privé transporte une
+  preuve SHA-256 et vérifie le mot de passe dans le navigateur.
+- Adoption isolée d'Astryx `0.5.0`, du thème Matcha adapté à Mon Florian, de la
+  fonte Outfit auto-hébergée et de la transition de confirmation
+  Transitions.dev, sans migrer l'accueil historique.
+- Routage canonique de `/v2` par le mode Cloudflare
+  `drop-trailing-slash`, redirection de `/v2/` et `/v2/index.html`, en-tête
+  `noindex` sur toute la surface V2 et maintien hors sitemap.
+- Promotion des cinq portraits Florian V2 sur l'accueil, les replis, les icônes
+  et la carte sociale.
 - Rotation de dix notes manuscrites sans répétition immédiate dans le même
   onglet, avec une largeur stable et la teinte crayon sauge `#85897a`.
 - Alignement du grand logo et de toute l'introduction sur les gouttières du
   contenu, avec une largeur maximale commune de `1240 px`.
 - Passage de la note « Alors, on part où ? » en Kalam auto-hébergée et gris
   graphite, avec un papier et une empreinte resserrés sur mobile.
-- Ajout de la variante publique `/v2`, hors index, pour comparer cinq nouveaux
-  portraits de Florian à la famille d'origine sans dupliquer l'accueil.
 - Ajout du paramètre facultatif `?avatar=` pour comparer la même variante dans
   les deux familles et conserver la rotation aléatoire en son absence.
 - Remplacement de l'accroche par la note « Alors, on part où ? », en bleu
