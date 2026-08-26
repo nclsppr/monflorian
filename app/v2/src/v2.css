@@ -170,11 +170,32 @@ a {
   border-bottom: 1px solid var(--mf-line);
   position: sticky;
   top: 0;
+  transition:
+    background-color 160ms cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 160ms cubic-bezier(0.22, 1, 0.36, 1);
   z-index: 40;
+}
+
+.v2-shell.has-intro-swap .site-header {
+  background: transparent;
+  border-color: transparent;
+}
+
+.v2-shell.has-intro-swap.is-intro-past .site-header {
+  background: color-mix(in srgb, var(--mf-surface) 92%, transparent);
+  border-color: var(--mf-line);
 }
 
 @supports (backdrop-filter: blur(12px)) {
   .site-header {
+    backdrop-filter: blur(18px);
+  }
+
+  .v2-shell.has-intro-swap .site-header {
+    backdrop-filter: none;
+  }
+
+  .v2-shell.has-intro-swap.is-intro-past .site-header {
     backdrop-filter: blur(18px);
   }
 }
@@ -188,6 +209,25 @@ a {
   max-width: calc(var(--mf-max) + (2 * var(--mf-gutter)));
   min-height: var(--mf-header-height);
   padding: 10px var(--mf-gutter);
+}
+
+.v2-shell.has-intro-swap .header-inner {
+  opacity: 0;
+  pointer-events: none;
+  transform: translate3d(0, -6px, 0);
+  transition:
+    opacity 160ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 160ms cubic-bezier(0.22, 1, 0.36, 1),
+    visibility 0s linear 160ms;
+  visibility: hidden;
+}
+
+.v2-shell.has-intro-swap.is-intro-past .header-inner {
+  opacity: 1;
+  pointer-events: auto;
+  transform: none;
+  transition-delay: 0s;
+  visibility: visible;
 }
 
 .brand-button {
@@ -206,9 +246,30 @@ a {
   outline-offset: 4px;
 }
 
-.brand-button img {
+.brand {
+  align-items: center;
+  display: grid;
+  flex: 0 0 auto;
+  gap: 3px;
+  grid-template-columns: minmax(0, 0.58fr) minmax(0, 1fr);
+  width: 218px;
+}
+
+.brand-character {
+  aspect-ratio: 1;
+  background: transparent;
+  display: block;
+}
+
+.brand-character img {
+  height: 100%;
+  object-fit: contain;
+  width: 100%;
+}
+
+.brand-wordmark {
   height: auto;
-  width: 132px;
+  width: 100%;
 }
 
 .desktop-nav {
@@ -256,6 +317,11 @@ a {
   padding-inline: var(--mf-gutter);
 }
 
+.composer-section,
+.examples-section {
+  scroll-margin-top: calc(var(--mf-header-height) + 16px);
+}
+
 .home-hero {
   align-items: center;
   display: grid;
@@ -265,47 +331,85 @@ a {
   padding-block: clamp(64px, 9vw, 126px);
 }
 
-.hero-florian-cue {
-  align-items: center;
-  display: flex;
-  gap: 2px;
-  margin-bottom: 18px;
-}
-
-.hero-florian-cue img {
-  flex: 0 0 auto;
-  height: 88px;
-  object-fit: contain;
-  width: 88px;
-}
-
-.hero-handwritten-note {
-  color: var(--mf-sage) !important;
-  font-family: "Kalam", "Bradley Hand", "Segoe Print", cursive !important;
-  font-size: 1.1rem !important;
-  line-height: 1.1 !important;
-  margin: 0 0 0 -3px !important;
-  padding: 10px 17px 12px;
+.brand-intro {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  min-height: calc(100vh - var(--mf-header-height));
+  min-height: calc(100svh - var(--mf-header-height));
+  padding-block: clamp(36px, 6svh, 72px) clamp(140px, 18svh, 260px);
+  place-items: center;
   position: relative;
-  transform: rotate(-1.5deg);
+}
+
+.brand-intro-content {
+  display: grid;
+  gap: clamp(18px, 2vw, 28px);
+  justify-items: center;
+  margin-inline: auto;
+  min-width: 0;
+  width: min(var(--mf-max), calc(100% - 40px));
+}
+
+.brand-intro-lockup {
+  align-items: center;
+  display: grid;
+  gap: 7px;
+  grid-template-columns: minmax(0, 0.58fr) minmax(0, 1fr);
+  width: 100%;
+}
+
+.brand-intro-tagline {
+  color: var(--mf-sage) !important;
+  display: grid;
+  font-family: "Kalam", "Bradley Hand", "Segoe Print", cursive !important;
+  font-size: clamp(18px, 1.8vw, 25px) !important;
+  font-style: normal;
+  font-weight: 400;
+  letter-spacing: 0.005em;
+  line-height: 1.05 !important;
+  padding: 12px 26px 14px;
+  place-items: center;
+  position: relative;
+  text-align: center;
+  text-wrap: balance;
+  transform: rotate(-1.1deg);
+  width: min(310px, calc(100vw - 48px));
+}
+
+.brand-intro-tagline > span {
+  position: relative;
+  z-index: 1;
+}
+
+.brand-intro-tagline-paper {
+  height: calc(100% + 16px);
+  inset: -8px -15px;
+  overflow: visible;
+  position: absolute;
+  width: calc(100% + 30px);
   z-index: 0;
 }
 
-.hero-handwritten-note::before,
-.hero-handwritten-note::after {
-  background: rgba(255, 255, 255, 0.82);
-  border-radius: 50%;
-  content: "";
-  inset: 2px -8px 0 -8px;
-  position: absolute;
-  transform: rotate(-2deg);
-  z-index: -1;
+.brand-intro-tagline-paper path {
+  fill: none;
+  opacity: 0.74;
+  stroke: var(--mf-paper);
+  stroke-linecap: round;
+  stroke-width: 28px;
 }
 
-.hero-handwritten-note::after {
-  inset: 7px -13px -2px -2px;
-  opacity: 0.66;
-  transform: rotate(2deg);
+.brand-intro-tagline-paper path:nth-child(2) {
+  opacity: 0.82;
+  stroke-width: 31px;
+}
+
+.brand-intro-trigger {
+  height: 1px;
+  inset-block-start: 70%;
+  inset-inline-start: 50%;
+  pointer-events: none;
+  position: absolute;
+  width: 1px;
 }
 
 .eyebrow {
@@ -1528,8 +1632,8 @@ a {
     min-height: var(--mf-header-height);
   }
 
-  .brand-button img {
-    width: 110px;
+  .brand {
+    width: 158px;
   }
 
   .header-action {
@@ -1545,6 +1649,41 @@ a {
 
   .home-hero {
     padding-block: 46px 96px;
+  }
+
+  .brand-intro {
+    height: clamp(300px, calc(72svh - var(--mf-header-height)), 520px);
+    min-height: 0;
+    padding-block: 24px clamp(72px, 12svh, 110px);
+  }
+
+  .brand-intro-content {
+    width: min(100% - 28px, var(--mf-max));
+  }
+
+  .brand-intro-lockup {
+    width: 100%;
+  }
+
+  .brand-intro-tagline {
+    font-size: 17px !important;
+    padding: 8px 20px 10px;
+    transform: rotate(-0.8deg);
+    width: min(278px, calc(100vw - 72px));
+  }
+
+  .brand-intro-tagline-paper {
+    height: calc(100% + 12px);
+    inset: -6px -11px;
+    width: calc(100% + 22px);
+  }
+
+  .brand-intro-tagline-paper path {
+    stroke-width: 24px;
+  }
+
+  .brand-intro-tagline-paper path:nth-child(2) {
+    stroke-width: 27px;
   }
 
   .hero-copy h1 br {
@@ -1788,6 +1927,8 @@ a {
 
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
+  .site-header,
+  .v2-shell.has-intro-swap .header-inner { transition: none; }
   .step-panel,
   .paper-plane { animation: none !important; }
   .example-image img,

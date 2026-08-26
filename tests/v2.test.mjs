@@ -72,7 +72,6 @@ test("la V2 reprend la grammaire de marque et stabilise le formulaire mobile", (
   const application = source("app/v2/src/main.jsx");
   const styles = source("app/v2/src/v2.css");
 
-  assert.match(application, /className="hero-florian-cue"/u);
   assert.match(application, /className="brief-field"/u);
   assert.doesNotMatch(application, /hasNumberSteppers/u);
   assert.match(styles, /--mf-font:\s*"Avenir Next"/u);
@@ -85,4 +84,20 @@ test("la V2 reprend la grammaire de marque et stabilise le formulaire mobile", (
     styles,
     /@media \(max-width: 440px\)[\s\S]*?\.form-actions\s*\{[^}]*flex-direction:\s*column-reverse/su,
   );
+});
+
+test("la V2 réutilise le grand lockup puis le compose en en-tête", () => {
+  const application = source("app/v2/src/main.jsx");
+  const styles = source("app/v2/src/v2.css");
+
+  assert.match(application, /function BrandIntro/u);
+  assert.match(application, /florian-v2-original-intro\.webp/u);
+  assert.match(application, /monflorian-wordmark-intro\.webp/u);
+  assert.match(application, /className="brand-intro-tagline-paper"/u);
+  assert.match(application, /IntersectionObserver/u);
+  assert.doesNotMatch(application, /className="hero-florian-cue"/u);
+  assert.match(styles, /\.brand-intro-lockup/u);
+  assert.match(styles, /\.v2-shell\.has-intro-swap\s+\.header-inner/u);
+  assert.match(styles, /\.v2-shell\.has-intro-swap\.is-intro-past\s+\.header-inner/u);
+  assert.match(styles, /scroll-margin-top:\s*calc\(var\(--mf-header-height\) \+ 16px\)/u);
 });
