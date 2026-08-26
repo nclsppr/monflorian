@@ -25,6 +25,8 @@ voyageurs.
 - Utiliser les composants Astryx `0.5.0` avec le thème Matcha adapté aux tokens
   Mon Florian. Conserver la pile système de la racine pour l'interface et
   réserver Outfit auto-hébergée aux titres superposés aux photos.
+- Réutiliser le lockup d'introduction de la racine, sa note manuscrite et son
+  basculement ponctuel vers le logo compact de l'en-tête.
 - Faire aboutir toute saisie au même carnet « Le Japon à deux », dix jours entre
   Tokyo, Hakone et Kyoto. Aucun formulaire V2 n'appelle `/api/trips`.
 - Versionner trois scènes du couple fictif et trois couvertures d'exemples en

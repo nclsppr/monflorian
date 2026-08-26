@@ -166,6 +166,11 @@ d'Astryx. Ils reprennent les rayons, les contrastes, les fonds cyan et citron,
 et la hiérarchie de la racine. Ce choix évite une migration du runtime
 historique sans isoler la V2 du langage visuel Mon Florian.
 
+L'entrée de `/v2` reprend aussi le lockup canonique de la racine à sa pleine
+largeur, la note Kalam posée sur trois traits blancs et le même seuil
+d'intersection. Le lockup compact ne devient visible dans l'en-tête qu'après
+le passage de cette introduction.
+
 Le changement d'étape reste court et respecte la réduction des mouvements. La
 confirmation de génération reprend la transition Success check de
 Transitions.dev. Les composants gardent un nom, un rôle, un focus et un état

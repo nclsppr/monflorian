@@ -141,9 +141,23 @@ function BrandHeader({ isTrip, onHome, onShare }) {
   return (
     <header className="site-header">
       <div className="header-inner">
-        <button className="brand-button" onClick={onHome} type="button">
+        <button
+          aria-label="Mon Florian, revenir au début"
+          className="brand-button brand"
+          onClick={onHome}
+          type="button"
+        >
+          <span aria-hidden="true" className="brand-character">
+            <img
+              alt=""
+              height="384"
+              src="/assets/florian-v2-original-web.webp"
+              width="384"
+            />
+          </span>
           <img
-            alt="Mon Florian"
+            alt=""
+            className="brand-wordmark"
             height="181"
             src="/assets/monflorian-wordmark-web.webp"
             width="338"
@@ -183,6 +197,70 @@ function BrandHeader({ isTrip, onHome, onShare }) {
   );
 }
 
+function BrandIntro({ onPastChange }) {
+  useEffect(() => {
+    const header = document.querySelector(".site-header");
+    const trigger = document.querySelector(".brand-intro-trigger");
+
+    if (!header || !trigger || typeof IntersectionObserver !== "function") {
+      onPastChange(true);
+      return undefined;
+    }
+
+    onPastChange(false);
+    const headerHeight = Math.ceil(header.getBoundingClientRect().height);
+    const observer = new IntersectionObserver(([entry]) => {
+      const introIsPast = !entry.isIntersecting && entry.boundingClientRect.top <= headerHeight;
+      onPastChange(introIsPast);
+    }, {
+      rootMargin: `-${headerHeight}px 0px 0px 0px`,
+      threshold: 0,
+    });
+
+    observer.observe(trigger);
+    return () => observer.disconnect();
+  }, [onPastChange]);
+
+  return (
+    <div aria-hidden="true" className="brand-intro">
+      <span className="brand-intro-content">
+        <span className="brand-intro-lockup">
+          <span className="brand-character">
+            <img
+              alt=""
+              height="1024"
+              src="/assets/florian-v2-original-intro.webp"
+              width="1024"
+            />
+          </span>
+          <img
+            alt=""
+            className="brand-wordmark"
+            height="724"
+            src="/assets/monflorian-wordmark-intro.webp"
+            width="1352"
+          />
+        </span>
+        <span className="brand-intro-tagline">
+          <svg
+            aria-hidden="true"
+            className="brand-intro-tagline-paper"
+            focusable="false"
+            preserveAspectRatio="none"
+            viewBox="0 0 440 88"
+          >
+            <path d="M22 20 C104 11 179 24 266 17 S388 16 422 25" />
+            <path d="M11 43 C96 33 183 49 276 39 S390 38 429 46" />
+            <path d="M25 67 C105 58 194 72 284 62 S386 62 414 69" />
+          </svg>
+          <span>Alors, on part où&nbsp;?</span>
+        </span>
+      </span>
+      <span className="brand-intro-trigger" />
+    </div>
+  );
+}
+
 function PhotoChapter({ alt, city, eager = false, src, note }) {
   return (
     <figure className="photo-chapter">
@@ -206,15 +284,6 @@ function Hero() {
   return (
     <section className="home-hero">
       <div className="hero-copy">
-        <div className="hero-florian-cue">
-          <img
-            alt="Florian"
-            height="384"
-            src="/assets/florian-v2-original-web.webp"
-            width="384"
-          />
-          <p className="hero-handwritten-note">Tu m’emmènes où&nbsp;?</p>
-        </div>
         <p className="eyebrow">TON VOYAGE, À TON RYTHME</p>
         <h1>Tu donnes l’envie.<br />Je construis le chemin.</h1>
         <p className="hero-intro">
@@ -984,6 +1053,7 @@ function App() {
   const [screen, setScreen] = useState(() => (routeFromLocation().trip ? "trip" : "home"));
   const [unlocked, setUnlocked] = useState(false);
   const [shareOpen, setShareOpen] = useState(false);
+  const [introPast, setIntroPast] = useState(false);
   const initialExample = useMemo(
     () => exampleTrips.find((trip) => trip.slug === route.example) || null,
     [],
@@ -1009,6 +1079,7 @@ function App() {
     setScreen("home");
     setUnlocked(false);
     setExample(null);
+    setIntroPast(false);
     window.scrollTo({ behavior: "smooth", top: 0 });
   }
 
@@ -1021,6 +1092,12 @@ function App() {
 
   const isPrivateRoute = route.trip && route.access === "prive" && !unlocked;
   const isTrip = screen === "trip" && !isPrivateRoute;
+  const hasIntroSwap = screen === "home" && !isPrivateRoute;
+  const shellClassName = [
+    "v2-shell",
+    hasIntroSwap ? "has-intro-swap" : "",
+    hasIntroSwap && introPast ? "is-intro-past" : "",
+  ].filter(Boolean).join(" ");
 
   return (
     <InternationalizationProvider
@@ -1034,11 +1111,12 @@ function App() {
       }}
     >
       <Theme mode="light" theme={matchaTheme}>
-        <div className="v2-shell">
-        <BrandHeader isTrip={isTrip} onHome={goHome} onShare={() => setShareOpen(true)} />
-        {isPrivateRoute ? (
-          <PasswordGate onHome={goHome} onUnlock={() => setUnlocked(true)} proof={route.proof} />
-        ) : screen === "generating" ? (
+        <div className={shellClassName}>
+          <BrandHeader isTrip={isTrip} onHome={goHome} onShare={() => setShareOpen(true)} />
+          {hasIntroSwap ? <BrandIntro onPastChange={setIntroPast} /> : null}
+          {isPrivateRoute ? (
+            <PasswordGate onHome={goHome} onUnlock={() => setUnlocked(true)} proof={route.proof} />
+          ) : screen === "generating" ? (
           <GeneratingPage onDone={finishGeneration} />
         ) : isTrip ? (
           <TripPage onShare={() => setShareOpen(true)} />
