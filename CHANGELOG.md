@@ -4,6 +4,8 @@ Git reste la source du diff technique. Les ADR expliquent les décisions importa
 
 ## Non publié
 
+- Déploiement public du réalignement visuel et du correctif mobile V2 au SHA
+  `567f27b`, avec contrôle des trois étapes sur le domaine actif.
 - Réalignement visuel de `/v2` sur l'accueil historique : pile système, halos
   cyan et citron, surfaces, rayons, présence de Florian et note manuscrite.
   Outfit reste réservée aux titres blancs posés sur les photos.
