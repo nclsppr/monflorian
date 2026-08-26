@@ -3,6 +3,45 @@
 Chaque section nomme son environnement et ses limites. Les sections Atlas sont
 des archives historiques ; la section Cloudflare porte la migration courante.
 
+## Identité V2 et questionnaire mobile, 2026-08-26
+
+La PR [#47](https://github.com/nclsppr/monflorian/pull/47) réintègre dans
+`/v2` la grammaire de l'accueil historique : pile système, halos cyan et
+citron, encre, surfaces, formes et prises de parole de Florian. Outfit reste
+limitée aux titres blancs sur les photos. Le questionnaire conserve les
+composants Astryx mais corrige le rendu de ses trois étapes sur petit écran.
+
+| Preuve | Résultat |
+| --- | --- |
+| Source runtime | `567f27bbb2c93b2896e96c39b374bbf25826f413` |
+| Version active | `6f25138f-a901-4dd5-8c37-14f834d300d4` |
+| CI du SHA fusionné | runs `32976483187` et `32976483108` verts |
+| CI de la PR | runs `32976312038` et `32976311887` verts sur `cc8eeda` |
+| Bundle Worker | 99,59 Kio avant compression, 24,64 Kio gzip, 66 assets lus |
+| Publication | 4 assets nouveaux ou modifiés envoyés, 56 assets réutilisés |
+| Assets V2 actifs | `index-dI_eD7VM.css` et `index-cPIIkQC_.js` |
+| Bureau | étapes 1 à 3 à `1440 × 900`, largeur du document `1440 px`, dépassement `0` |
+| Mobile | étapes 1 à 3 à `390 × 844`, largeur du document `390 px`, dépassement `0` |
+| Garde-fous | `generationReady: false`, `serviceReady: false`, création `false`, `POST /api/trips` en `503` |
+
+La correction retire les steppers numériques natifs, stabilise le libellé
+facultatif, supprime les hauteurs forcées et empile les actions de la troisième
+étape sous `440 px`. Les contrôles visibles mesurent au moins `52 px` de haut.
+Les éléments Astryx annoncés aux technologies d'assistance restent
+volontairement masqués à `1 px` et ne constituent pas un dépassement visible.
+
+`./scripts/verify.sh` passe avec 56 tests, le typage TypeScript, le dry-run
+Wrangler, l'image Docker, les sondes Compose ainsi que le build et le lint de
+46 fichiers Nimbus. Le runtime public a ensuite été relu dans Chromium aux deux
+viewports indiqués. Aucun iPhone Safari physique n'était disponible pendant
+cette tranche.
+
+Les sondes publiques confirment `/v2` en `200` et `noindex`, les deux assets
+hachés, `www` en `308` vers l'apex et la même version sur la santé et le marqueur
+de release. Aucun brief, courriel, photo, secret ni appel OpenAI n'a été envoyé.
+Le corps synthétique vide utilisé pour la sonde de création a été refusé en
+`503` avant tout traitement.
+
 ## Parcours V2 Japon, 2026-08-26
 
 La PR [#45](https://github.com/nclsppr/monflorian/pull/45) publie sous `/v2`
