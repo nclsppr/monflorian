@@ -3,6 +3,34 @@
 Chaque section nomme son environnement et ses limites. Les sections Atlas sont
 des archives historiques ; la section Cloudflare porte la migration courante.
 
+## Parcours V2 Japon, 2026-08-26
+
+La PR [#45](https://github.com/nclsppr/monflorian/pull/45) publie sous `/v2`
+le questionnaire Astryx, le carnet fixe « Le Japon à deux », les six visuels
+WebP et le partage public ou privé côté navigateur. Le parcours reste isolé du
+backend fermé et hors index.
+
+| Preuve | Résultat |
+| --- | --- |
+| Source runtime | `6672048100346562af8d9efbee045b10cbb4b6a0` |
+| Version active | `b7fbef1e-b0d4-4524-94c2-0a0a283eaa3e` |
+| CI du SHA fusionné | runs `32936664672` et `32936664685` verts |
+| Bundle Worker | 99,59 Kio avant compression, 24,64 Kio gzip, 66 assets lus |
+| Publication | 12 assets nouveaux ou modifiés envoyés, 48 assets réutilisés |
+| Route V2 | `/v2` en `200` et `noindex`; `/v2/` et `/v2/index.html` en `308` vers `/v2` |
+| Médias | six WebP publics en `200`, avec le type `image/webp` |
+| Parcours | formulaire en trois étapes, génération, carnet de dix jours et trois recherches Booking.com |
+| Partage | modes public et privé présents; mot de passe de démonstration affiché dans le dialogue |
+| Bureau | `/v2` puis carnet Japon à `1440 × 900`, sans erreur console |
+| Mobile | carnet Japon à `390 × 844`, largeur du document `390 px`, dépassement `0` |
+| Garde-fous | `generationReady: false`, `serviceReady: false`, création `false`, `POST /api/trips` en `503` |
+
+Le titre, les assets Vite, Outfit auto-hébergée et les trois scènes du couple
+fictif ont été relus depuis l'apex. `www` redirige vers l'apex, `workers.dev`
+sert aussi la V2 et le sitemap ne contient que l'accueil canonique. Aucun brief,
+courriel, portrait personnel, secret ni appel OpenAI n'a été envoyé pendant
+ces sondes.
+
 ## Florian V2 principal et notes variables, 2026-08-25
 
 La PR [#43](https://github.com/nclsppr/monflorian/pull/43) promeut les cinq
