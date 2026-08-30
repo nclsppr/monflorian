@@ -1,6 +1,6 @@
 # Gates de la migration Cloudflare
 
-Dernière mise à jour : 2026-08-24.
+Dernière mise à jour : 2026-08-30.
 
 ## Acquis
 
@@ -22,6 +22,22 @@ Dernière mise à jour : 2026-08-24.
 - [x] Domaine, apex, `www`, TLS et absence de réception humaine vérifiés.
 
 ## Avant la première génération synthétique
+
+### Contrat TravelGuideV1 avant intégration
+
+- [x] Versionner le contrat JSON candidat et le carnet Japon de référence.
+- [x] Compiler les consignes d'image depuis des champs bornés avec le profil
+  `fuji-editorial-v1`, sans prompt libre fourni au modèle d'image.
+- [ ] Tester le schéma, les relations entre journées, chapitres, nuits et images.
+- [ ] Tester le compilateur avec des URL, du HTML, des pseudo-instructions et
+  des valeurs hors limites.
+- [ ] Fixer les plafonds de réponse et de stockage avant intégration : le carnet
+  Japon minifié mesure environ 58 Ko, au-dessus de la limite courante de
+  32 768 octets.
+- [ ] Remplacer le contrat d'itinéraire courant dans le Workflow et l'OpenAPI.
+- [ ] Définir un `FactPack` sourcé et daté pour les faits volatils avant de les
+  présenter comme vérifiés dans un guide.
+- [ ] Générer plusieurs images sans retry aveugle, avec un plafond de coût.
 
 - [x] Écrire les photos validées dans R2 avant de démarrer le Workflow, avec la
   création toujours fermée.

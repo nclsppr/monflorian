@@ -1,0 +1,555 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": {
+      "type": "string",
+      "enum": ["travel-guide.v1"]
+    },
+    "contentTemplateVersion": {
+      "type": "string",
+      "enum": ["monflorian-guide.v1"]
+    },
+    "trip": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "title": { "type": "string" },
+        "subtitle": { "type": "string" },
+        "destination": { "type": "string" },
+        "routeLabel": { "type": "string" },
+        "startDate": { "type": ["string", "null"], "format": "date" },
+        "endDate": { "type": ["string", "null"], "format": "date" },
+        "durationDays": { "type": "integer", "minimum": 1, "maximum": 14 },
+        "travelerCount": { "type": "integer", "minimum": 1, "maximum": 8 },
+        "pace": {
+          "type": "string",
+          "enum": ["calm", "balanced", "intense"]
+        },
+        "summary": { "type": "string" },
+        "florianRationale": { "type": "string" },
+        "featuredImageBriefId": { "type": "string" }
+      },
+      "required": [
+        "title",
+        "subtitle",
+        "destination",
+        "routeLabel",
+        "startDate",
+        "endDate",
+        "durationDays",
+        "travelerCount",
+        "pace",
+        "summary",
+        "florianRationale",
+        "featuredImageBriefId"
+      ]
+    },
+    "budgetGuide": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "currencyCode": { "type": "string", "pattern": "^[A-Z]{3}$" },
+        "approach": {
+          "type": "string",
+          "enum": ["lean", "balanced", "comfort", "premium"]
+        },
+        "summary": { "type": "string" },
+        "mainVariables": {
+          "type": "array",
+          "items": { "type": "string" },
+          "minItems": 2,
+          "maxItems": 5
+        },
+        "verificationItemIds": {
+          "type": "array",
+          "items": { "type": "string" },
+          "minItems": 1,
+          "maxItems": 5
+        }
+      },
+      "required": [
+        "currencyCode",
+        "approach",
+        "summary",
+        "mainVariables",
+        "verificationItemIds"
+      ]
+    },
+    "chapters": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/chapter" },
+      "minItems": 1,
+      "maxItems": 7
+    },
+    "days": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/day" },
+      "minItems": 1,
+      "maxItems": 14
+    },
+    "accommodations": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/accommodation" },
+      "minItems": 0,
+      "maxItems": 8
+    },
+    "reservationPlan": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/reservationItem" },
+      "minItems": 5,
+      "maxItems": 14
+    },
+    "practicalGuide": { "$ref": "#/$defs/practicalGuide" },
+    "imageBriefs": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/imageBrief" },
+      "minItems": 1,
+      "maxItems": 7
+    },
+    "verificationItems": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/verificationItem" },
+      "minItems": 5,
+      "maxItems": 20
+    }
+  },
+  "required": [
+    "schemaVersion",
+    "contentTemplateVersion",
+    "trip",
+    "budgetGuide",
+    "chapters",
+    "days",
+    "accommodations",
+    "reservationPlan",
+    "practicalGuide",
+    "imageBriefs",
+    "verificationItems"
+  ],
+  "$defs": {
+    "chapter": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string" },
+        "dayStart": { "type": "integer", "minimum": 1, "maximum": 14 },
+        "dayEnd": { "type": "integer", "minimum": 1, "maximum": 14 },
+        "baseRefs": {
+          "type": "array",
+          "items": { "type": "string" },
+          "minItems": 1,
+          "maxItems": 2
+        },
+        "title": { "type": "string" },
+        "summary": { "type": "string" },
+        "whyItWorks": { "type": "string" },
+        "imageBriefId": { "type": "string" }
+      },
+      "required": [
+        "id",
+        "dayStart",
+        "dayEnd",
+        "baseRefs",
+        "title",
+        "summary",
+        "whyItWorks",
+        "imageBriefId"
+      ]
+    },
+    "day": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "day": { "type": "integer", "minimum": 1, "maximum": 14 },
+        "date": { "type": ["string", "null"], "format": "date" },
+        "chapterId": { "type": "string" },
+        "accommodationId": { "type": ["string", "null"] },
+        "baseRefs": {
+          "type": "array",
+          "items": { "type": "string" },
+          "minItems": 1,
+          "maxItems": 2
+        },
+        "title": { "type": "string" },
+        "energy": {
+          "type": "string",
+          "enum": ["light", "balanced", "full"]
+        },
+        "summary": { "type": "string" },
+        "moments": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/moment" },
+          "minItems": 2,
+          "maxItems": 3
+        },
+        "transfer": { "$ref": "#/$defs/transfer" }
+      },
+      "required": [
+        "day",
+        "date",
+        "chapterId",
+        "accommodationId",
+        "baseRefs",
+        "title",
+        "energy",
+        "summary",
+        "moments",
+        "transfer"
+      ]
+    },
+    "moment": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "period": {
+          "type": "string",
+          "enum": ["morning", "afternoon", "evening"]
+        },
+        "title": { "type": "string" },
+        "placeRef": { "type": "string" },
+        "description": { "type": "string" },
+        "whyThisFits": { "type": "string" },
+        "durationMinutes": { "type": "integer", "minimum": 15, "maximum": 480 },
+        "travelMinutes": { "type": "integer", "minimum": 0, "maximum": 240 },
+        "reservation": {
+          "type": "string",
+          "enum": ["none", "recommended", "required"]
+        },
+        "costLevel": {
+          "type": "string",
+          "enum": ["free", "low", "medium", "high", "variable"]
+        },
+        "practicalTip": { "type": "string" },
+        "rainAlternative": { "type": "string" },
+        "fatigueAlternative": { "type": "string" },
+        "verificationItemIds": {
+          "type": "array",
+          "items": { "type": "string" },
+          "minItems": 1,
+          "maxItems": 4
+        }
+      },
+      "required": [
+        "period",
+        "title",
+        "placeRef",
+        "description",
+        "whyThisFits",
+        "durationMinutes",
+        "travelMinutes",
+        "reservation",
+        "costLevel",
+        "practicalTip",
+        "rainAlternative",
+        "fatigueAlternative",
+        "verificationItemIds"
+      ]
+    },
+    "transfer": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "needed": { "type": "boolean" },
+        "fromPlaceRef": { "type": ["string", "null"] },
+        "toPlaceRef": { "type": ["string", "null"] },
+        "modes": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "none",
+              "walk",
+              "metro",
+              "local_train",
+              "high_speed_train",
+              "bus",
+              "ferry",
+              "car",
+              "flight"
+            ]
+          },
+          "minItems": 1,
+          "maxItems": 3
+        },
+        "durationMinutes": { "type": ["integer", "null"], "minimum": 0, "maximum": 720 },
+        "reservation": {
+          "type": "string",
+          "enum": ["none", "recommended", "required"]
+        },
+        "description": { "type": ["string", "null"] },
+        "luggageAdvice": { "type": ["string", "null"] },
+        "verificationItemIds": {
+          "type": "array",
+          "items": { "type": "string" },
+          "maxItems": 4
+        }
+      },
+      "required": [
+        "needed",
+        "fromPlaceRef",
+        "toPlaceRef",
+        "modes",
+        "durationMinutes",
+        "reservation",
+        "description",
+        "luggageAdvice",
+        "verificationItemIds"
+      ]
+    },
+    "accommodation": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string" },
+        "destination": { "type": "string" },
+        "checkInDay": { "type": "integer", "minimum": 1, "maximum": 14 },
+        "checkOutDay": { "type": "integer", "minimum": 1, "maximum": 14 },
+        "nights": { "type": "integer", "minimum": 1, "maximum": 13 },
+        "bookingDestinationRef": { "type": "string" },
+        "propertyType": {
+          "type": "string",
+          "enum": ["hotel", "ryokan", "guesthouse", "apartment", "mixed"]
+        },
+        "bookingPriority": {
+          "type": "string",
+          "enum": ["essential", "recommended", "optional"]
+        },
+        "recommendedAreas": {
+          "type": "array",
+          "items": { "type": "string" },
+          "minItems": 1,
+          "maxItems": 3
+        },
+        "selectionCriteria": {
+          "type": "array",
+          "items": { "type": "string" },
+          "minItems": 2,
+          "maxItems": 5
+        },
+        "rationale": { "type": "string" },
+        "watchFor": {
+          "type": "array",
+          "items": { "type": "string" },
+          "minItems": 1,
+          "maxItems": 4
+        },
+        "verificationItemIds": {
+          "type": "array",
+          "items": { "type": "string" },
+          "minItems": 1,
+          "maxItems": 4
+        }
+      },
+      "required": [
+        "id",
+        "destination",
+        "checkInDay",
+        "checkOutDay",
+        "nights",
+        "bookingDestinationRef",
+        "propertyType",
+        "bookingPriority",
+        "recommendedAreas",
+        "selectionCriteria",
+        "rationale",
+        "watchFor",
+        "verificationItemIds"
+      ]
+    },
+    "reservationItem": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string" },
+        "day": { "type": ["integer", "null"], "minimum": 1, "maximum": 14 },
+        "category": {
+          "type": "string",
+          "enum": ["accommodation", "transport", "luggage", "activity", "restaurant", "entry"]
+        },
+        "title": { "type": "string" },
+        "priority": {
+          "type": "string",
+          "enum": ["essential", "recommended", "optional"]
+        },
+        "whenToBook": { "type": "string" },
+        "reason": { "type": "string" },
+        "accommodationIds": {
+          "type": "array",
+          "items": { "type": "string" },
+          "minItems": 0,
+          "maxItems": 8
+        },
+        "verificationItemIds": {
+          "type": "array",
+          "items": { "type": "string" },
+          "minItems": 1,
+          "maxItems": 4
+        }
+      },
+      "required": [
+        "id",
+        "day",
+        "category",
+        "title",
+        "priority",
+        "whenToBook",
+        "reason",
+        "accommodationIds",
+        "verificationItemIds"
+      ]
+    },
+    "adviceItem": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "title": { "type": "string" },
+        "detail": { "type": "string" },
+        "priority": {
+          "type": "string",
+          "enum": ["essential", "recommended", "comfort"]
+        },
+        "mustVerify": { "type": "boolean" },
+        "verificationItemIds": {
+          "type": "array",
+          "items": { "type": "string" },
+          "maxItems": 4
+        }
+      },
+      "required": ["title", "detail", "priority", "mustVerify", "verificationItemIds"]
+    },
+    "practicalGuide": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "documents": { "$ref": "#/$defs/adviceList" },
+        "reservations": { "$ref": "#/$defs/adviceList" },
+        "transport": { "$ref": "#/$defs/adviceList" },
+        "money": { "$ref": "#/$defs/adviceList" },
+        "connectivity": { "$ref": "#/$defs/adviceList" },
+        "healthComfort": { "$ref": "#/$defs/adviceList" },
+        "packingWeather": { "$ref": "#/$defs/adviceList" },
+        "localEtiquette": { "$ref": "#/$defs/adviceList" },
+        "last72Hours": { "$ref": "#/$defs/adviceList" }
+      },
+      "required": [
+        "documents",
+        "reservations",
+        "transport",
+        "money",
+        "connectivity",
+        "healthComfort",
+        "packingWeather",
+        "localEtiquette",
+        "last72Hours"
+      ]
+    },
+    "adviceList": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/adviceItem" },
+      "minItems": 2,
+      "maxItems": 4
+    },
+    "imageBrief": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string" },
+        "chapterId": { "type": "string" },
+        "dayStart": { "type": "integer", "minimum": 1, "maximum": 14 },
+        "dayEnd": { "type": "integer", "minimum": 1, "maximum": 14 },
+        "placeRef": { "type": "string" },
+        "sceneType": {
+          "type": "string",
+          "enum": ["arrival", "urban", "cultural", "nature", "food", "transit", "rest", "departure"]
+        },
+        "activity": {
+          "type": "string",
+          "enum": [
+            "arrival_walk",
+            "city_walk",
+            "cultural_visit",
+            "market_discovery",
+            "rail_journey",
+            "lakeside_walk",
+            "garden_walk",
+            "food_moment",
+            "quiet_rest",
+            "departure_walk"
+          ]
+        },
+        "timeOfDay": {
+          "type": "string",
+          "enum": ["dawn", "morning", "afternoon", "golden_hour", "blue_hour", "evening"]
+        },
+        "composition": {
+          "type": "string",
+          "enum": [
+            "wide_environmental",
+            "environmental_portrait",
+            "walking_portrait",
+            "medium_candid",
+            "seated_candid"
+          ]
+        },
+        "weatherLight": {
+          "type": "string",
+          "enum": [
+            "soft_overcast",
+            "clear_soft",
+            "warm_backlight",
+            "city_lights",
+            "misty",
+            "interior_natural"
+          ]
+        },
+        "mood": {
+          "type": "string",
+          "enum": ["calm", "curious", "joyful", "contemplative", "intimate"]
+        },
+        "editorialPurpose": { "type": "string" },
+        "altText": { "type": "string" }
+      },
+      "required": [
+        "id",
+        "chapterId",
+        "dayStart",
+        "dayEnd",
+        "placeRef",
+        "sceneType",
+        "activity",
+        "timeOfDay",
+        "composition",
+        "weatherLight",
+        "mood",
+        "editorialPurpose",
+        "altText"
+      ]
+    },
+    "verificationItem": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string" },
+        "topic": { "type": "string" },
+        "timing": {
+          "type": "string",
+          "enum": ["before_booking", "before_departure", "last_72_hours", "on_site"]
+        },
+        "sourceType": {
+          "type": "string",
+          "enum": [
+            "official_operator",
+            "accommodation_provider",
+            "booking_provider",
+            "local_authority",
+            "manual_review"
+          ]
+        },
+        "sourceHint": { "type": "string" },
+        "reason": { "type": "string" }
+      },
+      "required": ["id", "topic", "timing", "sourceType", "sourceHint", "reason"]
+    }
+  }
+}

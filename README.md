@@ -2,12 +2,14 @@
 
 Mon Florian transforme un brief libre en proposition de voyage expliquée. La
 cible Cloudflare servira ensuite une page privée avec l'itinéraire, des
-projections dessinées à partir de photos consenties et des liens d'hébergement.
+projections synthétiques éditoriales à partir de photos consenties et des liens
+d'hébergement.
 
 Le runtime courant est un Worker TypeScript avec Static Assets. Il expose déjà
 l'interface sur `workers.dev`, mais maintient les générations fermées. D1 et un
-Workflow sont provisionnés sans donnée utilisateur. R2, les secrets, le courriel,
-Turnstile et Stripe ne sont pas activés.
+Workflow, R2, les secrets de chiffrement et de quota, Turnstile et le courriel
+sont provisionnés derrière des drapeaux fermés, sans donnée utilisateur. La clé
+OpenAI n'est pas installée et Stripe n'est pas activé.
 
 ## Démarrage
 

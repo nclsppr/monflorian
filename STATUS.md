@@ -5,6 +5,14 @@ GitHub et les réponses publiques. Le relevé DNS de fond date du 2026-08-24.
 
 ## Résultat
 
+### Contrat de guide candidat du 2026-08-30
+
+`TravelGuideV1`, son validateur métier, son compilateur d'images contrôlé et le
+carnet Japon enrichi sont versionnés mais non intégrés au Worker ni au Workflow
+déployés. La fixture contient dix jours et cinq scènes ; sa forme compactée
+mesure environ 58 Ko, au-dessus de la limite courante de 32 768 octets. Aucun
+appel OpenAI, secret, drapeau ou déploiement ne change dans cette tranche.
+
 ### Parcours V2 public du 2026-08-26
 
 La PR [#45](https://github.com/nclsppr/monflorian/pull/45) remplace la
@@ -16,7 +24,7 @@ côté navigateur. Le couple des trois scènes Japon est entièrement fictif.
 
 `https://monflorian.com`, `https://www.monflorian.com` et la surface de
 diagnostic `workers.dev` servent le même Worker Cloudflare. L'apex répond en
-HTTPS avec la version `b7fbef1e-b0d4-4524-94c2-0a0a283eaa3e`. `www`, HTTP et
+HTTPS avec la version `fce98697-262d-4351-89c9-9346c5d0a18a`. `www`, HTTP et
 les suffixes HTML publics redirigent désormais en `308` vers leur URL HTTPS
 canonique.
 
@@ -46,7 +54,7 @@ manquants.
 
 | Ressource | État | Preuve |
 | --- | --- | --- |
-| Worker `monflorian` | déployé | version `b7fbef1e-b0d4-4524-94c2-0a0a283eaa3e` |
+| Worker `monflorian` | déployé | version `fce98697-262d-4351-89c9-9346c5d0a18a` |
 | Static Assets | actifs | interface et visuels servis par l'apex et `www` |
 | D1 `monflorian-production` | actif, juridiction `eu`, région d'exécution `EEUR` | migrations `0001`, `0002` et `0003` appliquées |
 | Tables D1 | vides et prêtes | `trips`, `trip_assets`, `daily_quotas` |
@@ -113,9 +121,9 @@ manquants.
 
 ## État du dépôt et de la livraison
 
-- Source runtime déployée : `6672048100346562af8d9efbee045b10cbb4b6a0`,
-  issue de la PR [#45](https://github.com/nclsppr/monflorian/pull/45).
-- Les runs `32936664672` (`Cloudflare release`) et `32936664685` (`Verify`) du
+- Source runtime déployée : `99440d5808e8d11a4c7d4a80efed08074fe7e3a6`,
+  issue de la PR [#49](https://github.com/nclsppr/monflorian/pull/49).
+- Les runs `32980857522` (`Cloudflare release`) et `32980857606` (`Verify`) du
   SHA fusionné sont verts.
 - Le dépôt GitHub ne possède actuellement aucun secret Actions Cloudflare.
 - Le déploiement du SHA fusionné a donc été réalisé depuis la session Wrangler
