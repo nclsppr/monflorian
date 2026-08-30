@@ -4,6 +4,17 @@ Git reste la source du diff technique. Les ADR expliquent les décisions importa
 
 ## Non publié
 
+- Ajout du contrat candidat `TravelGuideV1` pour des carnets détaillés et de
+  longueur bornée, avec chapitres, journées, hébergements, réservations, guide
+  pratique, vérifications et plan d'images.
+- Ajout d'un carnet Japon de dix jours comme référence éditoriale enrichie,
+  structuré en cinq chapitres et cinq scènes sans lien ni prompt fournisseur.
+- Ajout d'une validation métier des dates, nuits, références et scènes, ainsi
+  que des instructions de génération et du compilateur serveur
+  `fuji-editorial-v1`. Le compilateur candidat réserve au contexte serveur le
+  choix des sujets, de la recette Fuji et des catalogues de lieux. Le contrat
+  reste hors du Workflow et les tests propres à cette tranche sont reportés
+  dans la todo.
 - Déploiement public du lockup d'introduction V2 au SHA `99440d5`, avec
   validation du basculement vers l'en-tête compact et des ancres du formulaire.
 - Réutilisation sur `/v2` du lockup d'introduction pleine largeur, de la note

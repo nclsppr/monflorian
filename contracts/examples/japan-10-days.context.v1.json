@@ -1,0 +1,200 @@
+{
+  "schemaVersion": "travel-guide-context.v1",
+  "request": {
+    "destination": "Japon",
+    "durationDays": 10,
+    "travelerCount": 2,
+    "pace": "balanced",
+    "startDate": null,
+    "endDate": null,
+    "budgetApproach": "balanced",
+    "currencyCode": "JPY",
+    "arrivalGateway": "Tokyo",
+    "departureGateway": "Aéroport international du Kansai"
+  },
+  "placeCatalog": {
+    "tokyo-arrival-airport": {
+      "country": "Japon",
+      "city": "Tokyo",
+      "label": "Aéroport d’arrivée à Tokyo à confirmer",
+      "overlayLabel": "TOKYO"
+    },
+    "tokyo-hotel-area": {
+      "country": "Japon",
+      "city": "Tokyo",
+      "label": "Shibuya ou Ebisu",
+      "overlayLabel": "TOKYO"
+    },
+    "daikanyama-ebisu": {
+      "country": "Japon",
+      "city": "Tokyo",
+      "label": "Daikanyama et Ebisu",
+      "overlayLabel": "TOKYO"
+    },
+    "sensoji-asakusa": {
+      "country": "Japon",
+      "city": "Tokyo",
+      "label": "Sensō-ji et Asakusa",
+      "overlayLabel": "ASAKUSA"
+    },
+    "ueno-yanaka": {
+      "country": "Japon",
+      "city": "Tokyo",
+      "label": "Ueno et Yanaka",
+      "overlayLabel": "TOKYO"
+    },
+    "meiji-jingu": {
+      "country": "Japon",
+      "city": "Tokyo",
+      "label": "Meiji-jingū",
+      "overlayLabel": "TOKYO"
+    },
+    "omotesando-daikanyama": {
+      "country": "Japon",
+      "city": "Tokyo",
+      "label": "Omotesandō et Daikanyama",
+      "overlayLabel": "TOKYO"
+    },
+    "shibuya-blue-hour": {
+      "country": "Japon",
+      "city": "Tokyo",
+      "label": "Shibuya à l’heure bleue",
+      "overlayLabel": "SHIBUYA"
+    },
+    "tsukiji-outer-market": {
+      "country": "Japon",
+      "city": "Tokyo",
+      "label": "Marché extérieur de Tsukiji",
+      "overlayLabel": "TSUKIJI"
+    },
+    "hama-rikyu-ginza": {
+      "country": "Japon",
+      "city": "Tokyo",
+      "label": "Hama-rikyū et Ginza",
+      "overlayLabel": "TOKYO"
+    },
+    "odawara-gora-transfer": {
+      "country": "Japon",
+      "city": "Hakone",
+      "label": "Odawara vers Gōra",
+      "overlayLabel": "HAKONE"
+    },
+    "hakone-open-air-museum": {
+      "country": "Japon",
+      "city": "Hakone",
+      "label": "Musée en plein air de Hakone",
+      "overlayLabel": "HAKONE"
+    },
+    "gora-ryokan": {
+      "country": "Japon",
+      "city": "Hakone",
+      "label": "Ryokan à Gōra",
+      "overlayLabel": "HAKONE"
+    },
+    "lake-ashi": {
+      "country": "Japon",
+      "city": "Hakone",
+      "label": "Lac Ashi",
+      "overlayLabel": "HAKONE"
+    },
+    "odawara-kyoto-rail": {
+      "country": "Japon",
+      "city": "Kyoto",
+      "label": "Odawara vers Kyoto",
+      "overlayLabel": "EN ROUTE"
+    },
+    "kamo-river": {
+      "country": "Japon",
+      "city": "Kyoto",
+      "label": "Rivière Kamo",
+      "overlayLabel": "KYOTO"
+    },
+    "kiyomizu-dera": {
+      "country": "Japon",
+      "city": "Kyoto",
+      "label": "Kiyomizu-dera",
+      "overlayLabel": "KYOTO"
+    },
+    "ninenzaka-sannenzaka": {
+      "country": "Japon",
+      "city": "Kyoto",
+      "label": "Ninenzaka et Sannenzaka",
+      "overlayLabel": "HIGASHIYAMA"
+    },
+    "gion-evening": {
+      "country": "Japon",
+      "city": "Kyoto",
+      "label": "Gion en fin de journée",
+      "overlayLabel": "GION"
+    },
+    "fushimi-inari": {
+      "country": "Japon",
+      "city": "Kyoto",
+      "label": "Fushimi Inari",
+      "overlayLabel": "FUSHIMI"
+    },
+    "nishiki-market": {
+      "country": "Japon",
+      "city": "Kyoto",
+      "label": "Marché Nishiki",
+      "overlayLabel": "KYOTO"
+    },
+    "kyoto-free-afternoon": {
+      "country": "Japon",
+      "city": "Kyoto",
+      "label": "Centre de Kyoto",
+      "overlayLabel": "KYOTO"
+    },
+    "arashiyama-bamboo": {
+      "country": "Japon",
+      "city": "Kyoto",
+      "label": "Bambouseraie d’Arashiyama",
+      "overlayLabel": "ARASHIYAMA"
+    },
+    "tenryu-ji-katsura": {
+      "country": "Japon",
+      "city": "Kyoto",
+      "label": "Tenryū-ji et rivière Katsura",
+      "overlayLabel": "ARASHIYAMA"
+    },
+    "kyoto-hotel-area": {
+      "country": "Japon",
+      "city": "Kyoto",
+      "label": "Kawaramachi ou Shijō",
+      "overlayLabel": "KYOTO"
+    },
+    "kansai-airport-transfer": {
+      "country": "Japon",
+      "city": "Osaka",
+      "label": "Aéroport international du Kansai",
+      "overlayLabel": "DÉPART"
+    }
+  },
+  "bookingDestinationRefs": {
+    "booking-tokyo": {
+      "label": "Tokyo",
+      "searchTerms": ["Tokyo", "Shibuya", "Ebisu"]
+    },
+    "booking-hakone": {
+      "label": "Hakone",
+      "searchTerms": ["Hakone", "Gōra", "ryokan"]
+    },
+    "booking-kyoto": {
+      "label": "Kyoto",
+      "searchTerms": ["Kyoto", "Kawaramachi", "Shijō"]
+    }
+  },
+  "imageCast": {
+    "mode": "travelers_only",
+    "approvedSubjects": [
+      {
+        "id": "traveler-1",
+        "kind": "traveler"
+      },
+      {
+        "id": "traveler-2",
+        "kind": "traveler"
+      }
+    ]
+  }
+}

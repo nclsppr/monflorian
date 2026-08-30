@@ -96,8 +96,9 @@ revue.
 | T22 | Compte Cloudflare pris | contrôle total | MFA forte, portée minimale des jetons, comptes séparés si possible, audit | propriétaire unique sans suppléant |
 | T23 | Bascule DNS casse le mail | perte de réception | inventaire complet, copie MX/SPF/TXT, diff limité, rollback par NS | caches et propagation |
 | T24 | Webhook Stripe falsifié ou rejoué | génération non payée | signature brute vérifiée, identifiant d'événement unique, état idempotent | erreurs opérateur et litiges |
+| T25 | Le modèle texte détourne la génération d'image avec une consigne libre | contenu arbitraire, abus ou coût | aucun prompt ni profil libre dans `TravelGuideV1`, champs transmis au modèle d'image bornés et énumérés, compilation serveur avec profil fixe, refus des URL et du HTML | une scène valide peut encore être inadéquate |
 
-## Contrôles de sortie
+## Contrôles de sortie courants
 
 Le Worker traite toute sortie OpenAI comme hostile :
 
@@ -107,6 +108,15 @@ Le Worker traite toute sortie OpenAI comme hostile :
 - liens Booking.com construits après validation ;
 - image décodée, taille et format contrôlés avant R2 ;
 - page rendue sans `innerHTML` alimenté par le modèle.
+
+### Contrôles candidats requis avant intégration de TravelGuideV1
+
+- cohérence entre durée, journées, chapitres, nuits et plan d'images ;
+- aucune instruction libre, URL, profil de rendu ou option fournisseur dans le
+  plan d'images ;
+- profil visuel, distribution des sujets et règles de sûreté ajoutés uniquement
+  par le serveur ;
+- brief brut et textes libres du guide jamais transmis au modèle d'image.
 
 ## Scénarios critiques avant ouverture
 
@@ -119,6 +129,8 @@ Le Worker traite toute sortie OpenAI comme hostile :
 - voyage partiellement écrit puis repris ou purgé ;
 - expiration source à 24 heures et résultat à 30 jours ;
 - sortie contenant HTML, JavaScript, URL ou mauvaise date ;
+- plan d'images contenant une pseudo-instruction, un chapitre inconnu, une plage
+  de jours incohérente ou trop d'images ;
 - courriel en échec puis repris sans doublon de voyage ;
 - retour Stripe sans webhook signé, quand cette phase existera ;
 - changement de serveurs de noms avec MX et SPF identiques.

@@ -15,6 +15,11 @@ D1 et R2, et le Workflow déployé contient les appels OpenAI sans retry
 automatique. La création reste fermée : aucun appel OpenAI n'est exécuté,
 le widget Turnstile reste masqué et le courriel n'est pas activé.
 
+`TravelGuideV1`, son validateur, son compilateur d'image et la fixture Japon
+enrichie restent des artefacts candidats du dépôt, non intégrés au runtime. Le
+Worker déployé ne les importe pas et aucun de ces artefacts n'est transmis à
+OpenAI dans cette tranche.
+
 ## Parcours cible
 
 | Catégorie | Exemples | Finalité | Emplacement cible |
@@ -23,10 +28,10 @@ le widget Turnstile reste masqué et le courriel n'est pas activé.
 | Paramètres | dates, voyageurs, rythme | borner et adapter | chiffrés dans D1 |
 | Courriel | adresse de notification | envoyer le lien privé | chiffré dans D1 jusqu'à l'envoi |
 | Identifiant réseau pseudonymisé | SHA-256 avec secret de quota | limiter l'abus | D1, sans adresse brute |
-| Photos | visages et apparence | créer une projection | R2 privé |
-| Scène | destination et moment | guider l'image | chiffrée avec la demande |
-| Résultat | itinéraire et listes de vérification | rendre la page privée | chiffré dans D1 |
-| Illustrations | WebP générés | illustrer le voyage | R2 privé |
+| Photos | visages et apparence | créer une projection synthétique éditoriale | R2 privé |
+| Plan d'images | références de lieu et choix visuels bornés | choisir les scènes sans prompt libre | dans `TravelGuideV1` chiffré après validation |
+| Résultat | guide `TravelGuideV1` validé et listes de vérification | rendre la page privée | chiffré dans D1 |
+| Images générées | WebP générés | illustrer le voyage | R2 privé |
 | Jeton privé | secret dans l'URL | autoriser consultation et retrait | SHA-256 seulement dans D1 |
 | Logs | route normalisée, statut, durée, identifiants techniques | diagnostic et sécurité | Cloudflare Logs |
 | Navigation Booking.com | destination, dates, voyageurs | recherche au clic | navigateur puis site externe |
@@ -63,8 +68,11 @@ Worker contrôle chaque lecture à partir du jeton de voyage.
 ### OpenAI
 
 Responses reçoit le brief, les paramètres et un `safety_identifier`
-pseudonymisé. Image Edits reçoit les photos réencodées et la scène. Les appels
-Responses fixent `store: false` et demandent une sortie JSON stricte.
+pseudonymisé. Dans le parcours cible, Image Edits reçoit seulement les
+références réencodées et une consigne compilée côté serveur depuis des champs de
+scène validés. Il ne reçoit ni le brief brut, ni un prompt libre produit par
+Responses. Les appels Responses fixent `store: false` et demandent une sortie
+JSON stricte.
 
 Selon la [documentation OpenAI sur les contrôles de
 données](https://developers.openai.com/api/docs/guides/your-data), `store: false`
@@ -99,7 +107,7 @@ Avant envoi, l'interface exige que la personne confirme :
 
 - qu'elle peut utiliser chaque fichier ;
 - que les personnes représentées comprennent l'envoi à OpenAI ;
-- qu'elles acceptent une projection dessinée pour ce voyage ;
+- qu'elles acceptent une projection synthétique éditoriale pour ce voyage ;
 - qu'aucune personne ne nécessite une autorité ou procédure absente.
 
 Ce contrôle ne vérifie ni l'identité, ni l'âge, ni l'autorité. Le consentement ne
@@ -111,7 +119,7 @@ vaut pas publication, entraînement, galerie ou conservation indéfinie.
 | --- | --- | --- | --- |
 | Mémoire navigateur | formulaire et prévisualisations | onglet courant | rechargement ou fermeture |
 | R2, sources | photos réencodées | suppression après génération, limite dure 24 h | purge automatique ou retrait du voyage |
-| R2, résultats | illustrations | 30 jours | expiration ou retrait anticipé |
+| R2, résultats | images générées | 30 jours | expiration ou retrait anticipé |
 | D1 | demande et résultat chiffrés, métadonnées | 30 jours | expiration ou retrait anticipé |
 | D1, courriel | adresse chiffrée | jusqu'à l'envoi réussi, au plus 30 jours | suppression après envoi ou expiration |
 | D1, quotas | date et sujet pseudonymisé par HMAC | 31 jours | purge automatique |
@@ -141,6 +149,8 @@ pas déployée et testée, aucune donnée réelle n'est autorisée.
 - Brief fictif sans identité ni réservation réelle.
 - Personnages entièrement fictifs produits par génération d'image et scènes
   synthétiques versionnés comme fixtures éditoriales.
+- Fixture `TravelGuideV1` du dépôt sans appel fournisseur ni information de
+  réservation présentée comme vérifiée.
 - Les futures photos de voyageurs réels suivent le flux R2 privé ; elles ne sont
   pas confondues avec les fixtures fictives du dépôt.
 - Un seul parcours fournisseur contrôlé avant ouverture.

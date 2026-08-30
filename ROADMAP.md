@@ -78,15 +78,25 @@ stockage R2 et la lecture privée de l'image sont codés. La phase reste ouverte
 Turnstile est configuré, mais la clé OpenAI n'est pas installée sur le Worker,
 les drapeaux sont à `false` et aucun coût fournisseur n'a été engagé.
 
+Le contrat candidat `TravelGuideV1` prépare un guide détaillé et une image par
+chapitre. Il reste séparé du contrat courant et du Workflow jusqu'à la mesure de
+ses plafonds, l'ajout des tests reportés et l'adaptation des quotas multi-images.
+La fixture Japon minifiée atteint environ 58 Ko, contre 32 768 octets admis par
+le contrat actuel.
+
 - Vérifier Turnstile avant création.
 - Débiter les quotas D1 de façon atomique.
 - Démarrer une seule instance Workflow par voyage.
 - Appeler Responses avec `store: false`, schéma strict et plafond de sortie.
+- Remplacer le contrat courant par `TravelGuideV1` après validation de la
+  fixture Japon, mesure du volume et couverture des invariants métier.
 - Appeler Image Edits depuis des clés R2 validées.
+- Compiler chaque consigne d'image depuis le profil serveur et un plan typé,
+  sans transmettre le brief brut ni un prompt libre produit par Responses.
 - Ne pas relancer automatiquement un appel payant si son résultat est inconnu.
 - Stocker les identifiants techniques et l'usage sans contenu.
-- Exécuter un seul brief et une seule image synthétiques, puis inspecter coût et
-  logs.
+- Exécuter un seul voyage synthétique avec son plan d'images borné, puis
+  inspecter coût, volume et logs.
 
 Un test avec fake ne termine pas cette phase.
 

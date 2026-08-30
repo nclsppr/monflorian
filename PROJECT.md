@@ -9,7 +9,7 @@
 | Classe | Critique |
 | Surface Cloudflare | Web actif sur l'apex, `www` et `workers.dev`, envoi transactionnel fermé |
 | Domaine public | `monflorian.com` sur Cloudflare Workers |
-| Décisions courantes | [ADR-0007](docs/decisions/adr-0007-runtime-et-production-cloudflare.md), [ADR-0008](docs/decisions/adr-0008-domaine-web-only-cloudflare.md) et [ADR-0009](docs/decisions/adr-0009-courriel-transactionnel-cloudflare.md) |
+| Décisions courantes | [ADR-0007](docs/decisions/adr-0007-runtime-et-production-cloudflare.md), [ADR-0008](docs/decisions/adr-0008-domaine-web-only-cloudflare.md), [ADR-0009](docs/decisions/adr-0009-courriel-transactionnel-cloudflare.md), [ADR-0010](docs/decisions/adr-0010-parcours-v2-astryx.md) et [ADR-0011](docs/decisions/adr-0011-contrat-guide-voyage-et-plan-images.md) |
 | Licence | Aucune licence de réutilisation accordée |
 
 ## Problème
@@ -28,7 +28,7 @@ tard un lien privé vers une page qui contient :
 - un itinéraire structuré et signalé comme projection ;
 - des points à vérifier avant réservation ;
 - des recherches d'hébergement externes ou des liens affiliés approuvés ;
-- des illustrations générées, jamais présentées comme de vraies photos du lieu ;
+- des images éditoriales générées, signalées comme projections synthétiques ;
 - une échéance et une action de suppression anticipée.
 
 Le premier MVP est gratuit. L'offre à 50 €, le paiement Stripe, le PDF, le compte
@@ -53,6 +53,12 @@ client et le Voyage vivant restent des hypothèses non livrées.
 - Parcours éditorial isolé sous `/v2`, hors index, avec questionnaire Astryx,
   génération déterministe d'un voyage de dix jours au Japon, trois exemples,
   liens Booking.com et partage public ou privé par mot de passe.
+
+### Candidat non intégré
+
+- Contrat `TravelGuideV1`, carnet Japon enrichi, validation métier et
+  compilation contrôlée des consignes d'image, sans branchement au Workflow ni
+  au Worker déployé.
 
 ### À livrer avant une génération réelle
 
@@ -83,8 +89,9 @@ client et le Voyage vivant restent des hypothèses non livrées.
 | Static Assets | Interface et visuels canoniques | `app/public/`, `assets/brand/` | déployé |
 | Coeur métier | Validation des briefs, photos, résultats et liens | `app/core.mjs` | réutilisé, tests locaux |
 | Adaptateur OpenAI | Responses et Image Edits sans SDK | `app/openai.mjs` | non appelé en production |
+| Contrat de guide candidat | Schéma, validation métier et compilation d'image | `contracts/`, `app/travel-guide.mjs` | versionné, non intégré |
 | D1 | États, quotas, données chiffrées et jetons hachés | `migrations/` | base vide, schéma appliqué |
-| R2 | Photos d'entrée et illustrations | binding `MEDIA` | bucket privé UE créé, vide, binding déployé |
+| R2 | Photos d'entrée et images générées | binding `MEDIA` | bucket privé UE créé, vide, binding déployé |
 | Workflows | Traitement durable et notification | `src/workflows/` | texte et image câblés, garde-fous fermés |
 | Turnstile | Réduction de l'abus gratuit | clé publique et Worker Secret | widget géré configuré, parcours fermé |
 | Courriel | Envoi du lien privé | binding Cloudflare `EMAIL` | domaine actif, code câblé, drapeau fermé |
@@ -101,7 +108,7 @@ un conteneur et une seconde chaîne d'exploitation sans bénéfice actuel.
 navigateur
   -> Worker + Turnstile
       -> D1 : état, quota, jeton haché, données chiffrées
-      -> R2 : photos privées et illustrations
+      -> R2 : photos privées et images générées
       -> Workflow
           -> OpenAI Responses
           -> OpenAI Image Edits
@@ -128,7 +135,7 @@ structurées ; il ne stocke pas une copie HTML par voyage.
 | R2 | Images privées | fermer les photos et préserver les objets existants |
 | Workflows | Traitement asynchrone | laisser le voyage en échec explicite sans retry payant aveugle |
 | OpenAI Responses | Itinéraire JSON strict avec `store: false` | marquer le voyage en échec et permettre un nouvel essai contrôlé |
-| OpenAI Image Edits | Projection dessinée depuis les photos | livrer l'itinéraire sans illustration si le contrat produit le permet |
+| OpenAI Image Edits | Projection synthétique éditoriale depuis les photos | livrer l'itinéraire sans image si le contrat produit le permet |
 | Booking.com | Recherche externe au clic | retirer les liens sans perdre le voyage |
 | Cloudflare Email Service | Envoyer le lien privé | conserver la page et proposer une reprise d'envoi |
 | Stripe, plus tard | Paiement ponctuel | ne jamais autoriser depuis le seul retour navigateur |
