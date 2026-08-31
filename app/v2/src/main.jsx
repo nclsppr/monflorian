@@ -10,7 +10,6 @@ import { Button } from "@astryxdesign/core/Button";
 import { Card } from "@astryxdesign/core/Card";
 import { ClickableCard } from "@astryxdesign/core/ClickableCard";
 import { Dialog, DialogHeader } from "@astryxdesign/core/Dialog";
-import { FileInput } from "@astryxdesign/core/FileInput";
 import { Layout, LayoutContent, LayoutFooter } from "@astryxdesign/core/Layout";
 import { NumberInput } from "@astryxdesign/core/NumberInput";
 import { ProgressBar } from "@astryxdesign/core/ProgressBar";
@@ -30,13 +29,19 @@ import { matchaTheme } from "@astryxdesign/theme-matcha/built";
 import {
   exampleTrips,
   generationStatuses,
-  hotels,
-  japanDays,
-  practicalChecks,
+  japanTrip,
+  travelGuideLabels,
 } from "./data.js";
 import "./v2.css";
 
 const PRIVATE_DEFAULT_PASSWORD = "MOMIJI26";
+
+const priorityVariants = {
+  comfort: "neutral",
+  essential: "blue",
+  optional: "neutral",
+  recommended: "green",
+};
 
 function Icon({ name, size = 20 }) {
   const common = {
@@ -52,11 +57,7 @@ function Icon({ name, size = 20 }) {
   };
 
   if (name === "arrow") {
-    return (
-      <svg {...common}>
-        <path d="M5 12h14M13 6l6 6-6 6" />
-      </svg>
-    );
+    return <svg {...common}><path d="M5 12h14M13 6l6 6-6 6" /></svg>;
   }
   if (name === "share") {
     return (
@@ -92,11 +93,7 @@ function Icon({ name, size = 20 }) {
       </svg>
     );
   }
-  return (
-    <svg {...common}>
-      <path d="m5 12 4 4L19 6" />
-    </svg>
-  );
+  return <svg {...common}><path d="m5 12 4 4L19 6" /></svg>;
 }
 
 function scrollToId(id) {
@@ -111,6 +108,29 @@ function routeFromLocation() {
     proof: params.get("preuve"),
     trip: params.get("voyage"),
   };
+}
+
+function formatMinutes(minutes) {
+  if (!minutes) return "Sur place";
+  if (minutes < 60) return String(minutes) + " min";
+  const hours = Math.floor(minutes / 60);
+  const remainder = minutes % 60;
+  return remainder ? hours + " h " + remainder : hours + " h";
+}
+
+function formatDayRange(start, end) {
+  return start === end ? "Jour " + start : "Jours " + start + "–" + end;
+}
+
+function LinkedVerifications({ items }) {
+  if (!items?.length) return null;
+  return (
+    <p className="linked-verifications">
+      <strong>À revérifier :</strong>{" "}
+      {items.map((item) => `${item.topic} (${item.timingLabel.toLowerCase()})`).join(" · ")}{" "}
+      <a href="#verify">Voir les sources</a>
+    </p>
+  );
 }
 
 async function hashPassword(value) {
@@ -137,7 +157,7 @@ async function copyText(value) {
   area.remove();
 }
 
-function BrandHeader({ isTrip, onHome, onShare }) {
+function BrandHeader({ isGate, isTrip, onHome, onOpenTrip, onShare }) {
   return (
     <header className="site-header">
       <div className="header-inner">
@@ -148,12 +168,7 @@ function BrandHeader({ isTrip, onHome, onShare }) {
           type="button"
         >
           <span aria-hidden="true" className="brand-character">
-            <img
-              alt=""
-              height="384"
-              src="/assets/florian-v2-original-web.webp"
-              width="384"
-            />
+            <img alt="" height="384" src="/assets/florian-v2-original-web.webp" width="384" />
           </span>
           <img
             alt=""
@@ -164,17 +179,19 @@ function BrandHeader({ isTrip, onHome, onShare }) {
           />
         </button>
         <nav aria-label="Navigation principale" className="desktop-nav">
-          <button onClick={() => (onHome(), setTimeout(() => scrollToId("create"), 0))} type="button">
-            Créer un voyage
-          </button>
-          <button onClick={() => (onHome(), setTimeout(() => scrollToId("examples"), 0))} type="button">
-            Voir des exemples
-          </button>
           <button onClick={() => (onHome(), setTimeout(() => scrollToId("how"), 0))} type="button">
             Comment ça marche
           </button>
+          <button onClick={() => (onHome(), setTimeout(() => scrollToId("create"), 0))} type="button">
+            Préparer le mien
+          </button>
+          <button onClick={() => (onHome(), setTimeout(() => scrollToId("examples"), 0))} type="button">
+            Inspirations
+          </button>
         </nav>
-        {isTrip ? (
+        {isGate ? (
+          <span className="header-gate-state"><Icon name="lock" size={16} /> Accès privé</span>
+        ) : isTrip ? (
           <Button
             className="header-action"
             icon={<Icon name="share" size={17} />}
@@ -186,8 +203,8 @@ function BrandHeader({ isTrip, onHome, onShare }) {
         ) : (
           <Button
             className="header-action"
-            label="Mon voyage"
-            onClick={() => scrollToId("create")}
+            label="Voir le carnet"
+            onClick={onOpenTrip}
             size="lg"
             variant="secondary"
           />
@@ -198,40 +215,59 @@ function BrandHeader({ isTrip, onHome, onShare }) {
 }
 
 function BrandIntro({ onPastChange }) {
-  useEffect(() => {
-    const header = document.querySelector(".site-header");
-    const trigger = document.querySelector(".brand-intro-trigger");
+  const [isCompact, setIsCompact] = useState(() => window.matchMedia("(max-width: 760px)").matches);
 
-    if (!header || !trigger || typeof IntersectionObserver !== "function") {
-      onPastChange(true);
-      return undefined;
+  useEffect(() => {
+    const media = window.matchMedia("(max-width: 760px)");
+    const update = () => setIsCompact(media.matches);
+    update();
+    media.addEventListener?.("change", update);
+    return () => media.removeEventListener?.("change", update);
+  }, []);
+
+  useEffect(() => {
+    let observer;
+    let frame;
+
+    function observeIntro() {
+      observer?.disconnect();
+      if (isCompact) {
+        onPastChange(true);
+        return;
+      }
+      const header = document.querySelector(".site-header");
+      const trigger = document.querySelector(".brand-intro-trigger");
+      if (!header || !trigger || typeof IntersectionObserver !== "function") {
+        onPastChange(true);
+        return;
+      }
+      onPastChange(false);
+      const headerHeight = Math.ceil(header.getBoundingClientRect().height);
+      observer = new IntersectionObserver(([entry]) => {
+        const introIsPast = !entry.isIntersecting && entry.boundingClientRect.top <= headerHeight;
+        onPastChange(introIsPast);
+      }, {
+        rootMargin: "-" + headerHeight + "px 0px 0px 0px",
+        threshold: 0,
+      });
+      observer.observe(trigger);
     }
 
-    onPastChange(false);
-    const headerHeight = Math.ceil(header.getBoundingClientRect().height);
-    const observer = new IntersectionObserver(([entry]) => {
-      const introIsPast = !entry.isIntersecting && entry.boundingClientRect.top <= headerHeight;
-      onPastChange(introIsPast);
-    }, {
-      rootMargin: `-${headerHeight}px 0px 0px 0px`,
-      threshold: 0,
-    });
+    frame = window.requestAnimationFrame(observeIntro);
+    return () => {
+      window.cancelAnimationFrame(frame);
+      observer?.disconnect();
+    };
+  }, [isCompact, onPastChange]);
 
-    observer.observe(trigger);
-    return () => observer.disconnect();
-  }, [onPastChange]);
+  if (isCompact) return null;
 
   return (
     <div aria-hidden="true" className="brand-intro">
       <span className="brand-intro-content">
         <span className="brand-intro-lockup">
           <span className="brand-character">
-            <img
-              alt=""
-              height="1024"
-              src="/assets/florian-v2-original-intro.webp"
-              width="1024"
-            />
+            <img alt="" height="1024" src="/assets/florian-v2-original-intro.webp" width="1024" />
           </span>
           <img
             alt=""
@@ -261,7 +297,7 @@ function BrandIntro({ onPastChange }) {
   );
 }
 
-function PhotoChapter({ alt, city, eager = false, src, note }) {
+function PhotoChapter({ alt, city, eager = false, mobileSrc, src, note }) {
   return (
     <figure className="photo-chapter">
       <img
@@ -270,7 +306,9 @@ function PhotoChapter({ alt, city, eager = false, src, note }) {
         fetchPriority={eager ? "high" : "auto"}
         height="960"
         loading={eager ? "eager" : "lazy"}
+        sizes="(max-width: 760px) 100vw, (max-width: 1200px) 80vw, 1120px"
         src={src}
+        srcSet={mobileSrc ? mobileSrc + " 720w, " + src + " 1440w" : undefined}
         width="1440"
       />
       <div aria-hidden="true" className="photo-wash" />
@@ -280,46 +318,156 @@ function PhotoChapter({ alt, city, eager = false, src, note }) {
   );
 }
 
-function Hero() {
+function PromisePhone() {
+  const image = japanTrip.featuredImage.asset;
   return (
-    <section className="home-hero">
+    <div className="promise-phone-stage">
+      <article aria-label="Aperçu du carnet Japon dans un téléphone" className="promise-phone">
+        <div aria-hidden="true" className="phone-island" />
+        <div className="phone-screen">
+          <div className="phone-app-bar"><span>Mon Florian</span><span>•••</span></div>
+          <figure className="phone-cover">
+            <img
+              alt="Le couple du carnet découvre Tokyo à la tombée du jour"
+              decoding="async"
+              fetchPriority="high"
+              height={image.height}
+              sizes="(max-width: 760px) 82vw, 360px"
+              src={image.src}
+              srcSet={image.mobileSrc + " 720w, " + image.src + " 1440w"}
+              width={image.width}
+            />
+            <div className="phone-cover-copy">
+              <span>10 jours · 2 voyageurs</span>
+              <strong>Le Japon à deux</strong>
+              <small>Tokyo → Hakone → Kyoto</small>
+            </div>
+          </figure>
+          <div className="phone-route" aria-label="Trois étapes">
+            {japanTrip.accommodations.map((stay) => (
+              <span key={stay.id}><i />{stay.destination}<small>{stay.nightsLabel}</small></span>
+            ))}
+          </div>
+          <div className="phone-preview-days">
+            {japanTrip.days.slice(0, 3).map((day) => (
+              <div className="phone-preview-day" key={day.day}>
+                <span>J{day.day}</span>
+                <div><strong>{day.title}</strong><small>{day.moments[0].title}</small></div>
+              </div>
+            ))}
+          </div>
+          <div className="phone-florian-note">
+            <img alt="" height="384" src="/assets/florian-v2-original-web.webp" width="384" />
+            <p><strong>Le choix de Florian</strong> Trois bases seulement, pour voir beaucoup sans refaire les valises chaque matin.</p>
+          </div>
+        </div>
+      </article>
+      <span className="phone-caption">Ton itinéraire, tes hôtels et les réservations à prévoir, au même endroit.</span>
+    </div>
+  );
+}
+
+function Hero({ onOpenTrip }) {
+  return (
+    <section className="home-hero" aria-labelledby="hero-title">
       <div className="hero-copy">
-        <p className="eyebrow">TON VOYAGE, À TON RYTHME</p>
-        <h1>Tu donnes l’envie.<br />Je construis le chemin.</h1>
+        <p className="eyebrow">FLORIAN, TON COPILOTE DE VOYAGE</p>
+        <h1 id="hero-title">Tu donnes l’envie.<br />Je construis le chemin.</h1>
         <p className="hero-intro">
-          Décris ce que tu veux vivre, le temps dont tu disposes et ton rythme.
-          Florian relie les étapes, ménage les respirations et prépare une page
-          de voyage facile à consulter et à partager.
+          Décris le voyage que tu imagines. Florian organise les étapes, les trajets,
+          les quartiers où dormir et les journées qui respirent, puis réunit tout
+          dans un carnet facile à consulter et à partager.
         </p>
         <div className="hero-actions">
           <Button
             endContent={<Icon name="arrow" />}
-            label="Créer mon voyage"
-            onClick={() => scrollToId("create")}
+            label="Ouvrir le carnet Japon"
+            onClick={onOpenTrip}
             size="lg"
             variant="primary"
           />
-          <button className="text-link" onClick={() => scrollToId("examples")} type="button">
-            Voir trois inspirations
+          <button className="text-link" onClick={() => scrollToId("create")} type="button">
+            Préparer le mien
           </button>
         </div>
-        <dl className="hero-facts">
-          <div><dt>01</dt><dd>Une envie libre</dd></div>
-          <div><dt>02</dt><dd>Un rythme choisi</dd></div>
-          <div><dt>03</dt><dd>Un carnet partageable</dd></div>
-        </dl>
+        <p className="hero-demo-note">
+          <strong>Exemple interactif.</strong> Découvre le format avec dix jours au Japon.
+          Tes réponses restent dans cette page et ouvrent ce même carnet.
+        </p>
+        <ul className="hero-trust" aria-label="Cadre de la démonstration">
+          <li>Aucune réservation automatique</li>
+          <li>Aucune donnée personnelle demandée</li>
+          <li>Partage simulé</li>
+        </ul>
       </div>
-      <div className="hero-visual">
-        <PhotoChapter
-          alt="Un couple découvre Tokyo le soir, sous les enseignes lumineuses"
-          city="TOKYO"
-          eager
-          src="/v2/media/japan-tokyo-couple.webp"
-        />
-        <div className="route-stamp" aria-label="Itinéraire présenté">
-          <span>10 jours</span>
-          <strong>Tokyo → Hakone → Kyoto</strong>
+      <PromisePhone />
+    </section>
+  );
+}
+
+function WhatYouReceive() {
+  const items = [
+    ["01", "Un parcours cohérent", "Les étapes, les nuits et les transferts suivent une logique simple à comprendre."],
+    ["02", "Dix journées détaillées", "Matin, après-midi, soir, temps de trajet et solution en cas de pluie ou de fatigue."],
+    ["03", "Des choix à réserver", "Hôtels, trains et activités sont classés par priorité, avec les points à vérifier."],
+    ["04", "Un carnet commun", "Une seule page à garder sous la main et à envoyer aux personnes qui voyagent avec toi."],
+  ];
+  return (
+    <section className="deliverables-section" aria-labelledby="deliverables-title">
+      <div className="section-heading compact-heading">
+        <div>
+          <p className="eyebrow">CE QUE TU REÇOIS</p>
+          <h2 id="deliverables-title">Pas une liste d’idées. Un voyage que tu peux décider.</h2>
         </div>
+        <p>Chaque recommandation a une place, une raison et un niveau de priorité.</p>
+      </div>
+      <div className="deliverable-grid">
+        {items.map(([number, title, copy]) => (
+          <article className="deliverable-item" key={number}>
+            <span>{number}</span><h3>{title}</h3><p>{copy}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function JapanProof({ onOpenTrip }) {
+  const garden = japanTrip.chapters[1].image.asset;
+  return (
+    <section className="guide-proof-section" aria-labelledby="proof-title">
+      <div className="guide-proof-visual">
+        <PhotoChapter
+          alt="Le couple se promène dans le jardin Hama-rikyu à Tokyo"
+          city={garden.overlayLabel}
+          mobileSrc={garden.mobileSrc}
+          src={garden.src}
+        />
+      </div>
+      <div className="guide-proof-copy">
+        <p className="eyebrow">UN CARNET COMPLET, AVANT LE FORMULAIRE</p>
+        <h2 id="proof-title">Le Japon à deux, prêt à être exploré.</h2>
+        <p>{japanTrip.trip.summary}</p>
+        <ol className="proof-route" aria-label="Itinéraire du carnet Japon">
+          {japanTrip.accommodations.map((stay, index) => (
+            <li key={stay.id}>
+              <span>{String(index + 1).padStart(2, "0")}</span>
+              <div><strong>{stay.destination}</strong><small>{stay.nightsLabel} · {stay.recommendedAreasLabel}</small></div>
+            </li>
+          ))}
+        </ol>
+        <ul className="proof-facts">
+          <li><strong>10</strong> journées détaillées</li>
+          <li><strong>5</strong> grands chapitres illustrés</li>
+          <li><strong>{japanTrip.reservationPlan.length}</strong> décisions à anticiper</li>
+        </ul>
+        <Button
+          endContent={<Icon name="arrow" />}
+          label="Voir le carnet complet"
+          onClick={onOpenTrip}
+          size="lg"
+          variant="primary"
+        />
       </div>
     </section>
   );
@@ -344,7 +492,6 @@ function TripQuestionnaire({ onGenerate }) {
   const [travelers, setTravelers] = useState(2);
   const [pace, setPace] = useState("equilibre");
   const [comfort, setComfort] = useState("charme");
-  const [photos, setPhotos] = useState([]);
 
   function goTo(nextStep) {
     setStep(nextStep);
@@ -352,14 +499,15 @@ function TripQuestionnaire({ onGenerate }) {
   }
 
   return (
-    <section className="composer-section" id="create">
+    <section className="composer-section" id="create" aria-labelledby="questionnaire-title">
       <div className="section-heading composer-heading">
         <div>
-          <p className="eyebrow">COMMENÇONS PAR TON ENVIE</p>
-          <h2 id="questionnaire-title" tabIndex="-1">Où veux-tu que je t’emmène ?</h2>
+          <p className="eyebrow">ESSAIE LE PARCOURS</p>
+          <h2 id="questionnaire-title" tabIndex="-1">À quoi ressemble ton prochain voyage ?</h2>
         </div>
         <p>
-          Trois étapes courtes. Tu peux rester précis ou me laisser de la liberté.
+          Trois étapes courtes pour tester la préparation. Cet exemple ouvre toujours
+          le même carnet Japon et n’envoie aucune réponse.
         </p>
       </div>
       <div className="composer-layout">
@@ -373,14 +521,13 @@ function TripQuestionnaire({ onGenerate }) {
           >
             <Step label="L’envie" step={0} />
             <Step label="Le rythme" step={1} />
-            <Step label="Les détails" step={2} />
+            <Step label="Le confort" step={2} />
           </Stepper>
-
           <form
             className="questionnaire-form"
             onSubmit={(event) => {
               event.preventDefault();
-              onGenerate({ brief, comfort, days, pace, photos, travelers });
+              onGenerate({ brief, comfort, days, pace, travelers });
             }}
           >
             <div className="step-panel" key={step}>
@@ -391,7 +538,7 @@ function TripQuestionnaire({ onGenerate }) {
                     <TextArea
                       description="Une destination, une saison, une sensation ou simplement une envie de partir."
                       isOptional
-                      label="À quoi ressemble le voyage que tu imagines ?"
+                      label="Le voyage que tu imagines"
                       maxLength={2000}
                       onChange={setBrief}
                       placeholder="Dix jours au Japon à deux, entre quartiers vivants, sources chaudes et temples. On veut voir beaucoup sans courir…"
@@ -401,34 +548,15 @@ function TripQuestionnaire({ onGenerate }) {
                       width="100%"
                     />
                   </div>
-                  <p className="field-hint">Tu pourras ajuster le détail après avoir vu la première proposition.</p>
+                  <p className="field-hint">Évite ici les noms, documents ou autres informations personnelles.</p>
                 </div>
               ) : null}
-
               {step === 1 ? (
                 <div className="field-stack">
                   <div className="step-kicker">02 · DONNE LE TEMPO</div>
                   <div className="number-grid">
-                    <NumberInput
-                      isIntegerOnly
-                      label="Nombre de jours"
-                      max={30}
-                      min={2}
-                      onChange={setDays}
-                      units="jours"
-                      value={days}
-                      width="100%"
-                    />
-                    <NumberInput
-                      isIntegerOnly
-                      label="Voyageurs"
-                      max={8}
-                      min={1}
-                      onChange={setTravelers}
-                      units="personnes"
-                      value={travelers}
-                      width="100%"
-                    />
+                    <NumberInput isIntegerOnly label="Nombre de jours" max={14} min={2} onChange={setDays} units="jours" value={days} width="100%" />
+                    <NumberInput isIntegerOnly label="Voyageurs" max={8} min={1} onChange={setTravelers} units="personnes" value={travelers} width="100%" />
                   </div>
                   <fieldset className="selection-fieldset">
                     <legend>Quel rythme te ressemble ?</legend>
@@ -442,18 +570,16 @@ function TripQuestionnaire({ onGenerate }) {
                           padding={4}
                           variant={pace === option.key ? "blue" : "default"}
                         >
-                          <strong>{option.title}</strong>
-                          <span>{option.note}</span>
+                          <strong>{option.title}</strong><span>{option.note}</span>
                         </SelectableCard>
                       ))}
                     </div>
                   </fieldset>
                 </div>
               ) : null}
-
               {step === 2 ? (
                 <div className="field-stack">
-                  <div className="step-kicker">03 · AJOUTE TA TOUCHE</div>
+                  <div className="step-kicker">03 · CHOISIS TA BASE</div>
                   <fieldset className="selection-fieldset">
                     <legend>Quelle ambiance d’hôtel ?</legend>
                     <div className="selection-grid">
@@ -466,64 +592,36 @@ function TripQuestionnaire({ onGenerate }) {
                           padding={4}
                           variant={comfort === option.key ? "green" : "default"}
                         >
-                          <strong>{option.title}</strong>
-                          <span>{option.note}</span>
+                          <strong>{option.title}</strong><span>{option.note}</span>
                         </SelectableCard>
                       ))}
                     </div>
                   </fieldset>
-                  <FileInput
-                    accept="image/jpeg,image/png,image/webp"
-                    description="Ajoute jusqu’à quatre portraits pour retrouver votre duo dans le carnet."
-                    isMultiple
-                    isOptional
-                    label="Vos photos"
-                    maxFiles={4}
-                    maxSize={8_000_000}
-                    mode="dropzone"
-                    onChange={(files) => setPhotos(Array.isArray(files) ? files : files ? [files] : [])}
-                    placeholder="Choisir ou déposer des photos"
-                    value={photos}
-                    width="100%"
-                  />
+                  <div className="demo-disclosure">
+                    <strong>Ce que fait cet exemple</strong>
+                    <p>
+                      Il montre le parcours et le niveau de détail du carnet. Les réponses
+                      restent dans ton navigateur, ne sont pas enregistrées et n’influencent
+                      pas la proposition Japon dans cette démonstration.
+                    </p>
+                  </div>
                 </div>
               ) : null}
             </div>
-
             <div className="form-actions">
-              {step > 0 ? (
-                <Button label="Retour" onClick={() => goTo(step - 1)} size="lg" variant="ghost" />
-              ) : <span />}
+              {step > 0 ? <Button label="Retour" onClick={() => goTo(step - 1)} size="lg" variant="ghost" /> : <span />}
               {step < 2 ? (
-                <Button
-                  endContent={<Icon name="arrow" />}
-                  label="Continuer"
-                  onClick={() => goTo(step + 1)}
-                  size="lg"
-                  variant="primary"
-                />
+                <Button endContent={<Icon name="arrow" />} label="Continuer" onClick={() => goTo(step + 1)} size="lg" variant="primary" />
               ) : (
-                <Button
-                  endContent={<Icon name="arrow" />}
-                  label="Générer mon voyage"
-                  size="lg"
-                  type="submit"
-                  variant="primary"
-                />
+                <Button endContent={<Icon name="arrow" />} label="Voir la proposition Japon" size="lg" type="submit" variant="primary" />
               )}
             </div>
           </form>
         </Card>
-
         <aside className="composer-aside">
           <div className="composer-aside-signature">
-            <img
-              alt=""
-              height="384"
-              src="/assets/florian-v2-original-web.webp"
-              width="384"
-            />
-            <p className="aside-label">CE QUE FLORIAN PRÉPARE</p>
+            <img alt="" height="384" src="/assets/florian-v2-original-web.webp" width="384" />
+            <p className="aside-label">CE QUE FLORIAN ORGANISE</p>
           </div>
           <div className="route-line" aria-hidden="true">
             <span>Départ</span><i /><span>Respirer</span><i /><span>S’émerveiller</span>
@@ -533,9 +631,9 @@ function TripQuestionnaire({ onGenerate }) {
             n’est prévu. C’est souvent là que le voyage commence vraiment.”
           </blockquote>
           <ul>
-            <li><Icon name="check" /> Un parcours jour par jour</li>
+            <li><Icon name="check" /> Un ordre qui limite les détours</li>
             <li><Icon name="check" /> Des hôtels à comparer sur Booking.com</li>
-            <li><Icon name="check" /> Une page à partager avec tes proches</li>
+            <li><Icon name="check" /> Les réservations classées par priorité</li>
           </ul>
         </aside>
       </div>
@@ -547,37 +645,19 @@ function Examples({ onOpen }) {
   return (
     <section className="examples-section" id="examples">
       <div className="section-heading">
-        <div>
-          <p className="eyebrow">TROIS FAÇONS DE PARTIR</p>
-          <h2>Des voyages qui laissent de la place au voyage.</h2>
-        </div>
+        <div><p className="eyebrow">TROIS AUTRES FAÇONS DE PARTIR</p><h2>Le même cadre, jamais le même voyage.</h2></div>
         <p>Chaque parcours relie les étapes, les respirations et les bonnes bases où dormir.</p>
       </div>
       <div className="example-grid">
         {exampleTrips.map((trip) => (
-          <ClickableCard
-            className="example-card"
-            elevation="low"
-            key={trip.slug}
-            label={`Découvrir ${trip.title}`}
-            onClick={() => onOpen(trip)}
-            padding={0}
-          >
+          <ClickableCard className="example-card" elevation="low" key={trip.slug} label={"Découvrir " + trip.title} onClick={() => onOpen(trip)} padding={0}>
             <div className="example-image">
-              <img
-                alt={trip.subtitle}
-                decoding="async"
-                height="960"
-                loading="lazy"
-                src={trip.image}
-                width="1440"
-              />
+              <img alt={trip.subtitle} decoding="async" height="960" loading="lazy" src={trip.image} width="1440" />
               <strong>{trip.coverLabel}</strong>
             </div>
             <div className="example-copy">
               <p className="card-eyebrow">{trip.eyebrow}</p>
-              <h3>{trip.title}</h3>
-              <p className="example-subtitle">{trip.subtitle}</p>
+              <h3>{trip.title}</h3><p className="example-subtitle">{trip.subtitle}</p>
               <p className="example-route">{trip.route}</p>
               <span className="card-link">Voir le parcours <Icon name="arrow" size={18} /></span>
             </div>
@@ -596,30 +676,76 @@ function HowItWorks() {
         <h2>Moins de comparaisons.<br />Plus de décisions claires.</h2>
       </div>
       <ol className="how-list">
-        <li>
-          <span>01</span>
-          <div><h3>Tu racontes</h3><p>Une phrase suffit. Ajoute le rythme, le nombre de jours et ce qui compte pour vous.</p></div>
-        </li>
-        <li>
-          <span>02</span>
-          <div><h3>Florian relie</h3><p>Les étapes s’enchaînent sans zigzag, avec des journées qui respirent et des hôtels bien placés.</p></div>
-        </li>
-        <li>
-          <span>03</span>
-          <div><h3>Vous partagez</h3><p>Le carnet devient votre point de repère commun, en accès public ou privé avec mot de passe.</p></div>
-        </li>
+        <li><span>01</span><div><h3>Tu racontes</h3><p>Une phrase suffit. Ajoute le rythme, le nombre de jours et ce qui compte pour toi.</p></div></li>
+        <li><span>02</span><div><h3>Florian relie</h3><p>Les étapes s’enchaînent sans zigzag, avec des journées qui respirent et des hôtels bien placés.</p></div></li>
+        <li><span>03</span><div><h3>Tu décides</h3><p>Le carnet distingue l’essentiel du facultatif et rassemble les points à vérifier avant de réserver.</p></div></li>
       </ol>
     </section>
   );
 }
 
-function HomePage({ onGenerate, onOpenExample }) {
+function Questions() {
+  const questions = [
+    ["Les prix sont-ils en temps réel ?", "Non. Les liens ouvrent une recherche Booking.com et les prix, disponibilités et conditions doivent être vérifiés au moment de réserver."],
+    ["Est-ce que Mon Florian réserve à ma place ?", "Non. Le carnet organise les décisions et te conduit vers les services concernés, sans acheter ni confirmer quoi que ce soit."],
+    ["Que deviennent mes réponses ?", "Dans cet exemple, elles restent dans ton navigateur, ne sont pas envoyées et ouvrent toujours le même carnet Japon."],
+    ["Dois-je ajouter des photos ?", "Non. Ce parcours de démonstration ne demande aucun portrait. Les cinq images du carnet utilisent un couple fictif créé pour cet exemple."],
+  ];
   return (
-    <main>
-      <Hero />
+    <section className="questions-section" aria-labelledby="questions-title">
+      <div>
+        <p className="eyebrow">AVANT DE COMMENCER</p>
+        <h2 id="questions-title">Ce que fait le carnet. Et ce qu’il ne fait pas.</h2>
+      </div>
+      <div className="questions-list">
+        {questions.map(([question, answer], index) => (
+          <details key={question} open={index === 0}>
+            <summary>{question}</summary>
+            <p>{answer}</p>
+          </details>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function MobileCta() {
+  const [isVisible, setIsVisible] = useState(true);
+
+  useEffect(() => {
+    const composer = document.getElementById("create");
+    if (!composer || typeof IntersectionObserver !== "function") return undefined;
+    const observer = new IntersectionObserver(([entry]) => {
+      setIsVisible(!entry.isIntersecting && entry.boundingClientRect.top > 0);
+    }, { rootMargin: "0px 0px -20% 0px" });
+    observer.observe(composer);
+    return () => observer.disconnect();
+  }, []);
+
+  return (
+    <div className={"mobile-cta" + (isVisible ? "" : " is-hidden")}>
+      <Button
+        endContent={<Icon name="arrow" size={18} />}
+        label="Préparer mon voyage"
+        onClick={() => scrollToId("create")}
+        size="lg"
+        variant="primary"
+      />
+    </div>
+  );
+}
+
+function HomePage({ onGenerate, onOpenExample, onOpenTrip }) {
+  return (
+    <main id="main-content">
+      <Hero onOpenTrip={onOpenTrip} />
+      <WhatYouReceive />
+      <JapanProof onOpenTrip={onOpenTrip} />
       <TripQuestionnaire onGenerate={onGenerate} />
       <Examples onOpen={onOpenExample} />
       <HowItWorks />
+      <Questions />
+      <MobileCta />
     </main>
   );
 }
@@ -630,8 +756,8 @@ function GeneratingPage({ onDone }) {
   useEffect(() => {
     const statusTimer = window.setInterval(() => {
       setStatusIndex((current) => Math.min(current + 1, generationStatuses.length - 1));
-    }, 650);
-    const doneTimer = window.setTimeout(onDone, 3500);
+    }, 360);
+    const doneTimer = window.setTimeout(onDone, 1200);
     return () => {
       window.clearInterval(statusTimer);
       window.clearTimeout(doneTimer);
@@ -642,9 +768,9 @@ function GeneratingPage({ onDone }) {
   const progress = ((statusIndex + 1) / generationStatuses.length) * 100;
 
   return (
-    <main className="generating-page">
+    <main className="generating-page" id="main-content">
       <div className="generation-card">
-        <span className="generation-count">10 JOURS · 3 ÉTAPES · 2 VOYAGEURS</span>
+        <span className="generation-count">EXEMPLE JAPON · 10 JOURS · 3 BASES</span>
         <div className="generation-mark" aria-hidden="true">
           {complete ? (
             <span className="t-success-check" data-state="in">
@@ -652,15 +778,11 @@ function GeneratingPage({ onDone }) {
                 <path d="m8 25 10 10 22-24" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="4" />
               </svg>
             </span>
-          ) : (
-            <span className="paper-plane">↗</span>
-          )}
+          ) : <span className="paper-plane">↗</span>}
         </div>
-        <p className="eyebrow">TON VOYAGE PREND FORME</p>
+        <p className="eyebrow">OUVERTURE DE L’EXEMPLE</p>
         <h1>{generationStatuses[statusIndex]}</h1>
-        <p className="generation-note">
-          Je vérifie que chaque déplacement mérite sa place et que vos journées gardent de l’air.
-        </p>
+        <p className="generation-note">Aucune réponse n’est envoyée : ce passage ouvre le carnet Japon déjà préparé.</p>
         <ProgressBar
           hasValueLabel
           label="Préparation du carnet"
@@ -674,37 +796,332 @@ function GeneratingPage({ onDone }) {
 }
 
 function TripHero({ onShare }) {
+  const { trip, featuredImage } = japanTrip;
   return (
-    <section className="trip-hero">
+    <section className="trip-hero" aria-labelledby="trip-title">
       <div className="trip-hero-image">
         <PhotoChapter
-          alt="Un couple marche dans Tokyo de nuit"
-          city="TOKYO"
+          alt="Le couple du carnet marche dans Tokyo à la tombée du jour"
+          city={featuredImage.asset.overlayLabel}
           eager
-          src="/v2/media/japan-tokyo-couple.webp"
+          mobileSrc={featuredImage.asset.mobileSrc}
+          src={featuredImage.asset.src}
         />
       </div>
       <div className="trip-hero-copy">
-        <p className="eyebrow">JAPON · 10 JOURS</p>
-        <h1>Le Japon à deux</h1>
-        <p className="trip-route">Tokyo → Hakone → Kyoto</p>
+        <p className="eyebrow">{trip.destination.toUpperCase()} · {trip.durationDays} JOURS</p>
+        <h1 id="trip-title">{trip.title}</h1>
+        <p className="trip-subtitle">{trip.subtitle}</p>
+        <p className="trip-route">{trip.routeLabel}</p>
         <div className="trip-meta">
-          <span><Icon name="calendar" /> 10 jours</span>
-          <span><Icon name="people" /> 2 voyageurs</span>
-          <Badge label="Rythme équilibré" variant="success" />
+          <span><Icon name="calendar" /> {trip.durationDays} jours</span>
+          <span><Icon name="people" /> {trip.travelerCount} voyageurs</span>
+          <Badge label={"Rythme " + trip.paceLabel.toLowerCase()} variant="success" />
         </div>
-        <p className="trip-summary">
-          Une première traversée du Japon qui alterne énergie urbaine, nuit en
-          ryokan et journées de temple. Peu de changements d’hôtel, des départs
-          matinaux choisis et de vraies plages libres.
-        </p>
-        <Button
-          icon={<Icon name="share" />}
-          label="Partager ce voyage"
-          onClick={onShare}
-          size="lg"
-          variant="primary"
+        <p className="trip-summary">{trip.summary}</p>
+        <Button icon={<Icon name="share" />} label="Partager ce voyage" onClick={onShare} size="lg" variant="primary" />
+        <p className="trip-demo-label">Exemple sans donnée personnelle · Prix et disponibilités à vérifier</p>
+      </div>
+    </section>
+  );
+}
+
+function RouteOverview() {
+  return (
+    <section className="route-overview-section" id="overview" aria-labelledby="route-title">
+      <div className="section-heading compact-heading">
+        <div><p className="eyebrow">LE FIL DU VOYAGE</p><h2 id="route-title">Trois bases, deux transferts entre étapes.</h2></div>
+        <p>Les grandes valises ne changent d’hôtel que deux fois en dix jours.</p>
+      </div>
+      <ol className="route-overview">
+        {japanTrip.accommodations.map((stay, index) => {
+          const transfer = index < japanTrip.accommodations.length - 1
+            ? japanTrip.days.find((day) => day.day === stay.checkOutDay && day.transfer.needed)
+            : null;
+          return (
+            <li className="route-overview-stop" key={stay.id}>
+              <article>
+                <span className="route-stop-index">0{index + 1}</span>
+                <p>{stay.propertyTypeLabel} · {stay.nightsLabel}</p>
+                <h3>{stay.destination}</h3>
+                <strong>{stay.recommendedAreasLabel}</strong>
+                <small>Arrivée J{stay.checkInDay} · départ J{stay.checkOutDay}</small>
+              </article>
+              {transfer ? (
+                <div className="route-connection">
+                  <span>{formatMinutes(transfer.transfer.durationMinutes)}</span>
+                  <i aria-hidden="true" />
+                  <small>{transfer.transfer.modeLabels.join(" + ")}</small>
+                </div>
+              ) : null}
+            </li>
+          );
+        })}
+      </ol>
+    </section>
+  );
+}
+
+function FlorianRationale() {
+  return (
+    <section className="florian-note" aria-label="Pourquoi cet itinéraire">
+      <div className="florian-mini">
+        <img alt="Florian" height="384" src="/assets/florian-v2-original-web.webp" width="384" />
+      </div>
+      <div>
+        <p className="eyebrow">POURQUOI CET ORDRE</p>
+        <blockquote>{japanTrip.trip.florianRationale}</blockquote>
+      </div>
+    </section>
+  );
+}
+
+function MomentCard({ moment }) {
+  const reservationVariant = moment.reservation === "required"
+    ? "blue"
+    : moment.reservation === "recommended" ? "green" : "neutral";
+  return (
+    <article className="moment-card">
+      <div className="moment-heading">
+        <span>{moment.periodLabel}</span>
+        <Badge label={moment.reservationLabel} variant={reservationVariant} />
+      </div>
+      <h4>{moment.title}</h4>
+      <p>{moment.description}</p>
+      <dl className="moment-meta">
+        <div><dt>Durée</dt><dd>{formatMinutes(moment.durationMinutes)}</dd></div>
+        <div><dt>Trajet local</dt><dd>{formatMinutes(moment.travelMinutes)}</dd></div>
+        <div><dt>Budget</dt><dd>{moment.costLevelLabel}</dd></div>
+      </dl>
+      <p className="moment-fit"><strong>Pourquoi ici :</strong> {moment.whyThisFits}</p>
+      <p className="moment-tip"><strong>À savoir :</strong> {moment.practicalTip}</p>
+      <LinkedVerifications items={moment.verificationItems} />
+      <details className="moment-alternatives">
+        <summary>Plan pluie ou fatigue</summary>
+        <div><strong>S’il pleut</strong><p>{moment.rainAlternative}</p></div>
+        <div><strong>Si la fatigue arrive</strong><p>{moment.fatigueAlternative}</p></div>
+      </details>
+    </article>
+  );
+}
+
+function TransferCard({ transfer }) {
+  return (
+    <aside className="transfer-card">
+      <div><span>TRANSFERT DU JOUR</span><strong>{formatMinutes(transfer.durationMinutes)}</strong></div>
+      <p>{transfer.description}</p>
+      <dl>
+        <div><dt>Modes à prévoir</dt><dd>{transfer.modeLabels.join(" · ")}</dd></div>
+        <div><dt>Réservation</dt><dd>{transfer.reservationLabel}</dd></div>
+        <div><dt>Bagages</dt><dd>{transfer.luggageAdvice}</dd></div>
+      </dl>
+      <LinkedVerifications items={transfer.verificationItems} />
+    </aside>
+  );
+}
+
+function Day({ item }) {
+  const timeline = [];
+  if (item.transfer.needed && item.transfer.placement === "before_morning") {
+    timeline.push(<TransferCard key={String(item.day) + "-transfer"} transfer={item.transfer} />);
+  }
+  item.moments.forEach((moment) => {
+    timeline.push(<MomentCard key={String(item.day) + "-" + moment.period} moment={moment} />);
+    if (item.transfer.needed && item.transfer.placement === "after_" + moment.period) {
+      timeline.push(<TransferCard key={String(item.day) + "-transfer"} transfer={item.transfer} />);
+    }
+  });
+
+  return (
+    <li className="day-item">
+      <div className="day-number"><span>JOUR</span><strong>{String(item.day).padStart(2, "0")}</strong></div>
+      <div className="day-copy">
+        <div className="day-heading">
+          <div><p>{item.cityLabel}</p><h3>{item.title}</h3></div>
+          <Badge label={item.energyLabel} variant={item.energy === "light" ? "green" : "neutral"} />
+        </div>
+        <p className="day-summary">{item.summary}</p>
+        <div className="moment-grid">{timeline}</div>
+      </div>
+    </li>
+  );
+}
+
+function Chapter({ chapter, index }) {
+  return (
+    <section className="chapter-block" aria-labelledby={"chapter-" + String(index + 1)}>
+      {index > 0 ? (
+        <PhotoChapter
+          alt={chapter.image.altText}
+          city={chapter.image.asset.overlayLabel}
+          mobileSrc={chapter.image.asset.mobileSrc}
+          note={formatDayRange(chapter.dayStart, chapter.dayEnd).toUpperCase()}
+          src={chapter.image.asset.src}
         />
+      ) : null}
+      <div className="chapter-heading">
+        <p className="eyebrow">ÉTAPE {String(index + 1).padStart(2, "0")} · {formatDayRange(chapter.dayStart, chapter.dayEnd).toUpperCase()}</p>
+        <h2 id={"chapter-" + String(index + 1)}>{chapter.title}</h2>
+        <p>{chapter.summary}</p>
+        <blockquote>{chapter.whyItWorks}</blockquote>
+      </div>
+      <ol className="day-list" start={chapter.dayStart}>
+        {chapter.days.map((day) => <Day item={day} key={day.day} />)}
+      </ol>
+    </section>
+  );
+}
+
+function HotelsSection() {
+  return (
+    <section className="hotels-section" id="hotels" aria-labelledby="hotels-title">
+      <div className="section-heading">
+        <div><p className="eyebrow">OÙ POSER LES VALISES</p><h2 id="hotels-title">Trois recherches, avec les bons critères.</h2></div>
+        <p>Les liens ouvrent Booking.com par ville. Les prix, disponibilités et conditions restent à vérifier avant toute réservation.</p>
+      </div>
+      <div className="hotel-grid">
+        {japanTrip.accommodations.map((stay) => (
+          <Card className="hotel-card" elevation="low" key={stay.id} padding={5}>
+            <div className="hotel-top"><span>{stay.nightsLabel}</span><Badge label={stay.destination} variant="blue" /></div>
+            <p className="hotel-type">{stay.propertyTypeLabel} · {stay.priorityLabel}</p>
+            <h3>{stay.recommendedAreasLabel}</h3>
+            <p>{stay.rationale}</p>
+            <div className="hotel-criteria">
+              <strong>À rechercher</strong>
+              <ul>{stay.selectionCriteria.map((criterion) => <li key={criterion}>{criterion}</li>)}</ul>
+            </div>
+            <details>
+              <summary>Points de vigilance</summary>
+              <ul>{stay.watchFor.map((warning) => <li key={warning}>{warning}</li>)}</ul>
+            </details>
+            <LinkedVerifications items={stay.verificationItems} />
+            <Button
+              endContent={<Icon name="arrow" size={18} />}
+              href={stay.href}
+              label={"Comparer à " + stay.destination}
+              referrerPolicy="no-referrer"
+              rel="noopener noreferrer"
+              size="lg"
+              target="_blank"
+              variant="secondary"
+            />
+          </Card>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function BudgetSection() {
+  const budget = japanTrip.budgetGuide;
+  return (
+    <section className="budget-section" id="budget" aria-labelledby="budget-title">
+      <div>
+        <p className="eyebrow">BUDGET · APPROCHE {budget.approachLabel.toUpperCase()}</p>
+        <h2 id="budget-title">Ce qui fera vraiment varier le total.</h2>
+        <p>{budget.summary}</p>
+        <LinkedVerifications items={budget.verificationItems} />
+      </div>
+      <ol>
+        {budget.mainVariables.map((variable, index) => (
+          <li key={variable}><span>{String(index + 1).padStart(2, "0")}</span>{variable}</li>
+        ))}
+      </ol>
+    </section>
+  );
+}
+
+function ReservationsSection() {
+  const groups = ["essential", "recommended", "optional"];
+  return (
+    <section className="reservations-section" id="reservations" aria-labelledby="reservations-title">
+      <div className="section-heading">
+        <div><p className="eyebrow">PLAN DE RÉSERVATION</p><h2 id="reservations-title">À faire dans le bon ordre.</h2></div>
+        <p>Commence par ce qui structure l’itinéraire. Le reste peut rester souple plus longtemps.</p>
+      </div>
+      <div className="reservation-groups">
+        {groups.map((priority) => {
+          const items = japanTrip.reservationPlan.filter((item) => item.priority === priority);
+          if (!items.length) return null;
+          return (
+            <section className="reservation-group" key={priority}>
+              <div className="reservation-group-title">
+                <Badge label={travelGuideLabels.priority[priority]} variant={priorityVariants[priority]} />
+                <span>{items.length} décision{items.length > 1 ? "s" : ""}</span>
+              </div>
+              <ol>
+                {items.map((item) => (
+                  <li key={item.id}>
+                    <div><span>{item.categoryLabel}</span><strong>{item.title}</strong></div>
+                    <p>{item.reason}</p>
+                    <small>
+                      {item.day ? `Jour ${item.day} · ` : ""}
+                      {item.accommodations.length ? `${item.accommodations.map((stay) => stay.destination).join(" · ")} · ` : ""}
+                      {item.whenToBook}
+                    </small>
+                    <LinkedVerifications items={item.verificationItems} />
+                  </li>
+                ))}
+              </ol>
+            </section>
+          );
+        })}
+      </div>
+    </section>
+  );
+}
+
+function PracticalGuideSection() {
+  return (
+    <section className="practical-guide-section" id="practical" aria-labelledby="practical-title">
+      <div className="section-heading">
+        <div><p className="eyebrow">AVANT DE PARTIR</p><h2 id="practical-title">Les détails qui évitent les grands détours.</h2></div>
+        <p>Ouvre chaque rubrique, puis garde seulement les conseils qui concernent ta situation.</p>
+      </div>
+      <div className="practical-grid">
+        {japanTrip.practicalSections.map((section, index) => (
+          <details key={section.id} open={index === 0}>
+            <summary><span>{section.label}</span><small>{section.items.length} points</small></summary>
+            <ul>
+              {section.items.map((item) => (
+                <li key={item.title}>
+                  <div>
+                    <strong>{item.title}</strong>
+                    <Badge label={item.priorityLabel} variant={priorityVariants[item.priority]} />
+                  </div>
+                  <p>{item.detail}</p>
+                  {item.mustVerify ? <small>À vérifier pour tes dates</small> : null}
+                  <LinkedVerifications items={item.verificationItems} />
+                </li>
+              ))}
+            </ul>
+          </details>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function VerificationSection() {
+  return (
+    <section className="verification-section" id="verify" aria-labelledby="verification-title">
+      <div className="section-heading compact-heading">
+        <div><p className="eyebrow">INFORMATIONS À REVÉRIFIER</p><h2 id="verification-title">Le carnet sait ce qui peut changer.</h2></div>
+        <p>Horaires, règles, tarifs et conditions doivent être confirmés auprès de la source indiquée au bon moment.</p>
+      </div>
+      <div className="verification-list">
+        {japanTrip.verificationItems.map((item) => (
+          <details key={item.id}>
+            <summary><span>{item.topic}</span><small>{item.timingLabel}</small></summary>
+            <div>
+              <p>{item.reason}</p>
+              <dl>
+                <div><dt>Source à consulter</dt><dd>{item.sourceHint}</dd></div>
+                <div><dt>Type</dt><dd>{item.sourceTypeLabel}</dd></div>
+              </dl>
+            </div>
+          </details>
+        ))}
       </div>
     </section>
   );
@@ -712,113 +1129,36 @@ function TripHero({ onShare }) {
 
 function TripPage({ onShare }) {
   return (
-    <main className="trip-page">
+    <main className="trip-page" id="main-content">
       <TripHero onShare={onShare} />
       <nav aria-label="Sommaire du voyage" className="trip-tabs">
-        <a href="#overview">En bref</a>
-        <a href="#itinerary">Itinéraire</a>
+        <a href="#overview">Parcours</a>
+        <a href="#itinerary">Jour après jour</a>
         <a href="#hotels">Hôtels</a>
+        <a href="#reservations">Réservations</a>
         <a href="#practical">À prévoir</a>
       </nav>
-
-      <section className="florian-note" id="overview">
-        <div className="florian-mini">
-          <img alt="Florian" height="384" src="/assets/florian-v2-original-web.webp" width="384" />
-        </div>
-        <div>
-          <p className="eyebrow">LE CHOIX DE FLORIAN</p>
-          <blockquote>
-            J’ai placé Hakone entre Tokyo et Kyoto pour passer des néons aux
-            sources chaudes avant de retrouver les temples. Une nuit suffit à
-            ralentir sans multiplier les valises.
-          </blockquote>
-        </div>
-      </section>
-
-      <section className="itinerary-section" id="itinerary">
+      <RouteOverview />
+      <FlorianRationale />
+      <section className="itinerary-section" id="itinerary" aria-labelledby="itinerary-title">
         <div className="section-heading itinerary-heading">
-          <div><p className="eyebrow">JOUR APRÈS JOUR</p><h2>Dix jours, sans course contre la montre.</h2></div>
-          <p>Les horaires restent des repères. Les pauses et les soirées libres font partie du parcours.</p>
+          <div><p className="eyebrow">JOUR APRÈS JOUR</p><h2 id="itinerary-title">Dix jours, sans course contre la montre.</h2></div>
+          <p>Les durées restent des repères. Les pauses, les plans pluie et les soirées libres font partie du parcours.</p>
         </div>
-        <ol className="day-list">
-          {japanDays.slice(0, 5).map((item) => <Day key={item.day} item={item} />)}
-        </ol>
-        <PhotoChapter
-          alt="Le couple profite d’un bain thermal extérieur à Hakone"
-          city="HAKONE"
-          note="JOUR 5 · UNE NUIT POUR RALENTIR"
-          src="/v2/media/japan-hakone-couple.webp"
-        />
-        <ol className="day-list" start="6">
-          {japanDays.slice(5).map((item) => <Day key={item.day} item={item} />)}
-        </ol>
-        <PhotoChapter
-          alt="Le couple marche dans un quartier traditionnel de Kyoto"
-          city="KYOTO"
-          note="JOURS 6–10 · TEMPLES, RUELLES ET TEMPS LIBRE"
-          src="/v2/media/japan-kyoto-couple.webp"
-        />
+        {japanTrip.chapters.map((chapter, index) => <Chapter chapter={chapter} index={index} key={chapter.id} />)}
       </section>
-
-      <section className="hotels-section" id="hotels">
-        <div className="section-heading">
-          <div><p className="eyebrow">OÙ POSER LES VALISES</p><h2>Trois bases, pas une de plus.</h2></div>
-          <p>Ces liens ouvrent une recherche par ville. Tu gardes le choix de l’adresse et des conditions.</p>
-        </div>
-        <div className="hotel-grid">
-          {hotels.map((hotel) => (
-            <Card className="hotel-card" elevation="low" key={hotel.city} padding={5}>
-              <div className="hotel-top"><span>{hotel.nights}</span><Badge label={hotel.city} variant="blue" /></div>
-              <h3>{hotel.neighborhood}</h3>
-              <p>{hotel.note}</p>
-              <Button
-                endContent={<Icon name="arrow" size={18} />}
-                href={hotel.href}
-                label={`Voir les hôtels à ${hotel.city}`}
-                referrerPolicy="no-referrer"
-                rel="noopener noreferrer"
-                size="lg"
-                target="_blank"
-                variant="secondary"
-              />
-            </Card>
-          ))}
-        </div>
-      </section>
-
-      <section className="practical-section" id="practical">
-        <div>
-          <p className="eyebrow">AVANT DE PARTIR</p>
-          <h2>La petite liste qui évite les grands détours.</h2>
-          <p>À cocher ensemble avant de fermer les valises.</p>
-        </div>
-        <ul>
-          {practicalChecks.map((check) => <li key={check}><Icon name="check" />{check}</li>)}
-        </ul>
-      </section>
-
+      <HotelsSection />
+      <BudgetSection />
+      <ReservationsSection />
+      <PracticalGuideSection />
+      <VerificationSection />
       <section className="trip-share-cta">
-        <p className="eyebrow">LE VOYAGE COMMENCE ICI</p>
-        <h2>Gardez le même itinéraire sous la main.</h2>
-        <p>Choisis qui peut voir le carnet, puis envoie le lien à la famille et aux amis.</p>
+        <p className="eyebrow">UN CARNET COMMUN</p>
+        <h2>Garde le même voyage sous la main.</h2>
+        <p>Teste un lien public ou un accès privé avec le mot de passe de démonstration.</p>
         <Button icon={<Icon name="share" />} label="Choisir le partage" onClick={onShare} size="lg" variant="primary" />
       </section>
     </main>
-  );
-}
-
-function Day({ item }) {
-  return (
-    <li className="day-item">
-      <div className="day-number"><span>JOUR</span><strong>{String(item.day).padStart(2, "0")}</strong></div>
-      <div className="day-copy">
-        <div className="day-heading">
-          <div><p>{item.city}</p><h3>{item.title}</h3></div>
-          <Badge label={item.pace} variant={item.pace === "Lent" ? "green" : "neutral"} />
-        </div>
-        <ul>{item.moments.map((moment) => <li key={moment}>{moment}</li>)}</ul>
-      </div>
-    </li>
   );
 }
 
@@ -837,15 +1177,15 @@ function PasswordGate({ proof, onUnlock, onHome }) {
   }
 
   return (
-    <main className="gate-page">
+    <main className="gate-page" id="main-content">
       <Card className="gate-card" elevation="med" padding={8}>
         <span className="gate-icon"><Icon name="lock" size={26} /></span>
-        <p className="eyebrow">VOYAGE PRIVÉ</p>
-        <h1>Le Japon à deux</h1>
-        <p>Entre le mot de passe reçu séparément pour ouvrir ce carnet.</p>
+        <p className="eyebrow">VOYAGE PRIVÉ · DÉMONSTRATION</p>
+        <h1>{japanTrip.trip.title}</h1>
+        <p>Entre le mot de passe reçu séparément pour ouvrir ce carnet d’exemple.</p>
         <form onSubmit={submit}>
           <TextInput
-            description={error || "Le mot de passe respecte les majuscules et les chiffres."}
+            description="Le mot de passe respecte les majuscules et les chiffres."
             label="Mot de passe"
             onChange={setPassword}
             maxLength={64}
@@ -857,6 +1197,7 @@ function PasswordGate({ proof, onUnlock, onHome }) {
           />
           <Button label="Ouvrir le voyage" size="lg" type="submit" variant="primary" width="100%" />
         </form>
+        <p className="gate-demo-note">Ce contrôle illustre le parcours. Le carnet ne contient aucune donnée personnelle.</p>
         <button className="text-link" onClick={onHome} type="button">Retour à Mon Florian</button>
       </Card>
     </main>
@@ -885,7 +1226,7 @@ function ShareDialog({ isOpen, onClose }) {
 
   async function buildLink() {
     const url = new URL("/v2", window.location.origin);
-    url.searchParams.set("voyage", "japon-a-deux");
+    url.searchParams.set("voyage", japanTrip.slug);
     url.searchParams.set("acces", access === "private" ? "prive" : "public");
     if (access === "private") {
       url.searchParams.set("preuve", await hashPassword(password));
@@ -910,7 +1251,7 @@ function ShareDialog({ isOpen, onClose }) {
     if (navigator.share) {
       try {
         await navigator.share({
-          title: "Le Japon à deux · Mon Florian",
+          title: japanTrip.trip.title + " · Mon Florian",
           text: "Voici notre voyage au Japon.",
           url: shareUrl,
         });
@@ -925,12 +1266,18 @@ function ShareDialog({ isOpen, onClose }) {
   }
 
   return (
-    <Dialog isOpen={isOpen} onOpenChange={onClose} purpose="form" width={560}>
+    <Dialog
+      isOpen={isOpen}
+      maxHeight="calc(100dvh - 24px)"
+      onOpenChange={onClose}
+      purpose="form"
+      width={560}
+    >
       <Layout
-        height="auto"
-        header={<DialogHeader hasDivider onOpenChange={onClose} subtitle="Famille, amis ou compagnon de voyage" title="Partager le Japon à deux" />}
+        height="fill"
+        header={<DialogHeader hasDivider onOpenChange={onClose} subtitle="Famille, amis ou compagnon de voyage" title={"Partager " + japanTrip.trip.title} />}
         content={
-          <LayoutContent isScrollable={false}>
+          <LayoutContent isScrollable>
             <div className="share-dialog-content">
               <SegmentedControl label="Visibilité du voyage" onChange={setAccess} value={access}>
                 <SegmentedControlItem label="Privé" value="private" />
@@ -940,7 +1287,7 @@ function ShareDialog({ isOpen, onClose }) {
                 <div className="private-share-fields">
                   <TextInput
                     description="Envoie-le séparément du lien."
-                    label="Mot de passe"
+                    label="Mot de passe de démonstration"
                     maxLength={64}
                     onChange={setPassword}
                     type="text"
@@ -959,8 +1306,11 @@ function ShareDialog({ isOpen, onClose }) {
                   </button>
                 </div>
               ) : (
-                <p className="share-explanation">Toute personne qui reçoit le lien peut ouvrir le carnet.</p>
+                <p className="share-explanation">Toute personne qui reçoit le lien peut ouvrir ce carnet d’exemple.</p>
               )}
+              <p className="share-demo-note">
+                Cette simulation ne contient aucune donnée personnelle. Un vrai accès privé doit être contrôlé côté serveur ; le lien seul ne constitue pas une protection.
+              </p>
               <div aria-live="polite" className="share-feedback">{feedback || "Choisis l’accès puis partage le lien."}</div>
             </div>
           </LayoutContent>
@@ -981,16 +1331,10 @@ function ShareDialog({ isOpen, onClose }) {
 function ExampleDialog({ trip, onClose }) {
   const [feedback, setFeedback] = useState("");
   if (!trip) return null;
-  const exampleUrl = `${window.location.origin}/v2?exemple=${trip.slug}`;
+  const exampleUrl = window.location.origin + "/v2?exemple=" + trip.slug;
 
   return (
-    <Dialog
-      isOpen={Boolean(trip)}
-      maxHeight="88dvh"
-      onOpenChange={onClose}
-      purpose="info"
-      width={680}
-    >
+    <Dialog isOpen={Boolean(trip)} maxHeight="88dvh" onOpenChange={onClose} purpose="info" width={680}>
       <Layout
         height="fill"
         header={<DialogHeader hasDivider onOpenChange={onClose} subtitle={trip.route} title={trip.title} />}
@@ -1002,8 +1346,7 @@ function ExampleDialog({ trip, onClose }) {
             </div>
             <div className="example-dialog-copy">
               <p className="card-eyebrow">{trip.eyebrow}</p>
-              <h3>{trip.subtitle}</h3>
-              <p>{trip.summary}</p>
+              <h3>{trip.subtitle}</h3><p>{trip.summary}</p>
               <ul>{trip.stops.map((stop) => <li key={stop}>{stop}</li>)}</ul>
               <p aria-live="polite" className="share-feedback">{feedback}</p>
             </div>
@@ -1041,7 +1384,6 @@ function Footer({ onHome }) {
       </div>
       <div className="footer-links">
         <a href="/confidentialite">Confidentialité</a>
-        <a href="mailto:voyage@monflorian.com">voyage@monflorian.com</a>
       </div>
       <p className="footer-mark">MON FLORIAN · 2026</p>
     </footer>
@@ -1083,10 +1425,11 @@ function App() {
     window.scrollTo({ behavior: "smooth", top: 0 });
   }
 
-  function finishGeneration() {
-    window.history.pushState({}, "", "/v2?voyage=japon-a-deux");
-    setRoute({ access: null, example: null, proof: null, trip: "japon-a-deux" });
+  function openTrip() {
+    window.history.pushState({}, "", "/v2?voyage=" + japanTrip.slug);
+    setRoute({ access: null, example: null, proof: null, trip: japanTrip.slug });
     setScreen("trip");
+    setUnlocked(false);
     window.scrollTo({ top: 0 });
   }
 
@@ -1112,20 +1455,24 @@ function App() {
     >
       <Theme mode="light" theme={matchaTheme}>
         <div className={shellClassName}>
-          <BrandHeader isTrip={isTrip} onHome={goHome} onShare={() => setShareOpen(true)} />
+          <BrandHeader isGate={Boolean(isPrivateRoute)} isTrip={isTrip} onHome={goHome} onOpenTrip={openTrip} onShare={() => setShareOpen(true)} />
           {hasIntroSwap ? <BrandIntro onPastChange={setIntroPast} /> : null}
           {isPrivateRoute ? (
             <PasswordGate onHome={goHome} onUnlock={() => setUnlocked(true)} proof={route.proof} />
           ) : screen === "generating" ? (
-          <GeneratingPage onDone={finishGeneration} />
-        ) : isTrip ? (
-          <TripPage onShare={() => setShareOpen(true)} />
-        ) : (
-          <HomePage onGenerate={() => { setScreen("generating"); window.scrollTo({ top: 0 }); }} onOpenExample={setExample} />
-        )}
-        <Footer onHome={goHome} />
-        <ShareDialog isOpen={shareOpen} onClose={setShareOpen} />
-        <ExampleDialog onClose={(open) => { if (!open) setExample(null); }} trip={example} />
+            <GeneratingPage onDone={openTrip} />
+          ) : isTrip ? (
+            <TripPage onShare={() => setShareOpen(true)} />
+          ) : (
+            <HomePage
+              onGenerate={() => { setScreen("generating"); window.scrollTo({ top: 0 }); }}
+              onOpenExample={setExample}
+              onOpenTrip={openTrip}
+            />
+          )}
+          <Footer onHome={goHome} />
+          <ShareDialog isOpen={shareOpen} onClose={setShareOpen} />
+          <ExampleDialog onClose={(open) => { if (!open) setExample(null); }} trip={example} />
         </div>
       </Theme>
     </InternationalizationProvider>

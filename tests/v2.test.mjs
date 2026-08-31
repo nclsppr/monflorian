@@ -23,17 +23,18 @@ test("la V2 livre le parcours Japon sans vocabulaire de chantier", () => {
   const html = source("app/v2/index.html");
   const application = source("app/v2/src/main.jsx");
   const data = source("app/v2/src/data.js");
-  const visibleSource = `${html}\n${application}\n${data}`;
+  const fixture = JSON.parse(source("contracts/examples/japan-10-days.v1.json"));
+  const visibleSource = `${html}\n${application}\n${data}\n${JSON.stringify(fixture)}`;
 
   assert.match(html, /<html lang="fr"/u);
   assert.match(html, /name="robots" content="noindex,nofollow,nosnippet,noimageindex"/u);
   assert.match(html, /name="referrer" content="no-referrer"/u);
   assert.match(application, /@astryxdesign\/core\/Stepper/u);
   assert.match(application, /@astryxdesign\/core\/Dialog/u);
-  assert.match(application, /Générer mon voyage/u);
+  assert.match(application, /Voir la proposition Japon/u);
   assert.match(application, /Le Japon à deux/u);
   assert.match(visibleSource, /Tokyo → Hakone → Kyoto/u);
-  assert.equal((data.match(/day:\s*\d+/gu) || []).length, 10);
+  assert.equal(fixture.days.length, 10);
   assert.equal((data.match(/https:\/\/www\.booking\.com\/city\/jp\//gu) || []).length, 3);
   assert.doesNotMatch(
     visibleSource,
@@ -51,13 +52,15 @@ test("le partage privé vérifie un condensat sans placer le mot de passe dans l
   assert.match(application, /navigator\.clipboard/u);
 });
 
-test("les six images V2 partagent le format éditorial 1440 par 960", () => {
+test("les huit images V2 partagent le format éditorial 1440 par 960", () => {
   const files = [
     "example-norway-fjords.webp",
     "example-portugal-train.webp",
     "example-sicily-table.webp",
     "japan-hakone-couple.webp",
     "japan-kyoto-couple.webp",
+    "japan-arashiyama-couple.webp",
+    "japan-tokyo-garden-couple.webp",
     "japan-tokyo-couple.webp",
   ];
 

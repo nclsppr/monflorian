@@ -1,4 +1,4 @@
-import { AppError, itineraryJsonSchema, validateItineraryOutput } from "./core.mjs";
+import { AppError, LIMITS, itineraryJsonSchema, validateItineraryOutput } from "./core.mjs";
 
 const RESPONSES_ENDPOINT = "https://api.openai.com/v1/responses";
 const IMAGE_EDITS_ENDPOINT = "https://api.openai.com/v1/images/edits";
@@ -165,7 +165,7 @@ export async function generateItinerary({
         model,
         store: false,
         safety_identifier: safetyIdentifier,
-        max_output_tokens: 10_000,
+        max_output_tokens: 32_000,
         reasoning: { effort: "low" },
         input: [
           { role: "developer", content: itineraryInstructions(request) },
@@ -201,6 +201,9 @@ export async function generateItinerary({
   const outputText = outputTextFromResponse(payload);
   if (!outputText) {
     throw new AppError(502, "PROVIDER_INVALID_RESPONSE", "Le service n’a pas produit d’itinéraire lisible.");
+  }
+  if (Buffer.byteLength(outputText, "utf8") > LIMITS.itineraryBodyBytes) {
+    throw new AppError(502, "PROVIDER_INVALID_RESPONSE", "Le service a produit un itinéraire trop volumineux.");
   }
   let parsed;
   try {

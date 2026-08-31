@@ -15,5 +15,7 @@
 !assets/
 !assets/brand/
 !assets/brand/**
+!contracts/
+!contracts/**
 !scripts/
 !scripts/build-worker-assets.mjs

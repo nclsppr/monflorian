@@ -21,9 +21,11 @@ voyageur et à Florian.
 
 ## Utilisateurs et résultat attendu
 
-Une personne décrit son envie, ajoute des dates, le nombre de voyageurs, son
-adresse de courriel et, avec consentement, une à quatre photos. Elle reçoit plus
-tard un lien privé vers une page qui contient :
+Une personne décrit son envie, ajoute des dates, le nombre de voyageurs et son
+adresse de courriel. Elle reçoit une première proposition structurée. Si elle la
+retient, elle peut ensuite ajouter, avec consentement, une à quatre photos pour
+personnaliser les illustrations avant de recevoir le lien privé final, qui
+contient :
 
 - un itinéraire structuré et signalé comme projection ;
 - des points à vérifier avant réservation ;
@@ -51,14 +53,14 @@ client et le Voyage vivant restent des hypothèses non livrées.
 - Famille validée de cinq portraits V2 sur l'accueil, avec rotation aléatoire
   et choix facultatif par `?avatar=`.
 - Parcours éditorial isolé sous `/v2`, hors index, avec questionnaire Astryx,
-  génération déterministe d'un voyage de dix jours au Japon, trois exemples,
-  liens Booking.com et partage public ou privé par mot de passe.
+  carnet déterministe de dix jours alimenté statiquement par la fixture Japon
+  canonique, trois exemples, liens Booking.com et simulation de partage public
+  ou privé par mot de passe, sans protection serveur.
 
 ### Candidat non intégré
 
-- Contrat `TravelGuideV1`, carnet Japon enrichi, validation métier et
-  compilation contrôlée des consignes d'image, sans branchement au Workflow ni
-  au Worker déployé.
+- Contrat dynamique `TravelGuideV1`, validation métier et compilation contrôlée
+  des consignes d'image, sans branchement au Workflow ni à OpenAI.
 
 ### À livrer avant une génération réelle
 
@@ -89,7 +91,7 @@ client et le Voyage vivant restent des hypothèses non livrées.
 | Static Assets | Interface et visuels canoniques | `app/public/`, `assets/brand/` | déployé |
 | Coeur métier | Validation des briefs, photos, résultats et liens | `app/core.mjs` | réutilisé, tests locaux |
 | Adaptateur OpenAI | Responses et Image Edits sans SDK | `app/openai.mjs` | non appelé en production |
-| Contrat de guide candidat | Schéma, validation métier et compilation d'image | `contracts/`, `app/travel-guide.mjs` | versionné, non intégré |
+| Contrat de guide candidat | Fixture statique, schéma, validation métier et compilation d'image | `contracts/`, `app/travel-guide.mjs` | fixture consommée par `/v2`, génération dynamique non intégrée |
 | D1 | États, quotas, données chiffrées et jetons hachés | `migrations/` | base vide, schéma appliqué |
 | R2 | Photos d'entrée et images générées | binding `MEDIA` | bucket privé UE créé, vide, binding déployé |
 | Workflows | Traitement durable et notification | `src/workflows/` | texte et image câblés, garde-fous fermés |

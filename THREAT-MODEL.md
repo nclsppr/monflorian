@@ -78,7 +78,7 @@ revue.
 | T04 | CSRF ou origine tierce | génération et coût | origine exacte, `Sec-Fetch-Site`, aucune CORS, jeton Turnstile | client non navigateur automatisé |
 | T05 | Bot contourne le MVP gratuit | budget épuisé | Turnstile, quota D1 global et pseudonymisé, limite du projet OpenAI | fermes de navigateurs et identifiants tournants |
 | T06 | Course sur le quota | dépassement simultané | batch D1 transactionnel, triggers de limite et clé d'idempotence | indisponibilité D1 |
-| T07 | Corps ou photo surdimensionné | mémoire et disponibilité | limites avant lecture complète, nombre et taille bornés, écriture R2 en flux | charge proche de la limite |
+| T07 | Corps ou photo surdimensionné | mémoire et disponibilité | limites avant lecture complète, enveloppe fournisseur et JSON extrait bornés, nombre et taille des photos contrôlés, écriture R2 en flux | charge proche de la limite |
 | T08 | Faux format ou bombe d'image | crash, fuite ou coût | réencodage navigateur, signatures, dimensions, pixels et métadonnées contrôlés | stéganographie ou parseur incomplet |
 | T09 | Photo sans droit | atteinte aux personnes | consentement explicite, durée courte, retrait, pas de galerie | déclarations impossibles à vérifier automatiquement |
 | T10 | Prompt injection | contenu trompeur ou hostile | brief comme donnée, instructions séparées, JSON strict, revalidation | texte conforme mais faux ou offensant |
@@ -103,13 +103,18 @@ revue.
 Le Worker traite toute sortie OpenAI comme hostile :
 
 - objet JSON sans propriété supplémentaire ;
+- enveloppe fournisseur limitée à 512 000 octets et JSON itinéraire extrait
+  limité à 131 072 octets avant analyse ;
 - jours, dates, moments et caractères bornés ;
 - aucun URL fournisseur dans le schéma ;
 - liens Booking.com construits après validation ;
 - image décodée, taille et format contrôlés avant R2 ;
 - page rendue sans `innerHTML` alimenté par le modèle.
 
-### Contrôles candidats requis avant intégration de TravelGuideV1
+La fixture canonique affichée statiquement sous `/v2` ne franchit pas la
+frontière OpenAI et ne reçoit aucune donnée du visiteur.
+
+### Contrôles candidats avant intégration dynamique de TravelGuideV1 au Workflow
 
 - cohérence entre durée, journées, chapitres, nuits et plan d'images ;
 - aucune instruction libre, URL, profil de rendu ou option fournisseur dans le

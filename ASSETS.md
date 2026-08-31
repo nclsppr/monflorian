@@ -45,8 +45,15 @@ Source canonique des visuels de marque et des références importées depuis le 
 | `assets/brand/monflorian-social-card.svg` | Source éditable de la carte de partage de l'accueil | Dérivé vectoriel de production | 1200 x 630, SVG | `827d5a33936fa4bd80fd5e305ed8d78a6cc0c1f9004f870c0ef48956517f456b` | Composé dans le dépôt avec le mot-symbole et `florian-v2-original.png`, sans retouche de ces deux fichiers |
 | `assets/brand/monflorian-social-card.png` | Image Open Graph et carte de partage de l'accueil | Dérivé raster de production | 1200 x 630, RGB | `530f2127e049c37c88370ed81d67ff7e027076346b41a7f6815317d374e48061` | Rendu local de la source SVG précédente après contrôle visuel, sans génération d'image |
 | `app/public/v2/media/japan-tokyo-couple.webp` | Chapitre Tokyo du carnet V2 | Fixture éditoriale synthétique | 1440 x 960, WebP | `fb724703ab5c8885630c40a8b6c0e8577e0179dcc5c70d1ac996cd60808db8eb` | Généré le 2026-08-26 avec l'outil d'image OpenAI intégré depuis les deux personnages fictifs fournis par le propriétaire, puis converti en WebP qualité 82 |
+| `app/public/v2/media/japan-tokyo-couple-720.webp` | Variante responsive du chapitre Tokyo | Dérivé Web de production | 720 x 480, WebP | `f99b3f3cf0079c04fdf122aa92c1ab2db387ff2caf587a5d248091a15902dc8c` | Redimensionné depuis `japan-tokyo-couple.webp` et compressé en WebP qualité 78, sans retouche |
+| `app/public/v2/media/japan-tokyo-garden-couple.webp` | Chapitre Hama-rikyū du carnet V2 | Fixture éditoriale synthétique | 1440 x 960, WebP | `90cd50fa1d32eb5fae100e3453f769f3c44960e124c5dc861a72b707dcd824d1` | Généré le 2026-08-31 avec ImageGen à partir des trois scènes Japon existantes comme références d'identité et de style, avec le même filtre Fuji éditorial ; aucun texte n'est incrusté, l'overlay Outfit est rendu en HTML |
+| `app/public/v2/media/japan-tokyo-garden-couple-720.webp` | Variante responsive du chapitre Hama-rikyū | Dérivé Web de production | 720 x 480, WebP | `dcde5dabbbd63bae14dc30a849cb57d9b1ca95849525a20a7cdeaf796a718b10` | Redimensionné depuis `japan-tokyo-garden-couple.webp` et compressé en WebP qualité 78, sans retouche |
 | `app/public/v2/media/japan-hakone-couple.webp` | Chapitre Hakone du carnet V2 | Fixture éditoriale synthétique | 1440 x 960, WebP | `ee50b5a6cb8c4e2d987eeb8bf978534a341e96541204ff5fc698c78ca3a99db8` | Généré le 2026-08-26 avec l'outil d'image OpenAI intégré depuis les deux personnages fictifs fournis par le propriétaire, puis converti en WebP qualité 82 |
+| `app/public/v2/media/japan-hakone-couple-720.webp` | Variante responsive du chapitre Hakone | Dérivé Web de production | 720 x 480, WebP | `3dd027e2b649c11556c032820b1c780d1b3d408384235ff20c108ad2fc90d6ab` | Redimensionné depuis `japan-hakone-couple.webp` et compressé en WebP qualité 78, sans retouche |
 | `app/public/v2/media/japan-kyoto-couple.webp` | Chapitre Kyoto du carnet V2 | Fixture éditoriale synthétique | 1440 x 960, WebP | `2f45e720be30706e09c87bbf4bf90648e6be0663cdeaf43296b8f680da01faea` | Généré le 2026-08-26 avec l'outil d'image OpenAI intégré depuis les deux personnages fictifs fournis par le propriétaire, puis converti en WebP qualité 82 |
+| `app/public/v2/media/japan-kyoto-couple-720.webp` | Variante responsive du chapitre Kyoto | Dérivé Web de production | 720 x 480, WebP | `dbfdcc21e76fb7949bfa3b89e87d1f2d00c4d5f95b5ea6a7982a684e4114e301` | Redimensionné depuis `japan-kyoto-couple.webp` et compressé en WebP qualité 78, sans retouche |
+| `app/public/v2/media/japan-arashiyama-couple.webp` | Chapitre Arashiyama du carnet V2 | Fixture éditoriale synthétique | 1440 x 960, WebP | `411ad86a5a7f09396bcb90295b53ea0a8241eac35592d721466a49ec293406a2` | Généré le 2026-08-31 avec ImageGen à partir des trois scènes Japon existantes comme références d'identité et de style, avec le même filtre Fuji éditorial ; aucun texte n'est incrusté, l'overlay Outfit est rendu en HTML |
+| `app/public/v2/media/japan-arashiyama-couple-720.webp` | Variante responsive du chapitre Arashiyama | Dérivé Web de production | 720 x 480, WebP | `d12ef5e65080e97c535dd30e7ebb1503632aff44a7f07140cf09f38b72745219` | Redimensionné depuis `japan-arashiyama-couple.webp` et compressé en WebP qualité 78, sans retouche |
 | `app/public/v2/media/example-portugal-train.webp` | Couverture de l'exemple Portugal | Fixture éditoriale synthétique | 1440 x 960, WebP | `832575d766c79b322b10efadd2ca5be85d4e2f10d8b1b3c1bfa960c75477319e` | Généré le 2026-08-26 avec l'outil d'image OpenAI intégré sans personne de référence, puis converti en WebP qualité 82 |
 | `app/public/v2/media/example-sicily-table.webp` | Couverture de l'exemple Sicile | Fixture éditoriale synthétique | 1440 x 960, WebP | `f2c6b01e2d03daa10c85163803aaa1d627ba755cf3662f04aa5098cacfe05d70` | Généré le 2026-08-26 avec l'outil d'image OpenAI intégré sans personne de référence, puis converti en WebP qualité 82 |
 | `app/public/v2/media/example-norway-fjords.webp` | Couverture de l'exemple Norvège | Fixture éditoriale synthétique | 1440 x 960, WebP | `e0365deeb82e7a4a73fcb7498c04249256a9f0b79e5ec6dcbd12d1e54b1647f5` | Généré le 2026-08-26 avec l'outil d'image OpenAI intégré sans personne de référence, puis converti en WebP qualité 82 |
@@ -61,13 +68,23 @@ Source canonique des visuels de marque et des références importées depuis le 
 
 ## Direction des images V2
 
-Les six images partagent le même prompt de production : photographie de voyage
+Les huit images partagent la même direction de production : photographie de voyage
 éditoriale naturelle, rendu Fuji X-Pro, teinte Classic Chrome ou Pro Neg,
 saturation contenue, grain fin, légère halation, anatomie réaliste, format 3:2
 et zone centrale lisible pour le titre HTML. Le prompt exclut texte, logo,
-filigrane et interface dans le bitmap. Les scènes Japon reprennent les deux
-personnages fictifs fournis ; les trois couvertures d'exemple sont créées sans
-personne de référence.
+filigrane et interface dans le bitmap. Les cinq scènes Japon reprennent les
+deux personnages fictifs fournis ; les trois couvertures d'exemple sont créées
+sans personne de référence. Outfit sert uniquement à l'overlay HTML du lieu ou
+de l'activité.
+
+Les scènes de Hama-rikyū et d'Arashiyama ont été générées le 2026-08-31 avec
+ImageGen. Les trois premières scènes Japon ont servi ensemble de références
+d'identité et de style afin de conserver le couple fictif et le filtre Fuji
+éditorial cohérent. Aucun texte n'a été incrusté dans ces deux fichiers.
+
+Chaque scène Japon dispose aussi d'un dérivé `720 x 480` servi par le `srcset`
+responsive avec sa source `1440 x 960`. Ces cinq dérivés résultent uniquement
+d'un redimensionnement et d'une compression WebP qualité 78, sans retouche.
 
 ## Frontières
 

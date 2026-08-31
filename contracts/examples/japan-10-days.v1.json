@@ -12,13 +12,13 @@
     "travelerCount": 2,
     "pace": "balanced",
     "summary": "Une première traversée du Japon conçue pour deux, avec quatre nuits à Tokyo, une parenthèse en ryokan à Hakone et quatre nuits à Kyoto. Le rythme alterne départs matinaux ciblés, après-midis souples et soirées sans programme imposé. Les grands déplacements sont regroupés pour limiter les changements d’hôtel.",
-    "florianRationale": "J’ai gardé trois bases seulement. Tokyo donne l’élan, Hakone crée une vraie respiration et Kyoto installe un rythme plus lent. Les visites les plus demandées sont placées tôt, sans remplir les journées jusqu’au soir. Cette proposition suppose un départ depuis le Kansai ; si vos vols passent par Tokyo, la fin du parcours devra être réorganisée.",
+    "florianRationale": "J’ai gardé trois bases seulement. Tokyo donne l’élan, Hakone crée une vraie respiration et Kyoto installe un rythme plus lent. Les visites les plus demandées sont placées tôt, sans remplir les journées jusqu’au soir. Cette proposition suppose un départ depuis le Kansai ; si ton vol repart de Tokyo, la fin du parcours devra être réorganisée.",
     "featuredImageBriefId": "image-tokyo-evening"
   },
   "budgetGuide": {
     "currencyCode": "JPY",
     "approach": "balanced",
-    "summary": "Le budget privilégie trois hébergements bien placés, une nuit de ryokan avec repas et des transports réservés seulement lorsqu’ils simplifient réellement le trajet. Aucun montant n’est figé avant de connaître les dates, la saison, les vols et le niveau de confort choisi.",
+    "summary": "Le budget privilégie trois hébergements bien placés, une nuit de ryokan avec repas et des transports réservés seulement lorsqu’ils simplifient le trajet. Les prix et disponibilités varient selon les dates : compare d’abord les hébergements, les vols et les deux grands trajets.",
     "mainVariables": [
       "Saison et délai de réservation des hébergements",
       "Formule choisie pour le ryokan à Hakone",
@@ -97,16 +97,16 @@
       "moments": [
         {
           "period": "morning",
-          "title": "Rejoindre l’hôtel et s’installer",
+          "title": "S’installer et laisser l’arrivée ouverte",
           "placeRef": "tokyo-hotel-area",
-          "description": "Rejoindre l’hôtel depuis l’aéroport choisi, déposer les bagages et garder un vrai temps calme avant de ressortir dans le quartier proche.",
+          "description": "Déposer les bagages, vérifier l’heure de la chambre et garder un vrai temps calme à l’hôtel avant de décider si une première sortie reste raisonnable.",
           "whyThisFits": "L’arrivée reste volontairement vide pour absorber le vol, les formalités et le décalage horaire.",
           "durationMinutes": 60,
           "travelMinutes": 0,
-          "reservation": "required",
+          "reservation": "none",
           "costLevel": "variable",
-          "practicalTip": "Conserver l’adresse de l’hôtel en japonais et vérifier les conditions d’arrivée tardive.",
-          "rainAlternative": "Le programme ne change pas : rejoindre directement l’hôtel et prolonger le temps de repos.",
+          "practicalTip": "Conserver l’adresse de l’hôtel en japonais et vérifier les conditions d’arrivée tardive avant le départ.",
+          "rainAlternative": "Le programme ne change pas : prolonger le temps de repos à l’hôtel.",
           "fatigueAlternative": "Ne pas ressortir avant le dîner et supprimer entièrement la promenade prévue ensuite.",
           "verificationItemIds": ["verify-airports-flights", "verify-tokyo-hotel"]
         },
@@ -143,6 +143,7 @@
       ],
       "transfer": {
         "needed": true,
+        "placement": "before_morning",
         "fromPlaceRef": "tokyo-arrival-airport",
         "toPlaceRef": "tokyo-hotel-area",
         "modes": ["local_train", "bus", "car"],
@@ -189,7 +190,7 @@
           "reservation": "none",
           "costLevel": "variable",
           "practicalTip": "Choisir Ueno ou Yanaka, plutôt que les deux, si le décalage horaire reste lourd.",
-          "rainAlternative": "Choisir un seul quartier et compléter avec un musée dont l’ouverture aura été vérifiée.",
+          "rainAlternative": "Rester à Ueno, choisir un musée du parc dont l’ouverture est confirmée puis supprimer la promenade à Yanaka.",
           "fatigueAlternative": "Déjeuner à Ueno puis rentrer directement à l’hôtel.",
           "verificationItemIds": ["verify-site-hours-tokyo", "verify-weather"]
         },
@@ -211,6 +212,7 @@
       ],
       "transfer": {
         "needed": false,
+        "placement": "none",
         "fromPlaceRef": null,
         "toPlaceRef": null,
         "modes": ["none"],
@@ -279,6 +281,7 @@
       ],
       "transfer": {
         "needed": false,
+        "placement": "none",
         "fromPlaceRef": null,
         "toPlaceRef": null,
         "modes": ["none"],
@@ -325,7 +328,7 @@
           "reservation": "none",
           "costLevel": "low",
           "practicalTip": "Le jardin est la partie essentielle ; Ginza peut être raccourci sans déséquilibrer le voyage.",
-          "rainAlternative": "Remplacer le jardin par une visite intérieure choisie à Ginza après vérification de son ouverture.",
+          "rainAlternative": "Supprimer le jardin, rester dans les espaces couverts de Ginza puis rentrer plus tôt à l’hôtel.",
           "fatigueAlternative": "Rentrer directement après le jardin et conserver tout le reste de la journée libre.",
           "verificationItemIds": ["verify-site-hours-tokyo", "verify-weather"]
         },
@@ -347,6 +350,7 @@
       ],
       "transfer": {
         "needed": false,
+        "placement": "none",
         "fromPlaceRef": null,
         "toPlaceRef": null,
         "modes": ["none"],
@@ -369,18 +373,18 @@
       "moments": [
         {
           "period": "morning",
-          "title": "Rejoindre Hakone via Odawara",
-          "placeRef": "odawara-gora-transfer",
-          "description": "Quitter Tokyo après le petit-déjeuner, rejoindre Odawara puis poursuivre avec le transport local adapté à l’adresse exacte du ryokan.",
-          "whyThisFits": "Un départ simple laisse assez de temps pour une visite avant l’arrivée au ryokan.",
+          "title": "Libérer la chambre et préparer le petit sac",
+          "placeRef": "tokyo-hotel-area",
+          "description": "Quitter la chambre après le petit-déjeuner, confirmer le traitement des grandes valises et garder seulement le nécessaire pour la nuit au ryokan.",
+          "whyThisFits": "Cette préparation protège le transfert qui suit et évite de gérer les bagages pendant la parenthèse à Hakone.",
           "durationMinutes": 30,
           "travelMinutes": 0,
-          "reservation": "recommended",
-          "costLevel": "variable",
-          "practicalTip": "Voyager avec un petit sac et prévoir une marge pour la correspondance locale.",
-          "rainAlternative": "Conserver le trajet et rejoindre le ryokan plus tôt si les transports locaux ralentissent.",
-          "fatigueAlternative": "Faire le trajet sans ajouter de visite avant le ryokan.",
-          "verificationItemIds": ["verify-tokyo-hakone-rail", "verify-luggage-forwarding", "verify-weather"]
+          "reservation": "none",
+          "costLevel": "free",
+          "practicalTip": "Garder billets, médicaments et une tenue de rechange dans le petit sac avant de remettre les grandes valises.",
+          "rainAlternative": "Faire la même préparation à l’intérieur de l’hôtel et protéger les bagages de la pluie.",
+          "fatigueAlternative": "Demander de l’aide à la réception et supprimer toute course supplémentaire avant le départ.",
+          "verificationItemIds": ["verify-luggage-forwarding", "verify-weather"]
         },
         {
           "period": "afternoon",
@@ -393,7 +397,7 @@
           "reservation": "none",
           "costLevel": "medium",
           "practicalTip": "Ne pas chercher à tout voir ; l’arrivée au ryokan reste prioritaire.",
-          "rainAlternative": "Remplacer le musée extérieur par une arrivée plus précoce ou un lieu intérieur vérifié.",
+          "rainAlternative": "Supprimer le musée en plein air et rejoindre le ryokan dès que son heure d’arrivée le permet.",
           "fatigueAlternative": "Supprimer le musée et rejoindre directement le ryokan.",
           "verificationItemIds": ["verify-site-hours-hakone", "verify-weather", "verify-hakone-ryokan"]
         },
@@ -415,6 +419,7 @@
       ],
       "transfer": {
         "needed": true,
+        "placement": "after_morning",
         "fromPlaceRef": "tokyo-hotel-area",
         "toPlaceRef": "gora-ryokan",
         "modes": ["local_train", "bus"],
@@ -446,24 +451,24 @@
           "reservation": "none",
           "costLevel": "variable",
           "practicalTip": "Ne pas construire la journée autour d’une vue garantie sur le mont Fuji.",
-          "rainAlternative": "Rester plus longtemps au ryokan ou choisir un lieu intérieur dont l’ouverture aura été vérifiée.",
+          "rainAlternative": "Prolonger la matinée au ryokan, rejoindre Odawara plus tôt et garder une marge confortable avant le train.",
           "fatigueAlternative": "Supprimer entièrement le lac et rejoindre Odawara plus tôt.",
           "verificationItemIds": ["verify-site-hours-hakone", "verify-weather", "verify-hakone-kyoto-rail"]
         },
         {
           "period": "afternoon",
-          "title": "Rejoindre Kyoto",
-          "placeRef": "odawara-kyoto-rail",
-          "description": "Retourner à Odawara, prendre le train à grande vitesse, récupérer les bagages prévus pour l’étape puis rejoindre l’hôtel à Kyoto.",
-          "whyThisFits": "Le long déplacement est regroupé en une seule séquence, avec une soirée volontairement légère à l’arrivée.",
-          "durationMinutes": 30,
+          "title": "S’installer à Kyoto sans nouvelle contrainte",
+          "placeRef": "kyoto-hotel-area",
+          "description": "Déposer le petit sac, retrouver les grandes valises si elles ont été expédiées et prendre un temps calme avant de décider pour la promenade du soir.",
+          "whyThisFits": "L’installation reste une séquence distincte du transfert et garde la soirée volontairement légère après le train.",
+          "durationMinutes": 60,
           "travelMinutes": 0,
-          "reservation": "recommended",
-          "costLevel": "variable",
-          "practicalTip": "Prévoir le déjeuner avant le départ et garder une marge pour les correspondances.",
-          "rainAlternative": "Le trajet reste inchangé ; rejoindre l’hôtel directement à l’arrivée.",
-          "fatigueAlternative": "Supprimer toute activité du soir après l’installation.",
-          "verificationItemIds": ["verify-hakone-kyoto-rail", "verify-luggage-forwarding", "verify-kyoto-hotel"]
+          "reservation": "none",
+          "costLevel": "free",
+          "practicalTip": "Prévenir l’hôtel si les bagages expédiés n’apparaissent pas à l’heure convenue.",
+          "rainAlternative": "Rester à l’hôtel après l’installation et remettre la promenade à un autre soir.",
+          "fatigueAlternative": "Supprimer toute activité du soir après cette installation.",
+          "verificationItemIds": ["verify-luggage-forwarding", "verify-kyoto-hotel"]
         },
         {
           "period": "evening",
@@ -483,6 +488,7 @@
       ],
       "transfer": {
         "needed": true,
+        "placement": "after_morning",
         "fromPlaceRef": "gora-ryokan",
         "toPlaceRef": "kyoto-hotel-area",
         "modes": ["local_train", "high_speed_train", "metro"],
@@ -551,6 +557,7 @@
       ],
       "transfer": {
         "needed": false,
+        "placement": "none",
         "fromPlaceRef": null,
         "toPlaceRef": null,
         "modes": ["none"],
@@ -612,13 +619,14 @@
           "reservation": "none",
           "costLevel": "variable",
           "practicalTip": "Ne pas remplir cette plage avec plusieurs visites manquées les jours précédents.",
-          "rainAlternative": "Choisir une activité intérieure dont l’ouverture aura été vérifiée.",
+          "rainAlternative": "Garder cette plage libre pour un café près de Nishiki, une lessive ou du repos à l’hôtel.",
           "fatigueAlternative": "Rester à l’hôtel sans chercher d’activité de remplacement.",
           "verificationItemIds": ["verify-site-hours-kyoto", "verify-weather"]
         }
       ],
       "transfer": {
         "needed": false,
+        "placement": "none",
         "fromPlaceRef": null,
         "toPlaceRef": null,
         "modes": ["none"],
@@ -687,6 +695,7 @@
       ],
       "transfer": {
         "needed": false,
+        "placement": "none",
         "fromPlaceRef": null,
         "toPlaceRef": null,
         "modes": ["none"],
@@ -730,7 +739,7 @@
           "whyThisFits": "Une séquence dédiée réduit le risque d’oubli et protège la marge avant le vol, même si le départ de l’hôtel prend du retard.",
           "durationMinutes": 60,
           "travelMinutes": 0,
-          "reservation": "required",
+          "reservation": "none",
           "costLevel": "free",
           "practicalTip": "Garder passeports, confirmations et objets de valeur dans un bagage accessible.",
           "rainAlternative": "Le programme reste inchangé, avec quelques minutes supplémentaires prévues pour quitter l’hôtel.",
@@ -739,22 +748,23 @@
         },
         {
           "period": "evening",
-          "title": "Rejoindre l’aéroport du Kansai",
+          "title": "Faire le dernier point avant l’embarquement",
           "placeRef": "kansai-airport-transfer",
-          "description": "Rejoindre l’aéroport avec une marge construite à partir du vol réel, du terminal, des bagages et du mode de transport retenu.",
-          "whyThisFits": "Le carnet se termine par une étape adaptable au vol au lieu d’une dernière visite risquée.",
-          "durationMinutes": 30,
+          "description": "Une fois à l’aéroport, confirmer le terminal, réorganiser les bagages si nécessaire et garder le reste du temps libre avant les formalités.",
+          "whyThisFits": "Le carnet se termine par une marge utile après le transfert au lieu d’une dernière visite risquée.",
+          "durationMinutes": 45,
           "travelMinutes": 0,
-          "reservation": "recommended",
-          "costLevel": "variable",
-          "practicalTip": "Si le vol repart de Tokyo, remplacer cette fin de parcours par un retour vers Tokyo et probablement une dernière nuit sur place.",
-          "rainAlternative": "Partir plus tôt et choisir le mode avec le moins de correspondances.",
-          "fatigueAlternative": "Choisir le transfert le plus direct compatible avec le vol et les bagages.",
-          "verificationItemIds": ["verify-airports-flights", "verify-kansai-transfer", "verify-weather"]
+          "reservation": "none",
+          "costLevel": "free",
+          "practicalTip": "Si le vol repart de Tokyo, cette fin de parcours doit être remplacée par un retour vers Tokyo et probablement une dernière nuit sur place.",
+          "rainAlternative": "Rester dans le terminal et conserver la marge prévue pour les formalités.",
+          "fatigueAlternative": "S’asseoir près de la zone d’enregistrement et éviter toute course ou achat non nécessaire.",
+          "verificationItemIds": ["verify-airports-flights"]
         }
       ],
       "transfer": {
         "needed": true,
+        "placement": "after_afternoon",
         "fromPlaceRef": "kyoto-hotel-area",
         "toPlaceRef": "kansai-airport-transfer",
         "modes": ["local_train", "bus", "car"],
@@ -807,7 +817,7 @@
         "Dîner et petit-déjeuner inclus si souhaités",
         "Heure limite d’arrivée compatible avec le trajet",
         "Accès expliqué depuis la gare ou l’arrêt local",
-        "Bain privé ou bain commun choisi consciemment",
+        "Type de bain adapté à tes préférences",
         "Contraintes alimentaires confirmées par l’établissement"
       ],
       "rationale": "Gōra convient à une étape courte centrée sur le ryokan, donne accès aux transports locaux et limite les détours avant de repartir vers Odawara.",
@@ -828,7 +838,7 @@
       "bookingDestinationRef": "booking-kyoto",
       "propertyType": "hotel",
       "bookingPriority": "essential",
-      "recommendedAreas": ["Kawaramachi", "Shijō", "Gion côté transports"],
+      "recommendedAreas": ["Kawaramachi", "Shijō", "Gion, près d’une gare ou d’un arrêt utile"],
       "selectionCriteria": [
         "Accès pratique depuis Kyoto Station",
         "Transport matinal simple vers Fushimi et Arashiyama",
@@ -1171,30 +1181,30 @@
       "chapterId": "hakone-pause",
       "dayStart": 5,
       "dayEnd": 6,
-      "placeRef": "gora-ryokan",
-      "sceneType": "rest",
-      "activity": "quiet_rest",
+      "placeRef": "lake-ashi",
+      "sceneType": "nature",
+      "activity": "lakeside_walk",
       "timeOfDay": "morning",
-      "composition": "medium_candid",
+      "composition": "environmental_portrait",
       "weatherLight": "misty",
-      "mood": "intimate",
-      "editorialPurpose": "Créer la respiration centrale du voyage sans représenter le couple dans le bain.",
-      "altText": "Le couple en yukata profite d’un matin calme sur la terrasse d’un ryokan à Hakone."
+      "mood": "joyful",
+      "editorialPurpose": "Créer la respiration centrale du voyage au bord du lac, avec les reliefs de Hakone dans une lumière douce.",
+      "altText": "Le couple profite d’un matin calme au bord du lac Ashi, avec le mont Fuji dans la brume."
     },
     {
       "id": "image-kyoto-higashiyama",
       "chapterId": "kyoto-east-south",
       "dayStart": 7,
       "dayEnd": 8,
-      "placeRef": "ninenzaka-sannenzaka",
+      "placeRef": "fushimi-inari",
       "sceneType": "cultural",
       "activity": "cultural_visit",
       "timeOfDay": "morning",
-      "composition": "wide_environmental",
+      "composition": "walking_portrait",
       "weatherLight": "warm_backlight",
-      "mood": "calm",
-      "editorialPurpose": "Installer le rythme matinal de Kyoto et la sensation de marche à deux.",
-      "altText": "Le couple marche dans une rue ancienne de Higashiyama tôt le matin."
+      "mood": "joyful",
+      "editorialPurpose": "Installer le rythme matinal de Kyoto avec une marche naturelle à deux sous les torii de Fushimi Inari.",
+      "altText": "Le couple marche sous les torii rouges de Fushimi Inari dans la lumière douce du matin."
     },
     {
       "id": "image-arashiyama-river",

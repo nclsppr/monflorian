@@ -10,7 +10,7 @@ export const LIMITS = Object.freeze({
   maxPhotoPixels: 4_194_304,
   minPhotoEdge: 256,
   maxPhotoEdge: 2_048,
-  itineraryBodyBytes: 32_768,
+  itineraryBodyBytes: 131_072,
   illustrationBodyBytes: 8_500_000,
 });
 
