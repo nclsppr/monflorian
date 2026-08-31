@@ -78,11 +78,16 @@ stockage R2 et la lecture privée de l'image sont codés. La phase reste ouverte
 Turnstile est configuré, mais la clé OpenAI n'est pas installée sur le Worker,
 les drapeaux sont à `false` et aucun coût fournisseur n'a été engagé.
 
-Le contrat candidat `TravelGuideV1` prépare un guide détaillé et une image par
-chapitre. Il reste séparé du contrat courant et du Workflow jusqu'à la mesure de
-ses plafonds, l'ajout des tests reportés et l'adaptation des quotas multi-images.
-La fixture Japon minifiée atteint environ 58 Ko, contre 32 768 octets admis par
-le contrat actuel.
+La fixture canonique `TravelGuideV1` alimente désormais statiquement le carnet
+Japon sous `/v2`, sans appel fournisseur. Le schéma, le validateur et le
+compilateur restent séparés du contrat OpenAI courant et du Workflow jusqu'à
+l'ajout des tests reportés et l'adaptation des quotas multi-images.
+
+L'adaptateur borne le JSON itinéraire extrait à 131 072 octets, à l'intérieur
+d'une enveloppe fournisseur limitée à 512 000 octets. Le budget Responses passe
+à 32 000 tokens de sortie afin de laisser de la marge au guide Japon de
+référence et aux tokens non visibles comptés dans cette limite. Ces plafonds ne rendent pas l'intégration
+dynamique active et doivent encore être mesurés sur plusieurs durées.
 
 - Vérifier Turnstile avant création.
 - Débiter les quotas D1 de façon atomique.

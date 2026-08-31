@@ -4,6 +4,32 @@ Git reste la source du diff technique. Les ADR expliquent les décisions importa
 
 ## Non publié
 
+- Réorganisation de l'entrée V2 autour d'un hero qui présente l'aperçu du
+  carnet dans le téléphone avant le formulaire. Le splash de marque est
+  raccourci sur grand écran et masqué sur mobile pour rejoindre directement
+  cette proposition.
+- Consommation statique de la fixture canonique `TravelGuideV1` par la démo
+  Japon de `/v2`. Le parcours indique qu'il ouvre toujours ce même exemple et
+  qu'aucun portrait n'est demandé ni utilisé par la démonstration.
+- Validation de cette fixture pendant le build et génération d'une projection
+  publique sans les champs de contrôle destinés au futur modèle d'image.
+- Passage du carnet Japon à cinq chapitres et cinq photos, avec les nouvelles
+  scènes de Hama-rikyū et d'Arashiyama. Le guide expose les choix de rythme,
+  les transferts, les critères d'hébergement, les réservations, le budget à
+  vérifier, les alternatives et les conseils des dernières 72 heures.
+- Placement des transferts dans la chronologie de chaque journée et alignement
+  du questionnaire sur la durée maximale de quatorze jours du contrat.
+- Assombrissement des actions et petits libellés bleus pour conserver un
+  contraste AA avec les fonds clairs et les textes blancs.
+- Ajout pour les cinq scènes Japon de dérivés WebP `720 x 480`, obtenus par
+  simple redimensionnement et compression sans retouche, et servis avec les
+  sources `1440 x 960` dans un `srcset` responsive.
+- Qualification explicite du partage V2 comme une simulation d'interface : le
+  lien de démonstration ne publie pas le carnet, ne persiste pas de règle
+  d'accès et ne protège aucune ressource côté serveur.
+- Passage du plafond Responses à 32 000 tokens : la fixture Japon dépasse
+  10 000 tokens une fois structurée et la limite compte aussi les tokens non
+  visibles. Le corps JSON extrait reste borné séparément à 131 072 octets.
 - Ajout du contrat candidat `TravelGuideV1` pour des carnets détaillés et de
   longueur bornée, avec chapitres, journées, hébergements, réservations, guide
   pratique, vérifications et plan d'images.

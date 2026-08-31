@@ -5,13 +5,21 @@ GitHub et les réponses publiques. Le relevé DNS de fond date du 2026-08-24.
 
 ## Résultat
 
-### Contrat de guide candidat du 2026-08-30
+### Adaptation V2 candidate du 2026-08-31
 
-`TravelGuideV1`, son validateur métier, son compilateur d'images contrôlé et le
-carnet Japon enrichi sont versionnés mais non intégrés au Worker ni au Workflow
-déployés. La fixture contient dix jours et cinq scènes ; sa forme compactée
-mesure environ 58 Ko, au-dessus de la limite courante de 32 768 octets. Aucun
-appel OpenAI, secret, drapeau ou déploiement ne change dans cette tranche.
+La branche candidate alimente statiquement `/v2` depuis la fixture canonique
+`TravelGuideV1`, sans l'intégrer au Workflow ni déclencher d'appel OpenAI. Le
+JSON itinéraire extrait est désormais borné à 131 072 octets, à l'intérieur de
+l'enveloppe fournisseur de 512 000 octets ; la fixture Japon compactée, d'environ
+58 Ko, tient sous ce plafond métier.
+
+L'entrée présente la promesse et le carnet Japon dans un téléphone avant le
+formulaire. Elle annonce explicitement que les réponses ne sont ni envoyées ni
+utilisées pour personnaliser cet exemple. Le carnet compte dix journées, cinq
+chapitres illustrés, des trajets, critères d'hôtel, décisions de réservation,
+variables de budget, alternatives pluie ou fatigue et points à revérifier. La
+simulation de partage ne publie et ne protège aucune ressource côté serveur.
+Cette candidate n'est pas encore la version publique décrite ci-dessous.
 
 ### Parcours V2 public du 2026-08-26
 

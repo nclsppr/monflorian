@@ -15,10 +15,11 @@ D1 et R2, et le Workflow déployé contient les appels OpenAI sans retry
 automatique. La création reste fermée : aucun appel OpenAI n'est exécuté,
 le widget Turnstile reste masqué et le courriel n'est pas activé.
 
-`TravelGuideV1`, son validateur, son compilateur d'image et la fixture Japon
-enrichie restent des artefacts candidats du dépôt, non intégrés au runtime. Le
-Worker déployé ne les importe pas et aucun de ces artefacts n'est transmis à
-OpenAI dans cette tranche.
+La fixture Japon canonique `TravelGuideV1` alimente statiquement le carnet
+déterministe sous `/v2`. Ce rendu ne collecte aucune donnée et ne provoque aucun
+appel fournisseur. Le schéma, le validateur et le compilateur restent candidats
+pour la génération dynamique : le Workflow ne les importe pas et aucun de ces
+artefacts n'est transmis à OpenAI dans cette tranche.
 
 ## Parcours cible
 
@@ -39,14 +40,16 @@ OpenAI dans cette tranche.
 Ne saisis pas de diagnostic médical, document d'identité, adresse privée, moyen
 de paiement, secret ou information inutile au voyage.
 
-## Limites d'entrée
+## Limites d'entrée et de sortie
 
 - brief : 2 000 caractères ;
 - voyage : 14 jours et 8 voyageurs ;
 - photos : 1 à 4 ;
 - photo réencodée : 1 500 000 octets, 256 à 2 048 pixels par côté et au plus
   4 194 304 pixels ;
-- corps itinéraire : 32 768 octets ;
+- JSON itinéraire extrait : 131 072 octets ;
+- enveloppe JSON de la réponse fournisseur : 512 000 octets ;
+- sortie Responses : 32 000 tokens au maximum ;
 - corps illustration historique : 8 500 000 octets.
 
 Le navigateur réencode les photos en PNG ou WebP. Le Worker doit aussi contrôler
@@ -149,8 +152,8 @@ pas déployée et testée, aucune donnée réelle n'est autorisée.
 - Brief fictif sans identité ni réservation réelle.
 - Personnages entièrement fictifs produits par génération d'image et scènes
   synthétiques versionnés comme fixtures éditoriales.
-- Fixture `TravelGuideV1` du dépôt sans appel fournisseur ni information de
-  réservation présentée comme vérifiée.
+- Fixture `TravelGuideV1` rendue statiquement sous `/v2`, sans appel fournisseur
+  ni information de réservation présentée comme vérifiée.
 - Les futures photos de voyageurs réels suivent le flux R2 privé ; elles ne sont
   pas confondues avec les fixtures fictives du dépôt.
 - Un seul parcours fournisseur contrôlé avant ouverture.

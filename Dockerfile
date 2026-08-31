@@ -13,6 +13,7 @@ COPY --chown=10001:10001 migrations ./migrations
 COPY --chown=10001:10001 src ./src
 COPY --chown=10001:10001 app ./app
 COPY --chown=10001:10001 assets/brand ./assets/brand
+COPY --chown=10001:10001 contracts ./contracts
 COPY --chown=10001:10001 scripts/build-worker-assets.mjs ./scripts/build-worker-assets.mjs
 
 RUN npm run build:assets

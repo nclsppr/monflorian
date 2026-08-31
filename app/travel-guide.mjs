@@ -488,7 +488,7 @@ export function travelGuideDeveloperInstructions(context) {
     `Retourne uniquement un objet travel-guide.v1 strict pour ${request.durationDays} jours, ${request.travelerCount} voyageurs et un rythme ${request.pace}.`,
     `Produis exactement ${request.durationDays} journées, ${imageCount} chapitres continus d’un ou deux jours et ${imageCount} briefs d’image, un par chapitre.`,
     "Utilise uniquement les identifiants présents dans placeCatalog et bookingDestinationRefs. Ne produis aucun lien, prix, disponibilité, note, horaire garanti, HTML ou instruction fournisseur.",
-    "Pour chaque journée, durationMinutes mesure le temps de l’activité, travelMinutes les déplacements locaux hors grand transfert, et transfer.durationMinutes le changement de base. Ne compte jamais le même trajet deux fois.",
+    "Pour chaque journée, durationMinutes mesure le temps de l’activité, travelMinutes les déplacements locaux hors grand transfert, et transfer.durationMinutes le changement de base. Ne compte jamais le même trajet deux fois et place le transfert dans la chronologie avec transfer.placement.",
     `La somme quotidienne des activités, déplacements locaux et transfert ne doit jamais dépasser ${dailyLimit} minutes, ni la limite plus basse imposée par l’énergie de la journée.`,
     "Chaque moment, transfert nécessaire, hébergement, réservation et estimation budgétaire doit citer au moins un verificationItem. Ces éléments décrivent ce qu’il faudra vérifier et ne constituent jamais une vérification déjà effectuée.",
     "Écris des alternatives pluie et fatigue réellement plus simples. Limite les changements d’hébergement et protège les temps de repos, d’arrivée et de départ.",
@@ -698,6 +698,7 @@ function validateChaptersAndDays(guide, bookingDestinationRefs, placeRefs) {
     const transfer = day.transfer;
     if (!transfer.needed) {
       if (
+        transfer.placement !== "none" ||
         transfer.fromPlaceRef !== null ||
         transfer.toPlaceRef !== null ||
         transfer.durationMinutes !== null ||
@@ -710,6 +711,7 @@ function validateChaptersAndDays(guide, bookingDestinationRefs, placeRefs) {
         invalidGuide(`Le jour ${day.day} décrit un transfert alors que needed vaut false.`);
       }
     } else if (
+      transfer.placement === "none" ||
       transfer.fromPlaceRef === null ||
       transfer.toPlaceRef === null ||
       transfer.durationMinutes === null ||
@@ -717,6 +719,13 @@ function validateChaptersAndDays(guide, bookingDestinationRefs, placeRefs) {
       transfer.modes.includes("none")
     ) {
       invalidGuide(`Le transfert du jour ${day.day} est incomplet.`);
+    }
+    if (
+      transfer.needed &&
+      transfer.placement !== "before_morning" &&
+      !periods.has(transfer.placement.replace("after_", ""))
+    ) {
+      invalidGuide(`Le placement du transfert du jour ${day.day} ne correspond à aucun moment.`);
     }
     if (transfer.fromPlaceRef !== null && !placeRefs.has(transfer.fromPlaceRef)) {
       invalidGuide(`Le transfert du jour ${day.day} référence un lieu de départ inconnu.`);

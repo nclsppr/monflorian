@@ -251,6 +251,10 @@
       "additionalProperties": false,
       "properties": {
         "needed": { "type": "boolean" },
+        "placement": {
+          "type": "string",
+          "enum": ["none", "before_morning", "after_morning", "after_afternoon", "after_evening"]
+        },
         "fromPlaceRef": { "type": ["string", "null"] },
         "toPlaceRef": { "type": ["string", "null"] },
         "modes": {
@@ -287,6 +291,7 @@
       },
       "required": [
         "needed",
+        "placement",
         "fromPlaceRef",
         "toPlaceRef",
         "modes",

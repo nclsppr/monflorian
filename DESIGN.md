@@ -115,7 +115,11 @@ Les capitales espacées sont réservées aux petits repères, jours et métadonn
 
 ## Layout
 
-Le composeur arrive avant toute explication secondaire. Sur bureau, il partage le premier écran avec un seul aperçu du voyage. Sur mobile, le composeur précède l'aperçu et conserve ses gouttières. Aucun élément décoratif ne doit rogner le texte ou masquer un contrôle.
+Sur `/`, le composeur arrive avant toute explication secondaire. Sur `/v2`, le
+hero présente d'abord la promesse et un aperçu du carnet dans le téléphone,
+puis conduit au formulaire en trois étapes. Cet ordre reste identique sur
+mobile : l'aperçu précède le formulaire et conserve ses gouttières. Aucun
+élément décoratif ne doit rogner le texte ou masquer un contrôle.
 
 La navigation de lancement se limite aux ancres utiles et à l'action principale. Le mini-site de voyage suit une autre hiérarchie : Aujourd'hui, Itinéraire, Carte et Pratique. Souvenirs n'apparaît qu'après l'achat de Voyage vivant.
 
@@ -133,27 +137,50 @@ Le téléphone, l'avion en papier et les montagnes sont des repères propres à 
 
 ## Components
 
-Le composeur de l'accueil réunit dans un seul envoi la phrase libre, les dates,
-le rythme, l'adresse de courriel et l'ajout facultatif de photos. Il garde un nom
-accessible, un focus visible et une erreur lisible. Une information manquante
-déclenche au plus une ou deux questions de Florian, pas une nouvelle suite
-d'écrans. Après acceptation, le navigateur ouvre la page privée : elle annonce
-clairement l'attente, le résultat, l'échec, l'expiration ou la suppression.
+Le composeur de l'accueil réunit dans un premier envoi la phrase libre, les
+dates, le rythme et l'adresse de courriel. Il garde un nom accessible, un focus
+visible et une erreur lisible. Une information manquante déclenche au plus une
+ou deux questions de Florian, pas une nouvelle suite d'écrans. Les portraits ne
+sont proposés qu'après une première proposition utile et acceptée, avec leur
+finalité et leur durée de conservation. Le navigateur ouvre ensuite la page
+privée : elle annonce clairement l'attente, le résultat, l'échec, l'expiration
+ou la suppression.
 
 L'action principale reste unique. Dans le prototype, elle doit annoncer qu'aucun paiement n'a lieu. Dans le produit actif, elle peut porter le prix seulement quand le parcours de paiement existe et a été vérifié.
 
 Une note de Florian explique un choix concret du parcours. Elle n'est ni une bulle de discussion, ni une mascotte décorative. Le retour dynamique utilise un statut annoncé aux technologies d'assistance et ne dépend pas du mouvement.
 
+La démonstration V2 ne demande et ne reçoit aucun portrait. Elle annonce
+qu'elle ouvre toujours le même carnet Japon et consomme statiquement la fixture
+canonique `contracts/examples/japan-10-days.v1.json`. Le rendu conserve les
+cinq chapitres qui couvrent les dix jours, leurs cinq photos et les
+informations utiles à la
+décision : rythme, moments, transferts, hébergements, réservations, variables de
+budget, alternatives pluie ou fatigue et conseils des dernières 72 heures. Le
+build valide la fixture puis en produit une projection publique qui retire les
+champs de contrôle des images. Ces consignes destinées aux fournisseurs ne sont
+ni incluses dans le bundle public ni rendues dans la page.
+
+Le partage de cette démonstration reste explicitement simulé. Le dialogue peut
+montrer les choix public ou privé et composer un lien de démonstration, mais il
+ne publie aucun carnet, ne persiste aucune règle d'accès et ne protège aucune
+ressource côté serveur. La copie visible ne doit pas présenter cette simulation
+comme un contrôle d'accès livré.
+
 La V2 utilise un couple fictif et des scènes synthétiques comme distribution
 éditoriale stable. Ses images adoptent une photographie naturelle de type Fuji,
 une colorimétrie contenue, un grain fin et le nom de la ville ou de l'activité
-centré en blanc avec Outfit. Les trois scènes Japon et les couvertures d'exemple
+centré en blanc avec Outfit. Les cinq scènes Japon et les couvertures d'exemple
 partagent ce même traitement. Aucune mention technique n'est superposée à ces
-fixtures fictives.
+fixtures fictives. Le texte reste un overlay HTML : aucun titre n'est incrusté
+dans les fichiers WebP. Les scènes Japon utilisent un `srcset` avec les formats
+`720 x 480` et `1440 x 960` afin d'adapter le poids chargé à la largeur rendue.
 
 Les futures photos envoyées par des voyageurs suivent le contrat de traitement
-et le stockage privé Cloudflare. Cette frontière ne s'applique pas au couple
-fictif ni aux scènes synthétiques versionnées de la V2.
+et le stockage privé Cloudflare. Elles ne sont demandées qu'après validation de
+la première proposition, jamais comme condition d'accès à l'itinéraire. Cette
+frontière ne s'applique pas au couple fictif ni aux scènes synthétiques
+versionnées de la V2.
 
 ## Astryx sur la V2
 
@@ -166,10 +193,11 @@ d'Astryx. Ils reprennent les rayons, les contrastes, les fonds cyan et citron,
 et la hiérarchie de la racine. Ce choix évite une migration du runtime
 historique sans isoler la V2 du langage visuel Mon Florian.
 
-L'entrée de `/v2` reprend aussi le lockup canonique de la racine à sa pleine
-largeur, la note Kalam posée sur trois traits blancs et le même seuil
-d'intersection. Le lockup compact ne devient visible dans l'en-tête qu'après
-le passage de cette introduction.
+Sur grand écran, l'entrée de `/v2` reprend le lockup canonique de la racine à sa
+pleine largeur et la note Kalam posée sur trois traits blancs, dans un splash
+plus court qui conduit au hero. Le lockup compact ne devient visible dans
+l'en-tête qu'après le passage de cette introduction. Sur mobile, ce splash est
+masqué : le hero et son aperçu téléphone apparaissent sans écran intermédiaire.
 
 Le changement d'étape reste court et respecte la réduction des mouvements. La
 confirmation de génération reprend la transition Success check de
