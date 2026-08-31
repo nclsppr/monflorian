@@ -3,6 +3,43 @@
 Chaque section nomme son environnement et ses limites. Les sections Atlas sont
 des archives historiques ; la section Cloudflare porte la migration courante.
 
+## Adaptation du carnet Japon issue de l'audit V2, 2026-08-31
+
+La PR [#52](https://github.com/nclsppr/monflorian/pull/52) place la promesse et
+le téléphone avant le formulaire, alimente le carnet depuis la fixture
+`TravelGuideV1` validée au build et détaille dix jours en cinq chapitres. Le
+partage privé reste une simulation locale et la génération réelle reste fermée.
+
+| Preuve | Résultat |
+| --- | --- |
+| Source runtime | `4917baf38164d95f25d3af79e4bc8e701502143a` |
+| Version active | `a3da53ea-cf97-4703-94b8-138584de7271` |
+| CI du SHA fusionné | runs `33344478423` et `33344478418` verts |
+| CI de la PR | runs `33344411477` et `33344411443` verts sur `2267598` |
+| Bundle Worker | 99,79 Kio avant compression, 24,68 Kio gzip, 76 assets lus |
+| Publication | 14 assets nouveaux ou modifiés envoyés, 56 assets réutilisés |
+| Assets V2 actifs | `index-BKprpbvj.css` et `index-F29H_u6W.js` |
+| Médias | 8 sources et 5 variantes WebP en `200` avec `image/webp` |
+| Route V2 | `/v2` en `200` et `noindex`; suffixes et `www` en `308` canonique |
+| Carnet | 10 jours, 5 chapitres, 5 scènes, 30 moments, 9 réservations et 20 vérifications |
+| Bureau | accueil et transition du logo à `1280 × 720`, dépassement horizontal `0` |
+| Mobile | accueil, carnet et verrou à `390 × 844`, dépassement horizontal `0` |
+| Partage simulé | mauvais mot de passe refusé, `MOMIJI26` accepté |
+| Garde-fous | `generationReady: false`, `serviceReady: false`, création `false`, `POST /api/trips` en `503` |
+
+`./scripts/verify.sh` passe avec 57 tests, le typage TypeScript, le dry-run
+Wrangler, l'image Docker et la documentation Nimbus. Le build refuse une fixture
+hors contrat et retire du bundle public les champs de contrôle du futur modèle
+d'image. Les transferts des jours 1, 5, 6 et 10 apparaissent à leur place dans
+la chronologie.
+
+Les sondes publiques confirment la même version sur `/api/health` et
+`/.well-known/monflorian-release`, les chunks JavaScript et CSS avec leurs types
+attendus, les treize WebP actifs et les redirections canoniques. Chromium a relu
+le domaine public aux deux viewports indiqués. Aucun brief, courriel, photo,
+secret ni appel OpenAI n'a été envoyé. Aucun iPhone Safari physique n'était
+disponible pendant cette tranche.
+
 ## Lockup d'introduction partagé avec la V2, 2026-08-26
 
 La PR [#49](https://github.com/nclsppr/monflorian/pull/49) reprend sur `/v2`

@@ -1,17 +1,17 @@
 # État courant
 
-Dernier déploiement et dernière vérification : 2026-08-26 sur Cloudflare,
+Dernier déploiement et dernière vérification : 2026-08-31 sur Cloudflare,
 GitHub et les réponses publiques. Le relevé DNS de fond date du 2026-08-24.
 
 ## Résultat
 
-### Adaptation V2 candidate du 2026-08-31
+### Parcours V2 enrichi public du 2026-08-31
 
-La branche candidate alimente statiquement `/v2` depuis la fixture canonique
-`TravelGuideV1`, sans l'intégrer au Workflow ni déclencher d'appel OpenAI. Le
-JSON itinéraire extrait est désormais borné à 131 072 octets, à l'intérieur de
-l'enveloppe fournisseur de 512 000 octets ; la fixture Japon compactée, d'environ
-58 Ko, tient sous ce plafond métier.
+La PR [#52](https://github.com/nclsppr/monflorian/pull/52) alimente statiquement
+`/v2` depuis la fixture canonique `TravelGuideV1`, sans l'intégrer au Workflow
+ni déclencher d'appel OpenAI. Le JSON itinéraire extrait est borné à 131 072
+octets, à l'intérieur de l'enveloppe fournisseur de 512 000 octets ; la fixture
+Japon compactée, d'environ 59 Ko, tient sous ce plafond métier.
 
 L'entrée présente la promesse et le carnet Japon dans un téléphone avant le
 formulaire. Elle annonce explicitement que les réponses ne sont ni envoyées ni
@@ -19,9 +19,16 @@ utilisées pour personnaliser cet exemple. Le carnet compte dix journées, cinq
 chapitres illustrés, des trajets, critères d'hôtel, décisions de réservation,
 variables de budget, alternatives pluie ou fatigue et points à revérifier. La
 simulation de partage ne publie et ne protège aucune ressource côté serveur.
-Cette candidate n'est pas encore la version publique décrite ci-dessous.
+Les transferts apparaissent à leur place dans la chronologie. Les cinq scènes
+Japon disposent de variantes `720 × 480` et les champs réservés au futur modèle
+d'image sont retirés du bundle public au moment du build.
 
-### Parcours V2 public du 2026-08-26
+La source runtime `4917baf38164d95f25d3af79e4bc8e701502143a` est active
+sous la version Worker `a3da53ea-cf97-4703-94b8-138584de7271`. Le contrat
+dynamique reste hors du Workflow et tous les garde-fous de création sont
+fermés.
+
+### Socle V2 livré le 2026-08-26
 
 La PR [#45](https://github.com/nclsppr/monflorian/pull/45) remplace la
 redirection `/v2` par un parcours React 19 et Astryx hors index. Tout formulaire
@@ -32,7 +39,7 @@ côté navigateur. Le couple des trois scènes Japon est entièrement fictif.
 
 `https://monflorian.com`, `https://www.monflorian.com` et la surface de
 diagnostic `workers.dev` servent le même Worker Cloudflare. L'apex répond en
-HTTPS avec la version `fce98697-262d-4351-89c9-9346c5d0a18a`. `www`, HTTP et
+HTTPS avec la version `a3da53ea-cf97-4703-94b8-138584de7271`. `www`, HTTP et
 les suffixes HTML publics redirigent désormais en `308` vers leur URL HTTPS
 canonique.
 
@@ -62,7 +69,7 @@ manquants.
 
 | Ressource | État | Preuve |
 | --- | --- | --- |
-| Worker `monflorian` | déployé | version `fce98697-262d-4351-89c9-9346c5d0a18a` |
+| Worker `monflorian` | déployé | version `a3da53ea-cf97-4703-94b8-138584de7271` |
 | Static Assets | actifs | interface et visuels servis par l'apex et `www` |
 | D1 `monflorian-production` | actif, juridiction `eu`, région d'exécution `EEUR` | migrations `0001`, `0002` et `0003` appliquées |
 | Tables D1 | vides et prêtes | `trips`, `trip_assets`, `daily_quotas` |
@@ -82,10 +89,12 @@ manquants.
   `X-Robots-Tag: noindex, nofollow, nosnippet, noimageindex`.
 - `/v2/` et `/v2/index.html` répondent `308` vers `/v2`. `www` redirige vers
   la même URL canonique sur l'apex.
-- Les six WebP du parcours V2 répondent `200` avec le type `image/webp`.
+- Les huit sources WebP et les cinq variantes responsives du parcours V2
+  répondent `200` avec le type `image/webp`.
 - Le questionnaire public aboutit au carnet « Le Japon à deux », avec dix
-  jours, les trois villes, les trois liens Booking.com et le dialogue de
-  partage privé affichant le mot de passe de démonstration.
+  jours, cinq chapitres, trente moments, les trois villes, les trois liens
+  Booking.com et le dialogue de partage privé affichant le mot de passe de
+  démonstration.
 - Les cinq couples WebP de la seconde famille répondent `200` avec le type
   `image/webp`. Les portraits compacts pèsent de 25 818 à 36 052 octets et les
   portraits d'introduction de 104 784 à 162 212 octets.
@@ -109,9 +118,13 @@ manquants.
   `same-origin` et `no-referrer`.
 - Un jeton synthétique inconnu sous `/voyages/` répond `404`, `no-store`,
   `noindex`, `nofollow` et `no-referrer`.
-- Le runtime `/v2` relu dans Chromium à `1440 × 900` et `390 × 844` ne
-  présente aucun dépassement horizontal ni erreur console. Les scènes Tokyo,
-  Hakone et Kyoto sont visibles dans le carnet.
+- Le runtime `/v2` relu dans Chromium à `1280 × 720` et `390 × 844` ne
+  présente aucun dépassement horizontal. Le grand logo, sa transition vers
+  l'en-tête, le téléphone, les cinq chapitres et les transferts chronologiques
+  sont visibles dans le carnet.
+- Le lien privé simulé refuse un mauvais mot de passe puis ouvre le carnet avec
+  `MOMIJI26`. L'en-tête de la page verrouillée ne permet pas de contourner le
+  contrôle local.
 - Le runtime `/` relu à `1280 × 720` mesure un dépassement horizontal nul et
   aligne l'introduction, le lockup et le hero à `1240 px`. La note mesure
   `311 px`. À `390 × 844`, les trois surfaces font `362 px`, la note `278 px`
@@ -129,9 +142,9 @@ manquants.
 
 ## État du dépôt et de la livraison
 
-- Source runtime déployée : `99440d5808e8d11a4c7d4a80efed08074fe7e3a6`,
-  issue de la PR [#49](https://github.com/nclsppr/monflorian/pull/49).
-- Les runs `32980857522` (`Cloudflare release`) et `32980857606` (`Verify`) du
+- Source runtime déployée : `4917baf38164d95f25d3af79e4bc8e701502143a`,
+  issue de la PR [#52](https://github.com/nclsppr/monflorian/pull/52).
+- Les runs `33344478423` (`Cloudflare release`) et `33344478418` (`Verify`) du
   SHA fusionné sont verts.
 - Le dépôt GitHub ne possède actuellement aucun secret Actions Cloudflare.
 - Le déploiement du SHA fusionné a donc été réalisé depuis la session Wrangler

@@ -4,6 +4,9 @@ Git reste la source du diff technique. Les ADR expliquent les décisions importa
 
 ## Non publié
 
+- Déploiement public de l'adaptation issue de l'audit V2 au SHA `4917baf` et
+  sous la version Worker `a3da53ea-cf97-4703-94b8-138584de7271`, avec contrôle
+  du carnet, des treize WebP, du mot de passe et des garde-fous fermés.
 - Réorganisation de l'entrée V2 autour d'un hero qui présente l'aperçu du
   carnet dans le téléphone avant le formulaire. Le splash de marque est
   raccourci sur grand écran et masqué sur mobile pour rejoindre directement
