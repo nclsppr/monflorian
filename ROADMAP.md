@@ -28,7 +28,7 @@ de ce parcours.
 | 1 | F01 | Contrats métier et OpenAI simulé | done | validateurs, OpenAPI et fakes fournisseur |
 | 2 | F02 | Aperçu historique sans génération | done | interface publique fermée sur l'ancienne cible |
 | 3 | F03 | Runtime Cloudflare fermé | done | Worker, D1, Workflow, PR, CI et preuve publique |
-| 3b | F03-V2 | Parcours éditorial V2 | in_progress | `/v2`, carnet Japon, partage et preuve publique |
+| 3b | F03-V2 | Parcours éditorial V2 | done | `/v2`, carnet Japon, partage simulé et preuve publique |
 | 4 | F04 | Stockage privé et cycle de vie | in_progress | R2 UE, chiffrement, jetons et purge prouvés |
 | 5 | F05 | Génération synthétique asynchrone | in_progress | texte, images, quotas, reprise et coûts observés |
 | 6 | F06 | Page privée et courriel | in_progress | rendu, suppression, notification et notice validés |

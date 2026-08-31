@@ -2,8 +2,10 @@
 
 ## Statut
 
-Acceptée le 2026-08-30, mise à jour le 2026-08-31. La fixture canonique alimente
-le rendu statique de `/v2` ; le contrat dynamique reste non branché au Workflow.
+Acceptée le 2026-08-30, mise à jour et livrée statiquement via la PR
+[#52](https://github.com/nclsppr/monflorian/pull/52) le 2026-08-31. La fixture
+canonique alimente le rendu de `/v2` ; le contrat dynamique reste non branché
+au Workflow.
 
 Cette décision complète l’ADR-0007 sans activer OpenAI, la création de voyage,
 le courriel ou un nouveau stockage. Elle remplace les données locales du carnet

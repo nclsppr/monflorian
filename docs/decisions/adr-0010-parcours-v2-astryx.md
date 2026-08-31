@@ -3,7 +3,9 @@
 ## Statut
 
 - Accepté le 2026-08-26.
-- Mise à jour candidate le 2026-08-31, soumise à une preuve publique séparée.
+- Mise à jour livrée le 2026-08-31 via la PR
+  [#52](https://github.com/nclsppr/monflorian/pull/52), avec preuve publique
+  séparée dans `DELIVERY-EVIDENCE.md`.
 - Aucun changement de secret, de fournisseur ou de drapeau Cloudflare.
 
 ## Contexte
