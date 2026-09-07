@@ -3,7 +3,39 @@
 Chaque section nomme son environnement et ses limites. Les sections Atlas sont
 des archives historiques ; la section Cloudflare porte la migration courante.
 
-## Site principal issu de la V2, publié le 7 septembre 2026
+## Accueil bureau et footer, publiés le 7 septembre 2026
+
+La [PR #56](https://github.com/nclsppr/monflorian/pull/56) supprime le doublon
+initial de logo, remplace le téléphone par la couverture du carnet et
+réorganise le footer sur fond crème. L'ancien comportement d'introduction et
+ses styles sont retirés. Aucun asset de marque ni fournisseur n'est modifié.
+
+| Preuve | Résultat |
+| --- | --- |
+| Source runtime | `2e145dfae9c35178d44f831e3bd253ef1489c434` |
+| Version Worker | `c6d84fbd-f104-4914-b230-b5567981a8f3`, 100 % du trafic |
+| CI de la PR | `34164246022` et `34164246036`, vertes sur `d975c2e` |
+| CI du SHA fusionné | `34164340341` et `34164340438`, vertes |
+| Vérification locale | `./scripts/verify.sh`, 66 tests applicatifs, types, build, Compose et Nimbus |
+| Réponses publiques | Cinq HTML et 23 ressources en `200`, identiques au build, treize WebP inclus |
+| Migration et erreurs | Cinq redirections `308` et trois réponses `404` conformes |
+| Service fermé | Santé et configuration fermées, `POST /api/trips` en `503` |
+
+L’accueil a été inspecté à `1280 × 720`, `1440 × 900` et `390 × 844`, le
+footer à `1280 × 720` et `390 × 844`. À 1280 px, les actions se terminent à 530 px de hauteur et le
+second logo est absent. La couverture entière reste visible dans le premier
+écran. Le menu du carnet et son bouton de partage restent dans l'écran à
+`320 × 740` ; le panneau du menu occupe les pixels 20 à 300. La navigation
+vers le carnet et les guides, le retour en haut et l'entrée au clavier depuis
+la couverture ont été vérifiés. Aucune erreur de console n'a été observée.
+
+Le navigateur public confirme la nouvelle couverture, l'absence d'introduction
+en double, le fond crème du footer et l'accès au carnet au clavier. Le
+[relevé public](https://github.com/nclsppr/monflorian/blob/main/docs/evidence/2026-09-07-desktop-public-proof.json)
+conserve les empreintes et les réponses. Ces dimensions émulées ne remplacent
+pas une vérification sur chaque modèle d'ordinateur ou technologie d'assistance.
+
+## Promotion initiale de la V2, publiée le 7 septembre 2026
 
 La PR [#54](https://github.com/nclsppr/monflorian/pull/54) est fusionnée et son
 commit a été déployé depuis un checkout propre. Aucun secret, drapeau ou

@@ -1,0 +1,280 @@
+{
+  "sourceRuntime": "2e145dfae9c35178d44f831e3bd253ef1489c434",
+  "workerVersion": "c6d84fbd-f104-4914-b230-b5567981a8f3",
+  "trafficPercentage": 100,
+  "pullRequest": "https://github.com/nclsppr/monflorian/pull/56",
+  "mainChecks": [
+    34164340341,
+    34164340438
+  ],
+  "browser": {
+    "localViewports": [
+      [
+        1280,
+        720
+      ],
+      [
+        1440,
+        900
+      ],
+      [
+        390,
+        844
+      ],
+      [
+        320,
+        740
+      ]
+    ],
+    "singleOpeningLogo": true,
+    "mobileTripMenuInsideViewport": true,
+    "publicCarnetKeyboardNavigation": true,
+    "consoleErrorsObserved": 0
+  },
+  "publicChecks": [
+    {
+      "path": "/",
+      "status": 200,
+      "htmlMatchesBuild": true,
+      "bytes": 22370
+    },
+    {
+      "path": "/carnets/japon-10-jours",
+      "status": 200,
+      "htmlMatchesBuild": true,
+      "bytes": 137672
+    },
+    {
+      "path": "/guides",
+      "status": 200,
+      "htmlMatchesBuild": true,
+      "bytes": 9590
+    },
+    {
+      "path": "/guides/preparer-itineraire-voyage",
+      "status": 200,
+      "htmlMatchesBuild": true,
+      "bytes": 16855
+    },
+    {
+      "path": "/guides/japon-10-jours-preparer-voyage",
+      "status": 200,
+      "htmlMatchesBuild": true,
+      "bytes": 17553
+    },
+    {
+      "asset": "/assets/florian-icon-192.png",
+      "status": 200,
+      "type": "image/png",
+      "sha256": "bc6cece44c75cd7d3a6e14aec7913a164e28d35af63acb48a6042fb84fd73f1d"
+    },
+    {
+      "asset": "/assets/florian-v2-original-web.webp",
+      "status": 200,
+      "type": "image/webp",
+      "sha256": "5d8e314db20eb8feac45dc059fede71c6ae808f96c1b6cb73c4c2fb39a877da9"
+    },
+    {
+      "asset": "/assets/monflorian-wordmark-web.webp",
+      "status": 200,
+      "type": "image/webp",
+      "sha256": "941c00869e36c83fd261c4d6195d219479e8685cb203c594d84f0b9e91cef966"
+    },
+    {
+      "asset": "/site-assets/astryx-BxJHvxZd.css",
+      "status": 200,
+      "type": "text/css",
+      "sha256": "b6c8e11cdc80e0b6d730837cdfa86746c9b561bb7e818db1de798d49e5d5b656"
+    },
+    {
+      "asset": "/site-assets/astryx-CXnDp5bb.js",
+      "status": 200,
+      "type": "text/javascript",
+      "sha256": "d598299fc3d9783a79a1f14d44a2951ed2b7012e69176be5f7e62941a179bbcd"
+    },
+    {
+      "asset": "/site-assets/index-Bz2iV1p5.css",
+      "status": 200,
+      "type": "text/css",
+      "sha256": "9d2b27787ece79cfc3f6afbac07c457c2ac2d5ab50dae6c0e38201889a5c1076"
+    },
+    {
+      "asset": "/site-assets/index-CSP8_sZU.js",
+      "status": 200,
+      "type": "text/javascript",
+      "sha256": "ab01a2c10b504e78cfafb45a87dff5214fad7e402c6e6fd9289248f0dc93c0b8"
+    },
+    {
+      "asset": "/site-assets/outfit-latin-wght-normal-Bc-8i84L.woff2",
+      "status": 200,
+      "type": "font/woff2",
+      "sha256": "6c18d579fd87c3776be068b762cbc83fde3acb543d49eabd3ade842eb987e887"
+    },
+    {
+      "asset": "/site-assets/react-D9T_Tk9e.js",
+      "status": 200,
+      "type": "text/javascript",
+      "sha256": "91e4ee57bec04e0b8712a62e6ff8299a3b876753ab3e23a2aaee7e69a97d318c"
+    },
+    {
+      "asset": "/site-assets/rolldown-runtime-hePW80VL.js",
+      "status": 200,
+      "type": "text/javascript",
+      "sha256": "580ad8c58061a4dde99bde0a56905e382f0568516ee2f5b84dbfb52085709021"
+    },
+    {
+      "asset": "/v2/media/example-norway-fjords.webp",
+      "status": 200,
+      "type": "image/webp",
+      "sha256": "e0365deeb82e7a4a73fcb7498c04249256a9f0b79e5ec6dcbd12d1e54b1647f5"
+    },
+    {
+      "asset": "/v2/media/example-portugal-train.webp",
+      "status": 200,
+      "type": "image/webp",
+      "sha256": "832575d766c79b322b10efadd2ca5be85d4e2f10d8b1b3c1bfa960c75477319e"
+    },
+    {
+      "asset": "/v2/media/example-sicily-table.webp",
+      "status": 200,
+      "type": "image/webp",
+      "sha256": "f2c6b01e2d03daa10c85163803aaa1d627ba755cf3662f04aa5098cacfe05d70"
+    },
+    {
+      "asset": "/v2/media/japan-arashiyama-couple-720.webp",
+      "status": 200,
+      "type": "image/webp",
+      "sha256": "d12ef5e65080e97c535dd30e7ebb1503632aff44a7f07140cf09f38b72745219"
+    },
+    {
+      "asset": "/v2/media/japan-arashiyama-couple.webp",
+      "status": 200,
+      "type": "image/webp",
+      "sha256": "411ad86a5a7f09396bcb90295b53ea0a8241eac35592d721466a49ec293406a2"
+    },
+    {
+      "asset": "/v2/media/japan-hakone-couple-720.webp",
+      "status": 200,
+      "type": "image/webp",
+      "sha256": "3dd027e2b649c11556c032820b1c780d1b3d408384235ff20c108ad2fc90d6ab"
+    },
+    {
+      "asset": "/v2/media/japan-hakone-couple.webp",
+      "status": 200,
+      "type": "image/webp",
+      "sha256": "ee50b5a6cb8c4e2d987eeb8bf978534a341e96541204ff5fc698c78ca3a99db8"
+    },
+    {
+      "asset": "/v2/media/japan-kyoto-couple-720.webp",
+      "status": 200,
+      "type": "image/webp",
+      "sha256": "dbfdcc21e76fb7949bfa3b89e87d1f2d00c4d5f95b5ea6a7982a684e4114e301"
+    },
+    {
+      "asset": "/v2/media/japan-kyoto-couple.webp",
+      "status": 200,
+      "type": "image/webp",
+      "sha256": "2f45e720be30706e09c87bbf4bf90648e6be0663cdeaf43296b8f680da01faea"
+    },
+    {
+      "asset": "/v2/media/japan-tokyo-couple-720.webp",
+      "status": 200,
+      "type": "image/webp",
+      "sha256": "f99b3f3cf0079c04fdf122aa92c1ab2db387ff2caf587a5d248091a15902dc8c"
+    },
+    {
+      "asset": "/v2/media/japan-tokyo-couple.webp",
+      "status": 200,
+      "type": "image/webp",
+      "sha256": "fb724703ab5c8885630c40a8b6c0e8577e0179dcc5c70d1ac996cd60808db8eb"
+    },
+    {
+      "asset": "/v2/media/japan-tokyo-garden-couple-720.webp",
+      "status": 200,
+      "type": "image/webp",
+      "sha256": "dcde5dabbbd63bae14dc30a849cb57d9b1ca95849525a20a7cdeaf796a718b10"
+    },
+    {
+      "asset": "/v2/media/japan-tokyo-garden-couple.webp",
+      "status": 200,
+      "type": "image/webp",
+      "sha256": "90cd50fa1d32eb5fae100e3453f769f3c44960e124c5dc861a72b707dcd824d1"
+    },
+    {
+      "redirect": "/v2",
+      "status": 308,
+      "destination": "/"
+    },
+    {
+      "redirect": "/v2/index.html",
+      "status": 308,
+      "destination": "/"
+    },
+    {
+      "redirect": "/v2?voyage=japon-a-deux&acces=prive&preuve=synthetic",
+      "status": 308,
+      "destination": "/carnets/japon-10-jours"
+    },
+    {
+      "redirect": "/v2?exemple=portugal-en-train",
+      "status": 308,
+      "destination": "/#inspiration-portugal-en-train"
+    },
+    {
+      "redirect": "/guides/",
+      "status": 308,
+      "destination": "/guides"
+    },
+    {
+      "notFound": "/guides/inconnu",
+      "status": 404
+    },
+    {
+      "notFound": "/carnets/inconnu",
+      "status": 404
+    },
+    {
+      "notFound": "/v2/inconnu",
+      "status": 404
+    },
+    {
+      "endpoint": "/api/health",
+      "value": {
+        "status": "ok",
+        "release": "c6d84fbd-f104-4914-b230-b5567981a8f3",
+        "generationReady": false
+      }
+    },
+    {
+      "endpoint": "/.well-known/monflorian-release",
+      "value": {
+        "platform": "cloudflare-workers",
+        "release": "c6d84fbd-f104-4914-b230-b5567981a8f3"
+      }
+    },
+    {
+      "endpoint": "/api/config",
+      "value": {
+        "serviceReady": false,
+        "tripCreationEnabled": false,
+        "illustrationEnabled": false,
+        "turnstileSiteKey": null,
+        "accessMode": "private",
+        "bookingMode": "external",
+        "bookingAllowedHosts": [],
+        "limits": {
+          "maxPhotos": 4,
+          "maxPhotoBytes": 1500000,
+          "maxTripDays": 14,
+          "maxTravelers": 8
+        }
+      }
+    },
+    {
+      "endpoint": "/api/trips",
+      "status": 503,
+      "error": "TRIP_CREATION_UNAVAILABLE"
+    }
+  ],
+  "recordedAt": "2026-09-07T21:50:05.790862+00:00"
+}

@@ -51,6 +51,8 @@ Ce contrat décrit la V2 principale publiée le 7 septembre 2026, décidée dans
 [l'ADR-0012](docs/decisions/adr-0012-v2-site-principal.md) et livrée par la
 [PR #54](https://github.com/nclsppr/monflorian/pull/54). `STATUS.md` et
 `DELIVERY-EVIDENCE.md` conservent la version active et les preuves publiques.
+La [PR #56](https://github.com/nclsppr/monflorian/pull/56) publie ensuite la
+composition bureau et le footer décrits ici.
 
 Les sources canoniques sont `app/v2/src/main.jsx`, `Planner.jsx`, `Guides.jsx`,
 leurs styles, dont `home-shell.css` pour l’accueil et le footer, et leurs données. Le carnet consomme la fixture canonique

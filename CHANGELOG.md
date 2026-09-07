@@ -6,6 +6,9 @@ Git reste la source du diff technique. Les ADR expliquent les décisions importa
 
 ### Accueil bureau et pied de page
 
+Publié via la [PR #56](https://github.com/nclsppr/monflorian/pull/56), avec
+vérification des cinq pages et des ressources sur le domaine public.
+
 - Suppression du second logo à l'arrivée et du basculement d'en-tête.
 - Remplacement du téléphone par une grande couverture du carnet Japon, avec
   les trois étapes et une entrée directe vers le voyage.
