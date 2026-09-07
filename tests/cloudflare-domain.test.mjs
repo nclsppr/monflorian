@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { test } from "node:test";
+import { canonicalPublicRedirect } from "../app/http.mjs";
 
 const config = JSON.parse(
   readFileSync(new URL("../wrangler.jsonc", import.meta.url), "utf8"),
@@ -27,4 +28,16 @@ test("le Worker porte les deux domaines publics exacts", () => {
 test("les lanceurs locaux gardent un hôte distinct des domaines publics", () => {
   assert.match(packageJson.scripts.dev, /--local-upstream 127\.0\.0\.1/u);
   assert.match(dockerfile, /"--local-upstream", "127\.0\.0\.1"/u);
+});
+
+test("les alias de migration restent sur leur environnement local ou de diagnostic", () => {
+  for (const origin of ["http://127.0.0.1:8080", "http://localhost:5173", "https://monflorian.nclsppr.workers.dev"]) {
+    const response = canonicalPublicRedirect(new Request(`${origin}/v2?voyage=japon-a-deux&avatar=flower`));
+    assert.equal(response?.status, 308);
+    assert.equal(response.headers.get("Location"), `${origin}/carnets/japon-10-jours?avatar=flower`);
+    if (origin.includes(".workers.dev")) {
+      assert.match(response.headers.get("X-Robots-Tag"), /noindex/u);
+      assert.equal(response.headers.get("Cache-Control"), "no-store");
+    }
+  }
 });

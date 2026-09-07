@@ -19,3 +19,4 @@
 !contracts/**
 !scripts/
 !scripts/build-worker-assets.mjs
+!scripts/prerender-site.mjs

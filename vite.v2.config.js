@@ -30,13 +30,15 @@ function publicTravelGuidePlugin() {
 }
 
 export default defineConfig({
-  base: "/v2/",
+  base: "/",
   plugins: [publicTravelGuidePlugin(), react()],
   publicDir: false,
   root: fileURLToPath(new URL("./app/v2/", import.meta.url)),
+  ssr: { noExternal: [/@astryxdesign/, /@stylexjs/] },
   build: {
+    assetsDir: "site-assets",
     emptyOutDir: false,
-    outDir: fileURLToPath(new URL("./dist/v2/", import.meta.url)),
+    outDir: fileURLToPath(new URL("./dist/", import.meta.url)),
     rollupOptions: {
       input: fileURLToPath(new URL("./app/v2/index.html", import.meta.url)),
       output: {

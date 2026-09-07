@@ -9,20 +9,28 @@
 | Classe | Critique |
 | Surface Cloudflare | Web actif sur l'apex, `www` et `workers.dev`, envoi transactionnel fermé |
 | Domaine public | `monflorian.com` sur Cloudflare Workers |
-| Décisions courantes | [ADR-0007](docs/decisions/adr-0007-runtime-et-production-cloudflare.md), [ADR-0008](docs/decisions/adr-0008-domaine-web-only-cloudflare.md), [ADR-0009](docs/decisions/adr-0009-courriel-transactionnel-cloudflare.md), [ADR-0010](docs/decisions/adr-0010-parcours-v2-astryx.md) et [ADR-0011](docs/decisions/adr-0011-contrat-guide-voyage-et-plan-images.md) |
+| Décisions courantes | [ADR-0007](docs/decisions/adr-0007-runtime-et-production-cloudflare.md), [ADR-0008](docs/decisions/adr-0008-domaine-web-only-cloudflare.md), [ADR-0009](docs/decisions/adr-0009-courriel-transactionnel-cloudflare.md), [ADR-0011](docs/decisions/adr-0011-contrat-guide-voyage-et-plan-images.md) et [ADR-0012](docs/decisions/adr-0012-v2-site-principal.md) |
 | Licence | Aucune licence de réutilisation accordée |
 
 ## Problème
 
 Préparer un voyage demande de relier une envie personnelle, un rythme réaliste,
-des trajets et des réservations dispersées. Mon Florian produit une première
-proposition lisible, puis laisse les vérifications et les décisions réelles au
-voyageur et à Florian.
+des trajets et des réservations dispersées. Mon Florian rend cette préparation
+lisible avec un carnet d'exemple, des guides et un pense-bête. La production d'un
+itinéraire personnalisé reste une capacité cible fermée.
 
 ## Utilisateurs et résultat attendu
 
-Une personne décrit son envie, ajoute des dates, le nombre de voyageurs et son
-adresse de courriel. Elle reçoit une première proposition structurée. Si elle la
+Le site candidat permet de lire un exemple public de dix jours au Japon,
+préparer un pense-bête local et cocher les vérifications du carnet. Ces outils
+ne créent aucune demande et ne réservent rien. Les pages publiques contiennent
+uniquement du contenu éditorial et des personnages fictifs.
+
+### MVP personnalisé cible
+
+Dans le futur parcours personnalisé, une personne décrit son envie, ajoute des
+dates, le nombre de voyageurs et son adresse de courriel. Elle reçoit une
+première proposition structurée. Si elle la
 retient, elle peut ensuite ajouter, avec consentement, une à quatre photos pour
 personnaliser les illustrations avant de recevoir le lien privé final, qui
 contient :
@@ -38,7 +46,7 @@ client et le Voyage vivant restent des hypothèses non livrées.
 
 ## Périmètre courant
 
-### Livré
+### Livré avant la promotion
 
 - Interface HTML, CSS et JavaScript native.
 - Worker TypeScript qui sert les assets et les routes API publiques.
@@ -57,7 +65,37 @@ client et le Voyage vivant restent des hypothèses non livrées.
   canonique, trois exemples, liens Booking.com et simulation de partage public
   ou privé par mot de passe, sans protection serveur.
 
-### Candidat non intégré
+### Candidat du 7 septembre 2026 : V2 principale
+
+La promotion est décidée dans l'ADR-0012. Cette tranche reste candidate jusqu'à
+la fusion, aux contrôles requis, au déploiement et aux sondes publiques.
+
+- Cinq pages pré-rendues en HTML depuis React : `/`,
+  `/carnets/japon-10-jours`, `/guides`,
+  `/guides/preparer-itineraire-voyage` et
+  `/guides/japon-10-jours-preparer-voyage`.
+- Hydratation React pour les outils interactifs ; carnet, guides, navigation et
+  inspirations lisibles sans JavaScript.
+- Redirection permanente `308` de l'ancienne entrée `/v2` vers le nouveau site,
+  avec migration des liens de carnet et d'inspiration historiques.
+- Pense-bête en trois étapes avec récapitulatif, copie et téléchargement texte.
+  Son enregistrement dans le navigateur exige le bouton explicite prévu à cet
+  effet. Les modifications suivantes ne sont enregistrées qu'après un nouveau
+  clic.
+- Checklist du carnet enregistrée localement à chaque case cochée ou décochée,
+  avec explication visible et remise à zéro. Cocher signifie vérifier, jamais
+  réserver.
+- Partage du lien public du carnet, sans mot de passe simulé ni transmission du
+  pense-bête ou de la checklist. Impression depuis le navigateur.
+- Métadonnées propres aux cinq pages, sitemap, liens internes et sources
+  éditoriales. Ces moyens ne prouvent aucun classement dans les moteurs.
+
+Aucune API, aucun secret, aucun fournisseur et aucun drapeau d'activation ne
+changent. La création personnalisée, les photos, le courriel et les paiements
+restent fermés. La preuve de publication appartient à `STATUS.md` et
+`DELIVERY-EVIDENCE.md`.
+
+### Contrat dynamique candidat non intégré
 
 - Contrat dynamique `TravelGuideV1`, validation métier et compilation contrôlée
   des consignes d'image, sans branchement au Workflow ni à OpenAI.
@@ -77,7 +115,8 @@ client et le Voyage vivant restent des hypothèses non livrées.
 - Réserver automatiquement un billet, un hôtel ou une activité.
 - Afficher en direct prix, disponibilité, note ou garantie.
 - Scraper Booking.com ou utiliser son API Demand.
-- Exposer une galerie ou une page de voyage indexable.
+- Exposer une galerie personnelle ou un voyage privé indexable. Le carnet
+  éditorial Japon de l'ADR-0012 est un exemple public distinct.
 - Garder des photos d'entrée au-delà du traitement.
 - Ouvrir Stripe avant la preuve du parcours gratuit.
 
@@ -88,10 +127,12 @@ client et le Voyage vivant restent des hypothèses non livrées.
 | Composant | Rôle | Source | État |
 | --- | --- | --- | --- |
 | Worker | API, sécurité, rendu de la page privée et accès aux bindings | `src/worker.ts` | déployé, génération fermée |
-| Static Assets | Interface et visuels canoniques | `app/public/`, `assets/brand/` | déployé |
+| Site principal candidat | HTML pré-rendu et hydratation React | `app/v2/src/main.jsx`, `Planner.jsx`, `Guides.jsx`, `scripts/prerender-site.mjs` | candidat, publication à prouver |
+| Static Assets | HTML dérivé, ressources publiques et visuels canoniques | `dist/` depuis `app/v2/`, `app/public/` et `assets/brand/` | distribution Cloudflare active, nouveau contenu candidat |
 | Coeur métier | Validation des briefs, photos, résultats et liens | `app/core.mjs` | réutilisé, tests locaux |
 | Adaptateur OpenAI | Responses et Image Edits sans SDK | `app/openai.mjs` | non appelé en production |
-| Contrat de guide candidat | Fixture statique, schéma, validation métier et compilation d'image | `contracts/`, `app/travel-guide.mjs` | fixture consommée par `/v2`, génération dynamique non intégrée |
+| Contrat de guide candidat | Fixture statique, schéma, validation métier et compilation d'image | `contracts/`, `app/travel-guide.mjs`, `app/v2/src/data.js` | fixture du carnet Japon, génération dynamique non intégrée |
+| Données locales de préparation | Pense-bête et cases de vérification | `app/v2/src/planner-state.mjs`, `app/v2/src/main.jsx` | navigateur seulement, candidat |
 | D1 | États, quotas, données chiffrées et jetons hachés | `migrations/` | base vide, schéma appliqué |
 | R2 | Photos d'entrée et images générées | binding `MEDIA` | bucket privé UE créé, vide, binding déployé |
 | Workflows | Traitement durable et notification | `src/workflows/` | texte et image câblés, garde-fous fermés |
@@ -103,6 +144,14 @@ client et le Voyage vivant restent des hypothèses non livrées.
 Pages, KV, Queues, Durable Objects, Vectorize, Workers AI et Containers ne sont
 pas requis dans le MVP. TypeScript remplace le backend serveur : Java ajouterait
 un conteneur et une seconde chaîne d'exploitation sans bénéfice actuel.
+
+Les sources canoniques du nouveau site vivent sous `app/v2/src/`. Le nom de ce
+répertoire reste technique et ne crée pas une seconde version publique. Le
+build remplace l'accueil de `dist/` par son HTML pré-rendu. L'ancien
+`app/public/index.html` est conservé comme source historique, mais ne constitue
+plus l'accueil servi dans le candidat. Les fichiers historiques `styles.css`
+et `app.js` restent conservés ; la notice et le rendu privé peuvent encore
+consommer leurs ressources communes. Ne jamais modifier `dist/` à la main.
 
 ### Flux cible
 
@@ -163,6 +212,7 @@ partie de cette chaîne de livraison.
 | Développer | `npm run dev` | Worker local Wrangler |
 | Développer avec Foundation | `docker compose up --build --wait` | Worker sain sur le port local |
 | Construire les assets | `npm run build:assets` | `dist/` dérivé des sources canoniques |
+| Construire le site principal | `npm run build:v2` | bundle navigateur, rendu serveur de build et cinq pages HTML |
 | Vérifier le Worker | `npm run check:worker` | types générés, TypeScript et dry-run Wrangler valides |
 | Vérifier le projet | `./scripts/verify.sh` | documentation, tests, Worker, Compose et Nimbus valides |
 | Déployer | `npm run deploy` | nouvelle version Worker sur Cloudflare |
@@ -171,6 +221,10 @@ partie de cette chaîne de livraison.
 
 ## Données et sécurité
 
+- Le pense-bête candidat reste en mémoire jusqu'à un enregistrement explicite.
+  La checklist enregistre seulement les identifiants des cases modifiées. Les
+  deux copies restent dans ce navigateur jusqu'à leur effacement ; elles ne
+  sont ni synchronisées ni jointes au lien public du carnet.
 - Les Worker Secrets ne sont jamais inscrits dans Git, les commandes ou les
   preuves.
 - Le jeton de page possède 256 bits et seul son SHA-256 est indexé dans D1.

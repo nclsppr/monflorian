@@ -42,8 +42,8 @@ Source canonique des visuels de marque et des références importées depuis le 
 | `assets/brand/florian-v2-flower-intro.webp` | Variante avec chapeau tropical de la seconde famille pour le grand lockup | Dérivé Web de production | 1024 x 1024, RGBA | `47424af1892d8b41339361e1216cca82e8078fd27bc6a0d41c7eac21831720e5` | Redimensionné et compressé depuis `florian-v2-flower.png`, sans retouche du dessin |
 | `assets/brand/florian-icon-192.png` | Favicon et icône Apple | Dérivé Web de production | 192 x 192, RGBA | `bc6cece44c75cd7d3a6e14aec7913a164e28d35af63acb48a6042fb84fd73f1d` | Redimensionné depuis `florian-v2-original.png`, sans retouche du dessin |
 | `assets/brand/florian-icon-512.png` | Icône d'installation Web | Dérivé Web de production | 512 x 512, RGBA | `04cfec237871e0786809932bbff36e78423fb36c55bb9d5efa1ef64c18bd3448` | Redimensionné depuis `florian-v2-original.png`, sans retouche du dessin |
-| `assets/brand/monflorian-social-card.svg` | Source éditable de la carte de partage de l'accueil | Dérivé vectoriel de production | 1200 x 630, SVG | `827d5a33936fa4bd80fd5e305ed8d78a6cc0c1f9004f870c0ef48956517f456b` | Composé dans le dépôt avec le mot-symbole et `florian-v2-original.png`, sans retouche de ces deux fichiers |
-| `assets/brand/monflorian-social-card.png` | Image Open Graph et carte de partage de l'accueil | Dérivé raster de production | 1200 x 630, RGB | `530f2127e049c37c88370ed81d67ff7e027076346b41a7f6815317d374e48061` | Rendu local de la source SVG précédente après contrôle visuel, sans génération d'image |
+| `assets/brand/monflorian-social-card.svg` | Source de l’ancienne carte de partage | Archive vectorielle | 1200 x 630, SVG | `827d5a33936fa4bd80fd5e305ed8d78a6cc0c1f9004f870c0ef48956517f456b` | Composé dans le dépôt avec le mot-symbole et `florian-v2-original.png`, sans retouche de ces deux fichiers |
+| `assets/brand/monflorian-social-card.png` | Ancienne carte de partage de l’accueil | Archive raster | 1200 x 630, RGB | `530f2127e049c37c88370ed81d67ff7e027076346b41a7f6815317d374e48061` | Rendu local de la source SVG précédente après contrôle visuel, sans génération d'image |
 | `app/public/v2/media/japan-tokyo-couple.webp` | Chapitre Tokyo du carnet V2 | Fixture éditoriale synthétique | 1440 x 960, WebP | `fb724703ab5c8885630c40a8b6c0e8577e0179dcc5c70d1ac996cd60808db8eb` | Généré le 2026-08-26 avec l'outil d'image OpenAI intégré depuis les deux personnages fictifs fournis par le propriétaire, puis converti en WebP qualité 82 |
 | `app/public/v2/media/japan-tokyo-couple-720.webp` | Variante responsive du chapitre Tokyo | Dérivé Web de production | 720 x 480, WebP | `f99b3f3cf0079c04fdf122aa92c1ab2db387ff2caf587a5d248091a15902dc8c` | Redimensionné depuis `japan-tokyo-couple.webp` et compressé en WebP qualité 78, sans retouche |
 | `app/public/v2/media/japan-tokyo-garden-couple.webp` | Chapitre Hama-rikyū du carnet V2 | Fixture éditoriale synthétique | 1440 x 960, WebP | `90cd50fa1d32eb5fae100e3453f769f3c44960e124c5dc861a72b707dcd824d1` | Généré le 2026-08-31 avec ImageGen à partir des trois scènes Japon existantes comme références d'identité et de style, avec le même filtre Fuji éditorial ; aucun texte n'est incrusté, l'overlay Outfit est rendu en HTML |
@@ -90,7 +90,10 @@ d'un redimensionnement et d'une compression WebP qualité 78, sans retouche.
 
 - Le logo PNG est le master actuel. Une future vectorisation doit être validée visuellement contre ce fichier et faire l'objet d'une provenance propre.
 - Les fichiers du logo modulable sont des dérivés. Ils ne remplacent pas le master et peuvent être retirés sans modifier sa provenance.
-- La carte de partage réutilise le mot-symbole et le portrait original sans les redessiner. Le SVG est sa source éditable ; seul le PNG est publié pour les plateformes sociales.
+- Les nouvelles pages utilisent les scènes Japon et Portugal déjà inventoriées
+  pour leurs aperçus sociaux. Leurs descriptions signalent leur nature éditoriale.
+  L’ancienne carte SVG/PNG reste archivée : sa promesse de voyage privé sur
+  mesure ne correspond pas au site principal issu de la V2.
 - `prototype/index.html` est la source éditable de l'expérience. Sa capture principale n'est jamais modifiée pour simuler un changement du produit.
 - Le prototype contient encore deux WebP embarqués en base64. Ils sont des dérivés propres au prototype, pas des masters concurrents.
 - L'application active conserve les PNG comme sources de référence. L'en-tête

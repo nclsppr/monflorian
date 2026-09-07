@@ -1,26 +1,13 @@
-import { StrictMode, useEffect, useMemo, useState } from "react";
-import { createRoot } from "react-dom/client";
+import { createContext, useContext, useEffect, useState } from "react";
 
-import "@fontsource-variable/outfit";
 import "@astryxdesign/core/astryx.css";
 import "@astryxdesign/theme-matcha/theme.css";
 
 import { Badge } from "@astryxdesign/core/Badge";
 import { Button } from "@astryxdesign/core/Button";
 import { Card } from "@astryxdesign/core/Card";
-import { ClickableCard } from "@astryxdesign/core/ClickableCard";
 import { Dialog, DialogHeader } from "@astryxdesign/core/Dialog";
 import { Layout, LayoutContent, LayoutFooter } from "@astryxdesign/core/Layout";
-import { NumberInput } from "@astryxdesign/core/NumberInput";
-import { ProgressBar } from "@astryxdesign/core/ProgressBar";
-import {
-  SegmentedControl,
-  SegmentedControlItem,
-} from "@astryxdesign/core/SegmentedControl";
-import { SelectableCard } from "@astryxdesign/core/SelectableCard";
-import { Step, Stepper } from "@astryxdesign/core/Stepper";
-import { TextArea } from "@astryxdesign/core/TextArea";
-import { TextInput } from "@astryxdesign/core/TextInput";
 import { Theme } from "@astryxdesign/core/theme";
 import { InternationalizationProvider } from "@astryxdesign/core/i18n";
 import frMessages from "@astryxdesign/core/locales/fr-FR.json";
@@ -28,13 +15,23 @@ import { matchaTheme } from "@astryxdesign/theme-matcha/built";
 
 import {
   exampleTrips,
-  generationStatuses,
   japanTrip,
   travelGuideLabels,
 } from "./data.js";
+import TripPlanner from "./Planner.jsx";
+import { GuideHub, GuidePage } from "./Guides.jsx";
+import { guides } from "./guides.js";
+import { sourceLinks } from "./sources.js";
 import "./v2.css";
+import "./site.css";
 
-const PRIVATE_DEFAULT_PASSWORD = "MOMIJI26";
+export const TRIP_PATH = "/carnets/japon-10-jours";
+const AvatarContext = createContext("original");
+
+function Portrait({ intro = false, ...props }) {
+  const variant = useContext(AvatarContext);
+  return <img {...props} src={"/assets/florian-v2-" + variant + (intro ? "-intro.webp" : "-web.webp")} />;
+}
 
 const priorityVariants = {
   comfort: "neutral",
@@ -97,17 +94,7 @@ function Icon({ name, size = 20 }) {
 }
 
 function scrollToId(id) {
-  document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
-}
-
-function routeFromLocation() {
-  const params = new URLSearchParams(window.location.search);
-  return {
-    access: params.get("acces"),
-    example: params.get("exemple"),
-    proof: params.get("preuve"),
-    trip: params.get("voyage"),
-  };
+  document.getElementById(id)?.scrollIntoView({ behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth", block: "start" });
 }
 
 function formatMinutes(minutes) {
@@ -128,17 +115,9 @@ function LinkedVerifications({ items }) {
     <p className="linked-verifications">
       <strong>À revérifier :</strong>{" "}
       {items.map((item) => `${item.topic} (${item.timingLabel.toLowerCase()})`).join(" · ")}{" "}
-      <a href="#verify">Voir les sources</a>
+      {items.map((item) => <a className="verification-jump" href={"#" + item.id} key={item.id}>Vérifier : {item.topic}</a>)}
     </p>
   );
-}
-
-async function hashPassword(value) {
-  const bytes = new TextEncoder().encode(value.normalize("NFKC"));
-  const digest = await crypto.subtle.digest("SHA-256", bytes);
-  return [...new Uint8Array(digest)]
-    .map((byte) => byte.toString(16).padStart(2, "0"))
-    .join("");
 }
 
 async function copyText(value) {
@@ -153,69 +132,36 @@ async function copyText(value) {
   area.style.opacity = "0";
   document.body.append(area);
   area.select();
-  document.execCommand("copy");
+  const copied = document.execCommand("copy");
   area.remove();
+  if (!copied) throw new Error("Copy unavailable");
 }
 
-function BrandHeader({ isGate, isTrip, onHome, onOpenTrip, onShare }) {
+function BrandHeader({ isTrip, onShare }) {
   return (
     <header className="site-header">
       <div className="header-inner">
-        <button
-          aria-label="Mon Florian, revenir au début"
-          className="brand-button brand"
-          onClick={onHome}
-          type="button"
-        >
-          <span aria-hidden="true" className="brand-character">
-            <img alt="" height="384" src="/assets/florian-v2-original-web.webp" width="384" />
-          </span>
-          <img
-            alt=""
-            className="brand-wordmark"
-            height="181"
-            src="/assets/monflorian-wordmark-web.webp"
-            width="338"
-          />
-        </button>
+        <a aria-label="Mon Florian, accueil" className="brand-button brand" href="/">
+          <span aria-hidden="true" className="brand-character"><Portrait alt="" height="384" width="384" /></span>
+          <img alt="" className="brand-wordmark" height="181" src="/assets/monflorian-wordmark-web.webp" width="338" />
+        </a>
         <nav aria-label="Navigation principale" className="desktop-nav">
-          <button onClick={() => (onHome(), setTimeout(() => scrollToId("how"), 0))} type="button">
-            Comment ça marche
-          </button>
-          <button onClick={() => (onHome(), setTimeout(() => scrollToId("create"), 0))} type="button">
-            Préparer le mien
-          </button>
-          <button onClick={() => (onHome(), setTimeout(() => scrollToId("examples"), 0))} type="button">
-            Inspirations
-          </button>
+          <a href={TRIP_PATH}>Le carnet Japon</a>
+          <a href="/#create">Mon pense-bête</a>
+          <a href="/guides">Les guides</a>
         </nav>
-        {isGate ? (
-          <span className="header-gate-state"><Icon name="lock" size={16} /> Accès privé</span>
-        ) : isTrip ? (
-          <Button
-            className="header-action"
-            icon={<Icon name="share" size={17} />}
-            label="Partager"
-            onClick={onShare}
-            size="lg"
-            variant="primary"
-          />
-        ) : (
-          <Button
-            className="header-action"
-            label="Voir le carnet"
-            onClick={onOpenTrip}
-            size="lg"
-            variant="secondary"
-          />
-        )}
+        <details className="mobile-menu">
+          <summary>Menu</summary>
+          <nav aria-label="Navigation mobile" onClick={(event) => { if (event.target.closest("a")) event.currentTarget.closest("details").open = false; }}><a href={TRIP_PATH}>Le carnet Japon</a><a href="/#create">Mon pense-bête</a><a href="/guides">Les guides</a><a href="/#examples">Inspirations</a></nav>
+        </details>
+        {isTrip ? <Button className="header-action js-only" icon={<Icon name="share" size={17} />} label="Partager" onClick={onShare} size="lg" variant="primary" /> : <Button className="header-action" href={TRIP_PATH} label="Voir le carnet" size="lg" variant="secondary" />}
       </div>
     </header>
   );
 }
 
 function BrandIntro({ onPastChange }) {
-  const [isCompact, setIsCompact] = useState(() => window.matchMedia("(max-width: 760px)").matches);
+  const [isCompact, setIsCompact] = useState(false);
 
   useEffect(() => {
     const media = window.matchMedia("(max-width: 760px)");
@@ -267,12 +213,13 @@ function BrandIntro({ onPastChange }) {
       <span className="brand-intro-content">
         <span className="brand-intro-lockup">
           <span className="brand-character">
-            <img alt="" height="1024" src="/assets/florian-v2-original-intro.webp" width="1024" />
+            <Portrait alt="" height="1024" intro loading="lazy" width="1024" />
           </span>
           <img
             alt=""
             className="brand-wordmark"
             height="724"
+            loading="lazy"
             src="/assets/monflorian-wordmark-intro.webp"
             width="1352"
           />
@@ -357,7 +304,7 @@ function PromisePhone() {
             ))}
           </div>
           <div className="phone-florian-note">
-            <img alt="" height="384" src="/assets/florian-v2-original-web.webp" width="384" />
+            <Portrait alt="" height="384" width="384" />
             <p><strong>Le choix de Florian</strong> Trois bases seulement, pour voir beaucoup sans refaire les valises chaque matin.</p>
           </div>
         </div>
@@ -367,37 +314,33 @@ function PromisePhone() {
   );
 }
 
-function Hero({ onOpenTrip }) {
+function Hero() {
   return (
     <section className="home-hero" aria-labelledby="hero-title">
       <div className="hero-copy">
-        <p className="eyebrow">FLORIAN, TON COPILOTE DE VOYAGE</p>
-        <h1 id="hero-title">Tu donnes l’envie.<br />Je construis le chemin.</h1>
+        <h1 id="hero-title">Ton voyage,<br />à ton rythme.</h1>
         <p className="hero-intro">
-          Décris le voyage que tu imagines. Florian organise les étapes, les trajets,
-          les quartiers où dormir et les journées qui respirent, puis réunit tout
-          dans un carnet facile à consulter et à partager.
+          Un itinéraire pour te projeter, les trajets pour relier les étapes et du temps pour improviser.
+          Explore dix jours au Japon, puis pose les idées de ton propre voyage.
         </p>
         <div className="hero-actions">
           <Button
             endContent={<Icon name="arrow" />}
             label="Ouvrir le carnet Japon"
-            onClick={onOpenTrip}
+            href={TRIP_PATH}
             size="lg"
             variant="primary"
           />
-          <button className="text-link" onClick={() => scrollToId("create")} type="button">
-            Préparer le mien
-          </button>
+          <a className="text-link" href="#create">Préparer mon pense-bête</a>
         </div>
         <p className="hero-demo-note">
-          <strong>Exemple interactif.</strong> Découvre le format avec dix jours au Japon.
-          Tes réponses restent dans cette page et ouvrent ce même carnet.
+          <strong>Un carnet d’exemple, accessible à tous.</strong> Le voyage Japon est déjà écrit.
+          La création d’un itinéraire sur mesure n’est pas encore ouverte.
         </p>
-        <ul className="hero-trust" aria-label="Cadre de la démonstration">
+        <ul className="hero-trust" aria-label="Ce que tu peux faire ici">
           <li>Aucune réservation automatique</li>
-          <li>Aucune donnée personnelle demandée</li>
-          <li>Partage simulé</li>
+          <li>Sans compte</li>
+          <li>Pense-bête sur ton appareil</li>
         </ul>
       </div>
       <PromisePhone />
@@ -416,8 +359,7 @@ function WhatYouReceive() {
     <section className="deliverables-section" aria-labelledby="deliverables-title">
       <div className="section-heading compact-heading">
         <div>
-          <p className="eyebrow">CE QUE TU REÇOIS</p>
-          <h2 id="deliverables-title">Pas une liste d’idées. Un voyage que tu peux décider.</h2>
+          <h2 id="deliverables-title">Tout ce qu’il faut pour se projeter.</h2>
         </div>
         <p>Chaque recommandation a une place, une raison et un niveau de priorité.</p>
       </div>
@@ -432,7 +374,7 @@ function WhatYouReceive() {
   );
 }
 
-function JapanProof({ onOpenTrip }) {
+function JapanProof() {
   const garden = japanTrip.chapters[1].image.asset;
   return (
     <section className="guide-proof-section" aria-labelledby="proof-title">
@@ -445,7 +387,7 @@ function JapanProof({ onOpenTrip }) {
         />
       </div>
       <div className="guide-proof-copy">
-        <p className="eyebrow">UN CARNET COMPLET, AVANT LE FORMULAIRE</p>
+
         <h2 id="proof-title">Le Japon à deux, prêt à être exploré.</h2>
         <p>{japanTrip.trip.summary}</p>
         <ol className="proof-route" aria-label="Itinéraire du carnet Japon">
@@ -464,7 +406,7 @@ function JapanProof({ onOpenTrip }) {
         <Button
           endContent={<Icon name="arrow" />}
           label="Voir le carnet complet"
-          onClick={onOpenTrip}
+          href={TRIP_PATH}
           size="lg"
           variant="primary"
         />
@@ -473,184 +415,16 @@ function JapanProof({ onOpenTrip }) {
   );
 }
 
-const paceOptions = [
-  { key: "calme", title: "Calme", note: "Une grande idée par jour" },
-  { key: "equilibre", title: "Équilibré", note: "Des temps forts et du temps libre" },
-  { key: "intense", title: "Intense", note: "Profiter de chaque créneau" },
-];
-
-const comfortOptions = [
-  { key: "charme", title: "Hôtels de charme", note: "Adresses singulières et bien placées" },
-  { key: "confort", title: "Confort essentiel", note: "Pratique, calme et sans détour" },
-  { key: "mixte", title: "Un mélange", note: "Une belle nuit, puis des bases simples" },
-];
-
-function TripQuestionnaire({ onGenerate }) {
-  const [step, setStep] = useState(0);
-  const [brief, setBrief] = useState("");
-  const [days, setDays] = useState(10);
-  const [travelers, setTravelers] = useState(2);
-  const [pace, setPace] = useState("equilibre");
-  const [comfort, setComfort] = useState("charme");
-
-  function goTo(nextStep) {
-    setStep(nextStep);
-    document.getElementById("questionnaire-title")?.focus({ preventScroll: true });
-  }
-
-  return (
-    <section className="composer-section" id="create" aria-labelledby="questionnaire-title">
-      <div className="section-heading composer-heading">
-        <div>
-          <p className="eyebrow">ESSAIE LE PARCOURS</p>
-          <h2 id="questionnaire-title" tabIndex="-1">À quoi ressemble ton prochain voyage ?</h2>
-        </div>
-        <p>
-          Trois étapes courtes pour tester la préparation. Cet exemple ouvre toujours
-          le même carnet Japon et n’envoie aucune réponse.
-        </p>
-      </div>
-      <div className="composer-layout">
-        <Card className="composer-card" elevation="low" padding={6}>
-          <Stepper
-            activeStep={step}
-            density="compact"
-            indicatorPosition="on-track"
-            label="Préparation du voyage"
-            onStepClick={goTo}
-          >
-            <Step label="L’envie" step={0} />
-            <Step label="Le rythme" step={1} />
-            <Step label="Le confort" step={2} />
-          </Stepper>
-          <form
-            className="questionnaire-form"
-            onSubmit={(event) => {
-              event.preventDefault();
-              onGenerate({ brief, comfort, days, pace, travelers });
-            }}
-          >
-            <div className="step-panel" key={step}>
-              {step === 0 ? (
-                <div className="field-stack">
-                  <div className="step-kicker">01 · RACONTE-MOI</div>
-                  <div className="brief-field">
-                    <TextArea
-                      description="Une destination, une saison, une sensation ou simplement une envie de partir."
-                      isOptional
-                      label="Le voyage que tu imagines"
-                      maxLength={2000}
-                      onChange={setBrief}
-                      placeholder="Dix jours au Japon à deux, entre quartiers vivants, sources chaudes et temples. On veut voir beaucoup sans courir…"
-                      rows={7}
-                      size="lg"
-                      value={brief}
-                      width="100%"
-                    />
-                  </div>
-                  <p className="field-hint">Évite ici les noms, documents ou autres informations personnelles.</p>
-                </div>
-              ) : null}
-              {step === 1 ? (
-                <div className="field-stack">
-                  <div className="step-kicker">02 · DONNE LE TEMPO</div>
-                  <div className="number-grid">
-                    <NumberInput isIntegerOnly label="Nombre de jours" max={14} min={2} onChange={setDays} units="jours" value={days} width="100%" />
-                    <NumberInput isIntegerOnly label="Voyageurs" max={8} min={1} onChange={setTravelers} units="personnes" value={travelers} width="100%" />
-                  </div>
-                  <fieldset className="selection-fieldset">
-                    <legend>Quel rythme te ressemble ?</legend>
-                    <div className="selection-grid">
-                      {paceOptions.map((option) => (
-                        <SelectableCard
-                          isSelected={pace === option.key}
-                          key={option.key}
-                          label={option.title}
-                          onChange={() => setPace(option.key)}
-                          padding={4}
-                          variant={pace === option.key ? "blue" : "default"}
-                        >
-                          <strong>{option.title}</strong><span>{option.note}</span>
-                        </SelectableCard>
-                      ))}
-                    </div>
-                  </fieldset>
-                </div>
-              ) : null}
-              {step === 2 ? (
-                <div className="field-stack">
-                  <div className="step-kicker">03 · CHOISIS TA BASE</div>
-                  <fieldset className="selection-fieldset">
-                    <legend>Quelle ambiance d’hôtel ?</legend>
-                    <div className="selection-grid">
-                      {comfortOptions.map((option) => (
-                        <SelectableCard
-                          isSelected={comfort === option.key}
-                          key={option.key}
-                          label={option.title}
-                          onChange={() => setComfort(option.key)}
-                          padding={4}
-                          variant={comfort === option.key ? "green" : "default"}
-                        >
-                          <strong>{option.title}</strong><span>{option.note}</span>
-                        </SelectableCard>
-                      ))}
-                    </div>
-                  </fieldset>
-                  <div className="demo-disclosure">
-                    <strong>Ce que fait cet exemple</strong>
-                    <p>
-                      Il montre le parcours et le niveau de détail du carnet. Les réponses
-                      restent dans ton navigateur, ne sont pas enregistrées et n’influencent
-                      pas la proposition Japon dans cette démonstration.
-                    </p>
-                  </div>
-                </div>
-              ) : null}
-            </div>
-            <div className="form-actions">
-              {step > 0 ? <Button label="Retour" onClick={() => goTo(step - 1)} size="lg" variant="ghost" /> : <span />}
-              {step < 2 ? (
-                <Button endContent={<Icon name="arrow" />} label="Continuer" onClick={() => goTo(step + 1)} size="lg" variant="primary" />
-              ) : (
-                <Button endContent={<Icon name="arrow" />} label="Voir la proposition Japon" size="lg" type="submit" variant="primary" />
-              )}
-            </div>
-          </form>
-        </Card>
-        <aside className="composer-aside">
-          <div className="composer-aside-signature">
-            <img alt="" height="384" src="/assets/florian-v2-original-web.webp" width="384" />
-            <p className="aside-label">CE QUE FLORIAN ORGANISE</p>
-          </div>
-          <div className="route-line" aria-hidden="true">
-            <span>Départ</span><i /><span>Respirer</span><i /><span>S’émerveiller</span>
-          </div>
-          <blockquote>
-            “Je garde les journées que tu attends, mais aussi les heures où rien
-            n’est prévu. C’est souvent là que le voyage commence vraiment.”
-          </blockquote>
-          <ul>
-            <li><Icon name="check" /> Un ordre qui limite les détours</li>
-            <li><Icon name="check" /> Des hôtels à comparer sur Booking.com</li>
-            <li><Icon name="check" /> Les réservations classées par priorité</li>
-          </ul>
-        </aside>
-      </div>
-    </section>
-  );
-}
-
-function Examples({ onOpen }) {
+function Examples() {
   return (
     <section className="examples-section" id="examples">
       <div className="section-heading">
-        <div><p className="eyebrow">TROIS AUTRES FAÇONS DE PARTIR</p><h2>Le même cadre, jamais le même voyage.</h2></div>
-        <p>Chaque parcours relie les étapes, les respirations et les bonnes bases où dormir.</p>
+        <div><h2>D’autres envies de départ.</h2></div>
+        <p>Trois pistes pour choisir une ambiance. Le carnet Japon reste l’exemple détaillé.</p>
       </div>
       <div className="example-grid">
         {exampleTrips.map((trip) => (
-          <ClickableCard className="example-card" elevation="low" key={trip.slug} label={"Découvrir " + trip.title} onClick={() => onOpen(trip)} padding={0}>
+          <article className="example-card" key={trip.slug}>
             <div className="example-image">
               <img alt={trip.subtitle} decoding="async" height="960" loading="lazy" src={trip.image} width="1440" />
               <strong>{trip.coverLabel}</strong>
@@ -659,9 +433,9 @@ function Examples({ onOpen }) {
               <p className="card-eyebrow">{trip.eyebrow}</p>
               <h3>{trip.title}</h3><p className="example-subtitle">{trip.subtitle}</p>
               <p className="example-route">{trip.route}</p>
-              <span className="card-link">Voir le parcours <Icon name="arrow" size={18} /></span>
+              <details className="inspiration-detail" id={"inspiration-" + trip.slug}><summary>Voir les étapes</summary><p>{trip.summary}</p><ul>{trip.stops.map((stop) => <li key={stop}>{stop}</li>)}</ul><a href={"/#inspiration-" + trip.slug}>Lien vers cette inspiration</a></details>
             </div>
-          </ClickableCard>
+          </article>
         ))}
       </div>
     </section>
@@ -672,12 +446,11 @@ function HowItWorks() {
   return (
     <section className="how-section" id="how">
       <div className="how-intro">
-        <p className="eyebrow">SIMPLEMENT BIEN PRÉPARÉ</p>
-        <h2>Moins de comparaisons.<br />Plus de décisions claires.</h2>
+        <h2>De l’envie aux premières décisions.</h2>
       </div>
       <ol className="how-list">
-        <li><span>01</span><div><h3>Tu racontes</h3><p>Une phrase suffit. Ajoute le rythme, le nombre de jours et ce qui compte pour toi.</p></div></li>
-        <li><span>02</span><div><h3>Florian relie</h3><p>Les étapes s’enchaînent sans zigzag, avec des journées qui respirent et des hôtels bien placés.</p></div></li>
+        <li><span>01</span><div><h3>Explore le carnet</h3><p>Regarde comment les nuits, les trajets et les journées s’articulent dans l’exemple Japon.</p></div></li>
+        <li><span>02</span><div><h3>Pose tes envies</h3><p>Ton pense-bête rassemble destination, rythme et confort. Garde-le sur ton appareil ou télécharge-le.</p></div></li>
         <li><span>03</span><div><h3>Tu décides</h3><p>Le carnet distingue l’essentiel du facultatif et rassemble les points à vérifier avant de réserver.</p></div></li>
       </ol>
     </section>
@@ -686,15 +459,15 @@ function HowItWorks() {
 
 function Questions() {
   const questions = [
+    ["Puis-je créer un voyage sur mesure ?", "Pas encore. Tu peux explorer le carnet Japon, lire les guides et préparer ton propre pense-bête. Aucun paiement, envoi de courriel ou génération ne se déclenche."],
     ["Les prix sont-ils en temps réel ?", "Non. Les liens ouvrent une recherche Booking.com et les prix, disponibilités et conditions doivent être vérifiés au moment de réserver."],
     ["Est-ce que Mon Florian réserve à ma place ?", "Non. Le carnet organise les décisions et te conduit vers les services concernés, sans acheter ni confirmer quoi que ce soit."],
-    ["Que deviennent mes réponses ?", "Dans cet exemple, elles restent dans ton navigateur, ne sont pas envoyées et ouvrent toujours le même carnet Japon."],
-    ["Dois-je ajouter des photos ?", "Non. Ce parcours de démonstration ne demande aucun portrait. Les cinq images du carnet utilisent un couple fictif créé pour cet exemple."],
+    ["Que deviennent mes réponses ?", "Ton pense-bête reste dans cette page. Tu peux choisir de le conserver sur cet appareil, le télécharger ou le copier. Il n’est jamais envoyé à Mon Florian et ne personnalise pas le carnet Japon."],
+    ["Dois-je ajouter des photos ?", "Non. Aucune photo n’est demandée. Les illustrations sont synthétiques et les personnages du carnet Japon sont fictifs."],
   ];
   return (
-    <section className="questions-section" aria-labelledby="questions-title">
+    <section id="questions" className="questions-section" aria-labelledby="questions-title">
       <div>
-        <p className="eyebrow">AVANT DE COMMENCER</p>
         <h2 id="questions-title">Ce que fait le carnet. Et ce qu’il ne fait pas.</h2>
       </div>
       <div className="questions-list">
@@ -709,88 +482,21 @@ function Questions() {
   );
 }
 
-function MobileCta() {
-  const [isVisible, setIsVisible] = useState(true);
-
-  useEffect(() => {
-    const composer = document.getElementById("create");
-    if (!composer || typeof IntersectionObserver !== "function") return undefined;
-    const observer = new IntersectionObserver(([entry]) => {
-      setIsVisible(!entry.isIntersecting && entry.boundingClientRect.top > 0);
-    }, { rootMargin: "0px 0px -20% 0px" });
-    observer.observe(composer);
-    return () => observer.disconnect();
-  }, []);
-
-  return (
-    <div className={"mobile-cta" + (isVisible ? "" : " is-hidden")}>
-      <Button
-        endContent={<Icon name="arrow" size={18} />}
-        label="Préparer mon voyage"
-        onClick={() => scrollToId("create")}
-        size="lg"
-        variant="primary"
-      />
-    </div>
-  );
-}
-
-function HomePage({ onGenerate, onOpenExample, onOpenTrip }) {
+function HomePage() {
   return (
     <main id="main-content">
-      <Hero onOpenTrip={onOpenTrip} />
+      <Hero />
       <WhatYouReceive />
-      <JapanProof onOpenTrip={onOpenTrip} />
-      <TripQuestionnaire onGenerate={onGenerate} />
-      <Examples onOpen={onOpenExample} />
+      <JapanProof />
+      <TripPlanner />
+      <Examples />
+      <section className="home-guides" aria-labelledby="home-guides-title">
+        <div><h2 id="home-guides-title">Avant de remplir les valises.</h2><p>Deux guides pour passer d’une envie à un parcours réaliste.</p></div>
+        <div>{guides.map((guide) => <a href={guide.path} key={guide.path}><h3>{guide.heading}</h3><p>{guide.description}</p><span>Lire le guide <Icon name="arrow" /></span></a>)}</div>
+        <a className="text-link" href="/guides">Tous les guides</a>
+      </section>
       <HowItWorks />
       <Questions />
-      <MobileCta />
-    </main>
-  );
-}
-
-function GeneratingPage({ onDone }) {
-  const [statusIndex, setStatusIndex] = useState(0);
-
-  useEffect(() => {
-    const statusTimer = window.setInterval(() => {
-      setStatusIndex((current) => Math.min(current + 1, generationStatuses.length - 1));
-    }, 360);
-    const doneTimer = window.setTimeout(onDone, 1200);
-    return () => {
-      window.clearInterval(statusTimer);
-      window.clearTimeout(doneTimer);
-    };
-  }, [onDone]);
-
-  const complete = statusIndex === generationStatuses.length - 1;
-  const progress = ((statusIndex + 1) / generationStatuses.length) * 100;
-
-  return (
-    <main className="generating-page" id="main-content">
-      <div className="generation-card">
-        <span className="generation-count">EXEMPLE JAPON · 10 JOURS · 3 BASES</span>
-        <div className="generation-mark" aria-hidden="true">
-          {complete ? (
-            <span className="t-success-check" data-state="in">
-              <svg fill="none" height="72" viewBox="0 0 48 48" width="72">
-                <path d="m8 25 10 10 22-24" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="4" />
-              </svg>
-            </span>
-          ) : <span className="paper-plane">↗</span>}
-        </div>
-        <p className="eyebrow">OUVERTURE DE L’EXEMPLE</p>
-        <h1>{generationStatuses[statusIndex]}</h1>
-        <p className="generation-note">Aucune réponse n’est envoyée : ce passage ouvre le carnet Japon déjà préparé.</p>
-        <ProgressBar
-          hasValueLabel
-          label="Préparation du carnet"
-          value={progress}
-          variant={complete ? "success" : "accent"}
-        />
-        <div aria-live="polite" className="sr-only">{generationStatuses[statusIndex]}</div>
-      </div>
     </main>
   );
 }
@@ -819,8 +525,8 @@ function TripHero({ onShare }) {
           <Badge label={"Rythme " + trip.paceLabel.toLowerCase()} variant="success" />
         </div>
         <p className="trip-summary">{trip.summary}</p>
-        <Button icon={<Icon name="share" />} label="Partager ce voyage" onClick={onShare} size="lg" variant="primary" />
-        <p className="trip-demo-label">Exemple sans donnée personnelle · Prix et disponibilités à vérifier</p>
+        <Button icon={<Icon name="share" />} className="js-only" label="Partager ce carnet" onClick={onShare} size="lg" variant="primary" />
+        <p className="trip-demo-label">Carnet éditorial d’exemple · Illustrations synthétiques, personnages fictifs · Informations à vérifier pour tes dates</p>
       </div>
     </section>
   );
@@ -866,7 +572,7 @@ function FlorianRationale() {
   return (
     <section className="florian-note" aria-label="Pourquoi cet itinéraire">
       <div className="florian-mini">
-        <img alt="Florian" height="384" src="/assets/florian-v2-original-web.webp" width="384" />
+        <Portrait alt="Florian" height="384" width="384" />
       </div>
       <div>
         <p className="eyebrow">POURQUOI CET ORDRE</p>
@@ -933,7 +639,7 @@ function Day({ item }) {
   });
 
   return (
-    <li className="day-item">
+    <li className="day-item" id={"jour-" + item.day}>
       <div className="day-number"><span>JOUR</span><strong>{String(item.day).padStart(2, "0")}</strong></div>
       <div className="day-copy">
         <div className="day-heading">
@@ -1032,6 +738,25 @@ function BudgetSection() {
 }
 
 function ReservationsSection() {
+  const storageKey = "monflorian:japan-checklist:v1";
+  const [checked, setChecked] = useState([]);
+  const [feedback, setFeedback] = useState("");
+  useEffect(() => {
+    try {
+      const saved = JSON.parse(localStorage.getItem(storageKey) || "[]");
+      if (Array.isArray(saved)) setChecked([...new Set(saved.filter((id) => japanTrip.reservationPlan.some((item) => item.id === id)))]);
+    } catch { setFeedback("La sauvegarde est indisponible. Tu peux utiliser la checklist pendant cette visite."); }
+  }, []);
+  function toggle(id) {
+    const next = checked.includes(id) ? checked.filter((value) => value !== id) : [...checked, id];
+    setChecked(next);
+    try { localStorage.setItem(storageKey, JSON.stringify(next)); setFeedback("Checklist enregistrée sur cet appareil."); }
+    catch { setFeedback("Ce changement restera seulement pendant cette visite."); }
+  }
+  function reset() {
+    try { localStorage.removeItem(storageKey); setChecked([]); setFeedback("Les cases sont décochées et la copie locale est effacée."); }
+    catch { setFeedback("La copie locale n’a pas pu être effacée. Réessaie depuis les réglages du navigateur."); }
+  }
   const groups = ["essential", "recommended", "optional"];
   return (
     <section className="reservations-section" id="reservations" aria-labelledby="reservations-title">
@@ -1039,6 +764,7 @@ function ReservationsSection() {
         <div><p className="eyebrow">PLAN DE RÉSERVATION</p><h2 id="reservations-title">À faire dans le bon ordre.</h2></div>
         <p>Commence par ce qui structure l’itinéraire. Le reste peut rester souple plus longtemps.</p>
       </div>
+      <div className="checklist-summary js-only"><p><strong>{checked.length} sur {japanTrip.reservationPlan.length} vérifications cochées.</strong> Les cases restent dans ce navigateur. Cocher une case signifie que tu as vérifié ce point ; cela ne réserve rien.</p>{checked.length ? <button className="text-link" onClick={reset} type="button">Tout décocher</button> : null}<p aria-live="polite">{feedback}</p></div>
       <div className="reservation-groups">
         {groups.map((priority) => {
           const items = japanTrip.reservationPlan.filter((item) => item.priority === priority);
@@ -1052,7 +778,7 @@ function ReservationsSection() {
               <ol>
                 {items.map((item) => (
                   <li key={item.id}>
-                    <div><span>{item.categoryLabel}</span><strong>{item.title}</strong></div>
+                    <div><span>{item.categoryLabel}</span><label className="reservation-check"><input className="js-only" type="checkbox" checked={checked.includes(item.id)} onChange={() => toggle(item.id)} /><strong>{item.title}</strong></label></div>
                     <p>{item.reason}</p>
                     <small>
                       {item.day ? `Jour ${item.day} · ` : ""}
@@ -1106,17 +832,17 @@ function VerificationSection() {
   return (
     <section className="verification-section" id="verify" aria-labelledby="verification-title">
       <div className="section-heading compact-heading">
-        <div><p className="eyebrow">INFORMATIONS À REVÉRIFIER</p><h2 id="verification-title">Le carnet sait ce qui peut changer.</h2></div>
-        <p>Horaires, règles, tarifs et conditions doivent être confirmés auprès de la source indiquée au bon moment.</p>
+        <div><p className="eyebrow">INFORMATIONS À REVÉRIFIER</p><h2 id="verification-title">Les sources pour revérifier.</h2></div>
+        <p>Horaires, règles, tarifs et conditions doivent être confirmés auprès de la source indiquée au bon moment. Liens sélectionnés le 7 septembre 2026 ; ce relevé ne valide pas les informations pour tes dates.</p>
       </div>
       <div className="verification-list">
         {japanTrip.verificationItems.map((item) => (
-          <details key={item.id}>
+          <details id={item.id} key={item.id}>
             <summary><span>{item.topic}</span><small>{item.timingLabel}</small></summary>
             <div>
               <p>{item.reason}</p>
               <dl>
-                <div><dt>Source à consulter</dt><dd>{item.sourceHint}</dd></div>
+                <div><dt>Source à consulter</dt><dd>{item.sourceHint}{sourceLinks[item.id]?.map((source) => <a className="official-source" href={source.url} key={source.url} rel="noopener noreferrer" target="_blank">{source.label} <span className="sr-only">, nouvel onglet</span></a>)}</dd></div>
                 <div><dt>Type</dt><dd>{item.sourceTypeLabel}</dd></div>
               </dl>
             </div>
@@ -1135,8 +861,10 @@ function TripPage({ onShare }) {
         <a href="#overview">Parcours</a>
         <a href="#itinerary">Jour après jour</a>
         <a href="#hotels">Hôtels</a>
-        <a href="#reservations">Réservations</a>
+        <a href="#reservations">Ma checklist</a>
+        <a href="#budget">Budget</a>
         <a href="#practical">À prévoir</a>
+        <a href="#verify">Sources</a>
       </nav>
       <RouteOverview />
       <FlorianRationale />
@@ -1145,6 +873,7 @@ function TripPage({ onShare }) {
           <div><p className="eyebrow">JOUR APRÈS JOUR</p><h2 id="itinerary-title">Dix jours, sans course contre la montre.</h2></div>
           <p>Les durées restent des repères. Les pauses, les plans pluie et les soirées libres font partie du parcours.</p>
         </div>
+        <nav className="day-navigation" aria-label="Aller à une journée">{japanTrip.days.map((day) => <a href={"#jour-" + day.day} key={day.day} title={day.title}><strong>J{day.day}</strong><span>{day.cityLabel}</span></a>)}</nav>
         {japanTrip.chapters.map((chapter, index) => <Chapter chapter={chapter} index={index} key={chapter.id} />)}
       </section>
       <HotelsSection />
@@ -1155,332 +884,89 @@ function TripPage({ onShare }) {
       <section className="trip-share-cta">
         <p className="eyebrow">UN CARNET COMMUN</p>
         <h2>Garde le même voyage sous la main.</h2>
-        <p>Teste un lien public ou un accès privé avec le mot de passe de démonstration.</p>
-        <Button icon={<Icon name="share" />} label="Choisir le partage" onClick={onShare} size="lg" variant="primary" />
+        <p>Partage l’exemple avec tes proches. Tes cases cochées et ton pense-bête restent sur ton appareil.</p>
+        <div className="trip-tools js-only"><Button icon={<Icon name="share" />} label="Copier ou partager le lien" onClick={onShare} size="lg" variant="primary" /><Button label="Imprimer le carnet" onClick={() => window.print()} size="lg" variant="secondary" /></div>
+        <p><a href="/guides/japon-10-jours-preparer-voyage">Comment adapter ces dix jours à ton voyage</a></p>
       </section>
     </main>
   );
 }
 
-function PasswordGate({ proof, onUnlock, onHome }) {
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
-
-  async function submit(event) {
-    event.preventDefault();
-    if (!proof || (await hashPassword(password)) !== proof) {
-      setError("Ce mot de passe ne correspond pas à ce voyage.");
-      return;
-    }
-    setError("");
-    onUnlock();
-  }
-
-  return (
-    <main className="gate-page" id="main-content">
-      <Card className="gate-card" elevation="med" padding={8}>
-        <span className="gate-icon"><Icon name="lock" size={26} /></span>
-        <p className="eyebrow">VOYAGE PRIVÉ · DÉMONSTRATION</p>
-        <h1>{japanTrip.trip.title}</h1>
-        <p>Entre le mot de passe reçu séparément pour ouvrir ce carnet d’exemple.</p>
-        <form onSubmit={submit}>
-          <TextInput
-            description="Le mot de passe respecte les majuscules et les chiffres."
-            label="Mot de passe"
-            onChange={setPassword}
-            maxLength={64}
-            placeholder="Ton mot de passe"
-            status={error ? { message: error, type: "error" } : undefined}
-            type="password"
-            value={password}
-            width="100%"
-          />
-          <Button label="Ouvrir le voyage" size="lg" type="submit" variant="primary" width="100%" />
-        </form>
-        <p className="gate-demo-note">Ce contrôle illustre le parcours. Le carnet ne contient aucune donnée personnelle.</p>
-        <button className="text-link" onClick={onHome} type="button">Retour à Mon Florian</button>
-      </Card>
-    </main>
-  );
-}
-
 function ShareDialog({ isOpen, onClose }) {
-  const [access, setAccess] = useState("private");
-  const [password, setPassword] = useState(PRIVATE_DEFAULT_PASSWORD);
   const [feedback, setFeedback] = useState("");
-  const [shareUrl, setShareUrl] = useState("");
-
-  useEffect(() => {
-    let isCurrent = true;
-    if (!isOpen || (access === "private" && password.length < 4)) {
-      setShareUrl("");
-      if (!isOpen) setFeedback("");
-      return () => { isCurrent = false; };
-    }
-    setShareUrl("");
-    void buildLink().then((url) => {
-      if (isCurrent) setShareUrl(url);
-    });
-    return () => { isCurrent = false; };
-  }, [access, isOpen, password]);
-
-  async function buildLink() {
-    const url = new URL("/v2", window.location.origin);
-    url.searchParams.set("voyage", japanTrip.slug);
-    url.searchParams.set("acces", access === "private" ? "prive" : "public");
-    if (access === "private") {
-      url.searchParams.set("preuve", await hashPassword(password));
-    }
-    return url.toString();
-  }
-
+  const shareUrl = "https://monflorian.com" + TRIP_PATH;
   async function copyLink() {
-    if (access === "private" && password.length < 4) {
-      setFeedback("Choisis au moins quatre caractères.");
-      return;
-    }
-    await copyText(shareUrl || await buildLink());
-    setFeedback("Lien copié.");
+    try { await copyText(shareUrl); setFeedback("Lien copié. Tes cases cochées restent sur cet appareil."); }
+    catch { setFeedback("La copie n’est pas disponible. Sélectionne le lien ci-dessous pour le copier."); }
   }
-
   async function shareLink() {
-    if (!shareUrl) {
-      setFeedback("Le lien est presque prêt. Réessaie dans un instant.");
-      return;
-    }
-    if (navigator.share) {
-      try {
-        await navigator.share({
-          title: japanTrip.trip.title + " · Mon Florian",
-          text: "Voici notre voyage au Japon.",
-          url: shareUrl,
-        });
-        setFeedback("Partage ouvert.");
-      } catch (error) {
-        setFeedback(error?.name === "AbortError" ? "Partage annulé." : "Copie le lien pour le partager.");
-      }
-      return;
-    }
-    await copyText(shareUrl);
-    setFeedback("Lien copié.");
+    if (!navigator.share) return copyLink();
+    try { await navigator.share({ title: "Dix jours au Japon · Mon Florian", text: "Un carnet d’exemple pour préparer dix jours au Japon.", url: shareUrl }); setFeedback("Partage ouvert."); }
+    catch (error) { setFeedback(error?.name === "AbortError" ? "Partage annulé." : "Le partage n’est pas disponible. Tu peux copier le lien."); }
   }
-
   return (
-    <Dialog
-      isOpen={isOpen}
-      maxHeight="calc(100dvh - 24px)"
-      onOpenChange={onClose}
-      purpose="form"
-      width={560}
-    >
-      <Layout
-        height="fill"
-        header={<DialogHeader hasDivider onOpenChange={onClose} subtitle="Famille, amis ou compagnon de voyage" title={"Partager " + japanTrip.trip.title} />}
-        content={
-          <LayoutContent isScrollable>
-            <div className="share-dialog-content">
-              <SegmentedControl label="Visibilité du voyage" onChange={setAccess} value={access}>
-                <SegmentedControlItem label="Privé" value="private" />
-                <SegmentedControlItem label="Public" value="public" />
-              </SegmentedControl>
-              {access === "private" ? (
-                <div className="private-share-fields">
-                  <TextInput
-                    description="Envoie-le séparément du lien."
-                    label="Mot de passe de démonstration"
-                    maxLength={64}
-                    onChange={setPassword}
-                    type="text"
-                    value={password}
-                    width="100%"
-                  />
-                  <button
-                    className="copy-password"
-                    onClick={async () => {
-                      await copyText(password);
-                      setFeedback("Mot de passe copié.");
-                    }}
-                    type="button"
-                  >
-                    Copier le mot de passe
-                  </button>
-                </div>
-              ) : (
-                <p className="share-explanation">Toute personne qui reçoit le lien peut ouvrir ce carnet d’exemple.</p>
-              )}
-              <p className="share-demo-note">
-                Cette simulation ne contient aucune donnée personnelle. Un vrai accès privé doit être contrôlé côté serveur ; le lien seul ne constitue pas une protection.
-              </p>
-              <div aria-live="polite" className="share-feedback">{feedback || "Choisis l’accès puis partage le lien."}</div>
-            </div>
-          </LayoutContent>
-        }
-        footer={
-          <LayoutFooter hasDivider>
-            <div className="dialog-actions">
-              <Button label="Copier le lien" onClick={copyLink} size="lg" variant="secondary" />
-              <Button icon={<Icon name="share" />} label="Partager" onClick={shareLink} size="lg" variant="primary" />
-            </div>
-          </LayoutFooter>
-        }
-      />
+    <Dialog isOpen={isOpen} maxHeight="calc(100dvh - 24px)" onOpenChange={onClose} purpose="info" width={560}>
+      <Layout height="fill" header={<DialogHeader hasDivider onOpenChange={onClose} title="Partager le carnet Japon" />} content={<LayoutContent isScrollable><div className="share-dialog-content"><p>Ce carnet est public. Le lien ouvre le même exemple pour tout le monde, sans transmettre ton pense-bête ni ta checklist.</p><label className="share-link-label" htmlFor="public-share-link">Lien du carnet</label><input id="public-share-link" readOnly value={shareUrl} onFocus={(event) => event.target.select()} /><p aria-live="polite" className="share-feedback">{feedback}</p></div></LayoutContent>} footer={<LayoutFooter hasDivider><div className="dialog-actions"><Button label="Copier le lien" onClick={copyLink} size="lg" variant="secondary" /><Button icon={<Icon name="share" />} label="Partager" onClick={shareLink} size="lg" variant="primary" /></div></LayoutFooter>} />
     </Dialog>
   );
 }
 
-function ExampleDialog({ trip, onClose }) {
-  const [feedback, setFeedback] = useState("");
-  if (!trip) return null;
-  const exampleUrl = window.location.origin + "/v2?exemple=" + trip.slug;
-
-  return (
-    <Dialog isOpen={Boolean(trip)} maxHeight="88dvh" onOpenChange={onClose} purpose="info" width={680}>
-      <Layout
-        height="fill"
-        header={<DialogHeader hasDivider onOpenChange={onClose} subtitle={trip.route} title={trip.title} />}
-        content={
-          <LayoutContent padding={0}>
-            <div className="example-dialog-image">
-              <img alt={trip.subtitle} height="960" src={trip.image} width="1440" />
-              <strong>{trip.coverLabel}</strong>
-            </div>
-            <div className="example-dialog-copy">
-              <p className="card-eyebrow">{trip.eyebrow}</p>
-              <h3>{trip.subtitle}</h3><p>{trip.summary}</p>
-              <ul>{trip.stops.map((stop) => <li key={stop}>{stop}</li>)}</ul>
-              <p aria-live="polite" className="share-feedback">{feedback}</p>
-            </div>
-          </LayoutContent>
-        }
-        footer={
-          <LayoutFooter hasDivider>
-            <div className="dialog-actions">
-              <Button
-                icon={<Icon name="share" />}
-                label="Copier le lien"
-                onClick={async () => {
-                  await copyText(exampleUrl);
-                  setFeedback("Lien copié.");
-                }}
-                size="lg"
-                variant="primary"
-              />
-            </div>
-          </LayoutFooter>
-        }
-      />
-    </Dialog>
-  );
-}
-
-function Footer({ onHome }) {
+function Footer() {
   return (
     <footer className="site-footer">
-      <div className="footer-brand">
-        <button className="brand-button" onClick={onHome} type="button">
-          <img alt="Mon Florian" height="181" src="/assets/monflorian-wordmark-web.webp" width="338" />
-        </button>
-        <p>Des voyages qui te ressemblent, sans remplir chaque minute.</p>
-      </div>
-      <div className="footer-links">
-        <a href="/confidentialite">Confidentialité</a>
-      </div>
-      <p className="footer-mark">MON FLORIAN · 2026</p>
+      <div className="footer-brand"><a href="/"><img alt="Mon Florian, accueil" height="181" src="/assets/monflorian-wordmark-web.webp" width="338" /></a><p>Un voyage se prépare. Il se laisse aussi un peu ouvert.</p></div>
+      <nav className="footer-links" aria-label="Navigation de pied de page"><a href={TRIP_PATH}>Carnet Japon</a><a href="/guides">Guides de voyage</a><a href="/#create">Mon pense-bête</a><a href="/#questions">Questions fréquentes</a><a href="/confidentialite">Confidentialité</a></nav>
+      <p className="footer-mark">MON FLORIAN · 2026 · Aucune réservation ni paiement sur ce site.</p>
     </footer>
   );
 }
 
-function App() {
-  const [route, setRoute] = useState(routeFromLocation);
-  const [screen, setScreen] = useState(() => (routeFromLocation().trip ? "trip" : "home"));
-  const [unlocked, setUnlocked] = useState(false);
+export function App({ pathname = "/" }) {
   const [shareOpen, setShareOpen] = useState(false);
   const [introPast, setIntroPast] = useState(false);
-  const initialExample = useMemo(
-    () => exampleTrips.find((trip) => trip.slug === route.example) || null,
-    [],
-  );
-  const [example, setExample] = useState(initialExample);
+  const [avatar, setAvatar] = useState("original");
+  const isTrip = pathname === TRIP_PATH;
+  const isHome = pathname === "/";
+  const guide = guides.find((item) => item.path === pathname);
 
   useEffect(() => {
-    function onPopState() {
-      const next = routeFromLocation();
-      setRoute(next);
-      setUnlocked(false);
-      setScreen(next.trip ? "trip" : "home");
-      setExample(exampleTrips.find((trip) => trip.slug === next.example) || null);
-      window.scrollTo({ top: 0 });
+    document.documentElement.classList.add("is-interactive");
+    const params = new URLSearchParams(window.location.search);
+    const variants = ["original", "wind", "beanie", "summer", "flower"];
+    const requested = params.get("avatar");
+    const selected = variants.includes(requested) ? requested : variants[Math.floor(Math.random() * variants.length)];
+    const image = new Image();
+    image.src = "/assets/florian-v2-" + selected + "-web.webp";
+    let active = true;
+    image.decode().then(() => { if (active) setAvatar(selected); }).catch(() => {});
+    function openHashTarget() {
+      const target = document.getElementById(window.location.hash.slice(1));
+      if (target?.tagName === "DETAILS") target.open = true;
     }
-    window.addEventListener("popstate", onPopState);
-    return () => window.removeEventListener("popstate", onPopState);
-  }, []);
+    openHashTarget();
+    let openBeforePrint = [];
+    function preparePrint() { openBeforePrint = [...document.querySelectorAll(".trip-page details")].filter((item) => !item.open); openBeforePrint.forEach((item) => { item.open = true; }); }
+    function finishPrint() { openBeforePrint.forEach((item) => { item.open = false; }); }
+    window.addEventListener("beforeprint", preparePrint);
+    window.addEventListener("afterprint", finishPrint);
+    window.addEventListener("hashchange", openHashTarget);
+    return () => { active = false; window.removeEventListener("hashchange", openHashTarget); window.removeEventListener("beforeprint", preparePrint); window.removeEventListener("afterprint", finishPrint); };
+  }, [isHome]);
 
-  function goHome() {
-    window.history.pushState({}, "", "/v2");
-    setRoute({ access: null, example: null, proof: null, trip: null });
-    setScreen("home");
-    setUnlocked(false);
-    setExample(null);
-    setIntroPast(false);
-    window.scrollTo({ behavior: "smooth", top: 0 });
-  }
-
-  function openTrip() {
-    window.history.pushState({}, "", "/v2?voyage=" + japanTrip.slug);
-    setRoute({ access: null, example: null, proof: null, trip: japanTrip.slug });
-    setScreen("trip");
-    setUnlocked(false);
-    window.scrollTo({ top: 0 });
-  }
-
-  const isPrivateRoute = route.trip && route.access === "prive" && !unlocked;
-  const isTrip = screen === "trip" && !isPrivateRoute;
-  const hasIntroSwap = screen === "home" && !isPrivateRoute;
-  const shellClassName = [
-    "v2-shell",
-    hasIntroSwap ? "has-intro-swap" : "",
-    hasIntroSwap && introPast ? "is-intro-past" : "",
-  ].filter(Boolean).join(" ");
-
+  const shellClassName = "v2-shell" + (isHome ? " has-intro-swap" : "") + (introPast ? " is-intro-past" : "");
   return (
-    <InternationalizationProvider
-      locale="fr-FR"
-      messages={{ "fr-FR": frMessages }}
-      overrides={{
-        "fr-FR": {
-          "@astryx.numberInput.decrementLabel": "Diminuer {label}",
-          "@astryx.numberInput.incrementLabel": "Augmenter {label}",
-        },
-      }}
-    >
+    <InternationalizationProvider locale="fr-FR" messages={{ "fr-FR": frMessages }} overrides={{ "fr-FR": { "@astryx.numberInput.decrementLabel": "Diminuer {label}", "@astryx.numberInput.incrementLabel": "Augmenter {label}" } }}>
       <Theme mode="light" theme={matchaTheme}>
-        <div className={shellClassName}>
-          <BrandHeader isGate={Boolean(isPrivateRoute)} isTrip={isTrip} onHome={goHome} onOpenTrip={openTrip} onShare={() => setShareOpen(true)} />
-          {hasIntroSwap ? <BrandIntro onPastChange={setIntroPast} /> : null}
-          {isPrivateRoute ? (
-            <PasswordGate onHome={goHome} onUnlock={() => setUnlocked(true)} proof={route.proof} />
-          ) : screen === "generating" ? (
-            <GeneratingPage onDone={openTrip} />
-          ) : isTrip ? (
-            <TripPage onShare={() => setShareOpen(true)} />
-          ) : (
-            <HomePage
-              onGenerate={() => { setScreen("generating"); window.scrollTo({ top: 0 }); }}
-              onOpenExample={setExample}
-              onOpenTrip={openTrip}
-            />
-          )}
-          <Footer onHome={goHome} />
-          <ShareDialog isOpen={shareOpen} onClose={setShareOpen} />
-          <ExampleDialog onClose={(open) => { if (!open) setExample(null); }} trip={example} />
-        </div>
+        <AvatarContext.Provider value={avatar}>
+          <div className={shellClassName}>
+            <BrandHeader isTrip={isTrip} onShare={() => setShareOpen(true)} />
+            {isHome ? <BrandIntro onPastChange={setIntroPast} /> : null}
+            {isTrip ? <TripPage onShare={() => setShareOpen(true)} /> : pathname === "/guides" ? <GuideHub /> : guide ? <GuidePage guide={guide} /> : <HomePage />}
+            <Footer />
+            {shareOpen ? <ShareDialog isOpen onClose={setShareOpen} /> : null}
+          </div>
+        </AvatarContext.Provider>
       </Theme>
     </InternationalizationProvider>
   );
 }
-
-createRoot(document.getElementById("root")).render(
-  <StrictMode>
-    <App />
-  </StrictMode>,
-);

@@ -8,8 +8,8 @@ Moteur déclaré : `nimbus`.
 
 | Collection | Visibilité | Fichiers |
 | --- | --- | ---: |
-| Documentation du projet | `internal` | 19 |
-| Décisions | `internal` | 11 |
+| Documentation du projet | `internal` | 20 |
+| Décisions | `internal` | 12 |
 | Socle vendorisé | `reference` | 10 |
 | Maintenance Nimbus | `reference` | 1 |
 
@@ -17,6 +17,7 @@ Moteur déclaré : `nimbus`.
 
 - [AGENTS.md](AGENTS.md)
 - [ASSETS.md](ASSETS.md)
+- [AUDIT-V2.md](AUDIT-V2.md)
 - [CHANGELOG.md](CHANGELOG.md)
 - [DATA-PROCESSING.md](DATA-PROCESSING.md)
 - [DELIVERY-EVIDENCE.md](DELIVERY-EVIDENCE.md)
@@ -48,6 +49,7 @@ Moteur déclaré : `nimbus`.
 - [docs/decisions/adr-0009-courriel-transactionnel-cloudflare.md](docs/decisions/adr-0009-courriel-transactionnel-cloudflare.md)
 - [docs/decisions/adr-0010-parcours-v2-astryx.md](docs/decisions/adr-0010-parcours-v2-astryx.md)
 - [docs/decisions/adr-0011-contrat-guide-voyage-et-plan-images.md](docs/decisions/adr-0011-contrat-guide-voyage-et-plan-images.md)
+- [docs/decisions/adr-0012-v2-site-principal.md](docs/decisions/adr-0012-v2-site-principal.md)
 
 ## Socle vendorisé
 
