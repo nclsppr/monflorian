@@ -25,7 +25,7 @@ fournisseur n'a été modifié. `AUDIT-V2.md` décrit la comparaison et les crit
 | Service fermé | Santé et configuration fermées ; `POST /api/trips` reste en `503 TRIP_CREATION_UNAVAILABLE` |
 
 Le relevé détaillé des pages, ressources, empreintes et contrats publics figure
-dans [le relevé JSON](docs/evidence/2026-09-07-v2-public-proof.json).
+dans [le relevé JSON](https://github.com/nclsppr/monflorian/blob/main/docs/evidence/2026-09-07-v2-public-proof.json).
 
 Le navigateur local a confirmé le pense-bête, sa sauvegarde volontaire et sa
 restauration, la conservation puis la remise à zéro de la checklist et la copie
