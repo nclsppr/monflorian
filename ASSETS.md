@@ -97,11 +97,9 @@ d'un redimensionnement et d'une compression WebP qualité 78, sans retouche.
 - `prototype/index.html` est la source éditable de l'expérience. Sa capture principale n'est jamais modifiée pour simuler un changement du produit.
 - Le prototype contient encore deux WebP embarqués en base64. Ils sont des dérivés propres au prototype, pas des masters concurrents.
 - L'application active conserve les PNG comme sources de référence. L'en-tête
-  compact charge les dérivés légers `monflorian-wordmark-web.webp` et
-  `florian-*-web.webp` ou `florian-v2-*-web.webp`. Le grand lockup d'introduction
-  charge les dérivés `monflorian-wordmark-intro.webp`, `florian-*-intro.webp` ou
-  `florian-v2-*-intro.webp`, issus des mêmes masters à une définition adaptée à
-  sa largeur complète.
+  permanent charge les dérivés légers `monflorian-wordmark-web.webp` et
+  `florian-v2-*-web.webp`. Les dérivés haute définition `*-intro.webp` restent
+  archivés ; le site principal ne rend plus le grand lockup d’introduction.
 - Une visite utilise une seule variante de Florian dans la famille V2, désormais
   active sur `/`. Les fichiers de la première
   famille restent une archive de retour, mais l'interface ne les sert plus.
