@@ -13,7 +13,8 @@ et la remise à zéro de la checklist, ainsi que la copie du vrai lien public.
 Les contrôles visuels intégrés couvrent l’accueil en 390 et 1280 pixels ; le
 menu mobile ferme son panneau après sélection. Le guide Japon est lisible à
 320 pixels et les métadonnées de journée atteignent 14,08 pixels. Les liens
-de source ouvrent leur rubrique au clavier et au toucher.
+de source ouvrent leur rubrique au clavier et au toucher. Fermer le dialogue
+de partage avec Échap restitue le focus au bouton qui l’a ouvert.
 
 Cette section ne constitue pas encore une preuve publique. La validation
 du SHA fusionné, la version active et les sondes publiques restent à consigner.

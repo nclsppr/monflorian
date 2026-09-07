@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useRef, useState } from "react";
 
 import "@astryxdesign/core/astryx.css";
 import "@astryxdesign/theme-matcha/theme.css";
@@ -922,11 +922,21 @@ function Footer() {
 
 export function App({ pathname = "/" }) {
   const [shareOpen, setShareOpen] = useState(false);
+  const shareTrigger = useRef(null);
   const [introPast, setIntroPast] = useState(false);
   const [avatar, setAvatar] = useState("original");
   const isTrip = pathname === TRIP_PATH;
   const isHome = pathname === "/";
   const guide = guides.find((item) => item.path === pathname);
+
+  function openShare(event) {
+    shareTrigger.current = event.currentTarget;
+    setShareOpen(true);
+  }
+  function changeShareOpen(nextOpen) {
+    setShareOpen(nextOpen);
+    if (!nextOpen) window.requestAnimationFrame(() => shareTrigger.current?.focus({ preventScroll: true }));
+  }
 
   useEffect(() => {
     document.documentElement.classList.add("is-interactive");
@@ -958,11 +968,11 @@ export function App({ pathname = "/" }) {
       <Theme mode="light" theme={matchaTheme}>
         <AvatarContext.Provider value={avatar}>
           <div className={shellClassName}>
-            <BrandHeader isTrip={isTrip} onShare={() => setShareOpen(true)} />
+            <BrandHeader isTrip={isTrip} onShare={openShare} />
             {isHome ? <BrandIntro onPastChange={setIntroPast} /> : null}
-            {isTrip ? <TripPage onShare={() => setShareOpen(true)} /> : pathname === "/guides" ? <GuideHub /> : guide ? <GuidePage guide={guide} /> : <HomePage />}
+            {isTrip ? <TripPage onShare={openShare} /> : pathname === "/guides" ? <GuideHub /> : guide ? <GuidePage guide={guide} /> : <HomePage />}
             <Footer />
-            {shareOpen ? <ShareDialog isOpen onClose={setShareOpen} /> : null}
+            {shareOpen ? <ShareDialog isOpen onClose={changeShareOpen} /> : null}
           </div>
         </AvatarContext.Provider>
       </Theme>
