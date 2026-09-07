@@ -3,6 +3,29 @@
 Chaque section nomme son environnement et ses limites. Les sections Atlas sont
 des archives historiques ; la section Cloudflare porte la migration courante.
 
+## Client iOS et API commune, candidat du 8 septembre 2026
+
+Cette tranche prépare l'application native dans le même dépôt que le site.
+L'ADR-0013, le guide `docs/native-ios.md` et les contrats de données décrivent
+la sélection facultative des photos dès la première étape et l'API commune.
+Le code et les résultats locaux ne constituent pas une distribution Apple.
+
+| Niveau | Frontière de preuve |
+| --- | --- |
+| Candidat | SwiftUI iOS 18, carnet Japon, préparation locale, photos en mémoire et StoreKit fermé |
+| API commune | Configuration et exemple public `/api/v1`, alias conservant les protections historiques |
+| Contrôles locaux | `./scripts/verify.sh` réussi : 75 tests, Worker, cinq pages publiques, Docker Compose et documentation ; build iOS Simulator réussi avec Xcode 26.6 |
+| Contrat photo | PNG préparé accepté par `decodePhoto` du backend : 1 435 780 octets, 1 024 × 1 024 ; métadonnées EXIF/GPS retirées ; entrées invalides refusées |
+| Exécution native | Simulateur dédié iPhone 17 Pro sous iOS 26.5 ; lancement et tests XCTest en cours de vérification |
+| Notice publique | Paragraphe sur les photos facultatives contrôlé dans le navigateur local |
+| Distribution Apple | Aucune preuve TestFlight ou App Store dans ce candidat |
+| Service personnalisé | Aucune commande, photo transmise, génération ou transaction réelle |
+
+Une preuve StoreKit future devra couvrir la vérification serveur, la reprise
+sans double achat et la récupération du carnet. Les résultats du simulateur
+ne couvrent pas ces fonctions. L'inscription Small Business et les accords
+partenaires ne sont pas réalisés par cette tranche.
+
 ## Accueil bureau et footer, publiés le 7 septembre 2026
 
 La [PR #56](https://github.com/nclsppr/monflorian/pull/56) supprime le doublon

@@ -37,6 +37,7 @@ import {
   type StoredTrip,
 } from "./trips/repository";
 import { renderPrivateTripPage, renderUnknownTripPage } from "./trips/page";
+import { publicJapanExample } from "../app/public-travel-guide.mjs";
 
 export { TripWorkflow } from "./workflows/trip";
 
@@ -54,8 +55,8 @@ const API_HEADERS = {
 
 const PRIVATE_TRIP_PATH = /^\/voyages\/([A-Za-z0-9_-]+)$/u;
 const PRIVATE_TRIP_DELETE_PATH = /^\/voyages\/([A-Za-z0-9_-]+)\/supprimer$/u;
-const TRIP_API_PATH = /^\/api\/trips\/([A-Za-z0-9_-]+)$/u;
-const TRIP_MEDIA_PATH = /^\/api\/trips\/([A-Za-z0-9_-]+)\/media\/(\d{1,2})$/u;
+const TRIP_API_PATH = /^\/api\/(?:v1\/)?trips\/([A-Za-z0-9_-]+)$/u;
+const TRIP_MEDIA_PATH = /^\/api\/(?:v1\/)?trips\/([A-Za-z0-9_-]+)\/media\/(\d{1,2})$/u;
 
 interface TurnstileResponse {
   success: boolean;
@@ -136,6 +137,24 @@ function publicConfiguration(env: Env) {
       maxPhotoBytes: LIMITS.maxPhotoBytes,
       maxTripDays: LIMITS.maxTripDays,
       maxTravelers: LIMITS.maxTravelers,
+    },
+  };
+}
+
+function publicConfigurationV1(env: Env) {
+  const configuration = publicConfiguration(env);
+  return {
+    ...configuration,
+    apiVersion: "v1",
+    generationReady: configuration.serviceReady,
+    capabilities: {
+      publicExamplesEnabled: true,
+      tripCreationEnabled: configuration.tripCreationEnabled,
+      photoUploadEnabled: configuration.tripCreationEnabled,
+      // Ces parcours n'ont pas encore leur autorisation serveur et leurs preuves.
+      privateSharingEnabled: false,
+      nativeOrdersEnabled: false,
+      storeKitPurchasesEnabled: false,
     },
   };
 }
@@ -528,8 +547,15 @@ async function deletePrivateTrip(
 function normalizedLogPath(pathname: string): string {
   if (PRIVATE_TRIP_PATH.test(pathname)) return "/voyages/:token";
   if (PRIVATE_TRIP_DELETE_PATH.test(pathname)) return "/voyages/:token/supprimer";
-  if (TRIP_API_PATH.test(pathname)) return "/api/trips/:token";
-  if (TRIP_MEDIA_PATH.test(pathname)) return "/api/trips/:token/media/:position";
+  const apiPrefix = pathname.startsWith("/api/v1/") ? "/api/v1" : "/api";
+  if (TRIP_API_PATH.test(pathname)) return `${apiPrefix}/trips/:token`;
+  if (TRIP_MEDIA_PATH.test(pathname)) return `${apiPrefix}/trips/:token/media/:position`;
+  // Un chemin privé mal formé ne doit pas révéler un jeton dans le journal 404.
+  if (pathname.startsWith(`${apiPrefix}/trips/`)) return `${apiPrefix}/trips/:redacted`;
+  if (pathname.startsWith("/voyages/")) return "/voyages/:redacted";
+  const decodedSeparators = pathname.replace(/%2f/giu, "/");
+  if (/^\/api\/(?:v\d+\/)?trips\//u.test(decodedSeparators)) return "/api/trips/:redacted";
+  if (decodedSeparators.startsWith("/voyages/")) return "/voyages/:redacted";
   return pathname;
 }
 
@@ -562,7 +588,17 @@ const worker = {
         return jsonResponse(env, status, publicConfiguration(env), requestId);
       }
 
-      if (request.method === "POST" && url.pathname === "/api/trips") {
+      if (request.method === "GET" && url.pathname === "/api/v1/config") {
+        status = 200;
+        return jsonResponse(env, status, publicConfigurationV1(env), requestId);
+      }
+
+      if (request.method === "GET" && url.pathname === "/api/v1/examples/japan-10-days") {
+        status = 200;
+        return jsonResponse(env, status, publicJapanExample(), requestId);
+      }
+
+      if (request.method === "POST" && ["/api/trips", "/api/v1/trips"].includes(url.pathname)) {
         const response = await createTrip(request, env, requestId);
         status = response.status;
         return response;

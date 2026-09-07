@@ -1,8 +1,8 @@
 # Traitement des données
 
-Ce document sépare le site éditorial, ses outils locaux candidats et le parcours
-personnalisé persistant cible. Il ne constitue pas une déclaration de conformité
-juridique. Rôles, bases légales, transferts et canal de droits doivent être
+Ce document sépare le site éditorial, les outils locaux du navigateur et de
+l'app iOS candidate, et le parcours personnalisé persistant cible. Il ne
+constitue pas une déclaration de conformité juridique. Rôles, bases légales, transferts et canal de droits doivent être
 validés avant d'ouvrir le parcours personnalisé à une personne réelle.
 
 ## État courant
@@ -76,6 +76,40 @@ Le lien du carnet ouvre toujours le même exemple public. Aucun mot de passe
 simulé ne protège ce contenu. Les données des futurs voyages privés suivent le
 contrat distinct ci-dessous, avec chiffrement, contrôle d'accès et expiration.
 
+## Client iOS candidat du 8 septembre 2026
+
+Le client SwiftUI lit la configuration et l'exemple public via `/api/v1`.
+Ces requêtes ne contiennent ni brief, ni photo. L'exemple embarqué permet la
+lecture hors ligne. Le backend reçoit les métadonnées réseau habituelles de
+ces lectures, sans nouvelle finalité de suivi ou de publicité.
+
+Le formulaire prépare un brouillon sur l'appareil. L'enregistrement et l'export
+texte demandent une action explicite. Les champs du brouillon peuvent être
+restaurés ou effacés depuis l'app. La checklist conserve les identifiants des
+cases à chaque modification et explique ce comportement avant utilisation.
+Ces copies ne sont pas synchronisées avec le site. Le fichier du brouillon
+utilise la protection complète des fichiers iOS et est exclu de la sauvegarde
+système. Sa taille est limitée à 16 384 octets.
+
+La première étape propose PhotosPicker et limite la sélection à quatre images.
+L'app réencode seulement les fichiers sélectionnés et conserve ses copies en
+mémoire. Le brouillon sauvegardé ne contient ni photos, ni miniatures, ni
+références de photothèque. Reprendre un brouillon nécessite une nouvelle
+sélection. Retirer une photo efface la copie de préparation de l'app ; cela ne
+supprime pas l'original de la photothèque.
+
+Le candidat n'envoie aucune image à Cloudflare ou OpenAI. Le choix d'une photo
+ne vaut pas consentement à son traitement par une IA tierce. Cette autorisation
+sera demandée avant l'envoi du futur parcours, avec finalité, destinataire,
+durée et accord des personnes représentées. Une préparation sans portrait
+reste possible depuis la même étape.
+
+La fermeture du processus libère la sélection en mémoire. Les originaux dans
+la photothèque et les fichiers exportés suivent les actions de la personne
+et les réglages de son appareil. Le contrat de sauvegarde et de récupération d'un
+voyage payé doit être décidé avant sa première vente. Aucun carnet privé et
+aucune transaction d'achat ne sont conservés par ce candidat.
+
 ## Parcours cible
 
 | Catégorie | Exemples | Finalité | Emplacement cible |
@@ -107,8 +141,10 @@ de paiement, secret ou information inutile au voyage.
 - sortie Responses : 32 000 tokens au maximum ;
 - corps illustration historique : 8 500 000 octets.
 
-Le navigateur réencode les photos en PNG ou WebP. Le Worker doit aussi contrôler
-signature, dimensions, poids et format avant R2 et avant OpenAI.
+Le navigateur réencode les photos en PNG ou WebP. Le client iOS prépare ses
+copies en mémoire sans les envoyer. Son futur format d'envoi doit respecter
+les mêmes limites serveur. Le Worker doit contrôler signature, dimensions,
+poids et format avant R2 et avant OpenAI, quel que soit le client.
 
 ## Destinataires
 
@@ -153,6 +189,28 @@ seulement après un clic. Le mode `external` peut placer destination, dates et
 nombre d'adultes dans l'URL. `cj-static` reste fermé sans partenariat, liens
 approuvés et notice commerciale.
 
+### Apple et StoreKit, avant activation
+
+Le futur achat iOS utilise StoreKit. Apple traite le paiement ; Mon Florian
+n'accède pas au numéro de carte. Le backend devra recevoir la transaction
+signée et les identifiants nécessaires pour vérifier le droit, l'associer à
+une commande et empêcher sa réutilisation. Les notifications et
+remboursements ajoutent des événements à ce registre.
+
+Ce traitement n'existe pas encore. Avant l'ouverture, documenter les champs,
+la durée propre aux preuves de paiement et leur séparation du contenu du
+voyage. Cette durée ne doit pas être héritée implicitement des 30 jours du
+carnet pilote. Le compte Apple utilisé, les informations de confidentialité
+App Store et la procédure de récupération restent à configurer.
+
+### Amazon, avant activation
+
+Aucune donnée de voyage ou photo ne doit servir à construire une transmission
+à Amazon. Une rubrique d'équipement affiliée reste soumise à l'approbation de
+l'app et aux conditions du programme. Les liens doivent être accessibles
+sans achat du carnet. Le clic explicite ouvre ensuite le site tiers, avec sa
+politique propre. Le candidat ne met en place aucune affiliation Amazon.
+
 ### Stripe, plus tard
 
 Stripe recevra les données nécessaires au paiement depuis Checkout. Mon Florian
@@ -161,7 +219,9 @@ le lien entre paiement et voyage seront décidés avant toute ressource réelle.
 
 ## Consentement sur les photos
 
-Avant envoi, l'interface exige que la personne confirme :
+L'ADR-0013 place le choix facultatif des photos dès la première étape de
+commande, dans les deux clients cibles. L'envoi reste distinct. Avant cet
+envoi, l'interface exige que la personne confirme :
 
 - qu'elle peut utiliser chaque fichier ;
 - que les personnes représentées comprennent l'envoi à OpenAI ;
@@ -178,6 +238,8 @@ vaut pas publication, entraînement, galerie ou conservation indéfinie.
 | Mémoire navigateur | formulaire et prévisualisations | onglet courant | rechargement ou fermeture |
 | Navigateur, pense-bête candidat | copie demandée explicitement | jusqu'à effacement, sans échéance programmée | « Effacer de cet appareil » ou réglages du navigateur |
 | Navigateur, checklist candidate | identifiants des cases sélectionnées | jusqu'à effacement, sans échéance programmée | « Tout décocher » ou réglages du navigateur |
+| Mémoire iOS candidate | copies des photos sélectionnées | session de préparation en mémoire | retrait de la sélection ou fermeture du processus |
+| Stockage iOS candidat | brouillon enregistré explicitement et identifiants de checklist | jusqu'à effacement local | commandes de l'app ou suppression de ses données |
 | R2, sources | photos réencodées | suppression après génération, limite dure 24 h | purge automatique ou retrait du voyage |
 | R2, résultats | images générées | 30 jours | expiration ou retrait anticipé |
 | D1 | demande et résultat chiffrés, métadonnées | 30 jours | expiration ou retrait anticipé |
@@ -187,8 +249,11 @@ vaut pas publication, entraînement, galerie ou conservation indéfinie.
 | OpenAI | entrées et sorties | selon le contrat et les contrôles du compte | procédure fournisseur |
 | Booking.com, CJ, Stripe | données après action explicite | politiques propres | procédure du fournisseur |
 
-Les durées D1 et R2 concernent le parcours personnalisé cible. La tâche de purge
-doit être idempotente, supprimer R2 avant de marquer D1 comme expiré et produire
+Les durées D1 et R2 concernent le parcours personnalisé cible. L'achat d'un
+voyage plusieurs mois avant le départ impose de réviser la conservation du
+résultat avant vente. L'ADR-0013 pose ce besoin, sans prolonger les délais
+actuels. Les photos sources gardent une rétention courte distincte du carnet.
+La tâche de purge doit être idempotente, supprimer R2 avant de marquer D1 comme expiré et produire
 une preuve sans nom de fichier ni contenu. Tant qu'elle n'est pas déployée et
 testée, aucune donnée réelle ne peut être envoyée dans ce parcours.
 
@@ -217,6 +282,8 @@ testée, aucune donnée réelle ne peut être envoyée dans ce parcours.
   limité aux clés prévues et refus des valeurs de stockage invalides.
 - Les futures photos de voyageurs réels suivent le flux R2 privé ; elles ne sont
   pas confondues avec les fixtures fictives du dépôt.
+- Brouillon fictif iOS, sélection de photos synthétiques, sauvegarde excluant
+  les photos et effacement local.
 - Un seul parcours fournisseur contrôlé avant ouverture.
 
 ## Changements qui imposent une nouvelle décision
@@ -235,7 +302,10 @@ testée, aucune donnée réelle ne peut être envoyée dans ce parcours.
 - [`PROJECT.md`](PROJECT.md)
 - [`THREAT-MODEL.md`](THREAT-MODEL.md)
 - [`RUNBOOK.md`](RUNBOOK.md)
+- [ADR-0013, client iOS et API commune](docs/decisions/adr-0013-ios-natif-et-api-commune.md)
 - [ADR-0012, V2 comme site principal](docs/decisions/adr-0012-v2-site-principal.md)
+- [Apple, confidentialité et consentement](https://developer.apple.com/app-store/review/guidelines/#privacy)
+- [Amazon France, politique mobile](https://partenaires.amazon.fr/help/operating/policies)
 - [OpenAI, contrôles de données](https://developers.openai.com/api/docs/guides/your-data)
 - [Cloudflare, localisation D1](https://developers.cloudflare.com/d1/configuration/data-location/)
 - [Cloudflare, juridictions R2](https://developers.cloudflare.com/r2/reference/data-location/)

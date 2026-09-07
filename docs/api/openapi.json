@@ -2,8 +2,8 @@
   "openapi": "3.1.0",
   "info": {
     "title": "API Mon Florian",
-    "version": "0.1.0",
-    "description": "Contrat du voyage privé asynchrone. La création reste fermée tant que Turnstile, les secrets et le budget fournisseur ne sont pas prêts."
+    "version": "0.2.0",
+    "description": "API commune au site et à iOS sous /api/v1. Les anciennes routes restent compatibles. Le carnet Japon est un exemple public ; les commandes natives, les achats intégrés et la création personnalisée restent fermés."
   },
   "jsonSchemaDialect": "https://json-schema.org/draft/2020-12/schema",
   "servers": [
@@ -34,7 +34,9 @@
         "operationId": "getHealth",
         "summary": "Lire la santé du processus",
         "description": "Cette sonde ne contacte pas OpenAI et ne prouve pas qu'une génération aboutira.",
-        "tags": ["Service"],
+        "tags": [
+          "Service"
+        ],
         "responses": {
           "200": {
             "description": "Le processus HTTP répond.",
@@ -53,7 +55,9 @@
       "get": {
         "operationId": "getPublicConfig",
         "summary": "Lire les capacités publiques de l'environnement",
-        "tags": ["Service"],
+        "tags": [
+          "Service"
+        ],
         "responses": {
           "200": {
             "description": "Configuration publique sans secret.",
@@ -73,7 +77,9 @@
         "operationId": "createTrip",
         "summary": "Créer un voyage asynchrone",
         "description": "Cette route exige une origine approuvée, un code d’accès en lancement privé, une clé Idempotency-Key et un jeton Turnstile. Elle répond avant la génération.",
-        "tags": ["Voyages privés"],
+        "tags": [
+          "Voyages privés"
+        ],
         "security": [
           {
             "launchCode": []
@@ -161,7 +167,9 @@
       "get": {
         "operationId": "getTrip",
         "summary": "Lire l’état ou le résultat d’un voyage privé",
-        "tags": ["Voyages privés"],
+        "tags": [
+          "Voyages privés"
+        ],
         "responses": {
           "200": {
             "description": "État courant, avec résultat seulement lorsque le voyage est prêt.",
@@ -181,7 +189,9 @@
       "delete": {
         "operationId": "deleteTrip",
         "summary": "Supprimer un voyage avant son échéance",
-        "tags": ["Voyages privés"],
+        "tags": [
+          "Voyages privés"
+        ],
         "responses": {
           "204": {
             "description": "Données D1 et objets R2 supprimés ou déjà absents."
@@ -221,7 +231,9 @@
       "get": {
         "operationId": "getTripMedia",
         "summary": "Lire une illustration depuis un voyage privé prêt",
-        "tags": ["Voyages privés"],
+        "tags": [
+          "Voyages privés"
+        ],
         "responses": {
           "200": {
             "description": "Image WebP privée, sans mise en cache.",
@@ -246,7 +258,9 @@
         "summary": "Composer une proposition de voyage",
         "description": "Ancienne route synchrone conservée fermée pendant la migration.",
         "deprecated": true,
-        "tags": ["Génération"],
+        "tags": [
+          "Génération"
+        ],
         "security": [
           {
             "launchCode": []
@@ -313,7 +327,9 @@
         "summary": "Créer une projection dessinée",
         "description": "Ancienne route synchrone conservée fermée pendant la migration.",
         "deprecated": true,
-        "tags": ["Génération"],
+        "tags": [
+          "Génération"
+        ],
         "security": [
           {
             "launchCode": []
@@ -373,6 +389,232 @@
           }
         }
       }
+    },
+    "/api/v1/trips": {
+      "post": {
+        "operationId": "createTripV1",
+        "summary": "Créer un voyage asynchrone",
+        "description": "Cette route exige une origine approuvée, un code d’accès en lancement privé, une clé Idempotency-Key et un jeton Turnstile. Elle répond avant la génération. Alias versionné du même traitement. Les contrôles Origin, accès privé et Turnstile restent requis ; aucun accès natif privilégié.",
+        "tags": [
+          "Voyages privés"
+        ],
+        "security": [
+          {
+            "launchCode": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 16,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9._:-]+$"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TripCreationRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Voyage enregistré et traitement accepté.",
+            "headers": {
+              "Location": {
+                "schema": {
+                  "type": "string",
+                  "format": "uri"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TripAccepted"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/AccessRequired"
+          },
+          "403": {
+            "$ref": "#/components/responses/OriginRejected"
+          },
+          "413": {
+            "$ref": "#/components/responses/RequestTooLarge"
+          },
+          "415": {
+            "$ref": "#/components/responses/UnsupportedMediaType"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          },
+          "503": {
+            "$ref": "#/components/responses/Unavailable"
+          }
+        }
+      }
+    },
+    "/api/v1/trips/{token}": {
+      "parameters": [
+        {
+          "name": "token",
+          "in": "path",
+          "required": true,
+          "description": "Jeton privé de 256 bits. Seul son condensat est indexé dans D1.",
+          "schema": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9_-]{43}$"
+          }
+        }
+      ],
+      "get": {
+        "operationId": "getTripV1",
+        "summary": "Lire l’état ou le résultat d’un voyage privé",
+        "tags": [
+          "Voyages privés"
+        ],
+        "responses": {
+          "200": {
+            "description": "État courant, avec résultat seulement lorsque le voyage est prêt.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TripStatus"
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        },
+        "description": " Alias versionné du même traitement. Les contrôles Origin, accès privé et Turnstile restent requis ; aucun accès natif privilégié."
+      },
+      "delete": {
+        "operationId": "deleteTripV1",
+        "summary": "Supprimer un voyage avant son échéance",
+        "tags": [
+          "Voyages privés"
+        ],
+        "responses": {
+          "204": {
+            "description": "Données D1 et objets R2 supprimés ou déjà absents."
+          },
+          "403": {
+            "$ref": "#/components/responses/OriginRejected"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        },
+        "description": " Alias versionné du même traitement. Les contrôles Origin, accès privé et Turnstile restent requis ; aucun accès natif privilégié."
+      }
+    },
+    "/api/v1/trips/{token}/media/{position}": {
+      "parameters": [
+        {
+          "name": "token",
+          "in": "path",
+          "required": true,
+          "description": "Jeton privé de 256 bits.",
+          "schema": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9_-]{43}$"
+          }
+        },
+        {
+          "name": "position",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 15
+          }
+        }
+      ],
+      "get": {
+        "operationId": "getTripMediaV1",
+        "summary": "Lire une illustration depuis un voyage privé prêt",
+        "tags": [
+          "Voyages privés"
+        ],
+        "responses": {
+          "200": {
+            "description": "Image WebP privée, sans mise en cache.",
+            "content": {
+              "image/webp": {
+                "schema": {
+                  "type": "string",
+                  "contentEncoding": "binary"
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        },
+        "description": " Alias versionné du même traitement. Les contrôles Origin, accès privé et Turnstile restent requis ; aucun accès natif privilégié."
+      }
+    },
+    "/api/v1/config": {
+      "get": {
+        "operationId": "getPublicConfigV1",
+        "summary": "Lire les capacités communes au site et à iOS",
+        "tags": [
+          "Service"
+        ],
+        "responses": {
+          "200": {
+            "description": "Configuration versionnée sans secret. Les commandes natives et achats intégrés sont fermés.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PublicConfigV1"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/examples/japan-10-days": {
+      "get": {
+        "operationId": "getJapanExampleV1",
+        "summary": "Lire le carnet Japon public canonique",
+        "description": "Exemple éditorial fixe, sans brief, photo, jeton privé, prompt ou plan de génération d’image. La projection est identique au build web et à la copie embarquée iOS. Les hôtels sont des recherches externes non affiliées, sans disponibilité ni prix en direct.",
+        "tags": [
+          "Service"
+        ],
+        "responses": {
+          "200": {
+            "description": "Carnet public et références vers les illustrations fictives déjà publiées.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PublicExampleV1"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -388,7 +630,15 @@
       "TripCreationRequest": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["brief", "travelers", "pace", "email", "photos", "photoConsent", "turnstileToken"],
+        "required": [
+          "brief",
+          "travelers",
+          "pace",
+          "email",
+          "photos",
+          "photoConsent",
+          "turnstileToken"
+        ],
         "properties": {
           "brief": {
             "type": "string",
@@ -396,11 +646,17 @@
             "maxLength": 2000
           },
           "startDate": {
-            "type": ["string", "null"],
+            "type": [
+              "string",
+              "null"
+            ],
             "format": "date"
           },
           "endDate": {
-            "type": ["string", "null"],
+            "type": [
+              "string",
+              "null"
+            ],
             "format": "date"
           },
           "travelers": {
@@ -410,7 +666,11 @@
           },
           "pace": {
             "type": "string",
-            "enum": ["calm", "balanced", "intense"]
+            "enum": [
+              "calm",
+              "balanced",
+              "intense"
+            ]
           },
           "email": {
             "type": "string",
@@ -437,14 +697,23 @@
           }
         },
         "dependentRequired": {
-          "startDate": ["endDate"],
-          "endDate": ["startDate"]
+          "startDate": [
+            "endDate"
+          ],
+          "endDate": [
+            "startDate"
+          ]
         }
       },
       "TripAccepted": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["tripId", "status", "privateUrl", "expiresAt"],
+        "required": [
+          "tripId",
+          "status",
+          "privateUrl",
+          "expiresAt"
+        ],
         "properties": {
           "tripId": {
             "type": "string",
@@ -466,29 +735,54 @@
       "TripStatus": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["status", "notificationStatus", "expiresAt"],
+        "required": [
+          "status",
+          "notificationStatus",
+          "expiresAt"
+        ],
         "properties": {
           "status": {
             "type": "string",
-            "enum": ["pending", "queued", "generating_itinerary", "generating_images", "ready", "failed", "deleted", "expired"]
+            "enum": [
+              "pending",
+              "queued",
+              "generating_itinerary",
+              "generating_images",
+              "ready",
+              "failed",
+              "deleted",
+              "expired"
+            ]
           },
           "notificationStatus": {
             "type": "string",
-            "enum": ["pending", "sent", "failed", "skipped"]
+            "enum": [
+              "pending",
+              "sent",
+              "failed",
+              "skipped"
+            ]
           },
           "expiresAt": {
             "type": "string",
             "format": "date-time"
           },
           "result": {
-            "type": ["object", "null"]
+            "type": [
+              "object",
+              "null"
+            ]
           }
         }
       },
       "Health": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["status", "release", "generationReady"],
+        "required": [
+          "status",
+          "release",
+          "generationReady"
+        ],
         "properties": {
           "status": {
             "const": "ok"
@@ -504,7 +798,16 @@
       "PublicConfig": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["serviceReady", "tripCreationEnabled", "illustrationEnabled", "turnstileSiteKey", "accessMode", "bookingMode", "bookingAllowedHosts", "limits"],
+        "required": [
+          "serviceReady",
+          "tripCreationEnabled",
+          "illustrationEnabled",
+          "turnstileSiteKey",
+          "accessMode",
+          "bookingMode",
+          "bookingAllowedHosts",
+          "limits"
+        ],
         "properties": {
           "serviceReady": {
             "type": "boolean"
@@ -516,15 +819,25 @@
             "type": "boolean"
           },
           "turnstileSiteKey": {
-            "type": ["string", "null"]
+            "type": [
+              "string",
+              "null"
+            ]
           },
           "accessMode": {
             "type": "string",
-            "enum": ["private", "public"]
+            "enum": [
+              "private",
+              "public"
+            ]
           },
           "bookingMode": {
             "type": "string",
-            "enum": ["off", "external", "cj-static"]
+            "enum": [
+              "off",
+              "external",
+              "cj-static"
+            ]
           },
           "bookingAllowedHosts": {
             "type": "array",
@@ -543,7 +856,12 @@
       "PublicLimits": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["maxPhotos", "maxPhotoBytes", "maxTripDays", "maxTravelers"],
+        "required": [
+          "maxPhotos",
+          "maxPhotoBytes",
+          "maxTripDays",
+          "maxTravelers"
+        ],
         "properties": {
           "maxPhotos": {
             "type": "integer",
@@ -566,7 +884,11 @@
       "ItineraryRequest": {
         "type": "object",
         "additionalProperties": true,
-        "required": ["brief", "travelers", "pace"],
+        "required": [
+          "brief",
+          "travelers",
+          "pace"
+        ],
         "properties": {
           "brief": {
             "type": "string",
@@ -574,11 +896,17 @@
             "maxLength": 2000
           },
           "startDate": {
-            "type": ["string", "null"],
+            "type": [
+              "string",
+              "null"
+            ],
             "format": "date"
           },
           "endDate": {
-            "type": ["string", "null"],
+            "type": [
+              "string",
+              "null"
+            ],
             "format": "date"
           },
           "travelers": {
@@ -588,7 +916,11 @@
           },
           "pace": {
             "type": "string",
-            "enum": ["calm", "balanced", "intense"]
+            "enum": [
+              "calm",
+              "balanced",
+              "intense"
+            ]
           },
           "accessCode": {
             "type": "string",
@@ -596,14 +928,22 @@
           }
         },
         "dependentRequired": {
-          "startDate": ["endDate"],
-          "endDate": ["startDate"]
+          "startDate": [
+            "endDate"
+          ],
+          "endDate": [
+            "startDate"
+          ]
         }
       },
       "ItineraryResponse": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["itinerary", "accommodations", "meta"],
+        "required": [
+          "itinerary",
+          "accommodations",
+          "meta"
+        ],
         "properties": {
           "itinerary": {
             "$ref": "#/components/schemas/Itinerary"
@@ -619,7 +959,17 @@
       "Itinerary": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["title", "destination", "summary", "florianNote", "budgetNote", "reservationChecklist", "verificationChecklist", "days", "accommodationStops"],
+        "required": [
+          "title",
+          "destination",
+          "summary",
+          "florianNote",
+          "budgetNote",
+          "reservationChecklist",
+          "verificationChecklist",
+          "days",
+          "accommodationStops"
+        ],
         "properties": {
           "title": {
             "type": "string",
@@ -677,7 +1027,15 @@
       "ItineraryDay": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["day", "date", "base", "title", "summary", "moments", "transfer"],
+        "required": [
+          "day",
+          "date",
+          "base",
+          "title",
+          "summary",
+          "moments",
+          "transfer"
+        ],
         "properties": {
           "day": {
             "type": "integer",
@@ -685,7 +1043,10 @@
             "maximum": 14
           },
           "date": {
-            "type": ["string", "null"],
+            "type": [
+              "string",
+              "null"
+            ],
             "format": "date"
           },
           "base": {
@@ -717,11 +1078,23 @@
       "Moment": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["period", "title", "description", "duration", "bookingRequired", "rainAlternative", "fatigueAlternative"],
+        "required": [
+          "period",
+          "title",
+          "description",
+          "duration",
+          "bookingRequired",
+          "rainAlternative",
+          "fatigueAlternative"
+        ],
         "properties": {
           "period": {
             "type": "string",
-            "enum": ["matin", "après-midi", "soir"]
+            "enum": [
+              "matin",
+              "après-midi",
+              "soir"
+            ]
           },
           "title": {
             "type": "string",
@@ -751,18 +1124,29 @@
       "AccommodationStop": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["destination", "checkIn", "checkOut", "nights"],
+        "required": [
+          "destination",
+          "checkIn",
+          "checkOut",
+          "nights"
+        ],
         "properties": {
           "destination": {
             "type": "string",
             "maxLength": 120
           },
           "checkIn": {
-            "type": ["string", "null"],
+            "type": [
+              "string",
+              "null"
+            ],
             "format": "date"
           },
           "checkOut": {
-            "type": ["string", "null"],
+            "type": [
+              "string",
+              "null"
+            ],
             "format": "date"
           },
           "nights": {
@@ -775,14 +1159,25 @@
       "AccommodationSuggestions": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["mode", "affiliateDisclosure", "items"],
+        "required": [
+          "mode",
+          "affiliateDisclosure",
+          "items"
+        ],
         "properties": {
           "mode": {
             "type": "string",
-            "enum": ["off", "external", "cj-static"]
+            "enum": [
+              "off",
+              "external",
+              "cj-static"
+            ]
           },
           "affiliateDisclosure": {
-            "type": ["string", "null"]
+            "type": [
+              "string",
+              "null"
+            ]
           },
           "items": {
             "type": "array",
@@ -796,7 +1191,12 @@
       "AccommodationLink": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["destination", "label", "url", "affiliate"],
+        "required": [
+          "destination",
+          "label",
+          "url",
+          "affiliate"
+        ],
         "properties": {
           "destination": {
             "type": "string"
@@ -817,7 +1217,11 @@
       "ItineraryMeta": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["generatedAt", "projection", "supportCode"],
+        "required": [
+          "generatedAt",
+          "projection",
+          "supportCode"
+        ],
         "properties": {
           "generatedAt": {
             "type": "string",
@@ -835,7 +1239,12 @@
       "IllustrationRequest": {
         "type": "object",
         "additionalProperties": true,
-        "required": ["destination", "scene", "consent", "photos"],
+        "required": [
+          "destination",
+          "scene",
+          "consent",
+          "photos"
+        ],
         "properties": {
           "destination": {
             "type": "string",
@@ -868,7 +1277,11 @@
       "IllustrationResponse": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["imageDataUrl", "alt", "meta"],
+        "required": [
+          "imageDataUrl",
+          "alt",
+          "meta"
+        ],
         "properties": {
           "imageDataUrl": {
             "type": "string",
@@ -885,7 +1298,11 @@
       "IllustrationMeta": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["generatedAt", "label", "supportCode"],
+        "required": [
+          "generatedAt",
+          "label",
+          "supportCode"
+        ],
         "properties": {
           "generatedAt": {
             "type": "string",
@@ -903,12 +1320,18 @@
       "Error": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["error"],
+        "required": [
+          "error"
+        ],
         "properties": {
           "error": {
             "type": "object",
             "additionalProperties": false,
-            "required": ["code", "message", "requestId"],
+            "required": [
+              "code",
+              "message",
+              "requestId"
+            ],
             "properties": {
               "code": {
                 "type": "string"
@@ -920,6 +1343,1016 @@
                 "type": "string",
                 "format": "uuid"
               }
+            }
+          }
+        }
+      },
+      "PublicConfigV1": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "serviceReady",
+          "tripCreationEnabled",
+          "illustrationEnabled",
+          "turnstileSiteKey",
+          "accessMode",
+          "bookingMode",
+          "bookingAllowedHosts",
+          "limits",
+          "apiVersion",
+          "generationReady",
+          "capabilities"
+        ],
+        "properties": {
+          "serviceReady": {
+            "type": "boolean"
+          },
+          "tripCreationEnabled": {
+            "type": "boolean"
+          },
+          "illustrationEnabled": {
+            "type": "boolean"
+          },
+          "turnstileSiteKey": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "accessMode": {
+            "type": "string",
+            "enum": [
+              "private",
+              "public"
+            ]
+          },
+          "bookingMode": {
+            "type": "string",
+            "enum": [
+              "off",
+              "external",
+              "cj-static"
+            ]
+          },
+          "bookingAllowedHosts": {
+            "type": "array",
+            "description": "Hôtes autorisés pour les liens configurés. Le tableau reste vide hors du mode cj-static.",
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "format": "hostname"
+            }
+          },
+          "limits": {
+            "$ref": "#/components/schemas/PublicLimits"
+          },
+          "apiVersion": {
+            "type": "string",
+            "const": "v1"
+          },
+          "generationReady": {
+            "type": "boolean"
+          },
+          "capabilities": {
+            "$ref": "#/components/schemas/PublicCapabilitiesV1"
+          }
+        }
+      },
+      "PublicCapabilitiesV1": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "publicExamplesEnabled",
+          "tripCreationEnabled",
+          "photoUploadEnabled",
+          "privateSharingEnabled",
+          "nativeOrdersEnabled",
+          "storeKitPurchasesEnabled"
+        ],
+        "properties": {
+          "publicExamplesEnabled": {
+            "type": "boolean",
+            "const": true
+          },
+          "tripCreationEnabled": {
+            "type": "boolean"
+          },
+          "photoUploadEnabled": {
+            "type": "boolean"
+          },
+          "privateSharingEnabled": {
+            "type": "boolean",
+            "const": false
+          },
+          "nativeOrdersEnabled": {
+            "type": "boolean",
+            "const": false
+          },
+          "storeKitPurchasesEnabled": {
+            "type": "boolean",
+            "const": false
+          }
+        }
+      },
+      "PublicTravelGuideV1": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "schemaVersion": {
+            "type": "string",
+            "enum": [
+              "travel-guide.v1"
+            ]
+          },
+          "contentTemplateVersion": {
+            "type": "string",
+            "enum": [
+              "monflorian-guide.v1"
+            ]
+          },
+          "trip": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "title": {
+                "type": "string"
+              },
+              "subtitle": {
+                "type": "string"
+              },
+              "destination": {
+                "type": "string"
+              },
+              "routeLabel": {
+                "type": "string"
+              },
+              "startDate": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "date"
+              },
+              "endDate": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "date"
+              },
+              "durationDays": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 14
+              },
+              "travelerCount": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 8
+              },
+              "pace": {
+                "type": "string",
+                "enum": [
+                  "calm",
+                  "balanced",
+                  "intense"
+                ]
+              },
+              "summary": {
+                "type": "string"
+              },
+              "florianRationale": {
+                "type": "string"
+              },
+              "featuredImageBriefId": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "title",
+              "subtitle",
+              "destination",
+              "routeLabel",
+              "startDate",
+              "endDate",
+              "durationDays",
+              "travelerCount",
+              "pace",
+              "summary",
+              "florianRationale",
+              "featuredImageBriefId"
+            ]
+          },
+          "budgetGuide": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "currencyCode": {
+                "type": "string",
+                "pattern": "^[A-Z]{3}$"
+              },
+              "approach": {
+                "type": "string",
+                "enum": [
+                  "lean",
+                  "balanced",
+                  "comfort",
+                  "premium"
+                ]
+              },
+              "summary": {
+                "type": "string"
+              },
+              "mainVariables": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "minItems": 2,
+                "maxItems": 5
+              },
+              "verificationItemIds": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "minItems": 1,
+                "maxItems": 5
+              }
+            },
+            "required": [
+              "currencyCode",
+              "approach",
+              "summary",
+              "mainVariables",
+              "verificationItemIds"
+            ]
+          },
+          "chapters": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PublicTravelGuideV1/$defs/chapter"
+            },
+            "minItems": 1,
+            "maxItems": 7
+          },
+          "days": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PublicTravelGuideV1/$defs/day"
+            },
+            "minItems": 1,
+            "maxItems": 14
+          },
+          "accommodations": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PublicTravelGuideV1/$defs/accommodation"
+            },
+            "minItems": 0,
+            "maxItems": 8
+          },
+          "reservationPlan": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PublicTravelGuideV1/$defs/reservationItem"
+            },
+            "minItems": 5,
+            "maxItems": 14
+          },
+          "practicalGuide": {
+            "$ref": "#/components/schemas/PublicTravelGuideV1/$defs/practicalGuide"
+          },
+          "imageBriefs": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PublicTravelGuideV1/$defs/imageBrief"
+            },
+            "minItems": 1,
+            "maxItems": 7
+          },
+          "verificationItems": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PublicTravelGuideV1/$defs/verificationItem"
+            },
+            "minItems": 5,
+            "maxItems": 20
+          }
+        },
+        "required": [
+          "schemaVersion",
+          "contentTemplateVersion",
+          "trip",
+          "budgetGuide",
+          "chapters",
+          "days",
+          "accommodations",
+          "reservationPlan",
+          "practicalGuide",
+          "imageBriefs",
+          "verificationItems"
+        ],
+        "$defs": {
+          "chapter": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "dayStart": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 14
+              },
+              "dayEnd": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 14
+              },
+              "baseRefs": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "minItems": 1,
+                "maxItems": 2
+              },
+              "title": {
+                "type": "string"
+              },
+              "summary": {
+                "type": "string"
+              },
+              "whyItWorks": {
+                "type": "string"
+              },
+              "imageBriefId": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "id",
+              "dayStart",
+              "dayEnd",
+              "baseRefs",
+              "title",
+              "summary",
+              "whyItWorks",
+              "imageBriefId"
+            ]
+          },
+          "day": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "day": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 14
+              },
+              "date": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "date"
+              },
+              "chapterId": {
+                "type": "string"
+              },
+              "accommodationId": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "baseRefs": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "minItems": 1,
+                "maxItems": 2
+              },
+              "title": {
+                "type": "string"
+              },
+              "energy": {
+                "type": "string",
+                "enum": [
+                  "light",
+                  "balanced",
+                  "full"
+                ]
+              },
+              "summary": {
+                "type": "string"
+              },
+              "moments": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/PublicTravelGuideV1/$defs/moment"
+                },
+                "minItems": 2,
+                "maxItems": 3
+              },
+              "transfer": {
+                "$ref": "#/components/schemas/PublicTravelGuideV1/$defs/transfer"
+              }
+            },
+            "required": [
+              "day",
+              "date",
+              "chapterId",
+              "accommodationId",
+              "baseRefs",
+              "title",
+              "energy",
+              "summary",
+              "moments",
+              "transfer"
+            ]
+          },
+          "moment": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "period": {
+                "type": "string",
+                "enum": [
+                  "morning",
+                  "afternoon",
+                  "evening"
+                ]
+              },
+              "title": {
+                "type": "string"
+              },
+              "placeRef": {
+                "type": "string"
+              },
+              "description": {
+                "type": "string"
+              },
+              "whyThisFits": {
+                "type": "string"
+              },
+              "durationMinutes": {
+                "type": "integer",
+                "minimum": 15,
+                "maximum": 480
+              },
+              "travelMinutes": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 240
+              },
+              "reservation": {
+                "type": "string",
+                "enum": [
+                  "none",
+                  "recommended",
+                  "required"
+                ]
+              },
+              "costLevel": {
+                "type": "string",
+                "enum": [
+                  "free",
+                  "low",
+                  "medium",
+                  "high",
+                  "variable"
+                ]
+              },
+              "practicalTip": {
+                "type": "string"
+              },
+              "rainAlternative": {
+                "type": "string"
+              },
+              "fatigueAlternative": {
+                "type": "string"
+              },
+              "verificationItemIds": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "minItems": 1,
+                "maxItems": 4
+              }
+            },
+            "required": [
+              "period",
+              "title",
+              "placeRef",
+              "description",
+              "whyThisFits",
+              "durationMinutes",
+              "travelMinutes",
+              "reservation",
+              "costLevel",
+              "practicalTip",
+              "rainAlternative",
+              "fatigueAlternative",
+              "verificationItemIds"
+            ]
+          },
+          "transfer": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "needed": {
+                "type": "boolean"
+              },
+              "placement": {
+                "type": "string",
+                "enum": [
+                  "none",
+                  "before_morning",
+                  "after_morning",
+                  "after_afternoon",
+                  "after_evening"
+                ]
+              },
+              "fromPlaceRef": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "toPlaceRef": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "modes": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "none",
+                    "walk",
+                    "metro",
+                    "local_train",
+                    "high_speed_train",
+                    "bus",
+                    "ferry",
+                    "car",
+                    "flight"
+                  ]
+                },
+                "minItems": 1,
+                "maxItems": 3
+              },
+              "durationMinutes": {
+                "type": [
+                  "integer",
+                  "null"
+                ],
+                "minimum": 0,
+                "maximum": 720
+              },
+              "reservation": {
+                "type": "string",
+                "enum": [
+                  "none",
+                  "recommended",
+                  "required"
+                ]
+              },
+              "description": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "luggageAdvice": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "verificationItemIds": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "maxItems": 4
+              }
+            },
+            "required": [
+              "needed",
+              "placement",
+              "fromPlaceRef",
+              "toPlaceRef",
+              "modes",
+              "durationMinutes",
+              "reservation",
+              "description",
+              "luggageAdvice",
+              "verificationItemIds"
+            ]
+          },
+          "accommodation": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "destination": {
+                "type": "string"
+              },
+              "checkInDay": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 14
+              },
+              "checkOutDay": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 14
+              },
+              "nights": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 13
+              },
+              "bookingDestinationRef": {
+                "type": "string"
+              },
+              "propertyType": {
+                "type": "string",
+                "enum": [
+                  "hotel",
+                  "ryokan",
+                  "guesthouse",
+                  "apartment",
+                  "mixed"
+                ]
+              },
+              "bookingPriority": {
+                "type": "string",
+                "enum": [
+                  "essential",
+                  "recommended",
+                  "optional"
+                ]
+              },
+              "recommendedAreas": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "minItems": 1,
+                "maxItems": 3
+              },
+              "selectionCriteria": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "minItems": 2,
+                "maxItems": 5
+              },
+              "rationale": {
+                "type": "string"
+              },
+              "watchFor": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "minItems": 1,
+                "maxItems": 4
+              },
+              "verificationItemIds": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "minItems": 1,
+                "maxItems": 4
+              }
+            },
+            "required": [
+              "id",
+              "destination",
+              "checkInDay",
+              "checkOutDay",
+              "nights",
+              "bookingDestinationRef",
+              "propertyType",
+              "bookingPriority",
+              "recommendedAreas",
+              "selectionCriteria",
+              "rationale",
+              "watchFor",
+              "verificationItemIds"
+            ]
+          },
+          "reservationItem": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "day": {
+                "type": [
+                  "integer",
+                  "null"
+                ],
+                "minimum": 1,
+                "maximum": 14
+              },
+              "category": {
+                "type": "string",
+                "enum": [
+                  "accommodation",
+                  "transport",
+                  "luggage",
+                  "activity",
+                  "restaurant",
+                  "entry"
+                ]
+              },
+              "title": {
+                "type": "string"
+              },
+              "priority": {
+                "type": "string",
+                "enum": [
+                  "essential",
+                  "recommended",
+                  "optional"
+                ]
+              },
+              "whenToBook": {
+                "type": "string"
+              },
+              "reason": {
+                "type": "string"
+              },
+              "accommodationIds": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "minItems": 0,
+                "maxItems": 8
+              },
+              "verificationItemIds": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "minItems": 1,
+                "maxItems": 4
+              }
+            },
+            "required": [
+              "id",
+              "day",
+              "category",
+              "title",
+              "priority",
+              "whenToBook",
+              "reason",
+              "accommodationIds",
+              "verificationItemIds"
+            ]
+          },
+          "adviceItem": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "title": {
+                "type": "string"
+              },
+              "detail": {
+                "type": "string"
+              },
+              "priority": {
+                "type": "string",
+                "enum": [
+                  "essential",
+                  "recommended",
+                  "comfort"
+                ]
+              },
+              "mustVerify": {
+                "type": "boolean"
+              },
+              "verificationItemIds": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "maxItems": 4
+              }
+            },
+            "required": [
+              "title",
+              "detail",
+              "priority",
+              "mustVerify",
+              "verificationItemIds"
+            ]
+          },
+          "practicalGuide": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "documents": {
+                "$ref": "#/components/schemas/PublicTravelGuideV1/$defs/adviceList"
+              },
+              "reservations": {
+                "$ref": "#/components/schemas/PublicTravelGuideV1/$defs/adviceList"
+              },
+              "transport": {
+                "$ref": "#/components/schemas/PublicTravelGuideV1/$defs/adviceList"
+              },
+              "money": {
+                "$ref": "#/components/schemas/PublicTravelGuideV1/$defs/adviceList"
+              },
+              "connectivity": {
+                "$ref": "#/components/schemas/PublicTravelGuideV1/$defs/adviceList"
+              },
+              "healthComfort": {
+                "$ref": "#/components/schemas/PublicTravelGuideV1/$defs/adviceList"
+              },
+              "packingWeather": {
+                "$ref": "#/components/schemas/PublicTravelGuideV1/$defs/adviceList"
+              },
+              "localEtiquette": {
+                "$ref": "#/components/schemas/PublicTravelGuideV1/$defs/adviceList"
+              },
+              "last72Hours": {
+                "$ref": "#/components/schemas/PublicTravelGuideV1/$defs/adviceList"
+              }
+            },
+            "required": [
+              "documents",
+              "reservations",
+              "transport",
+              "money",
+              "connectivity",
+              "healthComfort",
+              "packingWeather",
+              "localEtiquette",
+              "last72Hours"
+            ]
+          },
+          "adviceList": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PublicTravelGuideV1/$defs/adviceItem"
+            },
+            "minItems": 2,
+            "maxItems": 4
+          },
+          "imageBrief": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "id",
+              "altText"
+            ],
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "altText": {
+                "type": "string"
+              }
+            }
+          },
+          "verificationItem": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "topic": {
+                "type": "string"
+              },
+              "timing": {
+                "type": "string",
+                "enum": [
+                  "before_booking",
+                  "before_departure",
+                  "last_72_hours",
+                  "on_site"
+                ]
+              },
+              "sourceType": {
+                "type": "string",
+                "enum": [
+                  "official_operator",
+                  "accommodation_provider",
+                  "booking_provider",
+                  "local_authority",
+                  "manual_review"
+                ]
+              },
+              "sourceHint": {
+                "type": "string"
+              },
+              "reason": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "id",
+              "topic",
+              "timing",
+              "sourceType",
+              "sourceHint",
+              "reason"
+            ]
+          }
+        }
+      },
+      "PublicExampleV1": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "apiVersion",
+          "exampleId",
+          "kind",
+          "canonicalPath",
+          "guide",
+          "imageAssets",
+          "bookingLinks"
+        ],
+        "properties": {
+          "apiVersion": {
+            "type": "string",
+            "const": "v1"
+          },
+          "exampleId": {
+            "type": "string",
+            "const": "japan-10-days"
+          },
+          "kind": {
+            "type": "string",
+            "const": "public_example"
+          },
+          "canonicalPath": {
+            "type": "string",
+            "const": "/carnets/japon-10-jours"
+          },
+          "guide": {
+            "$ref": "#/components/schemas/PublicTravelGuideV1"
+          },
+          "imageAssets": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "src",
+                "mobileSrc",
+                "overlayLabel",
+                "width",
+                "height"
+              ],
+              "properties": {
+                "src": {
+                  "type": "string",
+                  "pattern": "^/v2/media/[a-z0-9-]+\\.webp$"
+                },
+                "mobileSrc": {
+                  "type": "string",
+                  "pattern": "^/v2/media/[a-z0-9-]+\\.webp$"
+                },
+                "overlayLabel": {
+                  "type": "string"
+                },
+                "width": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "height": {
+                  "type": "integer",
+                  "minimum": 1
+                }
+              }
+            }
+          },
+          "bookingLinks": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string",
+              "format": "uri",
+              "pattern": "^https://www\\.booking\\.com/city/jp/"
             }
           }
         }

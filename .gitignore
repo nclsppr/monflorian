@@ -11,3 +11,6 @@ dist/
 build/
 .astro/
 .nimbus/
+xcuserdata/
+*.xcuserstate
+ios/DerivedData/

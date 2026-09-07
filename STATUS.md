@@ -1,5 +1,24 @@
 # État courant
 
+## Client iOS et API commune, candidat du 8 septembre 2026
+
+L'ADR-0013 autorise l'app SwiftUI iOS 18 et versions suivantes, avec le même
+backend que le site. Le candidat prépare un brouillon local, propose les
+photos facultatives dès la première étape et rend le carnet Japon natif hors
+ligne. Les photos réencodées restent en mémoire et ne font pas partie de la
+sauvegarde du brouillon.
+
+Le Worker candidat expose `/api/v1/config`, l'exemple public Japon et les alias
+versionnés des routes de voyage existantes. Le client reçoit une projection du
+même `TravelGuideV1`, sans champs de contrôle d'image. Les anciennes routes web
+restent compatibles et conservent leurs protections.
+
+La création native et StoreKit restent fermés. Aucun achat, envoi de photo,
+appel fournisseur, inscription Small Business, signature ou publication Apple
+n'est réalisé par cette préparation. La génération du runtime public conserve
+son état fermé. Les résultats de validation et les niveaux de preuve de cette
+tranche sont consignés dans `DELIVERY-EVIDENCE.md`.
+
 ## Site principal publié le 7 septembre 2026
 
 La V2 améliorée est servie à la racine de `https://monflorian.com` après la

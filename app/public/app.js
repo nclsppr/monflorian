@@ -1,4 +1,5 @@
 "use strict";
+import { API_CONTRACT } from "./api-contract.js";
 
 const DEFAULT_LIMITS = Object.freeze({
   maxPhotos: 4,
@@ -235,7 +236,7 @@ function renderOpenConfiguration() {
 
 async function loadConfig() {
   try {
-    const response = await requestJson("/api/config", { method: "GET", headers: {} }, 8_000);
+    const response = await requestJson(API_CONTRACT.configurationPath, { method: "GET", headers: {} }, 8_000);
     state.config = normalizeConfig(response);
     elements.accessField.hidden = !accessCodeIsRequired();
     elements.accessCode.required = accessCodeIsRequired();
@@ -593,7 +594,7 @@ async function submitTrip() {
   };
 
   try {
-    const response = await requestJson("/api/trips", {
+    const response = await requestJson(API_CONTRACT.tripsPath, {
       method: "POST",
       headers: {
         "Idempotency-Key": state.idempotencyKey,

@@ -1,6 +1,6 @@
 # Gates de la migration Cloudflare
 
-Dernière mise à jour : 2026-08-31.
+Dernière mise à jour : 2026-09-08.
 
 ## Acquis
 
@@ -42,7 +42,8 @@ Dernière mise à jour : 2026-08-31.
 - [ ] Remplacer le contrat d'itinéraire courant dans le Workflow et l'OpenAPI.
 - [ ] Introduire dans D1 et le Workflow les états `proposal_pending`,
   `proposal_ready`, `illustration_pending` et `ready`, puis séparer la génération
-  du guide de l'acceptation et de l'ajout facultatif des portraits.
+  du guide de la production des illustrations. Le choix facultatif des
+  portraits intervient dès la commande selon l'ADR-0013.
 - [ ] Définir un `FactPack` sourcé et daté pour les faits volatils avant de les
   présenter comme vérifiés dans un guide.
 
@@ -61,8 +62,9 @@ Dernière mise à jour : 2026-08-31.
 - [ ] Ajouter saison ou dates, départ, budget, transport, intérêts et
   contraintes par divulgation progressive quand le moteur consommera réellement
   ces réponses.
-- [ ] Déplacer l'ajout facultatif de portraits après l'acceptation de la
-  première proposition, avec finalité et rétention visibles avant l'envoi.
+- [ ] Intégrer les photos facultatives dès la première étape du parcours
+  personnalisé web et iOS, avec finalité, destinataire et rétention visibles
+  avant envoi. La sélection iOS candidate reste locale.
 - [ ] Permettre d'alléger, remplacer, décaler ou conserver une journée depuis
   un carnet réellement persistant.
 - [ ] Remplacer la simulation de partage par un jeton serveur révocable, limité
@@ -103,9 +105,34 @@ Dernière mise à jour : 2026-08-31.
   identité réelle.
 - [ ] Définir un budget et une limite quotidienne du MVP gratuit.
 
+## Avant une commande iOS payée
+
+L'ADR-0013 prépare le client natif et l'API commune. La génération et l'achat
+restent fermés tant que les gates précédentes et les points suivants ne sont
+pas terminés.
+
+- [ ] Définir l'identité et la récupération du carnet après réinstallation ou
+  changement d'appareil.
+- [ ] Décider une conservation couvrant le séjour, puis modifier la purge et
+  la notice avant une durée supérieure à 30 jours.
+- [ ] Configurer l'équipe Apple Developer, la signature et le produit App Store
+  Connect avec le titulaire.
+- [ ] Vérifier la transaction StoreKit côté serveur et associer une seule
+  consommation du droit à une commande durable.
+- [ ] Traiter les notifications et remboursements ; prouver la reprise d'un
+  échec de génération sans nouvel achat.
+- [ ] Définir les protections d'admission native sans contourner Turnstile sur
+  les routes web historiques.
+- [ ] Mesurer les coûts texte, images et reprises avant le prix de vente final.
+- [ ] Tester le parcours complet en sandbox avant l'ouverture commerciale.
+- [ ] Préparer les déclarations App Store, le support et les preuves appareil.
+- [ ] Examiner l'inscription Small Business avec le titulaire du compte.
+
 ## Reporté
 
 - Affiliation Booking.com tant qu'aucun partenariat ni lien n'est approuvé.
+- Affiliation Amazon jusqu'à l'approbation de l'app gratuite et des liens
+  accessibles sans achat du carnet.
 - Stripe, fiscalité, remboursements et webhooks réels après validation du MVP
   gratuit.
 - Compte client, historique long, PDF, partage public et Voyage vivant.

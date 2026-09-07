@@ -111,6 +111,19 @@ d'un redimensionnement et d'une compression WebP qualité 78, sans retouche.
 - La capture alternative contient des promesses non prouvées, dont avis, paiement sécurisé et annulation. Elle ne doit pas guider la copie ni être publiée comme preuve.
 - Les textes fonctionnels restent en HTML et ne sont pas extraits depuis les images.
 
+## Ressources iOS candidates
+
+Le client natif réutilise le master et les portraits V2 existants, ainsi que
+les scènes fictives du carnet Japon. `scripts/ios-generate.py` prépare les
+ressources depuis ces sources. Les copies dans le projet iOS sont dérivées ;
+elles ne constituent pas de nouveaux masters.
+
+Les photos choisies dans PhotosPicker restent en mémoire dans le candidat.
+Elles ne doivent jamais être ajoutées au dépôt, aux tests, aux captures de
+preuve ou aux ressources de l'application. Les contrôles visuels utilisent les
+fixtures synthétiques existantes. Les droits des visuels et l'icône de
+publication devront être confirmés avant la distribution commerciale.
+
 ## Droits et données
 
 Les visuels ont été fournis par le propriétaire pour ce dépôt. Aucun fichier de licence ni preuve de droits distincte n'accompagne actuellement les sources. Toute diffusion hors de ce projet ou utilisation commerciale doit confirmer les droits, l'auteur et les éventuelles conditions du générateur d'origine.

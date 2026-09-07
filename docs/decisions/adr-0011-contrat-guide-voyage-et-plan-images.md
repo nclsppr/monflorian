@@ -7,11 +7,17 @@ Acceptée le 2026-08-30, mise à jour et livrée statiquement via la PR
 canonique alimente le rendu de `/v2` ; le contrat dynamique reste non branché
 au Workflow.
 
+La séquence de collecte des portraits est remplacée le 8 septembre 2026 par
+[l'ADR-0013](adr-0013-ios-natif-et-api-commune.md). Le choix facultatif apparaît
+dès la première étape de commande, avec envoi distinct et consenti. Le reste du
+contrat de guide et de compilation reste applicable.
+
 Cette décision complète l’ADR-0007 sans activer OpenAI, la création de voyage,
 le courriel ou un nouveau stockage. Elle remplace les données locales du carnet
-Japon de l’ADR-0010 par une fixture canonique au moment du build. Elle amende
-aussi la séquence cible « Parcours d’un voyage » de l’ADR-0007 : la proposition
-textuelle précède désormais le consentement et l’envoi facultatif de portraits.
+Japon de l’ADR-0010 par une fixture canonique au moment du build. Elle amendait
+aussi la séquence cible de l'ADR-0007 en plaçant la proposition textuelle avant
+la collecte facultative des portraits. Cette seule séquence est remplacée par
+l'ADR-0013.
 
 ## Contexte
 
@@ -109,10 +115,10 @@ texte ne peut ni ajouter un sujet, ni exclure le couple demandé.
 Le titre du lieu reste du HTML rendu avec Outfit. Il n’est pas dessiné dans le
 bitmap.
 
-### Séquence cible en deux phases
+### Séquence historique en deux phases, remplacée par l'ADR-0013
 
-Le parcours dynamique ne collecte plus les portraits avec le brief initial.
-Il sépare explicitement la proposition utile de sa personnalisation :
+La décision du 30 août prévoyait de ne plus collecter les portraits avec le
+brief initial. La séquence suivante est conservée comme historique :
 
 1. le Worker valide le brief, les limites et le jeton Turnstile, crée un
    identifiant opaque puis démarre uniquement la production du guide textuel ;
@@ -177,8 +183,9 @@ visuelle sans garantir une identité parfaite entre plusieurs générations.
 1. Ajouter les tests de forme, relations, contenu hostile et compilation.
 2. Mesurer la taille et le budget de sortie sur 3, 7, 10 et 14 jours.
 3. Remplacer le contrat courant dans Responses et l’OpenAPI.
-4. Introduire les états de proposition, d’acceptation et d’illustration, puis
-   séparer les deux phases dans le Worker, D1 et le Workflow.
+4. Introduire les états de proposition, d'acceptation et d'illustration dans
+   le Worker, D1 et le Workflow, en suivant la collecte initiale facultative
+   décidée dans l'ADR-0013.
 5. Produire une étape Workflow durable par image avec quota et état propres.
 6. Adapter le rendu privé avant un parcours fournisseur synthétique.
 

@@ -33,6 +33,11 @@ test("le contrat OpenAPI est autonome et décrit le voyage asynchrone et les rou
     "/api/trips",
     "/api/trips/{token}",
     "/api/trips/{token}/media/{position}",
+    "/api/v1/config",
+    "/api/v1/examples/japan-10-days",
+    "/api/v1/trips",
+    "/api/v1/trips/{token}",
+    "/api/v1/trips/{token}/media/{position}",
   ]);
   assert.deepEqual(Object.keys(contract.paths["/api/health"]), ["get"]);
   assert.deepEqual(Object.keys(contract.paths["/api/config"]), ["get"]);

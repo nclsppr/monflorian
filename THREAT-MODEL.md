@@ -2,10 +2,10 @@
 
 ## Portée
 
-Ce modèle couvre le navigateur, Cloudflare Workers et Static Assets, D1, R2,
-Workflows, OpenAI, Cloudflare Email Service, les liens Booking.com et le futur
-webhook Stripe. L'aperçu actuel garde les générations fermées ; les contrôles
-marqués requis sont des gates d'activation.
+Ce modèle couvre le navigateur, le client iOS candidat, Cloudflare Workers et
+Static Assets, D1, R2, Workflows, OpenAI, Cloudflare Email Service, les liens
+Booking.com et les futurs paiements StoreKit et Stripe. L'aperçu actuel garde
+les générations fermées ; les contrôles marqués requis sont des gates d'activation.
 
 ## Actifs à protéger
 
@@ -14,6 +14,7 @@ marqués requis sont des gates d'activation.
 - jeton de page privée et clé de chiffrement ;
 - secrets OpenAI, Turnstile et Stripe ;
 - budget fournisseur et quotas gratuits ;
+- brouillon iOS, sélection de photos en mémoire et futurs droits d'achat ;
 - intégrité du voyage, des images et des liens externes ;
 - Worker, D1, R2, Workflow, zone DNS et compte Cloudflare ;
 - confiance créée par les mentions de projection et d'affiliation.
@@ -26,6 +27,7 @@ marqués requis sont des gates d'activation.
 | Voyageur autorisé | contrôle brief, photos et adresse | injecter, dépasser les limites ou envoyer une photo sans droit |
 | Site tiers | provoque une requête navigateur | CSRF, dépense ou fuite de résultat |
 | Détenteur d'un lien | consulte ou partage le jeton | accéder au voyage privé |
+| Client iOS modifié | modifie le binaire, les réponses locales et les requêtes | simuler un achat ou contourner les quotas |
 | Fournisseur défaillant | renvoie délai, erreur ou contenu arbitraire | casser le Workflow ou injecter du contenu |
 | Dépendance compromise | exécute au build ou au runtime | voler un secret ou modifier le bundle |
 | Opérateur mal configuré | change binding, secret, bucket ou DNS | exposer les données, le mail ou une mauvaise version |
@@ -54,6 +56,17 @@ OVHcloud registrar -> serveurs de noms Cloudflare
 
 Booking.com ne traverse pas OpenAI. R2 ne sert jamais un objet directement. Le
 retour navigateur Stripe ne prouve jamais un paiement.
+
+Le candidat iOS lit les routes publiques `/api/v1/config` et
+`/api/v1/examples/japan-10-days`. Sa sélection de photos et son brouillon
+restent sur l'appareil. Les capacités `nativeOrdersEnabled` et
+`storeKitPurchasesEnabled` restent fermées. Une configuration modifiée dans le
+client ne doit jamais ouvrir une commande côté serveur.
+
+Le futur client peut présenter une transaction StoreKit, mais seul le serveur
+valide le droit et son association à la commande. L'app ne remplace pas
+Turnstile par un en-tête qu'elle contrôle. Les alias `/api/v1/trips` conservent
+les contrôles des handlers historiques.
 
 ## Hypothèses d'activation
 
@@ -98,6 +111,21 @@ revue.
 | T24 | Webhook Stripe falsifié ou rejoué | génération non payée | signature brute vérifiée, identifiant d'événement unique, état idempotent | erreurs opérateur et litiges |
 | T25 | Le modèle texte détourne la génération d'image avec une consigne libre | contenu arbitraire, abus ou coût | aucun prompt ni profil libre dans `TravelGuideV1`, champs transmis au modèle d'image bornés et énumérés, compilation serveur avec profil fixe, refus des URL et du HTML | une scène valide peut encore être inadéquate |
 
+## Contrôles propres au client iOS
+
+| ID | Menace | Contrôle candidat ou requis | Limite |
+| --- | --- | --- | --- |
+| T26 | Le brouillon sauvegarde des photos à l'insu de la personne | copies réencodées en mémoire et modèle de sauvegarde sans image ni référence de photothèque | mémoire et appareil compromis restent hors de cette protection |
+| T27 | Une configuration locale falsifiée ouvre la génération | capacité native et achat fermés, autorisation contrôlée par le serveur à chaque action | l'admission native future reste à implémenter |
+| T28 | Une transaction est falsifiée ou réutilisée | achat fermé ; validation signée serveur, produit, environnement et consommation unique requis avant ouverture | un contrôle StoreKit local seul serait insuffisant |
+| T29 | Un alias versionné contourne les protections web | réutilisation des handlers et des gates existantes, tests des refus | l'app ne doit pas fabriquer un contexte navigateur |
+| T30 | Une sauvegarde ou un export révèle le brouillon | sauvegarde et export explicites, effacement limité aux données Mon Florian | copie externe ou sauvegarde système hors du contrôle direct de l'app |
+| T31 | Une app ancienne interprète mal un nouveau guide | version de contrat, projection validée et erreur explicite en cas d'incompatibilité | durée de compatibilité à fixer avant App Store |
+| T32 | Un achat reste débité après échec de génération | commande serveur idempotente et reprise requises avant ouverture | support, remboursement et récupération doivent être éprouvés |
+
+Les contrôles StoreKit requis ne sont pas annoncés comme implémentés. Aucun
+paiement ni upload ne doit être activé pour contourner une limite du candidat.
+
 ## Contrôles de sortie courants
 
 Le Worker traite toute sortie OpenAI comme hostile :
@@ -138,7 +166,12 @@ frontière OpenAI et ne reçoit aucune donnée du visiteur.
   de jours incohérente ou trop d'images ;
 - courriel en échec puis repris sans doublon de voyage ;
 - retour Stripe sans webhook signé, quand cette phase existera ;
-- changement de serveurs de noms avec MX et SPF identiques.
+- changement de serveurs de noms avec MX et SPF identiques ;
+- absence de photos et de références de photothèque dans le brouillon iOS ;
+- configuration indisponible, incohérente ou faussement activée côté client ;
+- création via les alias versionnés refusée dans les mêmes conditions que la route historique ;
+- transaction StoreKit invalide, en attente, rejouée, remboursée ou du mauvais environnement avant activation ;
+- achat réussi puis interruption et reprise sur le même appareil ou un autre.
 
 ## Signaux d'arrêt
 

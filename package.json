@@ -15,7 +15,14 @@
     "start": "npm run dev",
     "test": "node --test tests/*.test.mjs",
     "check": "node --check app/core.mjs && node --check app/email.mjs && node --check app/http.mjs && node --check app/openai.mjs && node --check app/travel-guide.mjs && node --check app/trips.mjs && node --check app/public/avatar.js && node --check app/public/motion.js && node --check app/public/app.js && node --check scripts/build-worker-assets.mjs && node --check scripts/smoke_openai.mjs && node --check vite.v2.config.js && npm test && npm run check:worker",
-    "smoke:openai": "node scripts/smoke_openai.mjs"
+    "smoke:openai": "node scripts/smoke_openai.mjs",
+    "api:generate": "node scripts/generate-api-clients.mjs",
+    "api:check": "node scripts/generate-api-clients.mjs --check",
+    "ios:generate": "python3 scripts/ios-generate.py",
+    "ios:check": "npm run api:check && python3 scripts/ios-generate.py --check",
+    "ios:build": "./scripts/ios-build.sh",
+    "ios:photo-check": "./scripts/ios-photo-contract.sh",
+    "ios:test": "./scripts/ios-test.sh"
   },
   "devDependencies": {
     "@types/node": "24.13.3",
