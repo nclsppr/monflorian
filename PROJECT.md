@@ -21,7 +21,7 @@ itinéraire personnalisé reste une capacité cible fermée.
 
 ## Utilisateurs et résultat attendu
 
-Le site candidat permet de lire un exemple public de dix jours au Japon,
+Le site permet de lire un exemple public de dix jours au Japon,
 préparer un pense-bête local et cocher les vérifications du carnet. Ces outils
 ne créent aucune demande et ne réservent rien. Les pages publiques contiennent
 uniquement du contenu éditorial et des personnages fictifs.
@@ -65,10 +65,14 @@ client et le Voyage vivant restent des hypothèses non livrées.
   canonique, trois exemples, liens Booking.com et simulation de partage public
   ou privé par mot de passe, sans protection serveur.
 
-### Candidat du 7 septembre 2026 : V2 principale
+### Livré le 7 septembre 2026 : V2 principale
 
-La promotion est décidée dans l'ADR-0012. Cette tranche reste candidate jusqu'à
-la fusion, aux contrôles requis, au déploiement et aux sondes publiques.
+La [PR #54](https://github.com/nclsppr/monflorian/pull/54) a livré la promotion
+décidée dans l'ADR-0012. Son commit fusionné est
+`f0d8411530f0d6002c70f206f1c716169b22a184`. La version Worker
+`f3ffeb1e-0e3d-44ce-8eb3-82ab39c6f4d2` reçoit 100 % du trafic. Les contrôles
+de `main` et les sondes publiques passent ; leurs preuves figurent dans
+`STATUS.md` et `DELIVERY-EVIDENCE.md`.
 
 - Cinq pages pré-rendues en HTML depuis React : `/`,
   `/carnets/japon-10-jours`, `/guides`,
@@ -127,12 +131,12 @@ restent fermés. La preuve de publication appartient à `STATUS.md` et
 | Composant | Rôle | Source | État |
 | --- | --- | --- | --- |
 | Worker | API, sécurité, rendu de la page privée et accès aux bindings | `src/worker.ts` | déployé, génération fermée |
-| Site principal candidat | HTML pré-rendu et hydratation React | `app/v2/src/main.jsx`, `Planner.jsx`, `Guides.jsx`, `scripts/prerender-site.mjs` | candidat, publication à prouver |
-| Static Assets | HTML dérivé, ressources publiques et visuels canoniques | `dist/` depuis `app/v2/`, `app/public/` et `assets/brand/` | distribution Cloudflare active, nouveau contenu candidat |
+| Site principal | HTML pré-rendu et hydratation React | `app/v2/src/main.jsx`, `Planner.jsx`, `Guides.jsx`, `scripts/prerender-site.mjs` | publié le 7 septembre 2026 |
+| Static Assets | HTML dérivé, ressources publiques et visuels canoniques | `dist/` depuis `app/v2/`, `app/public/` et `assets/brand/` | distribution Cloudflare active, cinq pages pré-rendues publiées |
 | Coeur métier | Validation des briefs, photos, résultats et liens | `app/core.mjs` | réutilisé, tests locaux |
 | Adaptateur OpenAI | Responses et Image Edits sans SDK | `app/openai.mjs` | non appelé en production |
 | Contrat de guide candidat | Fixture statique, schéma, validation métier et compilation d'image | `contracts/`, `app/travel-guide.mjs`, `app/v2/src/data.js` | fixture du carnet Japon, génération dynamique non intégrée |
-| Données locales de préparation | Pense-bête et cases de vérification | `app/v2/src/planner-state.mjs`, `app/v2/src/main.jsx` | navigateur seulement, candidat |
+| Données locales de préparation | Pense-bête et cases de vérification | `app/v2/src/planner-state.mjs`, `app/v2/src/main.jsx` | publié le 7 septembre 2026, navigateur seulement |
 | D1 | États, quotas, données chiffrées et jetons hachés | `migrations/` | base vide, schéma appliqué |
 | R2 | Photos d'entrée et images générées | binding `MEDIA` | bucket privé UE créé, vide, binding déployé |
 | Workflows | Traitement durable et notification | `src/workflows/` | texte et image câblés, garde-fous fermés |
@@ -149,9 +153,9 @@ Les sources canoniques du nouveau site vivent sous `app/v2/src/`. Le nom de ce
 répertoire reste technique et ne crée pas une seconde version publique. Le
 build remplace l'accueil de `dist/` par son HTML pré-rendu. L'ancien
 `app/public/index.html` est conservé comme source historique, mais ne constitue
-plus l'accueil servi dans le candidat. Les fichiers historiques `styles.css`
-et `app.js` restent conservés ; la notice et le rendu privé peuvent encore
-consommer leurs ressources communes. Ne jamais modifier `dist/` à la main.
+plus l'accueil servi depuis le 7 septembre 2026. Les fichiers historiques
+`styles.css` et `app.js` restent conservés ; la notice et le rendu privé peuvent
+encore consommer leurs ressources communes. Ne jamais modifier `dist/` à la main.
 
 ### Flux cible
 
@@ -221,7 +225,7 @@ partie de cette chaîne de livraison.
 
 ## Données et sécurité
 
-- Le pense-bête candidat reste en mémoire jusqu'à un enregistrement explicite.
+- Le pense-bête reste en mémoire jusqu'à un enregistrement explicite.
   La checklist enregistre seulement les identifiants des cases modifiées. Les
   deux copies restent dans ce navigateur jusqu'à leur effacement ; elles ne
   sont ni synchronisées ni jointes au lien public du carnet.

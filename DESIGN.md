@@ -42,10 +42,10 @@ rounded:
 
 ## Statut et sources
 
-Ce contrat décrit la V2 principale candidate du 7 septembre 2026, décidée dans
-[l'ADR-0012](docs/decisions/adr-0012-v2-site-principal.md). Sa publication et son
-contrôle public doivent être prouvés séparément dans `STATUS.md` et
-`DELIVERY-EVIDENCE.md`.
+Ce contrat décrit la V2 principale publiée le 7 septembre 2026, décidée dans
+[l'ADR-0012](docs/decisions/adr-0012-v2-site-principal.md) et livrée par la
+[PR #54](https://github.com/nclsppr/monflorian/pull/54). `STATUS.md` et
+`DELIVERY-EVIDENCE.md` conservent la version active et les preuves publiques.
 
 Les sources canoniques sont `app/v2/src/main.jsx`, `Planner.jsx`, `Guides.jsx`,
 leurs styles et leurs données. Le carnet consomme la fixture canonique

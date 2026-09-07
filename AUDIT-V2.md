@@ -1,8 +1,10 @@
 # Comparaison et promotion de la V2
 
 Revue du 7 septembre 2026, depuis les sources et les deux interfaces publiques.
-La décision de promotion figure dans l'ADR-0012. Ce document décrit les choix du
-candidat ; `DELIVERY-EVIDENCE.md` porte les preuves de livraison.
+La décision de promotion figure dans l'ADR-0012. Ce document décrit les choix
+publiés le 7 septembre 2026 par la
+[PR #54](https://github.com/nclsppr/monflorian/pull/54) ;
+`DELIVERY-EVIDENCE.md` porte les preuves de livraison.
 
 ## Comparaison
 
@@ -67,6 +69,17 @@ dispose maintenant de sa propre ligne avec son échéance et une cible de 44 pix
 au minimum, sans répéter le même texte avant les liens. Le partage restitue
 aussi le focus au bouton d’origine après sa fermeture avec Échap. L’aperçu social de l’accueil emploie une scène du Japon
 à la place de l’ancienne carte qui annonçait encore un voyage privé sur mesure.
+
+## Publication du 7 septembre 2026
+
+Les contrôles de `main`
+[34071314651](https://github.com/nclsppr/monflorian/actions/runs/34071314651) et
+[34071314760](https://github.com/nclsppr/monflorian/actions/runs/34071314760)
+passent. Les sondes publiques retrouvent les cinq pages HTML à l'identique du
+build et les mêmes empreintes pour 25 assets, dont 13 WebP. Cinq redirections
+répondent en `308` et trois routes inconnues en `404`. La création de voyage
+reste fermée avec `503 TRIP_CREATION_UNAVAILABLE`. La version Worker active et
+le SHA livré figurent dans `STATUS.md` et `DELIVERY-EVIDENCE.md`.
 
 ## Limites retenues
 

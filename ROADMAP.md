@@ -29,7 +29,7 @@ de ce parcours.
 | 2 | F02 | Aperçu historique sans génération | done | interface publique fermée sur l'ancienne cible |
 | 3 | F03 | Runtime Cloudflare fermé | done | Worker, D1, Workflow, PR, CI et preuve publique |
 | 3b | F03-V2 | Parcours éditorial V2 | done | `/v2`, carnet Japon, partage simulé et preuve publique |
-| 3c | F03-SITE | V2 comme site principal | in_progress | candidat du 7 septembre : cinq pages pré-rendues, outils locaux, PR, contrôles et preuve publique à terminer |
+| 3c | F03-SITE | V2 comme site principal | done | livré le 7 septembre 2026 : cinq pages pré-rendues, outils locaux, PR #54 fusionnée, contrôles et preuve publique |
 | 4 | F04 | Stockage privé et cycle de vie | in_progress | R2 UE, chiffrement, jetons et purge prouvés |
 | 5 | F05 | Génération synthétique asynchrone | in_progress | texte, images, quotas, reprise et coûts observés |
 | 6 | F06 | Page privée et courriel | in_progress | rendu, suppression, notification et notice validés |
@@ -58,34 +58,34 @@ SHA fusionné répond et la preuve est consignée.
 
 ## F03-SITE, V2 comme site principal
 
-Décision acceptée dans l'ADR-0012 le 7 septembre 2026. La tranche est candidate,
-pas encore déclarée publiée. Elle promeut l'interface V2 sans ouvrir le backend
-personnalisé ni modifier les phases F04 à F11.
+Décision acceptée dans l'ADR-0012 et tranche publiée le 7 septembre 2026 par la
+[PR #54](https://github.com/nclsppr/monflorian/pull/54). Elle promeut l'interface
+V2 sans ouvrir le backend personnalisé ni modifier les phases F04 à F11.
 
-- Pré-rendre l'accueil, le carnet Japon, l'index des guides et deux articles.
-- Conserver leur lecture et leur navigation sans JavaScript ; hydrater React
+- [x] Pré-rendre l'accueil, le carnet Japon, l'index des guides et deux articles.
+- [x] Conserver leur lecture et leur navigation sans JavaScript ; hydrater React
   pour les outils interactifs.
-- Rediriger l'ancienne entrée `/v2` en `308` et conserver les destinations des
+- [x] Rediriger l'ancienne entrée `/v2` en `308` et conserver les destinations des
   liens historiques de carnet et d'inspiration.
-- Remplacer le questionnaire déterministe par un pense-bête utile, copiable,
+- [x] Remplacer le questionnaire déterministe par un pense-bête utile, copiable,
   téléchargeable en texte et enregistrable sur l'appareil par choix explicite.
-- Conserver les cases de la checklist localement à chaque modification, avec
+- [x] Conserver les cases de la checklist localement à chaque modification, avec
   explication et effacement. Aucune case ne vaut réservation.
-- Partager le lien public du carnet et proposer son impression. Retirer le
+- [x] Partager le lien public du carnet et proposer son impression. Retirer le
   faux partage privé et l'attente artificielle.
-- Donner aux pages des métadonnées, des liens internes et des sources utiles.
+- [x] Donner aux pages des métadonnées, des liens internes et des sources utiles.
   Vérifier la disponibilité du contenu ; ne pas promettre de classement SEO.
-- Garder les cinq portraits V2, le logo, les couleurs, la pile système, Kalam
+- [x] Garder les cinq portraits V2, le logo, les couleurs, la pile système, Kalam
   et Outfit. Réduire l'introduction desktop et placer l'action mobile avant
   l'aperçu du téléphone.
-- Mettre à jour la notice et les contrats des copies locales.
+- [x] Mettre à jour la notice et les contrats des copies locales.
 
-La sortie exige `./scripts/verify.sh`, le contrôle visible mobile et bureau,
-les parcours de copie, de stockage, d'effacement et de lecture sans JavaScript,
-puis PR, contrôles requis, fusion, déploiement et sondes des cinq pages. Les
-drapeaux de création, de génération, d'illustration et de courriel doivent
-rester fermés. `STATUS.md` et `DELIVERY-EVIDENCE.md` porteront la version
-Cloudflare et la preuve publique avant de passer cette ligne à `done`.
+La validation complète, les contrôles requis de `main`, la fusion et le
+déploiement sont terminés. Les sondes retrouvent les cinq pages HTML et les
+assets attendus, les redirections `308` et les erreurs `404`. La création reste
+fermée avec `503 TRIP_CREATION_UNAVAILABLE`. `STATUS.md` et
+`DELIVERY-EVIDENCE.md` conservent les contrôles détaillés, la version Cloudflare
+active et les limites du parcours.
 
 ## F04, stockage privé et cycle de vie
 
@@ -112,7 +112,7 @@ les drapeaux sont à `false` et aucun coût fournisseur n'a été engagé.
 
 La fixture canonique `TravelGuideV1` alimente statiquement le carnet
 Japon, historiquement sous `/v2` et sous `/carnets/japon-10-jours` dans le
-candidat F03-SITE, sans appel fournisseur. Le schéma, le validateur et le
+site livré par F03-SITE, sans appel fournisseur. Le schéma, le validateur et le
 compilateur restent séparés du contrat OpenAI courant et du Workflow jusqu'à
 l'ajout des tests reportés et l'adaptation des quotas multi-images.
 
