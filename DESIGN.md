@@ -28,7 +28,7 @@ typography:
     fontFamily: '"Avenir Next", "Segoe UI", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, sans-serif'
     fontWeight: 800
     lineHeight: 0.99
-    letterSpacing: -0.064em
+    letterSpacing: -0.04em
   note:
     fontFamily: '"Kalam", "Bradley Hand", "Segoe Print", cursive'
     fontWeight: 400
@@ -40,181 +40,164 @@ rounded:
 
 # Design de Mon Florian
 
-## Overview
+## Statut et sources
 
-Mon Florian est un produit de voyage grand public. Il ne doit ressembler ni au site d'une agence, ni à un chatbot. Le logo porte l'illustration et la personnalité. L'interface reste plus plate, plus calme et centrée sur une seule action : raconter son envie.
+Ce contrat décrit la V2 principale candidate du 7 septembre 2026, décidée dans
+[l'ADR-0012](docs/decisions/adr-0012-v2-site-principal.md). Sa publication et son
+contrôle public doivent être prouvés séparément dans `STATUS.md` et
+`DELIVERY-EVIDENCE.md`.
 
-Ce contrat s'appuie sur `prototype/index.html`, le master `assets/brand/monflorian-logo.png` et la capture principale. La capture alternative reste une archive. Elle ne justifie aucun composant, avis ou argument commercial.
+Les sources canoniques sont `app/v2/src/main.jsx`, `Planner.jsx`, `Guides.jsx`,
+leurs styles et leurs données. Le carnet consomme la fixture canonique
+`contracts/examples/japan-10-days.v1.json` par `app/v2/src/data.js`. Le build
+pré-rend les pages ; les fichiers de `dist/` ne sont jamais édités à la main.
+L'ancien `app/public/index.html` reste historique. Sa conservation ne lui donne
+pas autorité sur le nouvel accueil. Les styles historiques restent disponibles
+pour la notice et les autres consommateurs qui en dépendent.
 
-## Logo modulable
+Le master `assets/brand/monflorian-logo.png` et les assets documentés dans
+`ASSETS.md` gardent leur autorité de marque. Les captures sous
+`references/concepts/` sont des références historiques, jamais une source de
+promesses ou un substitut à une interface testée.
 
-Le lockup fourni reste le master de référence. L'application sépare désormais
-son personnage et son mot-symbole. Le mot "Mon Florian" et l'avion ne changent
-jamais. Le navigateur choisit un seul portrait de Florian au chargement et
-l'utilise partout pendant cette visite. Si le script ou le portrait choisi
-échoue, il conserve le personnage original de la famille V2.
+## Direction
 
-Les variantes gardent le même visage, les lunettes rondes dorées, les yeux
-bruns, la barbe, le sourire et le rendu 3D doux du master. Seuls les cheveux,
-le couvre-chef et un petit accessoire de voyage peuvent changer. Chaque portrait
-utilise le même canevas carré et un vrai canal alpha. Tout ce qui entoure le
-personnage reste transparent. Aucun fichier ni composant ne peint de fond, de
-médaillon, de halo ou d'ombre derrière lui. Le portrait ne reçoit ni texte, ni
-décor, ni second personnage.
+Mon Florian aide à préparer un voyage. Il ne ressemble ni à une agence ni à un
+chatbot. Le logo porte la personnalité ; les outils servent une action précise.
+Florian intervient pour expliquer un choix d'itinéraire, pas pour décorer chaque
+bloc.
 
-La famille V2 a remporté la comparaison visuelle et devient la famille active
-sur `/`. Elle conserve les variantes sémantiques `original`, `wind`, `beanie`,
-`summer` et `flower`. Le paramètre facultatif `?avatar=` fixe une variante ;
-sans lui, chaque visite en choisit une au hasard. Le portrait
-`florian-v2-original` reste le repli sans
-JavaScript ou en cas d'échec. La première famille reste archivée pour un retour
-explicite, mais n'est plus servie par l'interface. Une nouvelle variante doit
-respecter le contrat de transparence automatisé avant d'entrer dans la famille.
+L'accueil montre le carnet Japon et permet de préparer un pense-bête personnel.
+Il annonce que la génération sur mesure reste fermée. Les cinq pages publiques
+sont l'accueil, le carnet Japon, l'index des guides et deux articles. Le carnet
+et les guides se lisent sans JavaScript. Le pense-bête, la checklist et les
+commandes de partage sont des améliorations interactives du contenu déjà rendu.
 
-Le changement se produit au chargement. Il ne tourne pas en boucle et ne doit
-pas détourner l'attention du composeur. Florian reste un repère de marque dans
-l'en-tête et un conseiller ponctuel dans le contenu.
+## Logo et portraits
 
-Sur l'accueil, un grand lockup modulable occupe d'abord le centre du premier
-écran à sa taille de rendu réelle. Son conteneur reprend exactement les
-gouttières du contenu et ne dépasse jamais `1240 px`. Le lockup complet prend
-`100 %` de ce conteneur, sur grand écran comme sur mobile. Les sources
-d'introduction à `1024 px` pour le portrait et `1352 px` pour le mot-symbole
-préservent sa netteté sans charger les PNG masters. Sur grand écran,
-l'introduction occupe au moins la hauteur visible sous l'en-tête et réserve un
-espace volontairement généreux avant le hero. Elle défile avec la page, puis le
-logo compact apparaît dans l'en-tête quand l'introduction est passée. Ce
-basculement repose sur un seuil d'intersection, sans lecture continue du
-défilement, changement d'échelle ni boucle d'animation. L'aperçu du téléphone
-reste fixe sur les appareils tactiles. Sur un pointeur précis, les navigateurs
-compatibles peuvent ajouter une profondeur courte avec leur timeline de vue
-native. La préférence de réduction des mouvements supprime cette profondeur et
-les transitions.
+Le mot-symbole et son avion restent fixes. Les cinq portraits V2 conservent les
+variantes `original`, `wind`, `beanie`, `summer` et `flower`. Le navigateur
+choisit une variante par visite ou respecte un paramètre `?avatar=` reconnu.
+Tous les emplacements utilisent la même variante. Le portrait original sert de
+repli dans le HTML et si la variante ne peut pas être chargée.
 
-Une note choisie parmi dix phrases courtes accompagne uniquement le grand
-lockup. Le tirage change à chaque chargement et évite de répéter immédiatement
-la phrase précédente dans le même onglet. Trois traits blancs, irréguliers et
-légèrement transparents donnent l'impression que Florian l'a écrite sur la
-page. Le texte utilise Kalam en crayon sauge `#85897a` et reste statique : aucun
-effet de saisie, aucune boucle et aucun mouvement ne sont nécessaires. La fonte
-latine WOFF2 est auto-hébergée, préchargée et limitée à ce seul rôle. La surface
-garde une largeur fixe pour éviter qu'une phrase déplace le lockup. Sur mobile,
-la note et son papier se resserrent sans descendre sous `17 px`.
+Les portraits gardent le même visage, les lunettes, la barbe, le sourire et le
+rendu du master. Leur canevas reste carré et transparent. Les composants ne leur
+ajoutent ni fond ni médaillon. La première famille reste une archive de retour,
+jamais un second système visuel actif.
 
-## Colors
+Sur desktop, le grand logo ouvre l'accueil dans une introduction plus courte
+que celle de la V1. L'en-tête compact reste visible dès l'arrivée et accompagne
+le défilement. La navigation demeure utilisable sans JavaScript.
 
-L'encre structure les titres, le texte et le cadre du téléphone. Le bleu profond porte l'action principale quand du texte blanc doit atteindre le contraste AA. Le bleu électrique sert aux traits, liens et accents, pas aux longs textes.
+La note manuscrite utilise Kalam en crayon sauge `#85897a`, sur les trois traits
+blancs irréguliers issus du système existant. Elle reste statique. Sur mobile,
+l'introduction est masquée : le titre, l'explication et l'action précèdent le
+téléphone. L'aperçu du résultat reste présent avant le pense-bête.
 
-Le ciel et le cyan appartiennent aux aperçus de destination. Le citron signale une action courte ou une étape active. Il ne doit jamais être le seul signe d'un état. Les surfaces papier, crème et gris bleuté séparent les niveaux sans ajouter une ombre à chaque bloc.
+## Couleurs et typographie
 
-## Typography
+L'encre structure le texte et le téléphone. Le bleu profond porte les actions
+principales avec un texte blanc lisible. Ciel et cyan appartiennent aux aperçus ;
+le citron distingue les actions courtes et les étapes actives, avec un libellé
+ou une forme qui rend l'état compréhensible sans la couleur.
 
-Le produit utilise la pile système du prototype. Les grands titres sont lourds, courts et serrés. Ils portent une idée par bloc. Le corps de texte garde une largeur de lecture modérée et un rythme plus ouvert. Kalam est réservée à la seule note manuscrite de l'introduction.
+Les surfaces papier, crème et gris bleuté séparent les niveaux. Les boutons et
+les champs restent plats. Les ombres sont réservées au téléphone et aux quelques
+éléments qui ont besoin de se détacher ; les groupes de lecture utilisent
+l'espacement et les lignes fines.
 
-Les capitales espacées sont réservées aux petits repères, jours et métadonnées. Les libellés d'action restent en casse naturelle. Toute autre police de marque exige une décision et une preuve de chargement, de performance et de droits.
+La pile système du produit reste la police de l'interface et des guides. Les
+titres restent courts, lourds et lisibles. Kalam appartient uniquement à la note
+d'introduction. Outfit auto-hébergée sert aux titres blancs sur les scènes de
+voyage. Les informations utiles du carnet, dont durées, trajets et alternatives,
+restent lisibles sur mobile sans dépendre d'un agrandissement.
 
-## Layout
+## Parcours et navigation
 
-Sur `/`, le composeur arrive avant toute explication secondaire. Sur `/v2`, le
-hero présente d'abord la promesse et un aperçu du carnet dans le téléphone,
-puis conduit au formulaire en trois étapes. Cet ordre reste identique sur
-mobile : l'aperçu précède le formulaire et conserve ses gouttières. Aucun
-élément décoratif ne doit rogner le texte ou masquer un contrôle.
+L'action principale de l'accueil ouvre le carnet Japon. Une action secondaire
+mène au pense-bête. La navigation relie carnet, pense-bête et guides avec de
+vrais liens ; le menu mobile et les trois inspirations emploient des éléments
+`details` natifs. L'utilisateur peut ouvrir une destination dans un nouvel
+onglet et comprendre où mène le lien.
 
-La navigation de lancement se limite aux ancres utiles et à l'action principale. Le mini-site de voyage suit une autre hiérarchie : Aujourd'hui, Itinéraire, Carte et Pratique. Souvenirs n'apparaît qu'après l'achat de Voyage vivant.
+Le carnet propose un sommaire, des liens directs aux dix journées, les hôtels,
+le budget, la checklist, les conseils pratiques et les sources. Une référence à
+une vérification conduit au point concerné. Le contenu long reste organisé par
+chapitre et par journée, avec les transferts placés dans leur chronologie.
+Les champs de contrôle réservés au futur modèle d'image restent absents du
+bundle public.
 
-## Elevation & Depth
+Les guides possèdent une hiérarchie de titres, un sommaire, une date, leurs
+sources et des liens vers les pages utiles. Leur présentation favorise la
+lecture. Les métadonnées et le sitemap doivent décrire le contenu réel sans
+promettre son classement dans les moteurs.
 
-Les ombres sont réservées au composeur, à l'aperçu du téléphone et aux notes de Florian. Les autres groupes utilisent le contraste des fonds et une ligne fine. Ne pas empiler des cartes dans des cartes.
+## Pense-bête et checklist
 
-Les dégradés servent aux fonds d'ambiance et aux illustrations de destination. Les boutons et les champs restent plats. Pas de verre brillant ni de volume qui suggère une "IA magique".
+Le pense-bête conserve trois étapes : envie, rythme et confort. Il réunit les
+choix dans une fiche, permet de la copier et de la télécharger en texte. Il ne
+modifie pas le carnet Japon. Il ne demande ni adresse de courriel, ni photo, ni
+code d'accès. Le texte saisi peut rester vide ; les nombres sont bornés et les
+erreurs donnent une correction précise.
 
-## Shapes
+L'enregistrement est volontaire, avec un bouton « Garder sur cet appareil ».
+Après modification, la copie ne change qu'au clic suivant. La restauration et
+l'effacement portent uniquement sur cette copie locale. L'interface explique ce
+qui reste dans la page et ce qui est enregistré dans le navigateur. Une erreur
+de copie propose un texte sélectionnable. Une erreur de stockage laisse le
+pense-bête utilisable sans annoncer une sauvegarde réussie.
 
-Les grands panneaux utilisent les rayons les plus larges. Les champs et cartes secondaires utilisent les rayons intermédiaires. Les puces, portraits et badges restent circulaires ou en pilule. Un écran ne mélange pas ces formes avec des angles durs sans fonction.
+La checklist enregistre chaque coche et décoche dans le navigateur. Le texte
+près des cases l'annonce avant usage. Une case représente une vérification,
+jamais une réservation. L'action « Tout décocher » remet la liste à zéro et
+retire sa copie locale. Le lien partagé ne transmet ni cette liste ni le
+pense-bête.
 
-Le téléphone, l'avion en papier et les montagnes sont des repères propres à Mon Florian. Ils ne doivent pas devenir une bibliothèque d'illustrations génériques.
+## Images et partage
 
-## Components
+Les scènes Japon et les couvertures d'inspiration restent synthétiques. Le
+couple est fictif et ne constitue ni un témoignage ni une preuve de visite.
+Le traitement Fuji, la colorimétrie contenue et le grain fin restent communs.
+Les titres blancs centrés sont rendus en HTML avec Outfit ; ils ne sont jamais
+incrustés dans les images.
 
-Le composeur de l'accueil réunit dans un premier envoi la phrase libre, les
-dates, le rythme et l'adresse de courriel. Il garde un nom accessible, un focus
-visible et une erreur lisible. Une information manquante déclenche au plus une
-ou deux questions de Florian, pas une nouvelle suite d'écrans. Les portraits ne
-sont proposés qu'après une première proposition utile et acceptée, avec leur
-finalité et leur durée de conservation. Le navigateur ouvre ensuite la page
-privée : elle annonce clairement l'attente, le résultat, l'échec, l'expiration
-ou la suppression.
+Les scènes Japon possèdent les formats `720 x 480` et `1440 x 960` pour leur
+`srcset`. Les dimensions sont réservées dans le rendu et les images hors du
+premier écran peuvent être chargées à la demande.
 
-L'action principale reste unique. Dans le prototype, elle doit annoncer qu'aucun paiement n'a lieu. Dans le produit actif, elle peut porter le prix seulement quand le parcours de paiement existe et a été vérifié.
+Le partage ouvre ou copie le lien du carnet public. Il ne présente plus de
+contrôle d'accès privé simulé ni de mot de passe. L'impression utilise le
+navigateur et une présentation de lecture. Elle ne doit pas devenir une
+promesse de PDF généré par le service.
 
-Une note de Florian explique un choix concret du parcours. Elle n'est ni une bulle de discussion, ni une mascotte décorative. Le retour dynamique utilise un statut annoncé aux technologies d'assistance et ne dépend pas du mouvement.
+Les futures photos réelles restent soumises au contrat distinct de consentement,
+de stockage R2 privé et de suppression. Elles ne sont demandées qu'après une
+première proposition utile et acceptée dans le futur parcours personnalisé.
 
-La démonstration V2 ne demande et ne reçoit aucun portrait. Elle annonce
-qu'elle ouvre toujours le même carnet Japon et consomme statiquement la fixture
-canonique `contracts/examples/japan-10-days.v1.json`. Le rendu conserve les
-cinq chapitres qui couvrent les dix jours, leurs cinq photos et les
-informations utiles à la
-décision : rythme, moments, transferts, hébergements, réservations, variables de
-budget, alternatives pluie ou fatigue et conseils des dernières 72 heures. Le
-build valide la fixture puis en produit une projection publique qui retire les
-champs de contrôle des images. Ces consignes destinées aux fournisseurs ne sont
-ni incluses dans le bundle public ni rendues dans la page.
+## Composants et accessibilité
 
-Le partage de cette démonstration reste explicitement simulé. Le dialogue peut
-montrer les choix public ou privé et composer un lien de démonstration, mais il
-ne publie aucun carnet, ne persiste aucune règle d'accès et ne protège aucune
-ressource côté serveur. La copie visible ne doit pas présenter cette simulation
-comme un contrôle d'accès livré.
+React 19 et Astryx `0.5.0` restent la base existante. Le thème Matcha reprend les
+tokens Mon Florian. Les boutons, badges et dialogues peuvent utiliser Astryx ;
+les formulaires et les éléments de lecture utilisent les composants natifs
+lorsqu'ils remplissent le besoin. Le choix d'un composant ne doit pas imposer
+une nouvelle étape ni une animation artificielle.
 
-La V2 utilise un couple fictif et des scènes synthétiques comme distribution
-éditoriale stable. Ses images adoptent une photographie naturelle de type Fuji,
-une colorimétrie contenue, un grain fin et le nom de la ville ou de l'activité
-centré en blanc avec Outfit. Les cinq scènes Japon et les couvertures d'exemple
-partagent ce même traitement. Aucune mention technique n'est superposée à ces
-fixtures fictives. Le texte reste un overlay HTML : aucun titre n'est incrusté
-dans les fichiers WebP. Les scènes Japon utilisent un `srcset` avec les formats
-`720 x 480` et `1440 x 960` afin d'adapter le poids chargé à la largeur rendue.
+Les commandes possèdent un nom, un rôle et un focus visible. Les erreurs et
+résultats sont annoncés aux technologies d'assistance. Les étapes du
+pense-bête déplacent le focus vers leur titre. Les ancres restent visibles sous
+l'en-tête. Les cibles tactiles, le contraste et l'ordre de lecture sont vérifiés
+avec la copie réelle.
 
-Les futures photos envoyées par des voyageurs suivent le contrat de traitement
-et le stockage privé Cloudflare. Elles ne sont demandées qu'après validation de
-la première proposition, jamais comme condition d'accès à l'itinéraire. Cette
-frontière ne s'applique pas au couple fictif ni aux scènes synthétiques
-versionnées de la V2.
+Sans JavaScript, aucune commande inactive ne doit donner l'impression d'avoir
+copié, enregistré ou réservé quelque chose. Les alternatives de lecture sont
+accessibles immédiatement. La préférence de réduction des mouvements supprime
+les transitions dispensables et le défilement animé. Aucune fausse attente de
+génération ne précède l'ouverture du carnet.
 
-## Astryx sur la V2
+## Limites
 
-L'accueil historique `/` reste natif. `/v2` constitue une île React 19 isolée
-qui adopte Astryx `0.5.0` et son thème Matcha, repris avec la palette Mon Florian
-et la pile système du produit. Outfit reste auto-hébergée mais se limite aux
-titres blancs superposés aux photos. Les boutons, cartes sélectionnables,
-champs, stepper, progression, badges et dialogues viennent réellement
-d'Astryx. Ils reprennent les rayons, les contrastes, les fonds cyan et citron,
-et la hiérarchie de la racine. Ce choix évite une migration du runtime
-historique sans isoler la V2 du langage visuel Mon Florian.
-
-Sur grand écran, l'entrée de `/v2` reprend le lockup canonique de la racine à sa
-pleine largeur et la note Kalam posée sur trois traits blancs, dans un splash
-plus court qui conduit au hero. Le lockup compact ne devient visible dans
-l'en-tête qu'après le passage de cette introduction. Sur mobile, ce splash est
-masqué : le hero et son aperçu téléphone apparaissent sans écran intermédiaire.
-
-Le changement d'étape reste court et respecte la réduction des mouvements. La
-confirmation de génération reprend la transition Success check de
-Transitions.dev. Les composants gardent un nom, un rôle, un focus et un état
-lisibles au clavier. Sources : [Astryx](https://github.com/facebook/astryx) et
-[Transitions.dev](https://transitions.dev/).
-
-## Do's and Don'ts
-
-- Utiliser le logo master comme référence de marque jusqu'à la validation d'une version vectorielle.
-- Garder le mot-symbole fixe et limiter les variantes au portrait de Florian.
-- Garder tous les portraits sur fond transparent, dans les fichiers comme dans leurs composants d'accueil.
-- Garder une seule action commerciale sur la page d'entrée. Voyage vivant arrive après la première livraison.
-- Respecter le clavier, le focus visible, les cibles tactiles, le contraste AA et le mouvement réduit.
-- Garder le mot `Exemple` sur les trois itinéraires d'inspiration.
-- Ne pas ajouter d'étoiles, de halo ou de copie qui présente le service comme une IA magique.
-- Ne pas utiliser d'avis, de note Trustpilot, de garantie, de paiement sécurisé ou d'annulation sans preuve.
-- Ne pas insérer les voyageurs devant chaque monument. Quelques moments forts suffisent.
-- Garder le composeur historique `/` compact. La progression en trois étapes
-  appartient uniquement à `/v2`.
+Ne pas ajouter d'avis, de note, de disponibilité, d'affiliation, de garantie ou
+de paiement sans preuve. Aucun bouton ne doit suggérer une réservation confirmée.
+La génération personnalisée, le courriel et les photos restent fermés. Le
+prototype sous `prototype/` reste une expérience locale séparée.

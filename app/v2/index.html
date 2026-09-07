@@ -3,20 +3,17 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="robots" content="noindex,nofollow,nosnippet,noimageindex" />
-    <meta name="referrer" content="no-referrer" />
-    <meta
-      name="description"
-      content="Compose un voyage à ton rythme et partage son itinéraire avec tes proches."
-    />
-    <meta name="theme-color" content="#fff8eb" />
+    <meta name="referrer" content="strict-origin-when-cross-origin" />
+    <meta name="theme-color" content="#f4f7ff" />
     <link rel="icon" href="/assets/florian-icon-192.png" type="image/png" />
-    <title>Ton voyage à ton rythme · Mon Florian</title>
+    <link rel="apple-touch-icon" href="/assets/florian-icon-192.png" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <!--page-metadata-->
   </head>
   <body>
     <a class="skip-link" href="#main-content">Aller au contenu principal</a>
-    <div id="root"></div>
-    <noscript>Active JavaScript pour composer et consulter ton voyage.</noscript>
-    <script type="module" src="/src/main.jsx"></script>
+    <div id="root"><!--page-content--></div>
+    <noscript><p class="no-script-note">Le carnet et les guides se lisent sans JavaScript. Active-le pour le pense-bête, la checklist et les outils de partage.</p></noscript>
+    <script type="module" src="/src/client.jsx"></script>
   </body>
 </html>

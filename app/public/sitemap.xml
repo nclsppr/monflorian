@@ -2,6 +2,22 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://monflorian.com/</loc>
-    <lastmod>2026-08-25</lastmod>
+    <lastmod>2026-09-07</lastmod>
+  </url>
+  <url>
+    <loc>https://monflorian.com/carnets/japon-10-jours</loc>
+    <lastmod>2026-09-07</lastmod>
+  </url>
+  <url>
+    <loc>https://monflorian.com/guides</loc>
+    <lastmod>2026-09-07</lastmod>
+  </url>
+  <url>
+    <loc>https://monflorian.com/guides/preparer-itineraire-voyage</loc>
+    <lastmod>2026-09-07</lastmod>
+  </url>
+  <url>
+    <loc>https://monflorian.com/guides/japon-10-jours-preparer-voyage</loc>
+    <lastmod>2026-09-07</lastmod>
   </url>
 </urlset>

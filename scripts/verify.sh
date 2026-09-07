@@ -66,36 +66,143 @@ compose_down() {
 trap compose_down EXIT INT TERM
 docker compose --project-directory "${PROJECT_ROOT}" up --build --wait
 python3 - <<'PY'
+import json
 import os
-from urllib.request import urlopen
+from html.parser import HTMLParser
+from urllib.error import HTTPError
+from urllib.request import HTTPRedirectHandler, Request, build_opener, urlopen
+
+
+class Page(HTMLParser):
+    def __init__(self):
+        super().__init__()
+        self.h1_count = 0
+        self.canonicals = []
+        self.meta = {}
+        self.links = set()
+        self.title = ""
+        self.in_title = False
+        self.skip_text = 0
+        self.text = []
+
+    def handle_starttag(self, tag, attributes):
+        attrs = dict(attributes)
+        if tag == "h1":
+            self.h1_count += 1
+        if tag == "link" and attrs.get("rel") == "canonical":
+            self.canonicals.append(attrs.get("href"))
+        if tag == "meta":
+            self.meta[attrs.get("name") or attrs.get("property")] = attrs.get("content", "")
+        if tag == "a" and attrs.get("href"):
+            self.links.add(attrs["href"])
+        if tag == "title":
+            self.in_title = True
+        if tag in ("script", "style"):
+            self.skip_text += 1
+
+    def handle_endtag(self, tag):
+        if tag == "title":
+            self.in_title = False
+        if tag in ("script", "style"):
+            self.skip_text -= 1
+
+    def handle_data(self, data):
+        if self.in_title:
+            self.title += data
+        if not self.skip_text:
+            self.text.append(data)
+
+
+class NoRedirect(HTTPRedirectHandler):
+    def redirect_request(self, request, response, code, message, headers, new_url):
+        return None
 
 port = os.environ["MONFLORIAN_PORT"]
 base = f"http://127.0.0.1:{port}"
-with urlopen(f"{base}/", timeout=5) as response:
-    home = response.read()
-if b"<title>Pr\xc3\xa9parer un voyage \xc3\xa0 ton rythme | Mon Florian</title>" not in home:
-    raise SystemExit("L’application servie ne contient pas le titre attendu.")
+paths = [
+    "/",
+    "/carnets/japon-10-jours",
+    "/guides",
+    "/guides/preparer-itineraire-voyage",
+    "/guides/japon-10-jours-preparer-voyage",
+]
+pages = {}
+for path in paths:
+    with urlopen(f"{base}{path}", timeout=5) as response:
+        if response.status != 200 or response.geturl() != f"{base}{path}":
+            raise SystemExit(f"Route publique non canonique : {path}")
+        if "noindex" in response.headers.get("X-Robots-Tag", ""):
+            raise SystemExit(f"Route publique exclue de l’index : {path}")
+        page = Page()
+        page.feed(response.read().decode("utf-8"))
+    canonical = f"https://monflorian.com{path}"
+    if page.canonicals != [canonical] or page.h1_count != 1:
+        raise SystemExit(f"Canonical ou titre principal invalide : {path}")
+    if "noindex" in page.meta.get("robots", ""):
+        raise SystemExit(f"Meta robots bloquante : {path}")
+    if len(" ".join(page.text).strip()) < 500:
+        raise SystemExit(f"Contenu HTML initial insuffisant : {path}")
+    if "Mon Florian" not in page.title or not page.meta.get("description"):
+        raise SystemExit(f"Titre ou description absent : {path}")
+    if page.meta.get("og:url") != canonical or not page.meta.get("og:image", "").startswith("https://monflorian.com/"):
+        raise SystemExit(f"Aperçu social invalide : {path}")
+    pages[path] = page
+if len({page.title for page in pages.values()}) != len(paths):
+    raise SystemExit("Les titres des pages publiques doivent être distincts.")
+if not {"/carnets/japon-10-jours", "/guides"}.issubset(pages["/"].links):
+    raise SystemExit("L’accueil doit relier le carnet et les guides avec de vrais liens.")
+if not set(paths[3:]).issubset(pages["/guides"].links):
+    raise SystemExit("Le sommaire des guides doit relier chaque guide.")
 
-with urlopen(f"{base}/v2", timeout=5) as response:
-    v2_url = response.geturl()
-    v2_headers = response.headers
-    v2 = response.read()
-if v2_url != f"{base}/v2":
-    raise SystemExit(f"URL V2 locale inattendue : {v2_url!r}")
-if b"<title>Ton voyage \xc3\xa0 ton rythme \xc2\xb7 Mon Florian</title>" not in v2:
-    raise SystemExit("La V2 servie ne contient pas le titre attendu.")
-if "noindex" not in v2_headers.get("X-Robots-Tag", ""):
-    raise SystemExit("La V2 servie doit rester hors index.")
+opener = build_opener(NoRedirect)
+redirects = [
+    ("/v2", "/"),
+    ("/v2/", "/"),
+    ("/v2/index.html", "/"),
+    ("/v2?voyage=japon-a-deux&acces=prive&preuve=synthetic", "/carnets/japon-10-jours"),
+    ("/v2?exemple=portugal-en-train&avatar=summer", "/?avatar=summer#inspiration-portugal-en-train"),
+    ("/carnets/japon-10-jours/", "/carnets/japon-10-jours"),
+    ("/guides/preparer-itineraire-voyage.html", "/guides/preparer-itineraire-voyage"),
+]
+for path, destination in redirects:
+    try:
+        opener.open(f"{base}{path}", timeout=5)
+    except HTTPError as response:
+        if response.code != 308 or response.headers.get("Location") != f"{base}{destination}":
+            raise SystemExit(f"Redirection incorrecte : {path}")
+    else:
+        raise SystemExit(f"Redirection absente : {path}")
+
+for path in ("/guides/inconnu", "/carnets/inconnu", "/v2/inconnu"):
+    try:
+        urlopen(f"{base}{path}", timeout=5)
+    except HTTPError as response:
+        if response.code != 404:
+            raise SystemExit(f"Statut inattendu pour {path} : {response.code}")
+    else:
+        raise SystemExit(f"La route inconnue {path} doit répondre 404.")
+
+with urlopen(f"{base}/v2/media/japan-tokyo-couple-720.webp", timeout=5) as response:
+    if response.headers.get_content_type() != "image/webp" or "noindex" in response.headers.get("X-Robots-Tag", ""):
+        raise SystemExit("Les images du carnet public doivent être servies et indexables.")
 
 with urlopen(f"{base}/api/health", timeout=5) as response:
-    health = __import__("json").load(response)
+    health = json.load(response)
 if health != {"status": "ok", "release": "local-compose", "generationReady": False}:
     raise SystemExit(f"Santé locale inattendue : {health!r}")
 
 with urlopen(f"{base}/api/config", timeout=5) as response:
-    config = __import__("json").load(response)
+    config = json.load(response)
 if config.get("serviceReady") is not False or config.get("bookingMode") != "external":
     raise SystemExit(f"Configuration locale inattendue : {config!r}")
+
+try:
+    urlopen(Request(f"{base}/api/trips", data=b"{}", headers={"Content-Type": "application/json"}), timeout=5)
+except HTTPError as response:
+    if response.code != 503 or json.load(response).get("error", {}).get("code") != "TRIP_CREATION_UNAVAILABLE":
+        raise SystemExit("La création de voyage doit rester explicitement fermée.")
+else:
+    raise SystemExit("La création de voyage ne doit pas être ouverte.")
 PY
 compose_down
 trap - EXIT INT TERM

@@ -1,13 +1,13 @@
 # Traitement des données
 
-Ce document sépare l'aperçu Cloudflare actuellement fermé du parcours persistant
-cible. Il ne constitue pas une déclaration de conformité juridique. Rôles,
-bases légales, transferts et canal de droits doivent être validés avant une
-personne réelle.
+Ce document sépare le site éditorial, ses outils locaux candidats et le parcours
+personnalisé persistant cible. Il ne constitue pas une déclaration de conformité
+juridique. Rôles, bases légales, transferts et canal de droits doivent être
+validés avant d'ouvrir le parcours personnalisé à une personne réelle.
 
 ## État courant
 
-L'aperçu public ne reçoit aucun brief ni photo : l'interface désactive l'action,
+Le backend public ne reçoit aucun brief ni photo :
 `/api/config` annonce `serviceReady: false` et les routes de génération répondent
 `503`. D1 contient le schéma mais aucun voyage. Le bucket R2 privé est vide, sans
 URL publique, avec des règles d'expiration de secours. Le Worker déployé relie
@@ -16,10 +16,65 @@ automatique. La création reste fermée : aucun appel OpenAI n'est exécuté,
 le widget Turnstile reste masqué et le courriel n'est pas activé.
 
 La fixture Japon canonique `TravelGuideV1` alimente statiquement le carnet
-déterministe sous `/v2`. Ce rendu ne collecte aucune donnée et ne provoque aucun
-appel fournisseur. Le schéma, le validateur et le compilateur restent candidats
+déterministe, historiquement sous `/v2`. La promotion candidate de l'ADR-0012
+le place sous `/carnets/japon-10-jours`. Ses textes et ses illustrations
+synthétiques sont publics ; ses personnages sont fictifs. Le rendu ne provoque
+aucun appel fournisseur. Le schéma, le validateur et le compilateur restent
+candidats
 pour la génération dynamique : le Workflow ne les importe pas et aucun de ces
 artefacts n'est transmis à OpenAI dans cette tranche.
+
+## Outils locaux candidats du site principal
+
+Cette section décrit le candidat du 7 septembre 2026. Elle ne constitue pas une
+preuve de déploiement. L'ADR-0012 autorise les outils de préparation suivants,
+sans nouvelle API, sans secret et sans changement des drapeaux du backend.
+
+### Pense-bête
+
+Le pense-bête contient une envie libre de 2 000 caractères au maximum, une
+durée de 2 à 14 jours, 1 à 8 voyageurs, un rythme et une préférence
+d'hébergement. Aucun nom, courriel ou portrait n'est demandé. La saisie reste
+en mémoire dans la page. Elle ne personnalise pas le carnet Japon et n'est
+envoyée ni à Mon Florian, ni à Cloudflare, ni à OpenAI.
+
+Le bouton « Garder sur cet appareil » écrit une copie dans `localStorage`, sous
+la clé `monflorian:trip-planner:v1`. Une modification ultérieure reste en mémoire
+jusqu'au clic sur « Mettre à jour la copie ». La copie enregistrée est relue au
+chargement de l'outil, après validation de sa version et de ses valeurs. Une
+copie illisible ne remplace pas le formulaire.
+
+Le bouton « Effacer de cet appareil » retire uniquement cette clé. Le contenu
+encore affiché reste en mémoire jusqu'au rechargement ou à la fermeture de la
+page. Le téléchargement crée un fichier texte sur l'appareil ; la copie utilise
+le presse-papiers après un clic. Ces fichiers et copies suivent ensuite les
+actions de la personne et les réglages de son appareil.
+
+### Checklist du carnet
+
+Cocher ou décocher une vérification écrit les identifiants des cases sélectionnées
+dans `localStorage`, sous `monflorian:japan-checklist:v1`. L'explication est
+visible auprès de la checklist. Il n'existe pas de bouton d'enregistrement
+séparé et aucune donnée de réservation n'est reçue. Une case cochée signifie
+seulement que la personne a vérifié le point concerné.
+
+Au chargement, seuls les identifiants présents dans le plan de réservation
+canonique sont retenus. « Tout décocher » retire cette seule clé et vide la
+sélection de la page. Si le stockage échoue, l'interface l'annonce et la
+checklist reste utilisable pendant la visite.
+
+### Conservation et partage
+
+Ces deux copies restent dans ce navigateur, pour cette origine, jusqu'à leur
+effacement par l'outil, les réglages du navigateur ou le navigateur lui-même.
+Elles n'ont pas d'échéance programmée. Elles ne sont ni synchronisées entre
+appareils ni envoyées lors du partage du carnet. Une personne utilisant le même
+profil de navigateur peut les retrouver. Les fonctions de copie, d'export ou de
+partage ne déclenchent aucun envoi automatique à un proche.
+
+Le lien du carnet ouvre toujours le même exemple public. Aucun mot de passe
+simulé ne protège ce contenu. Les données des futurs voyages privés suivent le
+contrat distinct ci-dessous, avec chiffrement, contrôle d'accès et expiration.
 
 ## Parcours cible
 
@@ -116,11 +171,13 @@ Avant envoi, l'interface exige que la personne confirme :
 Ce contrôle ne vérifie ni l'identité, ni l'âge, ni l'autorité. Le consentement ne
 vaut pas publication, entraînement, galerie ou conservation indéfinie.
 
-## Rétention et effacement cible
+## Rétention et effacement
 
 | Emplacement | Données | Durée maximale MVP | Retrait |
 | --- | --- | --- | --- |
 | Mémoire navigateur | formulaire et prévisualisations | onglet courant | rechargement ou fermeture |
+| Navigateur, pense-bête candidat | copie demandée explicitement | jusqu'à effacement, sans échéance programmée | « Effacer de cet appareil » ou réglages du navigateur |
+| Navigateur, checklist candidate | identifiants des cases sélectionnées | jusqu'à effacement, sans échéance programmée | « Tout décocher » ou réglages du navigateur |
 | R2, sources | photos réencodées | suppression après génération, limite dure 24 h | purge automatique ou retrait du voyage |
 | R2, résultats | images générées | 30 jours | expiration ou retrait anticipé |
 | D1 | demande et résultat chiffrés, métadonnées | 30 jours | expiration ou retrait anticipé |
@@ -130,9 +187,10 @@ vaut pas publication, entraînement, galerie ou conservation indéfinie.
 | OpenAI | entrées et sorties | selon le contrat et les contrôles du compte | procédure fournisseur |
 | Booking.com, CJ, Stripe | données après action explicite | politiques propres | procédure du fournisseur |
 
-La tâche de purge doit être idempotente, supprimer R2 avant de marquer D1 comme
-expiré et produire une preuve sans nom de fichier ni contenu. Tant qu'elle n'est
-pas déployée et testée, aucune donnée réelle n'est autorisée.
+Les durées D1 et R2 concernent le parcours personnalisé cible. La tâche de purge
+doit être idempotente, supprimer R2 avant de marquer D1 comme expiré et produire
+une preuve sans nom de fichier ni contenu. Tant qu'elle n'est pas déployée et
+testée, aucune donnée réelle ne peut être envoyée dans ce parcours.
 
 ## Accès et incidents
 
@@ -145,23 +203,27 @@ pas déployée et testée, aucune donnée réelle n'est autorisée.
   l'exposition sans recopier de contenu.
 - Une fuite de brief ou photo coupe les générations, conserve les métadonnées
   utiles et identifie les destinataires.
-- Le canal de contact des droits manque encore et bloque une personne réelle.
+- Le canal de contact des droits manque encore et bloque l'ouverture du
+  parcours personnalisé à une personne réelle.
 
 ## Tests autorisés
 
 - Brief fictif sans identité ni réservation réelle.
 - Personnages entièrement fictifs produits par génération d'image et scènes
   synthétiques versionnés comme fixtures éditoriales.
-- Fixture `TravelGuideV1` rendue statiquement sous `/v2`, sans appel fournisseur
+- Fixture `TravelGuideV1` rendue statiquement dans le carnet public, sans appel fournisseur
   ni information de réservation présentée comme vérifiée.
+- Pense-bête fictif et checklist locale, avec restauration, export, effacement
+  limité aux clés prévues et refus des valeurs de stockage invalides.
 - Les futures photos de voyageurs réels suivent le flux R2 privé ; elles ne sont
   pas confondues avec les fixtures fictives du dépôt.
 - Un seul parcours fournisseur contrôlé avant ouverture.
 
 ## Changements qui imposent une nouvelle décision
 
-- durée supérieure à 30 jours ;
-- compte, partage public, historique ou PDF ;
+- durée supérieure à 30 jours pour un voyage privé côté serveur ;
+- compte, partage public de données personnelles, historique serveur ou PDF
+  produit par le service ;
 - biométrie ou reconnaissance ;
 - nouveau fournisseur, modèle ou territoire ;
 - API Demand Booking.com ;
@@ -173,6 +235,7 @@ pas déployée et testée, aucune donnée réelle n'est autorisée.
 - [`PROJECT.md`](PROJECT.md)
 - [`THREAT-MODEL.md`](THREAT-MODEL.md)
 - [`RUNBOOK.md`](RUNBOOK.md)
+- [ADR-0012, V2 comme site principal](docs/decisions/adr-0012-v2-site-principal.md)
 - [OpenAI, contrôles de données](https://developers.openai.com/api/docs/guides/your-data)
 - [Cloudflare, localisation D1](https://developers.cloudflare.com/d1/configuration/data-location/)
 - [Cloudflare, juridictions R2](https://developers.cloudflare.com/r2/reference/data-location/)

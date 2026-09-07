@@ -3,6 +3,23 @@
 Chaque section nomme son environnement et ses limites. Les sections Atlas sont
 des archives historiques ; la section Cloudflare porte la migration courante.
 
+## Promotion V2 principale, candidat du 7 septembre 2026
+
+Le build client, le rendu serveur et la production des cinq pages passent.
+Les 66 tests applicatifs et `./scripts/verify.sh` passent, avec les sondes
+HTTP sous Compose et la documentation Nimbus. Le navigateur a confirmé la
+saisie du pense-bête, sa sauvegarde volontaire, sa restauration, la conservation
+et la remise à zéro de la checklist, ainsi que la copie du vrai lien public.
+Les contrôles visuels intégrés couvrent l’accueil en 390 et 1280 pixels ; le
+menu mobile ferme son panneau après sélection. Le guide Japon est lisible à
+320 pixels et les métadonnées de journée atteignent 14,08 pixels. Les liens
+de source ouvrent leur rubrique au clavier et au toucher. Fermer le dialogue
+de partage avec Échap restitue le focus au bouton qui l’a ouvert.
+
+Cette section ne constitue pas encore une preuve publique. La validation
+du SHA fusionné, la version active et les sondes publiques restent à consigner.
+Le bilan des critiques figure dans `AUDIT-V2.md`.
+
 ## Adaptation du carnet Japon issue de l'audit V2, 2026-08-31
 
 La PR [#52](https://github.com/nclsppr/monflorian/pull/52) place la promesse et

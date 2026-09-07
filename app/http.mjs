@@ -1,23 +1,34 @@
 const PUBLIC_APEX = "monflorian.com";
 const PUBLIC_WWW = "www.monflorian.com";
 const NO_INDEX = "noindex, nofollow, nosnippet, noimageindex";
-const PUBLIC_HTML_ALIASES = new Map([
-  ["/index.html", "/"],
-  ["/v2/", "/v2"],
-  ["/v2/index.html", "/v2"],
-  ["/confidentialite.html", "/confidentialite"],
-]);
+const PUBLIC_PATHS = [
+  "/confidentialite",
+  "/carnets/japon-10-jours",
+  "/guides",
+  "/guides/preparer-itineraire-voyage",
+  "/guides/japon-10-jours-preparer-voyage",
+];
+const PUBLIC_HTML_ALIASES = new Map([["/index.html", "/"]]);
+for (const path of PUBLIC_PATHS) {
+  for (const suffix of ["/", ".html", "/index", "/index.html"]) {
+    PUBLIC_HTML_ALIASES.set(`${path}${suffix}`, path);
+  }
+}
+const LEGACY_ENTRY_PATHS = new Set(["/v2", "/v2/", "/v2.html", "/v2/index", "/v2/index.html"]);
+const LEGACY_JAPAN_SLUGS = new Set(["japon-a-deux", "le-japon-a-deux"]);
+const LEGACY_EXAMPLE_SLUGS = new Set(["portugal-en-train", "sicile-a-table", "rails-et-fjords"]);
 
 function isPrivateOrTechnicalRequest(request, url) {
   return (
     !["GET", "HEAD"].includes(request.method) ||
+    url.hostname.endsWith(".workers.dev") ||
     url.pathname === "/api" ||
     url.pathname.startsWith("/api/") ||
-    url.pathname === "/v2" ||
-    url.pathname.startsWith("/v2/") ||
     url.pathname === "/voyages" ||
     url.pathname.startsWith("/voyages/") ||
-    url.pathname === "/.well-known/monflorian-release"
+    url.pathname === "/.well-known/monflorian-release" ||
+    url.searchParams.has("acces") ||
+    url.searchParams.has("preuve")
   );
 }
 
@@ -32,18 +43,46 @@ export function canonicalPublicRedirect(request) {
     canonical.hostname = PUBLIC_APEX;
     shouldRedirect = true;
   }
-  if (
-    isPublicHostname &&
-    ["GET", "HEAD"].includes(request.method) &&
-    PUBLIC_HTML_ALIASES.has(url.pathname)
-  ) {
-    canonical.pathname = PUBLIC_HTML_ALIASES.get(url.pathname);
-    shouldRedirect = true;
+  if (["GET", "HEAD"].includes(request.method)) {
+    if (PUBLIC_HTML_ALIASES.has(url.pathname)) {
+      canonical.pathname = PUBLIC_HTML_ALIASES.get(url.pathname);
+      shouldRedirect = true;
+    }
+
+    const isLegacyEntry = LEGACY_ENTRY_PATHS.has(url.pathname);
+    if (isLegacyEntry) {
+      canonical.pathname = "/";
+      shouldRedirect = true;
+    }
+    if (canonical.pathname === "/") {
+      if (LEGACY_JAPAN_SLUGS.has(url.searchParams.get("voyage"))) {
+        canonical.pathname = "/carnets/japon-10-jours";
+      } else if (url.searchParams.has("exemple")) {
+        const example = url.searchParams.get("exemple");
+        canonical.hash = LEGACY_EXAMPLE_SLUGS.has(example) ? `inspiration-${example}` : "examples";
+      }
+      for (const key of ["voyage", "exemple"]) {
+        if (canonical.searchParams.has(key)) {
+          canonical.searchParams.delete(key);
+          shouldRedirect = true;
+        }
+      }
+    }
+    if (canonical.pathname === "/" || PUBLIC_PATHS.includes(canonical.pathname)) {
+      for (const key of ["acces", "preuve"]) {
+        if (canonical.searchParams.has(key)) {
+          canonical.searchParams.delete(key);
+          shouldRedirect = true;
+        }
+      }
+    }
   }
   if (!shouldRedirect) return null;
-  canonical.protocol = "https:";
-  canonical.hostname = PUBLIC_APEX;
-  canonical.port = "";
+  if (isPublicHostname) {
+    canonical.protocol = "https:";
+    canonical.hostname = PUBLIC_APEX;
+    canonical.port = "";
+  }
 
   const isPrivateOrTechnical = isPrivateOrTechnicalRequest(request, url);
   const headers = {
@@ -65,8 +104,10 @@ export function shouldNoIndexStaticAsset(request) {
   const url = new URL(request.url);
   return (
     url.hostname.endsWith(".workers.dev") ||
-    url.pathname === "/v2" ||
-    url.pathname.startsWith("/v2/")
+    url.pathname === "/api" ||
+    url.pathname.startsWith("/api/") ||
+    url.pathname === "/voyages" ||
+    url.pathname.startsWith("/voyages/")
   );
 }
 

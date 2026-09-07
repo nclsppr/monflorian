@@ -1,5 +1,17 @@
 # État courant
 
+## Candidat du 7 septembre 2026
+
+La V2 améliorée est candidate pour devenir le site principal. La tranche ajoute
+les cinq pages pré-rendues, un pense-bête utile, la checklist locale, les liens
+vers les sources et les redirections décrits dans l'ADR-0012.
+
+Le build, les 66 tests applicatifs et `./scripts/verify.sh` passent. Les
+contrôles visuels et les parcours locaux sont validés. La fusion et la
+publication restent à terminer. Aucun drapeau ni secret ne change.
+
+## Dernière version publique avant la promotion
+
 Dernier déploiement et dernière vérification : 2026-08-31 sur Cloudflare,
 GitHub et les réponses publiques. Le relevé DNS de fond date du 2026-08-24.
 

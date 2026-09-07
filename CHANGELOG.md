@@ -4,6 +4,24 @@ Git reste la source du diff technique. Les ADR expliquent les décisions importa
 
 ## Non publié
 
+### Site principal issu de la V2, 7 septembre 2026
+
+- Promotion candidate de la V2 à la racine, avec un carnet Japon public et
+  deux guides de préparation pré-rendus. Chaque page possède ses métadonnées
+  et des liens natifs ; les anciennes adresses redirigent en 308.
+- Remplacement du questionnaire sans effet par un pense-bête utile, copiable,
+  téléchargeable en texte et conservé sur l'appareil au choix du visiteur.
+- Ajout d'une checklist locale, d'ancres par journée, de sources officielles
+  ciblées et d'une mise en page d'impression du carnet.
+- Remplacement du faux partage privé par le lien public du carnet. Les
+  inspirations s'ouvrent sans JavaScript dans des sections natives.
+- Amélioration du premier écran mobile, des contrastes des actions et de la
+  lisibilité des journées. Conservation des portraits, du logo et des visuels.
+- Documentation de la sauvegarde locale et maintien de tous les garde-fous de
+  génération, photo, courriel et paiement.
+
+### Historique livré avant cette promotion
+
 - Déploiement public de l'adaptation issue de l'audit V2 au SHA `4917baf` et
   sous la version Worker `a3da53ea-cf97-4703-94b8-138584de7271`, avec contrôle
   du carnet, des treize WebP, du mot de passe et des garde-fous fermés.
