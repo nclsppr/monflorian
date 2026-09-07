@@ -9,12 +9,14 @@ struct PlannerView: View {
     @State private var date = Date()
     @State private var confirmReset = false
     @State private var confirmDelete = false
+    @State private var scrollRequest = 0
     var body: some View {
         @Bindable var state = state
         let photoButtonLabel = state.photos.isEmpty ? "Choisir des photos" : "Modifier les photos"
+        ScrollViewReader { scroll in
         Form {
             Section {
-                Text("Prends le temps de poser tes envies. Ce brief reste sur ton iPhone : aucune commande n’est envoyée.").font(.subheadline).foregroundStyle(.secondary)
+                Text("Prends le temps de poser tes envies. Ce brief reste sur ton appareil : aucune commande n’est envoyée.").font(.subheadline).foregroundStyle(.secondary).id("planner-top")
                 Picker("Étape", selection: $step) {
                     Text("1. Envie").tag(0); Text("2. Détails").tag(1); Text("3. Mon brief").tag(2)
                 }.pickerStyle(.segmented).accessibilityIdentifier("planner-step")
@@ -76,7 +78,7 @@ struct PlannerView: View {
                     if !state.photos.isEmpty { Text("\(state.photos.count) photo(s) prête(s) dans cette session uniquement.").font(.footnote).foregroundStyle(.secondary) }
                 }
                 Section {
-                    Button("Garder sur cet iPhone", systemImage: "square.and.arrow.down") { state.saveDraft() }.disabled(!validDraft).accessibilityIdentifier("save-draft")
+                    Button("Garder sur cet appareil", systemImage: "square.and.arrow.down") { state.saveDraft() }.disabled(!validDraft).accessibilityIdentifier("save-draft")
                     ShareLink(item: state.draft.exportText) { Label("Partager la fiche texte", systemImage: "square.and.arrow.up") }.disabled(!validDraft).accessibilityIdentifier("export-draft")
                 } footer: { Text("Seul le texte est enregistré après ton clic. Les modifications suivantes demandent un nouvel enregistrement. Le partage ouvre les options d’iOS et ne joint aucune photo.") }
                 Section("Voyage personnalisé") {
@@ -88,9 +90,9 @@ struct PlannerView: View {
             if !validDraft { Section { Label("Vérifie les limites des textes, des jours et des voyageurs avant d’enregistrer.", systemImage: "exclamationmark.circle").foregroundStyle(.red) } }
             if let message = state.draftMessage { Section { Text(message).font(.subheadline).accessibilityIdentifier("draft-status") } }
             if state.hasSavedDraft {
-                Section("La copie sur cet iPhone") {
+                Section("La copie sur cet appareil") {
                     Button("Reprendre le brouillon enregistré") {
-                        if state.restoreDraft() { selectedItems = []; syncDates(); step = 0 }
+                        if state.restoreDraft() { selectedItems = []; syncDates(); step = 0; scrollRequest += 1 }
                     }.accessibilityIdentifier("restore-draft")
                     Button("Supprimer la copie enregistrée", role: .destructive) { confirmDelete = true }.accessibilityIdentifier("delete-draft")
                 }
@@ -99,12 +101,15 @@ struct PlannerView: View {
         }.scrollDismissesKeyboard(.interactively).navigationTitle("Mon voyage")
             .task(id: selectedItems) { await state.loadPhotos(selectedItems) }
             .onAppear { syncDates() }
+            .onChange(of: step) { _, _ in scroll.scrollTo("planner-top", anchor: .top) }
+            .onChange(of: scrollRequest) { _, _ in scroll.scrollTo("planner-top", anchor: .top) }
             .confirmationDialog("Effacer la saisie en cours et les photos de cette session ?", isPresented: $confirmReset, titleVisibility: .visible) {
-                Button("Effacer la saisie", role: .destructive) { state.resetDraft(); selectedItems = []; hasDates = false; step = 0 }
+                Button("Effacer la saisie", role: .destructive) { state.resetDraft(); selectedItems = []; hasDates = false; step = 0; scrollRequest += 1 }
             } message: { Text("La copie déjà enregistrée restera disponible jusqu’à sa suppression séparée.") }
-            .confirmationDialog("Supprimer le brouillon enregistré sur cet iPhone ?", isPresented: $confirmDelete, titleVisibility: .visible) {
+            .confirmationDialog("Supprimer le brouillon enregistré sur cet appareil ?", isPresented: $confirmDelete, titleVisibility: .visible) {
                 Button("Supprimer le brouillon", role: .destructive) { state.deleteSavedDraft() }
             } message: { Text("Cette action efface uniquement la copie enregistrée. Le texte actuellement affiché reste disponible.") }
+        }
     }
     private var validDraft: Bool { (try? state.draft.validated()) != nil }
     private func syncDates() { hasDates = state.draft.startDate != nil; if let text = state.draft.startDate, let value = PlannerDraft.parseDate(text) { date = value } }
@@ -127,7 +132,8 @@ struct GuideHubView: View {
                 }.buttonStyle(.plain)
                 Divider()
             }
-            Note(title: "Inclus dans l’app", text: "Ces deux guides restent consultables sans connexion. Leurs sources externes demandent un accès à Internet.", systemImage: "arrow.down.circle")
+            if let error = state.articlesError { Note(title: "Guides indisponibles", text: error) }
+            else { Note(title: "Inclus dans l’app", text: "Ces deux guides restent consultables sans connexion. Leurs sources externes demandent un accès à Internet.", systemImage: "arrow.down.circle") }
         }.navigationTitle("Guides")
     }
 }
@@ -182,7 +188,7 @@ struct AboutView: View {
     @Environment(\.dismiss) private var dismiss
     var body: some View {
         List {
-            Section("Sur cet iPhone") {
+            Section("Sur cet appareil") {
                 Label("Carnet Japon et guides hors ligne", systemImage: "book.closed")
                 Text("Le brouillon est enregistré seulement à ta demande. Les cases cochées sont conservées après chaque changement. Les photos sélectionnées restent en mémoire et ne sont jamais enregistrées avec le brouillon.")
             }

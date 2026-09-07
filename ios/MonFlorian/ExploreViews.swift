@@ -7,8 +7,8 @@ struct ExploreView: View {
     var body: some View {
         ReadablePage {
             HStack(spacing: 4) {
-                Image("florian").resizable().scaledToFit().frame(width: 55, height: 55).accessibilityHidden(true)
-                Image("wordmark").resizable().scaledToFit().frame(width: 125, height: 62).accessibilityLabel("Mon Florian")
+                Image(uiImage: BundledImage.load("florian", extension: "png") ?? UIImage()).resizable().scaledToFit().frame(width: 55, height: 55).accessibilityHidden(true)
+                Image(uiImage: BundledImage.load("wordmark", extension: "png") ?? UIImage()).resizable().scaledToFit().frame(width: 125, height: 62).accessibilityLabel("Mon Florian")
                 Spacer()
             }.padding(8).background(Color(red: 1, green: 0.973, blue: 0.922), in: RoundedRectangle(cornerRadius: 16))
             VStack(alignment: .leading, spacing: 12) {
@@ -131,16 +131,19 @@ struct TransferView: View {
     let transfer: TravelGuide.Transfer
     let guide: TravelGuide
     var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Label("Transfert · \(transfer.durationMinutes) min", systemImage: "tram").font(.headline)
-            Text(transfer.modes.map(Labels.value).joined(separator: " / ")).font(.subheadline)
-            Text(transfer.description)
-            ReadingBlock(title: "Avec les bagages", text: transfer.luggageAdvice)
-            Text(Labels.value(transfer.reservation)).font(.subheadline.weight(.medium))
-            VerificationLinks(ids: transfer.verificationItemIds, guide: guide)
-        }.padding(18).background(.quaternary.opacity(0.5), in: RoundedRectangle(cornerRadius: 16))
+        if let duration = transfer.durationMinutes, let description = transfer.description, let luggageAdvice = transfer.luggageAdvice {
+            VStack(alignment: .leading, spacing: 12) {
+                Label("Transfert · \(duration) min", systemImage: "tram").font(.headline)
+                Text(transfer.modes.map(Labels.value).joined(separator: " / ")).font(.subheadline)
+                Text(description)
+                ReadingBlock(title: "Avec les bagages", text: luggageAdvice)
+                Text(Labels.value(transfer.reservation)).font(.subheadline.weight(.medium))
+                VerificationLinks(ids: transfer.verificationItemIds, guide: guide)
+            }.padding(18).background(.quaternary.opacity(0.5), in: RoundedRectangle(cornerRadius: 16))
+        }
     }
 }
+
 struct VerificationLinks: View {
     let ids: [String]
     let guide: TravelGuide
@@ -196,7 +199,7 @@ struct ChecklistView: View {
     var body: some View {
         List {
             Section {
-                Text("Cocher signifie que tu as vérifié ce point. Chaque changement est gardé sur cet iPhone, sans être partagé ni envoyé.").font(.subheadline).foregroundStyle(.secondary)
+                Text("Cocher signifie que tu as vérifié ce point. Chaque changement est gardé sur cet appareil, sans être partagé ni envoyé.").font(.subheadline).foregroundStyle(.secondary)
                 Text("\(state.checkedItems.count) sur \(guide.verificationItems.count) vérifiés").font(.headline)
             }
             ForEach(Labels.timings, id: \.self) { timing in

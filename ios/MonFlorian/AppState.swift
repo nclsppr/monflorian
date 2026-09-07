@@ -15,6 +15,7 @@ struct SelectedPhoto: Identifiable {
     var connectionMessage = "Le carnet et les guides inclus sont lisibles hors ligne."
     var isRefreshing = false
     var contentError: String?
+    var articlesError: String?
     var draft = PlannerDraft()
     var draftMessage: String?
     var hasSavedDraft = false
@@ -38,11 +39,13 @@ struct SelectedPhoto: Identifiable {
         do {
             guard let url = Bundle.main.url(forResource: "japan-10-days", withExtension: "json") else { throw APIError.invalidContent }
             example = try JSONDecoder().decode(PublicExample.self, from: Data(contentsOf: url)).validated()
-            guard let articlesURL = Bundle.main.url(forResource: "guides", withExtension: "json") else { throw APIError.invalidContent }
-            articles = try JSONDecoder().decode([EditorialGuide].self, from: Data(contentsOf: articlesURL))
             let allowed = Set(example?.guide.verificationItems.map(\.id) ?? [])
             checkedItems = Set(preferences.stringArray(forKey: checklistKey) ?? []).intersection(allowed)
         } catch { contentError = "Le carnet inclus n’a pas pu être ouvert. Tu peux toujours préparer ton brouillon." }
+        do {
+            guard let articlesURL = Bundle.main.url(forResource: "guides", withExtension: "json") else { throw APIError.invalidContent }
+            articles = try JSONDecoder().decode([EditorialGuide].self, from: Data(contentsOf: articlesURL))
+        } catch { articlesError = "Les guides inclus n’ont pas pu être ouverts. Le reste de l’app reste disponible." }
     }
     func refreshConfiguration() async {
         guard !offlineMode else { return }
@@ -64,19 +67,19 @@ struct SelectedPhoto: Identifiable {
         } catch { connectionMessage = error.localizedDescription }
     }
     func saveDraft() {
-        do { try storage.save(draft); hasSavedDraft = true; draftMessage = "Brouillon enregistré sur cet iPhone, sans les photos. Enregistre à nouveau après tes modifications." }
+        do { try storage.save(draft); hasSavedDraft = true; draftMessage = "Brouillon enregistré sur cet appareil, sans les photos. Enregistre à nouveau après tes modifications." }
         catch { draftMessage = "L’enregistrement a échoué. Tu peux conserver le texte avec Partager." }
     }
     @discardableResult func restoreDraft() -> Bool {
         do {
-            guard let value = try storage.load() else { hasSavedDraft = false; draftMessage = "Aucun brouillon enregistré sur cet iPhone."; return false }
+            guard let value = try storage.load() else { hasSavedDraft = false; draftMessage = "Aucun brouillon enregistré sur cet appareil."; return false }
             draft = value; clearPhotos(); draftMessage = "Brouillon repris. Les photos ne sont jamais enregistrées avec lui."
             return true
         } catch { draftMessage = error.localizedDescription; return false }
     }
     func deleteSavedDraft() {
-        do { try storage.delete(); hasSavedDraft = false; draftMessage = "La copie enregistrée a été supprimée de cet iPhone." }
-        catch { draftMessage = "La copie n’a pas pu être supprimée. Réessaie après avoir déverrouillé l’iPhone." }
+        do { try storage.delete(); hasSavedDraft = false; draftMessage = "La copie enregistrée a été supprimée de cet appareil." }
+        catch { draftMessage = "La copie n’a pas pu être supprimée. Réessaie après avoir déverrouillé l’appareil." }
     }
     func resetDraft() { draft = PlannerDraft(); clearPhotos(); draftMessage = "La saisie en cours a été effacée." }
     func setChecked(_ id: String, checked: Bool) {

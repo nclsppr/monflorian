@@ -52,6 +52,11 @@ final class MonFlorianTests: XCTestCase {
         XCTAssertEqual(example.guide.reservationPlan.count, 9)
         XCTAssertEqual(example.guide.verificationItems.count, 20)
         XCTAssertEqual(example.guide.days.last?.transfer.placement, "after_afternoon")
+        XCTAssertNil(example.guide.days[1].transfer.durationMinutes)
+        XCTAssertFalse(example.guide.days[1].transfer.needed)
+        XCTAssertTrue(example.guide.days.allSatisfy { $0.transfer.isValid })
+        XCTAssertNotNil(BundledImage.load("florian", extension: "png"))
+        XCTAssertNotNil(BundledImage.load("wordmark", extension: "png"))
         for image in example.guide.imageBriefs {
             let path = try XCTUnwrap(Bundle.main.path(forResource: image.id, ofType: "webp"))
             XCTAssertNotNil(UIImage(contentsOfFile: path), image.id)
@@ -61,6 +66,20 @@ final class MonFlorianTests: XCTestCase {
         var images = try XCTUnwrap(guide["imageBriefs"] as? [[String: Any]])
         images[0]["composition"] = "private-field"; guide["imageBriefs"] = images; object["guide"] = guide
         XCTAssertThrowsError(try JSONDecoder().decode(PublicExample.self, from: JSONSerialization.data(withJSONObject: object)))
+    }
+    func testTransferWithoutADurationCannotBePresentedAsPlanned() throws {
+        let absent = #"{"needed":false,"placement":"none","fromPlaceRef":null,"toPlaceRef":null,"modes":["none"],"durationMinutes":null,"reservation":"none","description":null,"luggageAdvice":null,"verificationItemIds":[]}"#
+        XCTAssertTrue(try JSONDecoder().decode(TravelGuide.Transfer.self, from: Data(absent.utf8)).isValid)
+        var values = try XCTUnwrap(JSONSerialization.jsonObject(with: Data(absent.utf8)) as? [String: Any])
+        values["needed"] = true; values["placement"] = "after_morning"; values["modes"] = ["local_train"]
+        values["fromPlaceRef"] = "departure"; values["toPlaceRef"] = "arrival"
+        values["description"] = "Train entre deux étapes"; values["luggageAdvice"] = "Garder les bagages près de soi"
+        for duration: Any in [NSNull(), 0, -1] {
+            values["durationMinutes"] = duration
+            XCTAssertFalse(try JSONDecoder().decode(TravelGuide.Transfer.self, from: JSONSerialization.data(withJSONObject: values)).isValid)
+        }
+        values["durationMinutes"] = 90
+        XCTAssertTrue(try JSONDecoder().decode(TravelGuide.Transfer.self, from: JSONSerialization.data(withJSONObject: values)).isValid)
     }
     func testCanonicalGuidesIncludeAllSectionsAndSources() throws {
         let url = try XCTUnwrap(Bundle.main.url(forResource: "guides", withExtension: "json"))

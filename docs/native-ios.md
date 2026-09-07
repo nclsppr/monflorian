@@ -33,6 +33,12 @@ ressources dérivées ne doivent pas diverger des sources canoniques. Les images
 viennent du catalogue existant de [`ASSETS.md`](../ASSETS.md). Aucun nouveau
 visage ou visuel de voyage n'est généré pour ce candidat.
 
+Le script de tests utilise un simulateur Mon Florian ou en crée un dédié. Il
+ne choisit pas celui d'un autre projet déjà ouvert. La variable
+`MONFLORIAN_IOS_SIMULATOR_ID` permet de désigner explicitement un appareil de
+test. `MONFLORIAN_IOS_TEST_SCOPE=unit` limite l'exécution aux tests métier et
+réseau ; par défaut, les parcours d'interface sont aussi exécutés.
+
 ## Parcours disponible dans le candidat
 
 Le carnet Japon fournit un exemple natif consultable hors ligne. Le formulaire

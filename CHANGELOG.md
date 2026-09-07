@@ -13,10 +13,12 @@ l'ouverture du service personnalisé restent distinctes de cette tranche.
   préparation locale et checklist.
 - Photos facultatives dès la première étape du formulaire. Les copies
   réencodées restent en mémoire et sont exclues du brouillon enregistré.
+  La préparation s'exécute hors du fil d'interface et son annulation empêche
+  une ancienne sélection de remplacer la nouvelle.
 - Préfixe API `/api/v1` commun au site et au mobile, avec configuration,
   exemple public et alias des routes historiques conservant leurs protections.
 - Réutilisation de la projection publique `TravelGuideV1` et des visuels
-  canoniques ; scripts de construction et tests iOS.
+  canoniques ; scripts de construction et tests iOS sur un simulateur dédié.
 - Préparation StoreKit 2 fermée par les capacités serveur. Aucun produit réel,
   achat, upload, appel fournisseur ou compte Apple n'est activé.
 - Révision du parcours cible et des contrats de données. Conservation du

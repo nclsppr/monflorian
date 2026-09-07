@@ -49,6 +49,7 @@ struct PublicExample: Codable, Sendable {
         let checkIDs = Set(guide.verificationItems.map(\.id))
         guard guide.days.allSatisfy({ chapterIDs.contains($0.chapterId) && ($0.accommodationId == nil || stayIDs.contains($0.accommodationId!)) }),
               guide.allVerificationReferences.allSatisfy(checkIDs.contains),
+              guide.days.allSatisfy({ $0.transfer.isValid }),
               bookingLinks.values.allSatisfy({ ExternalLinks.bookingURL($0) != nil }) else { throw APIError.invalidContent }
         return self
     }
@@ -112,9 +113,24 @@ struct TravelGuide: Codable, Sendable {
         let placement: String
         let fromPlaceRef, toPlaceRef: String?
         let modes: [String]
-        let durationMinutes: Int
-        let reservation, description, luggageAdvice: String
+        let durationMinutes: Int?
+        let reservation: String
+        let description, luggageAdvice: String?
         let verificationItemIds: [String]
+        var isValid: Bool {
+            if !needed {
+                return placement == "none" && fromPlaceRef == nil && toPlaceRef == nil
+                    && durationMinutes == nil && description == nil && luggageAdvice == nil
+                    && modes == ["none"] && reservation == "none" && verificationItemIds.isEmpty
+            }
+            guard let durationMinutes, (1...720).contains(durationMinutes),
+                  ["before_morning", "after_morning", "after_afternoon", "after_evening"].contains(placement),
+                  !modes.isEmpty, !modes.contains("none") else { return false }
+            return [fromPlaceRef, toPlaceRef, description, luggageAdvice].allSatisfy { value in
+                guard let value else { return false }
+                return !value.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+            }
+        }
     }
     struct Accommodation: Codable, Identifiable, Sendable {
         let id, destination: String

@@ -74,12 +74,18 @@ struct BulletList: View {
         }
     }
 }
+enum BundledImage {
+    static func load(_ name: String, extension fileExtension: String) -> UIImage? {
+        guard let path = Bundle.main.path(forResource: name, ofType: fileExtension) else { return nil }
+        return UIImage(contentsOfFile: path)
+    }
+}
 struct SceneImage: View {
     let id: String
     let label: String
     var title: String? = nil
     static func load(_ id: String) -> UIImage {
-        guard let path = Bundle.main.path(forResource: id, ofType: "webp"), let image = UIImage(contentsOfFile: path) else { return UIImage(systemName: "photo") ?? UIImage() }
+        guard let image = BundledImage.load(id, extension: "webp") else { return UIImage(systemName: "photo") ?? UIImage() }
         return image
     }
 

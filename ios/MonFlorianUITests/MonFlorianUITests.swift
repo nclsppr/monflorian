@@ -57,11 +57,31 @@ final class MonFlorianUITests: XCTestCase {
         app.launchArguments = ["--ui-testing", "--offline"]; app.launch()
         app.tabBars.buttons["Mon voyage"].tap()
         let restore = app.buttons["restore-draft"]; reveal(restore); restore.tap()
+        XCTAssertTrue(app.textFields["destination-field"].waitForExistence(timeout: 5))
         XCTAssertEqual(app.textFields["destination-field"].value as? String, "Portugal")
         let deletion = app.buttons["delete-draft"]; reveal(deletion); deletion.tap()
         app.buttons["Supprimer le brouillon"].tap()
         XCTAssertFalse(app.buttons["restore-draft"].exists)
         screenshot("Brouillon supprimé")
+    }
+    func testOptionalPhotoPickerCanBeCancelledBeforeSavingDraft() {
+        app.tabBars.buttons["Mon voyage"].tap()
+        let picker = app.buttons["choose-photos"]
+        reveal(picker); XCTAssertTrue(picker.isHittable); picker.tap()
+        let englishCancel = app.buttons["Cancel"].firstMatch
+        let frenchCancel = app.buttons["Annuler"].firstMatch
+        XCTAssertTrue(englishCancel.waitForExistence(timeout: 5) || frenchCancel.waitForExistence(timeout: 5))
+        screenshot("Sélecteur Photos natif facultatif")
+        if englishCancel.exists { englishCancel.tap() } else { frenchCancel.tap() }
+        XCTAssertTrue(picker.waitForExistence(timeout: 5))
+        XCTAssertFalse(app.buttons["remove-photos"].exists)
+        let next = app.buttons["planner-next"]; reveal(next); next.tap()
+        let review = app.buttons["planner-review"]; reveal(review); review.tap()
+        let save = app.buttons["save-draft"]; reveal(save)
+        XCTAssertTrue(save.isEnabled); save.tap()
+        let status = app.staticTexts["draft-status"]; reveal(status)
+        XCTAssertTrue(status.label.contains("sans les photos"))
+        screenshot("Brouillon enregistré sans photo")
     }
     func testGuidesReadWithoutNetwork() {
         app.tabBars.buttons["Guides"].tap()
