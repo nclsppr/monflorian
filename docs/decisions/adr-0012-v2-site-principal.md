@@ -7,8 +7,10 @@ les deux versions, améliorer la V2 et en faire la version principale.
 
 L'implémentation est publiée le 7 septembre 2026 après fusion de la
 [PR #54](https://github.com/nclsppr/monflorian/pull/54), au commit
-`f0d8411530f0d6002c70f206f1c716169b22a184`. La version Worker
-`f3ffeb1e-0e3d-44ce-8eb3-82ab39c6f4d2` reçoit 100 % du trafic. Les preuves de
+`f0d8411530f0d6002c70f206f1c716169b22a184`. Cette version est suivie le même jour par la correction bureau et footer
+de la [PR #56](https://github.com/nclsppr/monflorian/pull/56), au commit
+`2e145dfae9c35178d44f831e3bd253ef1489c434`. La version Worker
+`c6d84fbd-f104-4914-b230-b5567981a8f3` reçoit 100 % du trafic. Les preuves de
 CI et les sondes publiques sont consignées dans `STATUS.md` et
 `DELIVERY-EVIDENCE.md`.
 

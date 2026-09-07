@@ -3,15 +3,19 @@
 ## Site principal publié le 7 septembre 2026
 
 La V2 améliorée est servie à la racine de `https://monflorian.com` après la
-fusion de la PR [#54](https://github.com/nclsppr/monflorian/pull/54). Le carnet
+fusion de la PR [#54](https://github.com/nclsppr/monflorian/pull/54), puis la
+correction de l’accueil bureau et du footer par la
+PR [#56](https://github.com/nclsppr/monflorian/pull/56). Le carnet
 Japon, le pense-bête local et les deux guides font partie de cette version.
 Les anciennes adresses `/v2` redirigent vers les pages correspondantes.
 
-- Source runtime : `f0d8411530f0d6002c70f206f1c716169b22a184`.
-- Version Worker active à 100 % : `f3ffeb1e-0e3d-44ce-8eb3-82ab39c6f4d2`.
-- CI du SHA fusionné : `34071314651` et `34071314760`, vertes.
-- Cinq HTML publics et 25 ressources identiques au build, dont les treize WebP
+- Source runtime : `2e145dfae9c35178d44f831e3bd253ef1489c434`.
+- Version Worker active à 100 % : `c6d84fbd-f104-4914-b230-b5567981a8f3`.
+- CI du SHA fusionné : `34164340341` et `34164340438`, vertes.
+- Cinq HTML publics et 23 ressources identiques au build, dont les treize WebP
   du carnet et des inspirations. Les redirections et les réponses 404 passent.
+- Un seul logo à l’entrée, une grande couverture du carnet et un footer crème
+  en colonnes. Contrôles visuels bureau et mobile, menu du carnet corrigé à 320 px.
 - Aucun changement de secret ou de drapeau. La création de voyage répond
   toujours `503 TRIP_CREATION_UNAVAILABLE` ; le service reste fermé.
 
