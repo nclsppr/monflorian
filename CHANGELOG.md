@@ -2,11 +2,11 @@
 
 Git reste la source du diff technique. Les ADR expliquent les décisions importantes.
 
-## Non publié
+## 7 septembre 2026
 
-### Site principal issu de la V2, 7 septembre 2026
+### Site principal issu de la V2
 
-- Promotion candidate de la V2 à la racine, avec un carnet Japon public et
+- Publication de la V2 à la racine via la PR #54, avec un carnet Japon public et
   deux guides de préparation pré-rendus. Chaque page possède ses métadonnées
   et des liens natifs ; les anciennes adresses redirigent en 308.
 - Remplacement du questionnaire sans effet par un pense-bête utile, copiable,
@@ -20,7 +20,7 @@ Git reste la source du diff technique. Les ADR expliquent les décisions importa
 - Documentation de la sauvegarde locale et maintien de tous les garde-fous de
   génération, photo, courriel et paiement.
 
-### Historique livré avant cette promotion
+## Historique livré avant le 7 septembre 2026
 
 - Déploiement public de l'adaptation issue de l'audit V2 au SHA `4917baf` et
   sous la version Worker `a3da53ea-cf97-4703-94b8-138584de7271`, avec contrôle

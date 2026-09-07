@@ -1,14 +1,23 @@
 # État courant
 
-## Candidat du 7 septembre 2026
+## Site principal publié le 7 septembre 2026
 
-La V2 améliorée est candidate pour devenir le site principal. La tranche ajoute
-les cinq pages pré-rendues, un pense-bête utile, la checklist locale, les liens
-vers les sources et les redirections décrits dans l'ADR-0012.
+La V2 améliorée est servie à la racine de `https://monflorian.com` après la
+fusion de la PR [#54](https://github.com/nclsppr/monflorian/pull/54). Le carnet
+Japon, le pense-bête local et les deux guides font partie de cette version.
+Les anciennes adresses `/v2` redirigent vers les pages correspondantes.
 
-Le build, les 66 tests applicatifs et `./scripts/verify.sh` passent. Les
-contrôles visuels et les parcours locaux sont validés. La fusion et la
-publication restent à terminer. Aucun drapeau ni secret ne change.
+- Source runtime : `f0d8411530f0d6002c70f206f1c716169b22a184`.
+- Version Worker active à 100 % : `f3ffeb1e-0e3d-44ce-8eb3-82ab39c6f4d2`.
+- CI du SHA fusionné : `34071314651` et `34071314760`, vertes.
+- Cinq HTML publics et 25 ressources identiques au build, dont les treize WebP
+  du carnet et des inspirations. Les redirections et les réponses 404 passent.
+- Aucun changement de secret ou de drapeau. La création de voyage répond
+  toujours `503 TRIP_CREATION_UNAVAILABLE` ; le service reste fermé.
+
+`DELIVERY-EVIDENCE.md` détaille les contrôles. Les sections datées ci-dessous
+conservent l'historique antérieur à cette promotion. L'indexabilité technique
+ne prouve aucun classement ni aucune indexation effective dans Google.
 
 ## Dernière version publique avant la promotion
 

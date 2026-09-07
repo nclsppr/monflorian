@@ -3,22 +3,43 @@
 Chaque section nomme son environnement et ses limites. Les sections Atlas sont
 des archives historiques ; la section Cloudflare porte la migration courante.
 
-## Promotion V2 principale, candidat du 7 septembre 2026
+## Site principal issu de la V2, publié le 7 septembre 2026
 
-Le build client, le rendu serveur et la production des cinq pages passent.
-Les 66 tests applicatifs et `./scripts/verify.sh` passent, avec les sondes
-HTTP sous Compose et la documentation Nimbus. Le navigateur a confirmé la
-saisie du pense-bête, sa sauvegarde volontaire, sa restauration, la conservation
-et la remise à zéro de la checklist, ainsi que la copie du vrai lien public.
-Les contrôles visuels intégrés couvrent l’accueil en 390 et 1280 pixels ; le
-menu mobile ferme son panneau après sélection. Le guide Japon est lisible à
-320 pixels et les métadonnées de journée atteignent 14,08 pixels. Les liens
-de source ouvrent leur rubrique au clavier et au toucher. Fermer le dialogue
-de partage avec Échap restitue le focus au bouton qui l’a ouvert.
+La PR [#54](https://github.com/nclsppr/monflorian/pull/54) est fusionnée et son
+commit a été déployé depuis un checkout propre. Aucun secret, drapeau ou
+fournisseur n'a été modifié. `AUDIT-V2.md` décrit la comparaison et les critiques.
 
-Cette section ne constitue pas encore une preuve publique. La validation
-du SHA fusionné, la version active et les sondes publiques restent à consigner.
-Le bilan des critiques figure dans `AUDIT-V2.md`.
+| Preuve | Résultat |
+| --- | --- |
+| Source runtime | `f0d8411530f0d6002c70f206f1c716169b22a184` |
+| Version Worker active | `f3ffeb1e-0e3d-44ce-8eb3-82ab39c6f4d2`, 100 % du trafic |
+| CI finale PR | `34071219231` et `34071219201`, vertes sur `43a651c` |
+| CI du SHA fusionné | `34071314651` et `34071314760`, vertes |
+| Vérification locale | `./scripts/verify.sh`, 66 tests, types, build Worker, Compose et Nimbus |
+| Pages publiques | Cinq réponses `200`, HTML identique au build, canonical unique et contenu pré-rendu |
+| Ressources publiques | 25 fichiers en `200`, contenu et empreinte SHA-256 identiques au build ; treize WebP inclus |
+| Migration | `/v2`, liens Japon et inspirations, suffixes HTML et `www` redirigent en `308` |
+| Erreurs | Trois routes inconnues répondent `404` avec une page dédiée non indexable |
+| Site technique | `workers.dev` répond `200` avec `noindex` |
+| Parcours privés | `/voyages/inconnu` répond `404` et `noindex` |
+| Service fermé | Santé et configuration fermées ; `POST /api/trips` reste en `503 TRIP_CREATION_UNAVAILABLE` |
+
+Le relevé détaillé des pages, ressources, empreintes et contrats publics figure
+dans [le relevé JSON](docs/evidence/2026-09-07-v2-public-proof.json).
+
+Le navigateur local a confirmé le pense-bête, sa sauvegarde volontaire et sa
+restauration, la conservation puis la remise à zéro de la checklist et la copie
+du vrai lien public. L'accueil est inspecté en 390 et 1280 pixels et le guide
+Japon en 320 pixels. Les références ouvrent la bonne rubrique au toucher et au
+clavier ; la fermeture du dialogue avec Échap rend le focus au bouton d'origine.
+Les métadonnées de journée atteignent 14,08 pixels. Le menu mobile se ferme
+après sélection. Aucun dépassement horizontal ni erreur de console n'a été
+observé dans ces parcours. Ces contrôles ne constituent pas un audit complet
+avec toutes les technologies d'assistance.
+
+Le navigateur public confirme le nouvel accueil et l'accès au carnet. La
+publication technique ne prouve aucun classement Google. Aucun appel de
+génération, réservation, paiement ou courriel n'a été déclenché.
 
 ## Adaptation du carnet Japon issue de l'audit V2, 2026-08-31
 

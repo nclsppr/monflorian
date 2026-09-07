@@ -5,9 +5,12 @@
 Acceptée le 7 septembre 2026 sur demande explicite du propriétaire de comparer
 les deux versions, améliorer la V2 et en faire la version principale.
 
-L'implémentation est candidate à cette date. Cette décision ne constitue pas
-une preuve de fusion, de déploiement ou de fonctionnement public. Les preuves
-de livraison seront consignées dans `STATUS.md` et `DELIVERY-EVIDENCE.md`.
+L'implémentation est publiée le 7 septembre 2026 après fusion de la
+[PR #54](https://github.com/nclsppr/monflorian/pull/54), au commit
+`f0d8411530f0d6002c70f206f1c716169b22a184`. La version Worker
+`f3ffeb1e-0e3d-44ce-8eb3-82ab39c6f4d2` reçoit 100 % du trafic. Les preuves de
+CI et les sondes publiques sont consignées dans `STATUS.md` et
+`DELIVERY-EVIDENCE.md`.
 
 Cette ADR remplace les choix d'isolation sous `/v2`, de maintien de l'accueil
 historique, de mise hors index de la V2 et de partage simulé de l'ADR-0010. Elle
@@ -50,7 +53,8 @@ JavaScript sont annoncés comme tels dans le parcours sans script.
 Le nouveau build remplace l'accueil de `dist/`. L'ancien
 `app/public/index.html`, ses scripts et ses styles restent conservés pour
 l'historique et leurs autres consommateurs ; cet index n'est plus l'accueil
-servi dans le candidat. `dist/` et les rendus intermédiaires sont dérivés.
+servi depuis le 7 septembre 2026. `dist/` et les rendus intermédiaires sont
+dérivés.
 
 ### URLs et référencement
 
@@ -139,10 +143,9 @@ paiement restent soumis à leurs décisions propres.
 
 ## Retour arrière
 
-Avant publication, retirer la tranche candidate. Après publication, revenir à
-une version Worker connue et rétablir ensemble le build, les routes, les
-métadonnées et les contrats correspondants. Les fichiers historiques ne doivent
-pas être présentés comme une sauvegarde déployée à eux seuls.
+Revenir à une version Worker connue et rétablir ensemble le build, les routes,
+les métadonnées et les contrats correspondants. Les fichiers historiques ne
+doivent pas être présentés comme une sauvegarde déployée à eux seuls.
 
 Le retour arrière ne doit ni lire ni supprimer les autres données du navigateur.
 Les éventuelles copies locales de préparation restent sous leurs clés propres.
