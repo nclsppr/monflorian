@@ -4,6 +4,16 @@ Git reste la source du diff technique. Les ADR expliquent les décisions importa
 
 ## 7 septembre 2026
 
+### Accueil bureau et pied de page
+
+- Suppression du second logo à l'arrivée et du basculement d'en-tête.
+- Remplacement du téléphone par une grande couverture du carnet Japon, avec
+  les trois étapes et une entrée directe vers le voyage.
+- Réorganisation du premier écran pour les ordinateurs portables : titre,
+  explication et actions visibles sans traverser une introduction de marque.
+- Nouveau footer crème, marque à sa bonne taille, liens en colonnes et retour
+  en haut. Adaptation mobile et retrait des styles devenus inutiles.
+
 ### Site principal issu de la V2
 
 - Publication de la V2 à la racine via la PR #54, avec un carnet Japon public et

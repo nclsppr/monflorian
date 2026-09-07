@@ -24,13 +24,14 @@ import { guides } from "./guides.js";
 import { sourceLinks } from "./sources.js";
 import "./v2.css";
 import "./site.css";
+import "./home-shell.css";
 
 export const TRIP_PATH = "/carnets/japon-10-jours";
 const AvatarContext = createContext("original");
 
-function Portrait({ intro = false, ...props }) {
+function Portrait(props) {
   const variant = useContext(AvatarContext);
-  return <img {...props} src={"/assets/florian-v2-" + variant + (intro ? "-intro.webp" : "-web.webp")} />;
+  return <img {...props} src={"/assets/florian-v2-" + variant + "-web.webp"} />;
 }
 
 const priorityVariants = {
@@ -138,7 +139,7 @@ async function copyText(value) {
 
 function BrandHeader({ isTrip, onShare }) {
   return (
-    <header className="site-header">
+    <header className={"site-header" + (isTrip ? " has-share" : "")}>
       <div className="header-inner">
         <a aria-label="Mon Florian, accueil" className="brand-button brand" href="/">
           <span aria-hidden="true" className="brand-character"><Portrait alt="" height="384" width="384" /></span>
@@ -153,93 +154,9 @@ function BrandHeader({ isTrip, onShare }) {
           <summary>Menu</summary>
           <nav aria-label="Navigation mobile" onClick={(event) => { if (event.target.closest("a")) event.currentTarget.closest("details").open = false; }}><a href={TRIP_PATH}>Le carnet Japon</a><a href="/#create">Mon pense-bête</a><a href="/guides">Les guides</a><a href="/#examples">Inspirations</a></nav>
         </details>
-        {isTrip ? <Button className="header-action js-only" icon={<Icon name="share" size={17} />} label="Partager" onClick={onShare} size="lg" variant="primary" /> : <Button className="header-action" href={TRIP_PATH} label="Voir le carnet" size="lg" variant="secondary" />}
+        {isTrip ? <Button className="header-action js-only" icon={<Icon name="share" size={17} />} label="Partager" onClick={onShare} size="lg" variant="primary" /> : null}
       </div>
     </header>
-  );
-}
-
-function BrandIntro({ onPastChange }) {
-  const [isCompact, setIsCompact] = useState(false);
-
-  useEffect(() => {
-    const media = window.matchMedia("(max-width: 760px)");
-    const update = () => setIsCompact(media.matches);
-    update();
-    media.addEventListener?.("change", update);
-    return () => media.removeEventListener?.("change", update);
-  }, []);
-
-  useEffect(() => {
-    let observer;
-    let frame;
-
-    function observeIntro() {
-      observer?.disconnect();
-      if (isCompact) {
-        onPastChange(true);
-        return;
-      }
-      const header = document.querySelector(".site-header");
-      const trigger = document.querySelector(".brand-intro-trigger");
-      if (!header || !trigger || typeof IntersectionObserver !== "function") {
-        onPastChange(true);
-        return;
-      }
-      onPastChange(false);
-      const headerHeight = Math.ceil(header.getBoundingClientRect().height);
-      observer = new IntersectionObserver(([entry]) => {
-        const introIsPast = !entry.isIntersecting && entry.boundingClientRect.top <= headerHeight;
-        onPastChange(introIsPast);
-      }, {
-        rootMargin: "-" + headerHeight + "px 0px 0px 0px",
-        threshold: 0,
-      });
-      observer.observe(trigger);
-    }
-
-    frame = window.requestAnimationFrame(observeIntro);
-    return () => {
-      window.cancelAnimationFrame(frame);
-      observer?.disconnect();
-    };
-  }, [isCompact, onPastChange]);
-
-  if (isCompact) return null;
-
-  return (
-    <div aria-hidden="true" className="brand-intro">
-      <span className="brand-intro-content">
-        <span className="brand-intro-lockup">
-          <span className="brand-character">
-            <Portrait alt="" height="1024" intro loading="lazy" width="1024" />
-          </span>
-          <img
-            alt=""
-            className="brand-wordmark"
-            height="724"
-            loading="lazy"
-            src="/assets/monflorian-wordmark-intro.webp"
-            width="1352"
-          />
-        </span>
-        <span className="brand-intro-tagline">
-          <svg
-            aria-hidden="true"
-            className="brand-intro-tagline-paper"
-            focusable="false"
-            preserveAspectRatio="none"
-            viewBox="0 0 440 88"
-          >
-            <path d="M22 20 C104 11 179 24 266 17 S388 16 422 25" />
-            <path d="M11 43 C96 33 183 49 276 39 S390 38 429 46" />
-            <path d="M25 67 C105 58 194 72 284 62 S386 62 414 69" />
-          </svg>
-          <span>Alors, on part où&nbsp;?</span>
-        </span>
-      </span>
-      <span className="brand-intro-trigger" />
-    </div>
   );
 }
 
@@ -264,51 +181,35 @@ function PhotoChapter({ alt, city, eager = false, mobileSrc, src, note }) {
   );
 }
 
-function PromisePhone() {
+function CarnetPreview() {
   const image = japanTrip.featuredImage.asset;
   return (
-    <div className="promise-phone-stage">
-      <article aria-label="Aperçu du carnet Japon dans un téléphone" className="promise-phone">
-        <div aria-hidden="true" className="phone-island" />
-        <div className="phone-screen">
-          <div className="phone-app-bar"><span>Mon Florian</span><span>•••</span></div>
-          <figure className="phone-cover">
-            <img
-              alt="Le couple du carnet découvre Tokyo à la tombée du jour"
-              decoding="async"
-              fetchPriority="high"
-              height={image.height}
-              sizes="(max-width: 760px) 82vw, 360px"
-              src={image.src}
-              srcSet={image.mobileSrc + " 720w, " + image.src + " 1440w"}
-              width={image.width}
-            />
-            <div className="phone-cover-copy">
-              <span>10 jours · 2 voyageurs</span>
-              <strong>Le Japon à deux</strong>
-              <small>Tokyo → Hakone → Kyoto</small>
-            </div>
-          </figure>
-          <div className="phone-route" aria-label="Trois étapes">
-            {japanTrip.accommodations.map((stay) => (
-              <span key={stay.id}><i />{stay.destination}<small>{stay.nightsLabel}</small></span>
-            ))}
+    <div className="carnet-preview">
+      <p className="carnet-annotation">Un premier départ : le Japon.</p>
+      <a className="carnet-cover" href={TRIP_PATH} aria-label="Découvrir Le Japon à deux, le carnet de dix jours">
+        <div className="carnet-cover-image">
+          <img
+            alt="Illustration du couple fictif du carnet dans une rue de Tokyo, à la tombée du jour"
+            decoding="async"
+            fetchPriority="high"
+            height={image.height}
+            sizes="(max-width: 760px) calc(100vw - 40px), (max-width: 1408px) 50vw, 640px"
+            src={image.src}
+            srcSet={image.mobileSrc + " 720w, " + image.src + " 1440w"}
+            width={image.width}
+          />
+          <div className="carnet-cover-title">
+            <strong>Le Japon<br />à deux.</strong>
+            <span className="carnet-open"><Icon name="arrow" size={24} /></span>
           </div>
-          <div className="phone-preview-days">
-            {japanTrip.days.slice(0, 3).map((day) => (
-              <div className="phone-preview-day" key={day.day}>
-                <span>J{day.day}</span>
-                <div><strong>{day.title}</strong><small>{day.moments[0].title}</small></div>
-              </div>
-            ))}
-          </div>
-          <div className="phone-florian-note">
-            <Portrait alt="" height="384" width="384" />
-            <p><strong>Le choix de Florian</strong> Trois bases seulement, pour voir beaucoup sans refaire les valises chaque matin.</p>
-          </div>
+          <span className="carnet-duration">10 jours à explorer</span>
         </div>
-      </article>
-      <span className="phone-caption">Ton itinéraire, tes hôtels et les réservations à prévoir, au même endroit.</span>
+        <ol className="carnet-route" aria-label="Les trois bases du carnet">
+          {japanTrip.accommodations.map((stay) => (
+            <li key={stay.id}><strong>{stay.destination}</strong><span>{stay.nightsLabel}</span></li>
+          ))}
+        </ol>
+      </a>
     </div>
   );
 }
@@ -319,8 +220,8 @@ function Hero() {
       <div className="hero-copy">
         <h1 id="hero-title">Ton voyage,<br />à ton rythme.</h1>
         <p className="hero-intro">
-          Un itinéraire pour te projeter, les trajets pour relier les étapes et du temps pour improviser.
-          Explore dix jours au Japon, puis pose les idées de ton propre voyage.
+          Des étapes qui s’enchaînent, du temps pour improviser.
+          Explore le carnet Japon, puis pose les envies de ton prochain voyage.
         </p>
         <div className="hero-actions">
           <Button
@@ -333,16 +234,11 @@ function Hero() {
           <a className="text-link" href="#create">Préparer mon pense-bête</a>
         </div>
         <p className="hero-demo-note">
-          <strong>Un carnet d’exemple, accessible à tous.</strong> Le voyage Japon est déjà écrit.
-          La création d’un itinéraire sur mesure n’est pas encore ouverte.
+          Un carnet d’exemple, à lire sans compte.<br />
+          La création sur mesure n’est pas encore ouverte.
         </p>
-        <ul className="hero-trust" aria-label="Ce que tu peux faire ici">
-          <li>Aucune réservation automatique</li>
-          <li>Sans compte</li>
-          <li>Pense-bête sur ton appareil</li>
-        </ul>
       </div>
-      <PromisePhone />
+      <CarnetPreview />
     </section>
   );
 }
@@ -913,9 +809,37 @@ function ShareDialog({ isOpen, onClose }) {
 function Footer() {
   return (
     <footer className="site-footer">
-      <div className="footer-brand"><a href="/"><img alt="Mon Florian, accueil" height="181" src="/assets/monflorian-wordmark-web.webp" width="338" /></a><p>Un voyage se prépare. Il se laisse aussi un peu ouvert.</p></div>
-      <nav className="footer-links" aria-label="Navigation de pied de page"><a href={TRIP_PATH}>Carnet Japon</a><a href="/guides">Guides de voyage</a><a href="/#create">Mon pense-bête</a><a href="/#questions">Questions fréquentes</a><a href="/confidentialite">Confidentialité</a></nav>
-      <p className="footer-mark">MON FLORIAN · 2026 · Aucune réservation ni paiement sur ce site.</p>
+      <div className="footer-inner">
+        <div className="footer-invitation">
+          <h2>Alors, on part où&nbsp;?</h2>
+          <a href="/#create">Poser mes idées <span><Icon name="arrow" size={26} /></span></a>
+        </div>
+        <div className="footer-directory">
+          <div className="footer-brand">
+            <a href="/" aria-label="Mon Florian, accueil">
+              <img alt="" height="181" src="/assets/monflorian-wordmark-web.webp" width="338" loading="lazy" />
+            </a>
+            <p>Préparer le chemin.<br />Garder une place pour l’imprévu.</p>
+          </div>
+          <nav className="footer-column" aria-label="Explorer">
+            <h3>Explorer</h3>
+            <a href={TRIP_PATH}>Le carnet Japon</a>
+            <a href="/guides">Les guides de voyage</a>
+            <a href="/#examples">D’autres envies de départ</a>
+          </nav>
+          <nav className="footer-column" aria-label="Préparer ton voyage">
+            <h3>Préparer ton voyage</h3>
+            <a href="/#create">Mon pense-bête</a>
+            <a href="/#questions">Questions fréquentes</a>
+            <a href="/confidentialite">Confidentialité</a>
+          </nav>
+        </div>
+        <div className="footer-bottom">
+          <p>© 2026 Mon Florian</p>
+          <p>Aucune réservation ni paiement sur ce site.</p>
+          <a href="#main-content">Retour en haut <Icon name="arrow" size={17} /></a>
+        </div>
+      </div>
     </footer>
   );
 }
@@ -923,7 +847,6 @@ function Footer() {
 export function App({ pathname = "/" }) {
   const [shareOpen, setShareOpen] = useState(false);
   const shareTrigger = useRef(null);
-  const [introPast, setIntroPast] = useState(false);
   const [avatar, setAvatar] = useState("original");
   const isTrip = pathname === TRIP_PATH;
   const isHome = pathname === "/";
@@ -962,14 +885,12 @@ export function App({ pathname = "/" }) {
     return () => { active = false; window.removeEventListener("hashchange", openHashTarget); window.removeEventListener("beforeprint", preparePrint); window.removeEventListener("afterprint", finishPrint); };
   }, [isHome]);
 
-  const shellClassName = "v2-shell" + (isHome ? " has-intro-swap" : "") + (introPast ? " is-intro-past" : "");
   return (
     <InternationalizationProvider locale="fr-FR" messages={{ "fr-FR": frMessages }} overrides={{ "fr-FR": { "@astryx.numberInput.decrementLabel": "Diminuer {label}", "@astryx.numberInput.incrementLabel": "Augmenter {label}" } }}>
       <Theme mode="light" theme={matchaTheme}>
         <AvatarContext.Provider value={avatar}>
-          <div className={shellClassName}>
+          <div className="v2-shell">
             <BrandHeader isTrip={isTrip} onShare={openShare} />
-            {isHome ? <BrandIntro onPastChange={setIntroPast} /> : null}
             {isTrip ? <TripPage onShare={openShare} /> : pathname === "/guides" ? <GuideHub /> : guide ? <GuidePage guide={guide} /> : <HomePage />}
             <Footer />
             {shareOpen ? <ShareDialog isOpen onClose={changeShareOpen} /> : null}

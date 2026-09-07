@@ -19,6 +19,7 @@ colors:
   paper: "#fffefb"
   surface: "#f4f7ff"
   pencilSage: "#85897a"
+  pencilSageDark: "#626855"
   line: "rgba(6, 26, 59, 0.12)"
   muted: "#66738b"
 typography:
@@ -29,6 +30,8 @@ typography:
     fontWeight: 800
     lineHeight: 0.99
     letterSpacing: -0.04em
+  cover:
+    fontFamily: '"Outfit Variable", sans-serif'
   note:
     fontFamily: '"Kalam", "Bradley Hand", "Segoe Print", cursive'
     fontWeight: 400
@@ -36,6 +39,8 @@ rounded:
   xl: 34px
   lg: 26px
   md: 18px
+  cover: 16px
+  label: 4px
 ---
 
 # Design de Mon Florian
@@ -48,7 +53,7 @@ Ce contrat décrit la V2 principale publiée le 7 septembre 2026, décidée dans
 `DELIVERY-EVIDENCE.md` conservent la version active et les preuves publiques.
 
 Les sources canoniques sont `app/v2/src/main.jsx`, `Planner.jsx`, `Guides.jsx`,
-leurs styles et leurs données. Le carnet consomme la fixture canonique
+leurs styles, dont `home-shell.css` pour l’accueil et le footer, et leurs données. Le carnet consomme la fixture canonique
 `contracts/examples/japan-10-days.v1.json` par `app/v2/src/data.js`. Le build
 pré-rend les pages ; les fichiers de `dist/` ne sont jamais édités à la main.
 L'ancien `app/public/index.html` reste historique. Sa conservation ne lui donne
@@ -86,30 +91,36 @@ rendu du master. Leur canevas reste carré et transparent. Les composants ne leu
 ajoutent ni fond ni médaillon. La première famille reste une archive de retour,
 jamais un second système visuel actif.
 
-Sur desktop, le grand logo ouvre l'accueil dans une introduction plus courte
-que celle de la V1. L'en-tête compact reste visible dès l'arrivée et accompagne
-le défilement. La navigation demeure utilisable sans JavaScript.
+L'en-tête permanent porte le seul logo de l'entrée, sur bureau comme sur
+mobile. Le grand lockup d'introduction et son basculement au défilement sont
+retirés. La navigation demeure utilisable sans JavaScript.
 
-La note manuscrite utilise Kalam en crayon sauge `#85897a`, sur les trois traits
-blancs irréguliers issus du système existant. Elle reste statique. Sur mobile,
-l'introduction est masquée : le titre, l'explication et l'action précèdent le
-téléphone. L'aperçu du résultat reste présent avant le pense-bête.
+L'accueil s'ouvre sur une composition en deux colonnes : titre et actions à
+gauche, couverture du carnet Japon à droite. L'image, le titre en Outfit et les
+trois bases remplacent la coque de téléphone et ses petits textes. Une seule
+annotation Kalam accompagne le carnet, en sauge assombrie `#626855`. Sur mobile,
+le titre, l'explication et les actions précèdent la couverture.
+
+Le footer utilise le fond crème, un mot-symbole limité à 146 px et deux colonnes
+de navigation. Une invitation au pense-bête ouvre cette dernière section ;
+l'année, la limite sur les réservations et le retour en haut ferment la page.
+Les colonnes se réorganisent sur mobile, sans texte clair sur logo sombre.
 
 ## Couleurs et typographie
 
-L'encre structure le texte et le téléphone. Le bleu profond porte les actions
+L'encre structure le texte et les couvertures. Le bleu profond porte les actions
 principales avec un texte blanc lisible. Ciel et cyan appartiennent aux aperçus ;
 le citron distingue les actions courtes et les étapes actives, avec un libellé
 ou une forme qui rend l'état compréhensible sans la couleur.
 
 Les surfaces papier, crème et gris bleuté séparent les niveaux. Les boutons et
-les champs restent plats. Les ombres sont réservées au téléphone et aux quelques
+les champs restent plats. Les ombres sont réservées à la couverture et aux quelques
 éléments qui ont besoin de se détacher ; les groupes de lecture utilisent
 l'espacement et les lignes fines.
 
 La pile système du produit reste la police de l'interface et des guides. Les
-titres restent courts, lourds et lisibles. Kalam appartient uniquement à la note
-d'introduction. Outfit auto-hébergée sert aux titres blancs sur les scènes de
+titres restent courts, lourds et lisibles. Kalam appartient uniquement à l’annotation
+du carnet sur l’accueil. Outfit auto-hébergée sert aux titres blancs sur les scènes de
 voyage. Les informations utiles du carnet, dont durées, trajets et alternatives,
 restent lisibles sur mobile sans dépendre d'un agrandissement.
 

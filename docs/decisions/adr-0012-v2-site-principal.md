@@ -106,10 +106,12 @@ l'ouverture du carnet disparaît.
 ### Conserver la marque, faciliter la lecture
 
 Le master du logo, les cinq portraits V2, la palette, la pile système, Kalam et
-Outfit restent les références. L'introduction desktop garde le grand logo dans
-une hauteur plus courte. La navigation reste visible sans JavaScript. Sur
-mobile, l'action et l'explication précèdent le téléphone pour éviter de cacher
-le premier choix derrière l'aperçu.
+Outfit restent les références. À la demande complémentaire du propriétaire le
+7 septembre, l'entrée conserve un seul logo dans l'en-tête permanent. La grande
+introduction et son basculement au défilement sont supprimés. La couverture
+illustrée du carnet remplace la coque de téléphone ; elle suit les actions et
+l'explication sur mobile. Le footer passe sur fond crème avec une navigation
+en colonnes. La navigation reste visible sans JavaScript.
 
 Le carnet ajoute des accès directs aux journées et aux vérifications, du texte
 lisible sur mobile et une impression utilisable. Les personnages fictifs et les
