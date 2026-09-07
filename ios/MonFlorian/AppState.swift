@@ -90,14 +90,27 @@ struct SelectedPhoto: Identifiable {
         guard !Task.isCancelled else { return }
         let selectionID = UUID(); photoSelectionID = selectionID
         isLoadingPhotos = true; photoMessage = nil; photos.removeAll()
+        defer { if selectionID == photoSelectionID { isLoadingPhotos = false } }
         var loaded: [SelectedPhoto] = []
         do {
             guard items.count <= 4 else { throw APIError.oversized }
             for item in items {
                 guard let source = try await item.loadTransferable(type: Data.self) else { throw APIError.invalidContent }
                 guard !Task.isCancelled, selectionID == photoSelectionID else { return }
-                let prepared = try PhotoPreparer.prepare(source)
-                loaded.append(SelectedPhoto(data: prepared.data, image: UIImage(cgImage: prepared.image)))
+                let processing = Task.detached(priority: .userInitiated) {
+                    try Task.checkCancellation()
+                    let data = try PhotoPreparer.prepare(source).data
+                    try Task.checkCancellation()
+                    return data
+                }
+                let preparedData = try await withTaskCancellationHandler {
+                    try await processing.value
+                } onCancel: {
+                    processing.cancel()
+                }
+                guard !Task.isCancelled, selectionID == photoSelectionID else { return }
+                guard let image = UIImage(data: preparedData) else { throw PhotoPreparationError.unreadable }
+                loaded.append(SelectedPhoto(data: preparedData, image: image))
             }
             guard !Task.isCancelled, selectionID == photoSelectionID else { return }
             photos = loaded
@@ -106,6 +119,5 @@ struct SelectedPhoto: Identifiable {
             guard !Task.isCancelled, selectionID == photoSelectionID else { return }
             photos.removeAll(); photoMessage = error.localizedDescription
         }
-        if selectionID == photoSelectionID { isLoadingPhotos = false }
     }
 }
