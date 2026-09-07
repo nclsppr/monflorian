@@ -11,7 +11,9 @@ HTTP sous Compose et la documentation Nimbus. Le navigateur a confirmé la
 saisie du pense-bête, sa sauvegarde volontaire, sa restauration, la conservation
 et la remise à zéro de la checklist, ainsi que la copie du vrai lien public.
 Les contrôles visuels intégrés couvrent l’accueil en 390 et 1280 pixels ; le
-menu mobile ferme son panneau après sélection.
+menu mobile ferme son panneau après sélection. Le guide Japon est lisible à
+320 pixels et les métadonnées de journée atteignent 14,08 pixels. Les liens
+de source ouvrent leur rubrique au clavier et au toucher.
 
 Cette section ne constitue pas encore une preuve publique. La validation
 du SHA fusionné, la version active et les sondes publiques restent à consigner.

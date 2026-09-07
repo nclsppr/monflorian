@@ -114,8 +114,7 @@ function LinkedVerifications({ items }) {
   return (
     <p className="linked-verifications">
       <strong>À revérifier :</strong>{" "}
-      {items.map((item) => `${item.topic} (${item.timingLabel.toLowerCase()})`).join(" · ")}{" "}
-      {items.map((item) => <a className="verification-jump" href={"#" + item.id} key={item.id}>Vérifier : {item.topic}</a>)}
+      {items.map((item) => <a aria-label={"Vérifier : " + item.topic} className="verification-jump" href={"#" + item.id} key={item.id}>{item.topic}<small>{item.timingLabel}</small></a>)}
     </p>
   );
 }

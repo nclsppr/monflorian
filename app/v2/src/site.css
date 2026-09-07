@@ -64,7 +64,8 @@ html:not(.is-interactive) .planner-layout { display: none; }
 .moment-card .moment-meta dt, .moment-card .moment-meta dd, .moment-card small, .transfer-card dt, .transfer-card dd, .reservation-group li > small, .verification-list dt, .verification-list dd, .hotel-criteria li { font-size: .88rem; line-height: 1.5; }
 .moment-card .moment-meta { font-size: .85rem; }
 .linked-verifications { font-size: .84rem !important; line-height: 1.65 !important; }
-.verification-jump { display: inline; margin-left: 6px; color: var(--mf-blue-deep); }
+.verification-jump { display: flex; flex-direction: column; justify-content: center; min-height: 44px; padding-block: 8px; color: var(--mf-blue-deep); }
+.verification-jump small { display: block; color: var(--mf-ink-soft); font-size: .8rem; font-weight: 400; }
 .official-source { display: block; color: var(--mf-blue-deep); margin-top: 12px; padding-block: 6px; }
 .verification-list details:target { outline: 2px solid var(--mf-blue-deep); outline-offset: 6px; }
 .trip-tools { display: flex; flex-wrap: wrap; justify-content: center; gap: 14px; }

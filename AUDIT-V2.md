@@ -61,7 +61,10 @@ Une relecture indépendante a aussi détecté que les anciennes inspirations
 perdaient leur destination dans les redirections. Elles disposent maintenant
 de sections natives et d'ancres partageables, présentes dans le HTML initial.
 La revue finale corrige aussi la fermeture du menu mobile et la taille des
-métadonnées du carnet. L’aperçu social de l’accueil emploie une scène du Japon
+métadonnées du carnet. Un essai au toucher révèle ensuite que les liens de
+sources juxtaposés sont difficiles à activer sur 320 pixels. Chaque référence
+dispose maintenant de sa propre ligne avec son échéance et une cible de 44 pixels
+au minimum, sans répéter le même texte avant les liens. L’aperçu social de l’accueil emploie une scène du Japon
 à la place de l’ancienne carte qui annonçait encore un voyage privé sur mesure.
 
 ## Limites retenues
