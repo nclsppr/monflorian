@@ -1,0 +1,267 @@
+[
+  {
+    "path": "/guides/preparer-itineraire-voyage",
+    "title": "Préparer un itinéraire de voyage : étapes et budget",
+    "description": "Une méthode pour répartir tes nuits, vérifier les trajets, choisir tes priorités et construire un budget de voyage sans remplir chaque heure.",
+    "heading": "Préparer un itinéraire qui te laisse le temps de voyager",
+    "updatedDate": "2026-09-07",
+    "readTime": "5 min",
+    "category": "Méthode",
+    "intro": [
+      "Tu as une liste de lieux, quelques dates et déjà trop d'onglets ouverts. Commence par les nuits et les déplacements. Les visites viennent ensuite. Cette méthode te permet de repérer ce qui tient vraiment dans le voyage avant de réserver.",
+      "Le résultat attendu tient sur une page : où tu dors chaque soir, comment tu changes d'étape, ce que tu veux absolument faire et ce que tu peux retirer."
+    ],
+    "sections": [
+      {
+        "id": "jours-et-nuits",
+        "heading": "Compte tes journées sur place et tes nuits",
+        "paragraphs": [
+          {
+            "text": "Écris les dates et heures locales d'arrivée et de départ. Dix jours de congés ne donnent pas forcément dix journées sur place. Un vol de nuit, une arrivée tardive ou un retour matinal changent ce que tu peux prévoir."
+          },
+          {
+            "text": "Attribue ensuite un lieu à chaque nuit. Pour un séjour du lundi au mercredi de la semaine suivante, avec arrivée le lundi et départ le mercredi, tu as neuf nuits à répartir. Une nuit oubliée se transforme vite en changement d'hôtel ou en transfert ajouté au mauvais moment."
+          },
+          {
+            "text": "Garde le jour d'arrivée léger jusqu'à connaître tes horaires. Pour le départ, pars de l'heure à laquelle le transporteur te demande d'être présent, puis remonte jusqu'à ton hébergement."
+          }
+        ]
+      },
+      {
+        "id": "priorites",
+        "heading": "Choisis ce qui mérite une étape",
+        "paragraphs": [
+          {
+            "text": "Demande à chaque voyageur ce qu'il regretterait de manquer et ce qu'il préfère éviter. Un marché, deux jours sans voiture ou une longue randonnée donnent des critères plus utiles que l'envie de tout voir. Place ces priorités sur une carte."
+          },
+          {
+            "text": "Regroupe les lieux proches autour d'un même hébergement. Ajouter une ville implique de faire les bagages, quitter une chambre, rejoindre la suivante et retrouver ses repères. Retire une étape si tu la gardes seulement parce qu'elle est connue."
+          },
+          {
+            "text": "Les itinéraires d'un office de tourisme peuvent aider à repérer les regroupements possibles. JNTO présente ainsi ses parcours comme des points de départ à adapter à son voyage. Une proposition publiée ne remplace pas ton propre calendrier.",
+            "source": "jnto-itineraries"
+          }
+        ]
+      },
+      {
+        "id": "transferts",
+        "heading": "Calcule les transferts de porte à porte",
+        "paragraphs": [
+          {
+            "text": "Pour chaque changement de base, note le trajet entre l'hôtel et la gare, le transport principal, les correspondances et l'arrivée au prochain logement. Ajoute le temps nécessaire aux bagages et au repas. La durée affichée pour un train ne couvre qu'une partie de ta journée."
+          },
+          {
+            "text": "Consulte le transporteur pour la date envisagée. Si les horaires ne sont pas encore ouverts, marque le trajet comme provisoire et note quand le vérifier. Prévois une marge adaptée à la gare, à tes bagages et à ta mobilité. Il n'existe pas une durée de correspondance qui convient partout."
+          },
+          {
+            "text": "Une journée avec un long transfert peut se terminer par une promenade près de l'hôtel. Évite d'y accrocher une visite chère et non déplaçable avant d'avoir confirmé ton arrivée."
+          }
+        ]
+      },
+      {
+        "id": "budget",
+        "heading": "Construis un budget que tu peux corriger",
+        "paragraphs": [
+          {
+            "text": "Sépare les dépenses du groupe et celles de chaque personne. Une chambre se compte par nuit ; un billet se compte souvent par voyageur. Compare des offres pour tes dates et ta composition de groupe, puis relève ce qu'elles incluent."
+          }
+        ],
+        "bullets": [
+          "Transport : aller-retour, déplacements entre étapes, transports locaux et bagages éventuels.",
+          "Hébergement : nombre de nuits, type de chambre, repas inclus et frais affichés.",
+          "Sur place : repas, visites, activités et dépenses que tu choisis de garder facultatives.",
+          "Marge : une somme disponible pour modifier un trajet ou remplacer une activité."
+        ],
+        "after": [
+          {
+            "text": "Note la devise et la date de chaque montant. Distingue les dépenses réservées, les devis consultés et les postes encore inconnus. Si le total dépasse ton plafond, compare l'effet d'une étape en moins ou d'un hébergement différent avant de réduire toutes les journées."
+          }
+        ]
+      },
+      {
+        "id": "journees",
+        "heading": "Donne une priorité à chaque journée",
+        "paragraphs": [
+          {
+            "text": "Choisis une visite ou une activité qui donne sa forme à la journée. Place autour les pauses, le trajet et une option proche. Une seconde activité reste possible si elle tient sans course contre la montre."
+          },
+          {
+            "text": "Écris aussi ce que tu retires en cas de pluie ou de fatigue. Une alternative utile reste dans le même secteur et correspond à tes envies. Elle ne rajoute pas une traversée de la ville. Vérifie les jours de fermeture et les conditions de réservation sur le site du lieu."
+          }
+        ]
+      },
+      {
+        "id": "avant-reservation",
+        "heading": "Vérifie ce qui peut changer le plan",
+        "paragraphs": [
+          {
+            "text": "Avant un engagement, vérifie les informations officielles liées à ta destination et à ta situation. France Diplomatie réunit les rubriques de préparation du départ, dont les formalités, les moyens de paiement et les assurances. Pour une situation individuelle, consulte l'autorité ou le prestataire compétent.",
+            "source": "france-diplomatie"
+          },
+          {
+            "text": "Relis enfin le voyage dans l'ordre, du départ de chez toi au retour. Une réservation déplacée change parfois deux journées. Garde les confirmations, adresses et points encore à vérifier ensemble, avec une copie consultable pendant les trajets."
+          }
+        ]
+      }
+    ],
+    "sources": [
+      {
+        "id": "jnto-itineraries",
+        "label": "JNTO, itinéraires à adapter",
+        "url": "https://www.japan.travel/en/itineraries/",
+        "detail": "Exemples officiels pour comprendre la logique des étapes au Japon."
+      },
+      {
+        "id": "france-diplomatie",
+        "label": "France Diplomatie, préparer son départ",
+        "url": "https://www.diplomatie.gouv.fr/fr/informations-pratiques/preparer-son-depart",
+        "detail": "Points de départ officiels pour les vérifications avant un voyage à l'étranger."
+      }
+    ],
+    "relatedPath": "/guides/japon-10-jours-preparer-voyage"
+  },
+  {
+    "path": "/guides/japon-10-jours-preparer-voyage",
+    "title": "Japon en 10 jours : préparer Tokyo, Hakone et Kyoto",
+    "description": "Répartir neuf nuits entre Tokyo, Hakone et Kyoto, choisir les bons billets et adapter dix jours au Japon à ton aéroport de retour et à ton rythme.",
+    "heading": "Dix jours au Japon, avec le temps de faire des choix",
+    "updatedDate": "2026-09-07",
+    "readTime": "5 min",
+    "category": "Japon",
+    "intro": [
+      "Tokyo, Hakone et Kyoto forment le parcours de notre carnet d'exemple. Pour l'adapter, commence par vérifier une hypothèse décisive : tu arrives à Tokyo et tu repars du Kansai. Un retour depuis Tokyo demande de refaire la fin du voyage.",
+      "Voici une proposition de dix jours sur place et neuf nuits. Les horaires, ouvertures et disponibilités restent à vérifier pour tes dates. Ce guide explique les choix du parcours ; il ne constitue pas une réservation."
+    ],
+    "sections": [
+      {
+        "id": "repartir-nuits",
+        "heading": "Répartis neuf nuits entre trois bases",
+        "paragraphs": [
+          {
+            "text": "Notre exemple consacre quatre nuits à Tokyo, une à Hakone et quatre à Kyoto. Le jour 1 comprend l'arrivée ; le jour 10 comprend le départ. Les deux changements d'hôtel occupent une partie des jours 5 et 6. Ils ne s'ajoutent pas à deux journées de visites complètes."
+          }
+        ],
+        "table": {
+          "caption": "Répartition proposée pour une arrivée à Tokyo et un départ du Kansai",
+          "headings": [
+            "Étape",
+            "Nuits",
+            "Place dans le voyage"
+          ],
+          "rows": [
+            [
+              "Tokyo",
+              "4",
+              "Jours 1 à 4, puis départ le jour 5"
+            ],
+            [
+              "Hakone",
+              "1",
+              "Jour 5, puis départ le jour 6"
+            ],
+            [
+              "Kyoto",
+              "4",
+              "Jours 6 à 9, puis départ le jour 10"
+            ]
+          ]
+        },
+        "after": [
+          {
+            "text": "JNTO inclut aussi Tokyo, Hakone et Kyoto dans sa Golden Route de deux semaines, prolongée vers d'autres villes. Nous en retenons ici trois bases. Cette répartition sur dix jours est notre proposition éditoriale, pas une durée recommandée par JNTO.",
+            "source": "jnto-route"
+          }
+        ]
+      },
+      {
+        "id": "tokyo",
+        "heading": "À Tokyo, garde l'arrivée et une demi-journée souples",
+        "paragraphs": [
+          {
+            "text": "Le premier jour, vise l'installation et une sortie proche de l'hôtel. Une arrivée matinale peut laisser plus de place ; un passage tardif à l'aéroport peut réduire le programme au dîner. Ne réserve pas une visite à horaire fixe sur la seule base du jour d'arrivée."
+          },
+          {
+            "text": "Pour les jours suivants, organise tes envies par quartier et mesure les trajets depuis ton hébergement. Le carnet alterne promenades, jardins et moments libres. Si tu ajoutes un musée ou une activité réservée, remplace un moment existant. Garde du temps le jour 4 pour préparer le changement de base."
+          }
+        ]
+      },
+      {
+        "id": "hakone",
+        "heading": "Décide ce que tu attends de la nuit à Hakone",
+        "paragraphs": [
+          {
+            "text": "Si tu choisis un ryokan pour y passer du temps, son heure d'arrivée et celle d'un éventuel dîner organisent la journée. Demande ce que la formule comprend avant de comparer les chambres. Une succession de visites ne doit pas te faire manquer ce que tu as réservé."
+          },
+          {
+            "text": "Compare le Hakone Freepass avec les trajets que tu comptes faire. Odakyu distingue notamment les versions au départ de Shinjuku et d'Odawara. Le Romancecar exige un billet express séparé, même avec le pass. Vérifie donc le prix complet et la zone couverte, pas seulement le nom de l'offre.",
+            "source": "odakyu-pass"
+          },
+          {
+            "text": "Pour une seule nuit, prépare un petit sac. Si tu envisages de faire envoyer une grande valise à Kyoto, confirme directement le délai, l'acceptation par les deux hébergements et le coût. Garde avec toi ce dont tu as besoin jusqu'à sa réception."
+          }
+        ]
+      },
+      {
+        "id": "kyoto-et-trains",
+        "heading": "Protège le transfert vers Kyoto",
+        "paragraphs": [
+          {
+            "text": "Le jour 6, construis le trajet depuis ton hébergement de Hakone jusqu'à celui de Kyoto. Vérifie les correspondances et le train retenu. Une sortie au lac reste facultative : retire-la si elle réduit trop la marge avant le départ."
+          },
+          {
+            "text": "N'achète pas un Japan Rail Pass par automatisme. Compare le coût des trajets retenus avec le pass applicable, sa durée et ses conditions. Le site officiel précise que les trains Nozomi et Mizuho nécessitent un billet spécial acheté en complément d'un Japan Rail Pass valide avant l'embarquement.",
+            "source": "jr-pass"
+          },
+          {
+            "text": "À Kyoto, consacre les jours 7 à 9 aux secteurs qui t'intéressent, en vérifiant les ouvertures auprès de chaque lieu. Évite d'ajouter une excursion seulement parce qu'elle paraît proche sur une carte. Compte aussi le départ de l'hôtel, les correspondances et le retour."
+          }
+        ]
+      },
+      {
+        "id": "adapter-retour",
+        "heading": "Si ton vol repart de Tokyo, refais la fin",
+        "paragraphs": [
+          {
+            "text": "Le carnet suppose un départ depuis le Kansai. Avec un vol retour depuis Tokyo, il manque un trajet entre les régions et peut-être une dernière nuit à Tokyo. Compare cette organisation avec un départ du Kansai avant de fixer les hébergements."
+          },
+          {
+            "text": "Pour conserver neuf nuits, tu peux déplacer une nuit de Kyoto vers Tokyo et consacrer le jour 9 au retour. C'est une variante de préparation, à vérifier avec les horaires de ton vol et des trains. Elle raccourcit forcément le temps disponible à Kyoto."
+          }
+        ]
+      },
+      {
+        "id": "budget-et-verifications",
+        "heading": "Chiffre tes choix, puis vérifie-les",
+        "paragraphs": [
+          {
+            "text": "Le budget dépend notamment des dates, des vols, de la chambre, de la formule du ryokan et des billets retenus. Relève les montants pour ton groupe et distingue les repas inclus des dépenses à ajouter. Aucun total universel ne remplace cette comparaison."
+          },
+          {
+            "text": "Avant chaque réservation, vérifie les conditions de modification et les horaires d'arrivée. Avant le départ, recontrôle les transports, les prévisions météo et les ouvertures. Prévois une option courte près de l'hôtel pour les journées où la pluie ou la fatigue changent tes envies."
+          }
+        ]
+      }
+    ],
+    "sources": [
+      {
+        "id": "jnto-route",
+        "label": "JNTO, Golden Route de deux semaines",
+        "url": "https://www.japan.travel/en/gc/itineraries/long-plan/",
+        "detail": "Parcours officiel utilisé pour situer Tokyo, Hakone et Kyoto. Notre découpage en dix jours est distinct."
+      },
+      {
+        "id": "odakyu-pass",
+        "label": "Odakyu, périmètre du Hakone Freepass",
+        "url": "https://hakonetrip.odakyu-global.com/passes/hakone-freepass/",
+        "detail": "Versions du pass, transports couverts et billet express Romancecar séparé."
+      },
+      {
+        "id": "jr-pass",
+        "label": "Japan Rail Pass, trains et suppléments",
+        "url": "https://japanrailpass.net/en/about_jrp/vehicle/",
+        "detail": "Conditions d'utilisation par type de train, dont Nozomi et Mizuho."
+      }
+    ],
+    "relatedPath": "/guides/preparer-itineraire-voyage"
+  }
+]

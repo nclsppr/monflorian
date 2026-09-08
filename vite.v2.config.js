@@ -3,18 +3,12 @@ import { fileURLToPath } from "node:url";
 import react from "@vitejs/plugin-react";
 import { defineConfig } from "vite";
 
-import { validateTravelGuideDraft } from "./app/travel-guide.mjs";
-import japanGuideContext from "./contracts/examples/japan-10-days.context.v1.json" with { type: "json" };
-import japanGuideFixture from "./contracts/examples/japan-10-days.v1.json" with { type: "json" };
+import { publicJapanExample } from "./app/public-travel-guide.mjs";
 
 const projectRoot = fileURLToPath(new URL("./", import.meta.url));
 const publicGuideModuleId = "virtual:monflorian-japan-guide";
 const resolvedPublicGuideModuleId = `\0${publicGuideModuleId}`;
-const validatedJapanGuide = validateTravelGuideDraft(japanGuideFixture, japanGuideContext);
-const publicJapanGuide = Object.freeze({
-  ...validatedJapanGuide,
-  imageBriefs: validatedJapanGuide.imageBriefs.map(({ altText, id }) => ({ altText, id })),
-});
+const publicJapanGuide = publicJapanExample().guide;
 
 function publicTravelGuidePlugin() {
   return {

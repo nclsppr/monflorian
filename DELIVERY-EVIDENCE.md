@@ -3,6 +3,80 @@
 Chaque section nomme son environnement et ses limites. Les sections Atlas sont
 des archives historiques ; la section Cloudflare porte la migration courante.
 
+## Client iOS et API commune, candidat du 8 septembre 2026
+
+Cette tranche prépare l'application native dans le même dépôt que le site.
+L'ADR-0013, le guide `docs/native-ios.md` et les contrats de données décrivent
+la sélection facultative des photos dès la première étape et l'API commune.
+La construction et les contrôles locaux passent. Le résultat de la révision
+proposée et ses artefacts Xcode se trouvent dans les
+[contrôles de la PR #58](https://github.com/nclsppr/monflorian/pull/58/checks).
+
+### Contrôles acquis
+
+| Preuve | Résultat |
+| --- | --- |
+| Vérification du projet | `./scripts/verify.sh` réussi : 75 tests, Worker, cinq pages publiques, Docker Compose et documentation |
+| Construction iOS | Build simulateur réussi avec Xcode 26.6, signature ad hoc réussie ; aucune signature de distribution Apple prouvée |
+| API commune | Configuration et exemple public `/api/v1`, alias conservant les protections historiques |
+| Contrat photo | `./scripts/ios-photo-contract.sh` réussi : PNG de 1 435 780 octets, 1 024 × 1 024, accepté par `decodePhoto` du backend |
+| Métadonnées photo | Marqueur EXIF/GPS retiré ; données invalides et images trop petites refusées |
+| Notice | Paragraphe sur les photos facultatives dès le début contrôlé dans le navigateur local |
+
+Le contrôle photo emploie une fixture synthétique du dépôt. Il réencode
+localement le fichier puis appelle le validateur du backend sans envoyer
+l'image au service. Cette preuve ne couvre pas un upload ni une génération.
+
+### Exécution iOS analysée pendant le développement
+
+Ce tableau archive le run qui a validé le brouillon après relance et isolé
+le dernier cas de chargement du sélecteur Photos. Il ne décrit
+pas les résultats des révisions suivantes ; leurs preuves sont attachées
+à la PR ci-dessus, avec le SHA exécuté et le résultat Xcode.
+
+| Champ | Résultat observé |
+| --- | --- |
+| Run | [CI iOS 34172341124](https://github.com/nclsppr/monflorian/actions/runs/34172341124) |
+| SHA testé | `be0ee99cf6c127ff144947297328584035ef5896` |
+| Environnement | iPhone 17 Pro, iOS Simulator 26.5, build système `23F77` |
+| Tests unitaires | 13 réussis sur 13 |
+| Tests d'interface | 3 réussis sur 4 ; 1 échec, aucun test ignoré |
+| Résultat global | Échec, 16 tests réussis sur 17 |
+| Artefact relu | `build/ios/ci-final/Tests-20260908T001142Z.xcresult` |
+| Journal de construction | `build/ios/ci-final/build.log`, avec `BUILD SUCCEEDED` et étapes de signature |
+
+Les trois parcours UI réussis couvrent la lecture des guides sans réseau,
+le carnet avec sa checklist et le brouillon : sauvegarde, partage, reprise,
+suppression puis vérification de son absence après relance. Le seul échec
+concerne `testOptionalPhotoPickerCanBeCancelledBeforeSavingDraft` : le test
+attendait la barre `Photos` alors que le système affichait encore
+`PUPickerUnavailableView`, sa feuille de chargement avec un bouton `Annuler`.
+La suite traite désormais cet état et la photothèque chargée. Elle exige la
+fermeture de la feuille, le retour au formulaire et la sauvegarde sans photo.
+Seul le résultat d'exécution de la révision suivante valide ce correctif.
+
+Les captures extraites sous `build/ios/ci-final/screenshots/` ont été
+inspectées pour l'accueil, le jour 1, la checklist, un guide, la suppression
+et la relance. Le run précédent montrait la photothèque système chargée dans
+`build/ios/ci-second/picker.png` ; le dernier montre sa feuille d'attente dans
+`build/ios/ci-final/picker-failure.png`. L'accueil et la première étape du
+formulaire ont aussi été ouverts dans le simulateur local Mon Florian QA sous
+iOS 26.5, après une installation et un lancement réussis. Les captures et le
+résultat Xcode sont des artefacts de contrôle, pas les sources éditables de l'app.
+
+### Limites avant distribution
+
+Aucun appareil iOS physique, envoi TestFlight ou publication App Store n'est
+vérifié. La signature ad hoc du simulateur ne prouve ni inscription Apple,
+ni profil de distribution, ni archive signée pour l'App Store.
+
+`nativeOrdersEnabled` et `storeKitPurchasesEnabled` restent à `false`. Aucune
+commande, photo transmise, génération ou transaction réelle n'a lieu dans ce
+candidat. Une preuve StoreKit future devra couvrir la vérification serveur,
+la reprise sans double achat et la récupération du carnet. Les tests du
+simulateur ne couvrent pas ces fonctions. L'inscription Small Business et les
+accords partenaires ne sont pas réalisés par cette tranche.
+
 ## Accueil bureau et footer, publiés le 7 septembre 2026
 
 La [PR #56](https://github.com/nclsppr/monflorian/pull/56) supprime le doublon

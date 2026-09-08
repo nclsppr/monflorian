@@ -364,7 +364,8 @@ test("le formulaire public suit un seul parcours asynchrone", () => {
   assert.match(html, /id="turnstile-widget"/u);
   assert.doesNotMatch(html, /id="illustration-form"/u);
   assert.doesNotMatch(html, /id="trip-result"/u);
-  assert.match(app, /requestJson\("\/api\/trips"/u);
+  assert.match(app, /requestJson\(API_CONTRACT\.tripsPath/u);
+  assert.match(html, /src="\/app\.js[^"\s]*" type="module"/u);
   assert.match(app, /"Idempotency-Key": state\.idempotencyKey/u);
   assert.doesNotMatch(app, /\/api\/itineraries/u);
   assert.doesNotMatch(app, /\/api\/illustrations/u);

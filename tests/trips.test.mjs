@@ -111,7 +111,7 @@ test("la configuration R2 reste privee et les routes masquent les jetons", () =>
     ["10", "2"],
   );
   assert.match(worker, /return "\/voyages\/:token"/u);
-  assert.match(worker, /return "\/api\/trips\/:token\/media\/:position"/u);
+  assert.match(worker, /path: normalizedLogPath\(url\.pathname\)/u);
   assert.doesNotMatch(worker, /path:\s*url\.pathname/u);
   assert.match(page, /noindex, nofollow, noarchive/u);
   assert.match(page, /"Cache-Control": "no-store, max-age=0"/u);

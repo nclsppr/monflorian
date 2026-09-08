@@ -9,7 +9,12 @@
       "id": "project",
       "title": "Documentation du projet",
       "visibility": "internal",
-      "include": ["*.md", "docs/agents/**/*.md"]
+      "include": [
+        "*.md",
+        "docs/agents/**/*.md",
+        "docs/native-ios.md",
+        "ios/**/*.md"
+      ]
     },
     {
       "id": "decisions",

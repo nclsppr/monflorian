@@ -29,6 +29,19 @@ Les fichiers sous `docs/foundation/` proviennent exactement du commit ci-dessus 
 
 Les gates d'un profil s'appliquent seulement aux unités qui rencontrent son déclencheur.
 
+## Unité iOS native
+
+L'ADR-0013 ajoute un client SwiftUI au dépôt le 8 septembre 2026. Le pack
+Critique et les profils ci-dessus restent applicables à leurs unités actuelles.
+Le snapshot adopté ne possède pas de profil iOS ; aucun fichier vendorisé n'est
+modifié pour en inventer un. Le contrat local ajoute construction Xcode, tests
+natifs et inspection sur simulateur aux preuves du Worker. Signature,
+TestFlight et App Store doivent conserver leurs preuves distinctes.
+
+Le client ne reçoit aucun secret fournisseur. La génération et l'achat
+restent contrôlés côté serveur. L'ajout du client n'est pas une dérogation aux
+contrôles des données, aux revues de paiement ou aux règles de livraison.
+
 ## Dérogations et contrôles compensatoires
 
 Aucune dérogation locale n'est documentée au 2026-08-23.

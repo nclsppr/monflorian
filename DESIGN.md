@@ -184,9 +184,32 @@ contrôle d'accès privé simulé ni de mot de passe. L'impression utilise le
 navigateur et une présentation de lecture. Elle ne doit pas devenir une
 promesse de PDF généré par le service.
 
-Les futures photos réelles restent soumises au contrat distinct de consentement,
-de stockage R2 privé et de suppression. Elles ne sont demandées qu'après une
-première proposition utile et acceptée dans le futur parcours personnalisé.
+Les photos facultatives sont proposées dès la première étape du futur parcours
+personnalisé, selon l'ADR-0013. La personne peut continuer sans image et retirer
+sa sélection. Les copies restent locales jusqu'à une action d'envoi explicite,
+avec information sur le fournisseur et accord des personnes représentées.
+La préparation d'une commande ne vaut pas consentement au traitement.
+
+## Client iOS natif candidat
+
+L'app SwiftUI conserve l'encre, le bleu et les surfaces papier du produit, avec
+les visuels déjà référencés dans `ASSETS.md`. Les composants Apple structurent
+la navigation, les formulaires et le partage. L'interface suit Dynamic Type,
+VoiceOver et le mouvement réduit. Les commandes restent lisibles en mode sombre
+et avec un agrandissement du texte. Les effets système restent réservés aux
+contrôles auxquels ils servent.
+
+Le parcours distingue le carnet Japon public, le brouillon personnel et une
+future commande. Le formulaire propose les photos dès son ouverture ; il
+annonce qu'elles restent en mémoire et ne sont pas enregistrées avec le
+brouillon. Le récapitulatif explique que la génération et l'achat sont fermés.
+Il ne transforme pas le carnet Japon en résultat personnalisé.
+
+L'exemple embarqué reste lisible hors ligne. Les liens Booking demandent une
+connexion et ne promettent aucune disponibilité. L'enregistrement du brouillon
+est explicite ; la checklist annonce son enregistrement à chaque case modifiée.
+Le partage d'un exemple transmet seulement son lien public. Le texte du
+brouillon ne part que lors d'un export ou d'un partage demandé par la personne.
 
 ## Composants et accessibilité
 

@@ -30,6 +30,14 @@ npm run check:worker
 ./scripts/verify.sh
 ```
 
+## Application iOS candidate
+
+Le client SwiftUI pour iOS 18 partage le backend et le contrat de carnet avec
+le site. Il propose les photos facultatives dès la première étape, prépare un
+brouillon local et ouvre le carnet Japon hors ligne. L'envoi de photos et
+l'achat restent fermés. Le [guide iOS](docs/native-ios.md) décrit les sources,
+la construction et les étapes précédant une distribution Apple.
+
 ## Carte documentaire
 
 - [`PROJECT.md`](PROJECT.md) : contrat produit, architecture et commandes.

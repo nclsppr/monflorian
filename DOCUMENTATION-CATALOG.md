@@ -8,8 +8,8 @@ Moteur déclaré : `nimbus`.
 
 | Collection | Visibilité | Fichiers |
 | --- | --- | ---: |
-| Documentation du projet | `internal` | 20 |
-| Décisions | `internal` | 12 |
+| Documentation du projet | `internal` | 21 |
+| Décisions | `internal` | 13 |
 | Socle vendorisé | `reference` | 10 |
 | Maintenance Nimbus | `reference` | 1 |
 
@@ -35,6 +35,7 @@ Moteur déclaré : `nimbus`.
 - [docs/agents/domain.md](docs/agents/domain.md)
 - [docs/agents/issue-tracker.md](docs/agents/issue-tracker.md)
 - [docs/agents/triage-labels.md](docs/agents/triage-labels.md)
+- [docs/native-ios.md](docs/native-ios.md)
 
 ## Décisions
 
@@ -50,6 +51,7 @@ Moteur déclaré : `nimbus`.
 - [docs/decisions/adr-0010-parcours-v2-astryx.md](docs/decisions/adr-0010-parcours-v2-astryx.md)
 - [docs/decisions/adr-0011-contrat-guide-voyage-et-plan-images.md](docs/decisions/adr-0011-contrat-guide-voyage-et-plan-images.md)
 - [docs/decisions/adr-0012-v2-site-principal.md](docs/decisions/adr-0012-v2-site-principal.md)
+- [docs/decisions/adr-0013-ios-natif-et-api-commune.md](docs/decisions/adr-0013-ios-natif-et-api-commune.md)
 
 ## Socle vendorisé
 

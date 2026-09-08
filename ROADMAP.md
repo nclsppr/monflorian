@@ -6,13 +6,18 @@ Source canonique de l'ordre de livraison.
 
 Mon Florian prépare un voyage, montre les voyageurs dans les destinations sous
 forme d'images éditoriales cohérentes, conserve une page privée et l'envoie par
-courriel. Le MVP est gratuit. Booking affilié et Stripe viennent après la preuve
-de ce parcours.
+courriel. Le site et l'app SwiftUI partagent le même backend. Les photos
+facultatives sont proposées dès la première étape de commande, conformément à
+l'ADR-0013. Les pilotes sont gratuits ; l'offre cible est un achat ponctuel
+d'environ 30 euros par voyage pour le groupe. Booking affilié, Amazon et les
+paiements réels viennent après la preuve du parcours et leurs accords propres.
 
 ## Principes de séquencement
 
-- Un seul runtime et un seul déploiement Cloudflare.
-- Aucune photo réelle avant R2 privé, rétention et suppression prouvées.
+- Un seul backend Cloudflare et un contrat `/api/v1` commun aux clients web et iOS.
+- Une distribution iOS distincte, avec preuves de build, simulateur, signature et publication.
+- Photos facultatives dès la première étape, gardées localement avant envoi consenti.
+- Aucun envoi de photo réelle avant R2 privé, rétention et suppression prouvées.
 - Aucun appel payant avant quotas persistants, Turnstile et budget.
 - Aucun retry aveugle d'une étape OpenAI au résultat incertain.
 - Aucun déplacement DNS avant preuve sur `workers.dev` et décision explicite sur
@@ -30,13 +35,16 @@ de ce parcours.
 | 3 | F03 | Runtime Cloudflare fermé | done | Worker, D1, Workflow, PR, CI et preuve publique |
 | 3b | F03-V2 | Parcours éditorial V2 | done | `/v2`, carnet Japon, partage simulé et preuve publique |
 | 3c | F03-SITE | V2 comme site principal | done | livré le 7 septembre 2026 : cinq pages pré-rendues, outils locaux, PR #54 fusionnée, contrôles et preuve publique |
+| 3d | F03-IOS | Client SwiftUI et API commune | in_progress | app native et contrat commun validés localement et en CI, distribution Apple séparée |
 | 4 | F04 | Stockage privé et cycle de vie | in_progress | R2 UE, chiffrement, jetons et purge prouvés |
 | 5 | F05 | Génération synthétique asynchrone | in_progress | texte, images, quotas, reprise et coûts observés |
 | 6 | F06 | Page privée et courriel | in_progress | rendu, suppression, notification et notice validés |
 | 7 | F07 | Domaine Cloudflare | done | web, DNS d'envoi, apex, `www`, TLS et release vérifiés |
 | 8 | F08 | MVP gratuit limité | planned | Turnstile, budget et premier utilisateur informé |
 | 9 | F09 | Attribution Booking.com | blocked | partenariat et liens approuvés |
-| 10 | F10 | Paiement Stripe | planned | Checkout, webhook signé, fiscalité et remboursement décidés |
+| 9b | F09-AMAZON | Conseils équipement et affiliation | blocked | rubrique gratuite, app approuvée et liens autorisés |
+| 10 | F10-IOS | Achat ponctuel StoreKit 2 | planned | transaction vérifiée côté serveur, reprise, remboursements et sandbox complet |
+| 10b | F10 | Paiement Stripe web | planned | Checkout, webhook signé, fiscalité et remboursement décidés |
 | 11 | F11 | Voyage vivant | planned | parcours pendant et après le séjour testé |
 
 États autorisés : `planned`, `in_progress`, `blocked`, `done`, `cancelled`.
@@ -87,6 +95,25 @@ fermée avec `503 TRIP_CREATION_UNAVAILABLE`. `STATUS.md` et
 `DELIVERY-EVIDENCE.md` conservent les contrôles détaillés, la version Cloudflare
 active et les limites du parcours.
 
+## F03-IOS, client SwiftUI et API commune
+
+L'ADR-0013 autorise un client iOS 18 et versions suivantes dans le même dépôt.
+Le candidat rend le carnet Japon en SwiftUI, prépare un brouillon local et
+propose les photos facultatives dès la première étape. Leur sélection reste en
+mémoire et n'entre pas dans le brouillon enregistré.
+
+- Versionner `/api/v1` sans supprimer les routes web historiques.
+- Distribuer la projection publique du même `TravelGuideV1` aux deux clients.
+- Garder l'exemple accessible hors ligne et les erreurs réseau explicites.
+- Construire et tester l'app, puis contrôler les écrans sur simulateur.
+- Garder `nativeOrdersEnabled` et `storeKitPurchasesEnabled` à `false` jusqu'à
+  l'intégration complète de la commande et du paiement serveur.
+- Vérifier que le client ne transmet aucune photo ou demande et ne contourne
+  pas Turnstile.
+
+Cette phase prépare le produit natif. Elle ne termine pas F04, F05 ou F06 et
+ne constitue pas une distribution TestFlight ou App Store.
+
 ## F04, stockage privé et cycle de vie
 
 Le bucket privé UE, ses règles de cycle de vie, les secrets de chiffrement et
@@ -100,7 +127,8 @@ purge. La phase reste ouverte jusqu'à une preuve synthétique après déploieme
 - Chiffrer brief, résultat et courriel dans D1 avec un Worker Secret.
 - Hacher le jeton de consultation et ne jamais le journaliser.
 - Supprimer les sources après génération, au plus tard sous 24 heures.
-- Expirer le voyage sous 30 jours et offrir une suppression anticipée.
+- Expirer le voyage sous 30 jours dans le pilote et offrir une suppression anticipée.
+- Décider et migrer une conservation couvrant le séjour avant de vendre un carnet payé.
 - Prouver la purge avec des objets et données synthétiques.
 
 ## F05, génération synthétique asynchrone
@@ -176,6 +204,31 @@ les destinataires, les durées et le retrait anticipé. Aucun courriel n'a encor
 Le mode `external` reste la valeur par défaut. `cj-static` exige un partenariat
 accepté, des liens approuvés, une liste d'hôtes et la mention commerciale près de
 chaque lien. Aucune affiliation n'est déduite d'une URL trouvée en ligne.
+
+## F09-AMAZON, conseils équipement
+
+La rubrique d'équipement doit être accessible gratuitement. Les liens affiliés
+attendent l'approbation de l'app par Amazon et les conditions du programme
+concerné. Le carnet ne présente aucune recommandation comme nécessaire sans
+expliquer son usage. L'affiliation ne détermine pas le classement des conseils.
+
+## F10-IOS, achat ponctuel StoreKit 2
+
+La cible est un achat par voyage pour tout le groupe. Le backend associe une
+transaction vérifiée à une commande et n'autorise qu'une seule consommation du
+droit. Il doit reprendre une génération échouée sans nouvel achat et traiter
+remboursements, interruption de l'app et récupération sur un autre appareil.
+Le prix affiché vient de StoreKit, avec sa devise et sa localisation.
+
+- Configurer le produit App Store Connect et la signature avec le titulaire.
+- Définir identité, récupération du carnet et conservation après paiement.
+- Vérifier la transaction côté serveur et son environnement.
+- Prouver les cas de reprise, doublon, achat en attente et remboursement.
+- Mesurer coût complet et marge avant activation.
+- Terminer un parcours sandbox puis décider l'ouverture réelle.
+
+L'inscription Small Business reste une démarche ultérieure du titulaire. Elle
+ne remplace aucun contrôle de paiement ou de génération.
 
 ## F10, paiement Stripe
 

@@ -9,7 +9,7 @@
 | Classe | Critique |
 | Surface Cloudflare | Web actif sur l'apex, `www` et `workers.dev`, envoi transactionnel fermé |
 | Domaine public | `monflorian.com` sur Cloudflare Workers |
-| Décisions courantes | [ADR-0007](docs/decisions/adr-0007-runtime-et-production-cloudflare.md), [ADR-0008](docs/decisions/adr-0008-domaine-web-only-cloudflare.md), [ADR-0009](docs/decisions/adr-0009-courriel-transactionnel-cloudflare.md), [ADR-0011](docs/decisions/adr-0011-contrat-guide-voyage-et-plan-images.md) et [ADR-0012](docs/decisions/adr-0012-v2-site-principal.md) |
+| Décisions courantes | [ADR-0007](docs/decisions/adr-0007-runtime-et-production-cloudflare.md), [ADR-0008](docs/decisions/adr-0008-domaine-web-only-cloudflare.md), [ADR-0009](docs/decisions/adr-0009-courriel-transactionnel-cloudflare.md), [ADR-0011](docs/decisions/adr-0011-contrat-guide-voyage-et-plan-images.md), [ADR-0012](docs/decisions/adr-0012-v2-site-principal.md) et [ADR-0013](docs/decisions/adr-0013-ios-natif-et-api-commune.md) |
 | Licence | Aucune licence de réutilisation accordée |
 
 ## Problème
@@ -28,12 +28,12 @@ uniquement du contenu éditorial et des personnages fictifs.
 
 ### MVP personnalisé cible
 
-Dans le futur parcours personnalisé, une personne décrit son envie, ajoute des
-dates, le nombre de voyageurs et son adresse de courriel. Elle reçoit une
-première proposition structurée. Si elle la
-retient, elle peut ensuite ajouter, avec consentement, une à quatre photos pour
-personnaliser les illustrations avant de recevoir le lien privé final, qui
-contient :
+Dans le futur parcours personnalisé commun au site et à l'app iOS, une personne
+décrit son envie, ajoute des dates et le nombre de voyageurs. Dès la première
+étape, elle peut sélectionner une à quatre photos pour les illustrations ou
+continuer sans photo. La sélection reste locale jusqu'à l'action d'envoi et au
+consentement qui explique le traitement par OpenAI. Le récapitulatif précède
+la commande. Le carnet final contient :
 
 - un itinéraire structuré et signalé comme projection ;
 - des points à vérifier avant réservation ;
@@ -41,8 +41,13 @@ contient :
 - des images éditoriales générées, signalées comme projections synthétiques ;
 - une échéance et une action de suppression anticipée.
 
-Le premier MVP est gratuit. L'offre à 50 €, le paiement Stripe, le PDF, le compte
-client et le Voyage vivant restent des hypothèses non livrées.
+Les premiers pilotes restent gratuits. L'offre cible approuvée le 8 septembre
+2026 est un achat ponctuel d'environ 30 euros par voyage, pour le groupe, avec
+StoreKit 2 sur iOS. Le prix réel viendra du produit Apple localisé. Paiement,
+reprise d'un carnet payé sur un autre appareil et conservation couvrant le
+séjour restent à prouver avant vente. L'ancienne offre à 50 euros est remplacée
+par cette direction. Stripe pour le web, le PDF produit par le service, le
+compte client et le Voyage vivant restent non livrés.
 
 ## Périmètre courant
 
@@ -99,6 +104,23 @@ changent. La création personnalisée, les photos, le courriel et les paiements
 restent fermés. La preuve de publication appartient à `STATUS.md` et
 `DELIVERY-EVIDENCE.md`.
 
+### Client iOS et API commune candidats du 8 septembre 2026
+
+L'ADR-0013 autorise une app SwiftUI iOS 18 et versions suivantes dans le même
+dépôt. Le candidat prépare un brouillon local, propose les photos facultatives
+dès la première étape et rend le carnet Japon natif hors ligne. Les photos
+réencodées restent en mémoire et sont exclues du brouillon enregistré.
+
+Le préfixe `/api/v1` expose la configuration, l'exemple public et les alias des
+routes de voyage existantes. Le Worker et les contrôles coûteux restent les
+mêmes. La projection de lecture `TravelGuideV1` sert aux deux clients. Les
+droits de création native et StoreKit restent fermés. L'app ne transmet aucun
+brief ni photo et ne lance aucun achat. Les commandes et les limites du
+candidat figurent dans [le guide iOS](docs/native-ios.md).
+
+Le code local, les contrôles, le simulateur et une future distribution sont
+consignés séparément dans `STATUS.md` et `DELIVERY-EVIDENCE.md`.
+
 ### Contrat dynamique candidat non intégré
 
 - Contrat dynamique `TravelGuideV1`, validation métier et compilation contrôlée
@@ -131,6 +153,8 @@ restent fermés. La preuve de publication appartient à `STATUS.md` et
 | Composant | Rôle | Source | État |
 | --- | --- | --- | --- |
 | Worker | API, sécurité, rendu de la page privée et accès aux bindings | `src/worker.ts` | déployé, génération fermée |
+| Client iOS | SwiftUI, préparation locale, carnet et StoreKit 2 fermé | `ios/`, `scripts/ios-generate.py` | candidat local, aucune distribution Apple |
+| API commune versionnée | Configuration, exemple public et alias compatibles | `/api/v1`, `docs/api/openapi.json` | candidat local, création native fermée |
 | Site principal | HTML pré-rendu et hydratation React | `app/v2/src/main.jsx`, `Planner.jsx`, `Guides.jsx`, `scripts/prerender-site.mjs` | publié le 7 septembre 2026 |
 | Static Assets | HTML dérivé, ressources publiques et visuels canoniques | `dist/` depuis `app/v2/`, `app/public/` et `assets/brand/` | distribution Cloudflare active, cinq pages pré-rendues publiées |
 | Coeur métier | Validation des briefs, photos, résultats et liens | `app/core.mjs` | réutilisé, tests locaux |
@@ -142,7 +166,8 @@ restent fermés. La preuve de publication appartient à `STATUS.md` et
 | Workflows | Traitement durable et notification | `src/workflows/` | texte et image câblés, garde-fous fermés |
 | Turnstile | Réduction de l'abus gratuit | clé publique et Worker Secret | widget géré configuré, parcours fermé |
 | Courriel | Envoi du lien privé | binding Cloudflare `EMAIL` | domaine actif, code câblé, drapeau fermé |
-| Stripe | Paiement ponctuel futur | Checkout Sessions et webhook | hors tranche |
+| StoreKit 2 | Achat ponctuel iOS futur et droit serveur | client SwiftUI puis validation serveur | client candidat, achat et validation serveur fermés |
+| Stripe | Paiement ponctuel web futur | Checkout Sessions et webhook | hors tranche |
 | Documentation Nimbus | Rendu des contrats | `docs-nimbus/` | local et CI |
 
 Pages, KV, Queues, Durable Objects, Vectorize, Workers AI et Containers ne sont
@@ -176,6 +201,11 @@ navigateur
 navigateur
   -> Booking.com au clic explicite
 ```
+
+Le client iOS rejoint le même Worker par `/api/v1`. Dans le candidat, il lit
+seulement configuration et exemple public. Son futur achat doit être associé
+à une commande vérifiée côté serveur. Il ne contourne pas les protections
+Turnstile du parcours web.
 
 Le Workflow reçoit des identifiants et des clés R2, pas les photos dans ses
 paramètres. Le Worker rend la page depuis un template commun et des données
@@ -218,6 +248,11 @@ partie de cette chaîne de livraison.
 | Construire les assets | `npm run build:assets` | `dist/` dérivé des sources canoniques |
 | Construire le site principal | `npm run build:v2` | bundle navigateur, rendu serveur de build et cinq pages HTML |
 | Vérifier le Worker | `npm run check:worker` | types générés, TypeScript et dry-run Wrangler valides |
+| Régénérer les clients API | `node scripts/generate-api-clients.mjs` | chemins JavaScript et configuration Swift alignés sur OpenAPI |
+| Préparer le projet iOS | `python3 scripts/ios-generate.py` | projet et ressources dérivés des sources canoniques |
+| Construire iOS | `./scripts/ios-build.sh` | build simulateur sans publication |
+| Tester iOS | `./scripts/ios-test.sh` | tests et résultat Xcode local |
+| Vérifier les photos iOS | `./scripts/ios-photo-contract.sh` | PNG réencodé admis par le validateur backend, sans envoi |
 | Vérifier le projet | `./scripts/verify.sh` | documentation, tests, Worker, Compose et Nimbus valides |
 | Déployer | `npm run deploy` | nouvelle version Worker sur Cloudflare |
 | Lister les migrations | `npx wrangler d1 migrations list monflorian-production --remote` | état distant sans contenu utilisateur |
@@ -234,7 +269,11 @@ partie de cette chaîne de livraison.
 - Le jeton de page possède 256 bits et seul son SHA-256 est indexé dans D1.
 - Le brief, le résultat et l'adresse de courriel sont chiffrés avant persistance.
 - Les photos d'entrée sont supprimées après génération et au plus tard sous 24
-  heures ; le voyage expire sous 30 jours dans le MVP.
+  heures ; le voyage expire sous 30 jours dans le MVP. Une décision et une
+  migration du cycle de vie doivent précéder la vente d'un carnet conservé plus
+  longtemps.
+- Le brouillon iOS enregistré exclut les photos. La sélection locale en mémoire
+  ne déclenche aucun envoi au serveur ou à OpenAI.
 - Les quotas global et client sont débités dans une seule transaction D1 avant
   le démarrage du Workflow et leurs sujets sont pseudonymisés par HMAC.
 - R2 reste privé. Aucune URL `r2.dev` ni clé d'objet prévisible n'est publiée.
