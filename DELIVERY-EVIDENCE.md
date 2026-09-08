@@ -8,8 +8,9 @@ des archives historiques ; la section Cloudflare porte la migration courante.
 Cette tranche prépare l'application native dans le même dépôt que le site.
 L'ADR-0013, le guide `docs/native-ios.md` et les contrats de données décrivent
 la sélection facultative des photos dès la première étape et l'API commune.
-La construction et les contrôles locaux passent. La dernière suite iOS
-observée reste en échec sur deux parcours d'interface.
+La construction et les contrôles locaux passent. Le résultat de la révision
+proposée et ses artefacts Xcode se trouvent dans les
+[contrôles de la PR #58](https://github.com/nclsppr/monflorian/pull/58/checks).
 
 ### Contrôles acquis
 
@@ -26,10 +27,12 @@ Le contrôle photo emploie une fixture synthétique du dépôt. Il réencode
 localement le fichier puis appelle le validateur du backend sans envoyer
 l'image au service. Cette preuve ne couvre pas un upload ni une génération.
 
-### Dernière validation iOS observée
+### Exécution iOS analysée pendant le développement
 
-Ce tableau désigne le dernier run dont le résultat et les artefacts ont été
-relus. Une correction de code ne change pas son statut avant un nouveau run.
+Ce tableau archive le run qui a confirmé les corrections du carnet et mis
+en évidence deux problèmes dans les contrôles du formulaire. Il ne décrit
+pas les résultats des révisions suivantes ; leurs preuves sont attachées
+à la PR ci-dessus, avec le SHA exécuté et le résultat Xcode.
 
 | Champ | Résultat observé |
 | --- | --- |
@@ -47,14 +50,19 @@ l'ouverture du carnet, d'une journée et de la checklist. Les échecs concernent
 `testDraftCanBeSavedRestoredExportedAndDeletedWithoutPayment`, à l'assertion de
 suppression du brouillon, et
 `testOptionalPhotoPickerCanBeCancelledBeforeSavingDraft`, lors du contrôle de
-l'annulation du sélecteur de photos. Leurs corrections sont en cours ; aucun
-succès de ces deux parcours n'est encore prouvé.
+l'annulation du sélecteur de photos. La suite corrigée attend désormais la
+disparition des actions après suppression, contrôle le message de succès et
+revérifie l'absence de copie après relance. Elle vise le bouton `Cancel` dans
+la barre `Photos` du sélecteur système. Ces changements renforcent les
+assertions ; seul le résultat d'exécution de la révision suivante les valide.
 
 Les captures extraites sous `build/ios/ci-second/screenshots/` ont été
 inspectées pour l'accueil, le jour 1, la checklist et un guide. La capture
 `build/ios/ci-second/picker.png` montre le sélecteur système. Cette inspection
 confirme les écrans observés, sans valider à elle seule les deux parcours qui
-échouent. Les captures et le résultat Xcode sont des artefacts de contrôle,
+échouaient dans ce run. L'accueil et la première étape du formulaire ont aussi
+été ouverts dans le simulateur local Mon Florian QA sous iOS 26.5, après une
+installation et un lancement réussis. Les captures et le résultat Xcode sont des artefacts de contrôle,
 pas les sources éditables de l'app.
 
 ### Limites avant distribution
