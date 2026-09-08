@@ -20,6 +20,54 @@ final class MonFlorianUITests: XCTestCase {
             app.swipeUp()
         }
     }
+    private func attachPhotoPickerDiagnostics(service: XCUIApplication) {
+        for (name, scope) in [("Mon Florian", app!), ("PhotosUIService", service)] {
+            let attachment = XCTAttachment(string: "State: \(scope.state.rawValue)\n\(scope.debugDescription)")
+            attachment.name = "PhotosPicker · \(name) · hiérarchie"
+            attachment.lifetime = .keepAlways
+            add(attachment)
+        }
+        screenshot("PhotosPicker · état à l’échec")
+    }
+    private func photoPickerBars(in scope: XCUIApplication) -> [XCUIElement] {
+        guard scope.state != .notRunning else { return [] }
+        return scope.descendants(matching: .navigationBar).allElementsBoundByAccessibilityElement
+            .filter { $0.identifier == "Photos" || $0.identifier == "PUPickerUnavailableView" }
+    }
+    private func waitForPhotoPickerCancel(service: XCUIApplication) async throws -> (bar: XCUIElement, cancel: XCUIElement)? {
+        let clock = ContinuousClock()
+        let deadline = clock.now.advanced(by: .seconds(30))
+        repeat {
+            for scope in [app!, service] where scope.state != .notRunning {
+                // Both states are present in actual iOS test attachments: the
+                // loaded Photos service and its cancellable loading sheet.
+                let bars = photoPickerBars(in: scope)
+                let matches = bars.flatMap { bar in
+                    bar.descendants(matching: .button).allElementsBoundByAccessibilityElement
+                        .filter { $0.identifier == "Cancel" || $0.label == "Cancel" || $0.label == "Annuler" }
+                        .map { (bar: bar, cancel: $0) }
+                }
+                if matches.count == 1, let match = matches.first, match.cancel.isHittable { return match }
+                if clock.now >= deadline { return nil }
+            }
+            if clock.now >= deadline { return nil }
+            try await Task.sleep(for: .milliseconds(500))
+        } while clock.now < deadline
+        return nil
+    }
+    private func waitForPhotoPickerDismissal(service: XCUIApplication, picker: XCUIElement) async throws -> Bool {
+        let clock = ContinuousClock()
+        let deadline = clock.now.advanced(by: .seconds(10))
+        repeat {
+            // A system process can retain an offscreen view after dismissal.
+            let hasPickerBar = [app!, service].contains { scope in
+                photoPickerBars(in: scope).contains { $0.isHittable }
+            }
+            if !hasPickerBar && picker.exists && picker.isHittable { return true }
+            try await Task.sleep(for: .milliseconds(250))
+        } while clock.now < deadline
+        return false
+    }
     func testOfflineCarnetDayAndChecklist() throws {
         XCTAssertTrue(app.buttons["open-example"].waitForExistence(timeout: 10))
         screenshot("Accueil natif")
@@ -76,22 +124,26 @@ final class MonFlorianUITests: XCTestCase {
         XCTAssertFalse(app.buttons["delete-draft"].exists)
         screenshot("Suppression conservée après relance")
     }
-    func testOptionalPhotoPickerCanBeCancelledBeforeSavingDraft() {
+    func testOptionalPhotoPickerCanBeCancelledBeforeSavingDraft() async throws {
         app.tabBars.buttons["Mon voyage"].tap()
         let picker = app.buttons["choose-photos"]
         reveal(picker); XCTAssertTrue(picker.isHittable); picker.tap()
-        // The system picker is hosted by a remote Photos process. Resolve its
-        // navigation bar explicitly instead of an optimized app-wide firstMatch.
-        // "Cancel" is the accessibility identifier, including in localized UI.
-        let photoNavigation = app.navigationBars["Photos"]
-        let cancel = photoNavigation.buttons["Cancel"]
-        XCTAssertTrue(cancel.waitForExistence(timeout: 10))
-        XCTAssertTrue(cancel.isHittable)
-        screenshot("Sélecteur Photos natif facultatif")
-        cancel.tap()
-        XCTAssertTrue(photoNavigation.waitForNonExistence(timeout: 5))
-        XCTAssertTrue(picker.waitForExistence(timeout: 5))
-        XCTAssertTrue(picker.isHittable)
+        // This proxy only observes the system service; the app opens the picker.
+        // Bundle identifier verified in the Apple iOS 26.5 runtime's Info.plist.
+        let service = XCUIApplication(bundleIdentifier: "com.apple.Photos.PhotosUIService")
+        screenshot("Sélecteur Photos · ouverture")
+        guard let controls = try await waitForPhotoPickerCancel(service: service) else {
+            attachPhotoPickerDiagnostics(service: service)
+            XCTFail("Le sélecteur Photos doit présenter un unique bouton Cancel ou Annuler interactif sous 30 secondes.")
+            return
+        }
+        // Tap immediately: the loading sheet can become the Photos service.
+        controls.cancel.tap()
+        guard try await waitForPhotoPickerDismissal(service: service, picker: picker) else {
+            attachPhotoPickerDiagnostics(service: service)
+            XCTFail("Annuler doit fermer le sélecteur système et rendre le formulaire interactif.")
+            return
+        }
         XCTAssertFalse(app.buttons["remove-photos"].exists)
         let next = app.buttons["planner-next"]; reveal(next); next.tap()
         let review = app.buttons["planner-review"]; reveal(review); review.tap()

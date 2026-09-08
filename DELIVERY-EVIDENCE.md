@@ -29,41 +29,40 @@ l'image au service. Cette preuve ne couvre pas un upload ni une génération.
 
 ### Exécution iOS analysée pendant le développement
 
-Ce tableau archive le run qui a confirmé les corrections du carnet et mis
-en évidence deux problèmes dans les contrôles du formulaire. Il ne décrit
+Ce tableau archive le run qui a validé le brouillon après relance et isolé
+le dernier cas de chargement du sélecteur Photos. Il ne décrit
 pas les résultats des révisions suivantes ; leurs preuves sont attachées
 à la PR ci-dessus, avec le SHA exécuté et le résultat Xcode.
 
 | Champ | Résultat observé |
 | --- | --- |
-| Run | [CI iOS 34171199078](https://github.com/nclsppr/monflorian/actions/runs/34171199078) |
-| SHA testé | `70d43adeb74dfdcb2f5ccfddbe85c131115e6343` |
+| Run | [CI iOS 34172341124](https://github.com/nclsppr/monflorian/actions/runs/34172341124) |
+| SHA testé | `be0ee99cf6c127ff144947297328584035ef5896` |
 | Environnement | iPhone 17 Pro, iOS Simulator 26.5, build système `23F77` |
 | Tests unitaires | 13 réussis sur 13 |
-| Tests d'interface | 2 réussis sur 4 ; 2 échecs, aucun test ignoré |
-| Résultat global | Échec, 15 tests réussis sur 17 |
-| Artefact relu | `build/ios/ci-second/Tests-20260907T234902Z.xcresult` |
-| Journal de construction | `build/ios/ci-second/build.log`, avec `BUILD SUCCEEDED` et étapes de signature |
+| Tests d'interface | 3 réussis sur 4 ; 1 échec, aucun test ignoré |
+| Résultat global | Échec, 16 tests réussis sur 17 |
+| Artefact relu | `build/ios/ci-final/Tests-20260908T001142Z.xcresult` |
+| Journal de construction | `build/ios/ci-final/build.log`, avec `BUILD SUCCEEDED` et étapes de signature |
 
-Les deux parcours UI réussis couvrent la lecture des guides sans réseau et
-l'ouverture du carnet, d'une journée et de la checklist. Les échecs concernent
-`testDraftCanBeSavedRestoredExportedAndDeletedWithoutPayment`, à l'assertion de
-suppression du brouillon, et
-`testOptionalPhotoPickerCanBeCancelledBeforeSavingDraft`, lors du contrôle de
-l'annulation du sélecteur de photos. La suite corrigée attend désormais la
-disparition des actions après suppression, contrôle le message de succès et
-revérifie l'absence de copie après relance. Elle vise le bouton `Cancel` dans
-la barre `Photos` du sélecteur système. Ces changements renforcent les
-assertions ; seul le résultat d'exécution de la révision suivante les valide.
+Les trois parcours UI réussis couvrent la lecture des guides sans réseau,
+le carnet avec sa checklist et le brouillon : sauvegarde, partage, reprise,
+suppression puis vérification de son absence après relance. Le seul échec
+concerne `testOptionalPhotoPickerCanBeCancelledBeforeSavingDraft` : le test
+attendait la barre `Photos` alors que le système affichait encore
+`PUPickerUnavailableView`, sa feuille de chargement avec un bouton `Annuler`.
+La suite traite désormais cet état et la photothèque chargée. Elle exige la
+fermeture de la feuille, le retour au formulaire et la sauvegarde sans photo.
+Seul le résultat d'exécution de la révision suivante valide ce correctif.
 
-Les captures extraites sous `build/ios/ci-second/screenshots/` ont été
-inspectées pour l'accueil, le jour 1, la checklist et un guide. La capture
-`build/ios/ci-second/picker.png` montre le sélecteur système. Cette inspection
-confirme les écrans observés, sans valider à elle seule les deux parcours qui
-échouaient dans ce run. L'accueil et la première étape du formulaire ont aussi
-été ouverts dans le simulateur local Mon Florian QA sous iOS 26.5, après une
-installation et un lancement réussis. Les captures et le résultat Xcode sont des artefacts de contrôle,
-pas les sources éditables de l'app.
+Les captures extraites sous `build/ios/ci-final/screenshots/` ont été
+inspectées pour l'accueil, le jour 1, la checklist, un guide, la suppression
+et la relance. Le run précédent montrait la photothèque système chargée dans
+`build/ios/ci-second/picker.png` ; le dernier montre sa feuille d'attente dans
+`build/ios/ci-final/picker-failure.png`. L'accueil et la première étape du
+formulaire ont aussi été ouverts dans le simulateur local Mon Florian QA sous
+iOS 26.5, après une installation et un lancement réussis. Les captures et le
+résultat Xcode sont des artefacts de contrôle, pas les sources éditables de l'app.
 
 ### Limites avant distribution
 
