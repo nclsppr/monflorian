@@ -14,7 +14,7 @@ même `TravelGuideV1`, sans champs de contrôle d'image. Les anciennes routes we
 restent compatibles et conservent leurs protections.
 
 La création native et StoreKit restent fermés. Aucun achat, envoi de photo,
-appel fournisseur, inscription Small Business, signature ou publication Apple
+appel fournisseur, inscription Small Business, signature de distribution ou publication Apple
 n'est réalisé par cette préparation. La génération du runtime public conserve
 son état fermé. Les résultats de validation et les niveaux de preuve de cette
 tranche sont consignés dans `DELIVERY-EVIDENCE.md`.

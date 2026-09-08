@@ -81,6 +81,7 @@ enum BundledImage {
     }
 }
 struct SceneImage: View {
+    @ScaledMetric(relativeTo: .largeTitle) private var imageHeight: CGFloat = 236
     let id: String
     let label: String
     var title: String? = nil
@@ -91,11 +92,11 @@ struct SceneImage: View {
 
     var body: some View {
         ZStack(alignment: .bottomLeading) {
-            Image(uiImage: SceneImage.load(id)).resizable().scaledToFill().frame(height: 236).clipped().accessibilityLabel(label)
+            Image(uiImage: SceneImage.load(id)).resizable().scaledToFill().frame(height: imageHeight).clipped().accessibilityLabel(label)
             if let title {
                 LinearGradient(colors: [.clear, .black.opacity(0.65)], startPoint: .center, endPoint: .bottom)
                 Text(title).font(.system(.largeTitle, design: .rounded, weight: .bold)).foregroundStyle(.white).padding(20)
             }
-        }.frame(height: 236).clipShape(RoundedRectangle(cornerRadius: 18))
+        }.frame(height: imageHeight).clipShape(RoundedRectangle(cornerRadius: 18))
     }
 }

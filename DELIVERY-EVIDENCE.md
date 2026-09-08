@@ -8,23 +8,67 @@ des archives historiques ; la section Cloudflare porte la migration courante.
 Cette tranche prépare l'application native dans le même dépôt que le site.
 L'ADR-0013, le guide `docs/native-ios.md` et les contrats de données décrivent
 la sélection facultative des photos dès la première étape et l'API commune.
-Le code et les résultats locaux ne constituent pas une distribution Apple.
+La construction et les contrôles locaux passent. La dernière suite iOS
+observée reste en échec sur deux parcours d'interface.
 
-| Niveau | Frontière de preuve |
+### Contrôles acquis
+
+| Preuve | Résultat |
 | --- | --- |
-| Candidat | SwiftUI iOS 18, carnet Japon, préparation locale, photos en mémoire et StoreKit fermé |
+| Vérification du projet | `./scripts/verify.sh` réussi : 75 tests, Worker, cinq pages publiques, Docker Compose et documentation |
+| Construction iOS | Build simulateur réussi avec Xcode 26.6, signature ad hoc réussie ; aucune signature de distribution Apple prouvée |
 | API commune | Configuration et exemple public `/api/v1`, alias conservant les protections historiques |
-| Contrôles locaux | `./scripts/verify.sh` réussi : 75 tests, Worker, cinq pages publiques, Docker Compose et documentation ; build iOS Simulator réussi avec Xcode 26.6 |
-| Contrat photo | PNG préparé accepté par `decodePhoto` du backend : 1 435 780 octets, 1 024 × 1 024 ; métadonnées EXIF/GPS retirées ; entrées invalides refusées |
-| Exécution native | Simulateur dédié iPhone 17 Pro sous iOS 26.5 ; lancement et tests XCTest en cours de vérification |
-| Notice publique | Paragraphe sur les photos facultatives contrôlé dans le navigateur local |
-| Distribution Apple | Aucune preuve TestFlight ou App Store dans ce candidat |
-| Service personnalisé | Aucune commande, photo transmise, génération ou transaction réelle |
+| Contrat photo | `./scripts/ios-photo-contract.sh` réussi : PNG de 1 435 780 octets, 1 024 × 1 024, accepté par `decodePhoto` du backend |
+| Métadonnées photo | Marqueur EXIF/GPS retiré ; données invalides et images trop petites refusées |
+| Notice | Paragraphe sur les photos facultatives dès le début contrôlé dans le navigateur local |
 
-Une preuve StoreKit future devra couvrir la vérification serveur, la reprise
-sans double achat et la récupération du carnet. Les résultats du simulateur
-ne couvrent pas ces fonctions. L'inscription Small Business et les accords
-partenaires ne sont pas réalisés par cette tranche.
+Le contrôle photo emploie une fixture synthétique du dépôt. Il réencode
+localement le fichier puis appelle le validateur du backend sans envoyer
+l'image au service. Cette preuve ne couvre pas un upload ni une génération.
+
+### Dernière validation iOS observée
+
+Ce tableau désigne le dernier run dont le résultat et les artefacts ont été
+relus. Une correction de code ne change pas son statut avant un nouveau run.
+
+| Champ | Résultat observé |
+| --- | --- |
+| Run | [CI iOS 34171199078](https://github.com/nclsppr/monflorian/actions/runs/34171199078) |
+| SHA testé | `70d43adeb74dfdcb2f5ccfddbe85c131115e6343` |
+| Environnement | iPhone 17 Pro, iOS Simulator 26.5, build système `23F77` |
+| Tests unitaires | 13 réussis sur 13 |
+| Tests d'interface | 2 réussis sur 4 ; 2 échecs, aucun test ignoré |
+| Résultat global | Échec, 15 tests réussis sur 17 |
+| Artefact relu | `build/ios/ci-second/Tests-20260907T234902Z.xcresult` |
+| Journal de construction | `build/ios/ci-second/build.log`, avec `BUILD SUCCEEDED` et étapes de signature |
+
+Les deux parcours UI réussis couvrent la lecture des guides sans réseau et
+l'ouverture du carnet, d'une journée et de la checklist. Les échecs concernent
+`testDraftCanBeSavedRestoredExportedAndDeletedWithoutPayment`, à l'assertion de
+suppression du brouillon, et
+`testOptionalPhotoPickerCanBeCancelledBeforeSavingDraft`, lors du contrôle de
+l'annulation du sélecteur de photos. Leurs corrections sont en cours ; aucun
+succès de ces deux parcours n'est encore prouvé.
+
+Les captures extraites sous `build/ios/ci-second/screenshots/` ont été
+inspectées pour l'accueil, le jour 1, la checklist et un guide. La capture
+`build/ios/ci-second/picker.png` montre le sélecteur système. Cette inspection
+confirme les écrans observés, sans valider à elle seule les deux parcours qui
+échouent. Les captures et le résultat Xcode sont des artefacts de contrôle,
+pas les sources éditables de l'app.
+
+### Limites avant distribution
+
+Aucun appareil iOS physique, envoi TestFlight ou publication App Store n'est
+vérifié. La signature ad hoc du simulateur ne prouve ni inscription Apple,
+ni profil de distribution, ni archive signée pour l'App Store.
+
+`nativeOrdersEnabled` et `storeKitPurchasesEnabled` restent à `false`. Aucune
+commande, photo transmise, génération ou transaction réelle n'a lieu dans ce
+candidat. Une preuve StoreKit future devra couvrir la vérification serveur,
+la reprise sans double achat et la récupération du carnet. Les tests du
+simulateur ne couvrent pas ces fonctions. L'inscription Small Business et les
+accords partenaires ne sont pas réalisés par cette tranche.
 
 ## Accueil bureau et footer, publiés le 7 septembre 2026
 

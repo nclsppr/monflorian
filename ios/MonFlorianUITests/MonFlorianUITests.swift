@@ -61,19 +61,37 @@ final class MonFlorianUITests: XCTestCase {
         XCTAssertEqual(app.textFields["destination-field"].value as? String, "Portugal")
         let deletion = app.buttons["delete-draft"]; reveal(deletion); deletion.tap()
         app.buttons["Supprimer le brouillon"].tap()
-        XCTAssertFalse(app.buttons["restore-draft"].exists)
+        XCTAssertTrue(restore.waitForNonExistence(timeout: 10))
+        let deletedStatus = app.staticTexts["draft-status"]
+        XCTAssertTrue(deletedStatus.waitForExistence(timeout: 5))
+        XCTAssertEqual(deletedStatus.label, "La copie enregistrée a été supprimée de cet appareil.")
+        XCTAssertFalse(app.buttons["delete-draft"].exists)
         screenshot("Brouillon supprimé")
+        app.terminate()
+        app.launchArguments = ["--ui-testing", "--offline"]; app.launch()
+        app.tabBars.buttons["Mon voyage"].tap()
+        let reset = app.buttons["Effacer la saisie en cours"]; reveal(reset)
+        XCTAssertTrue(reset.isHittable)
+        XCTAssertFalse(app.buttons["restore-draft"].exists)
+        XCTAssertFalse(app.buttons["delete-draft"].exists)
+        screenshot("Suppression conservée après relance")
     }
     func testOptionalPhotoPickerCanBeCancelledBeforeSavingDraft() {
         app.tabBars.buttons["Mon voyage"].tap()
         let picker = app.buttons["choose-photos"]
         reveal(picker); XCTAssertTrue(picker.isHittable); picker.tap()
-        let englishCancel = app.buttons["Cancel"].firstMatch
-        let frenchCancel = app.buttons["Annuler"].firstMatch
-        XCTAssertTrue(englishCancel.waitForExistence(timeout: 5) || frenchCancel.waitForExistence(timeout: 5))
+        // The system picker is hosted by a remote Photos process. Resolve its
+        // navigation bar explicitly instead of an optimized app-wide firstMatch.
+        // "Cancel" is the accessibility identifier, including in localized UI.
+        let photoNavigation = app.navigationBars["Photos"]
+        let cancel = photoNavigation.buttons["Cancel"]
+        XCTAssertTrue(cancel.waitForExistence(timeout: 10))
+        XCTAssertTrue(cancel.isHittable)
         screenshot("Sélecteur Photos natif facultatif")
-        if englishCancel.exists { englishCancel.tap() } else { frenchCancel.tap() }
+        cancel.tap()
+        XCTAssertTrue(photoNavigation.waitForNonExistence(timeout: 5))
         XCTAssertTrue(picker.waitForExistence(timeout: 5))
+        XCTAssertTrue(picker.isHittable)
         XCTAssertFalse(app.buttons["remove-photos"].exists)
         let next = app.buttons["planner-next"]; reveal(next); next.tap()
         let review = app.buttons["planner-review"]; reveal(review); review.tap()

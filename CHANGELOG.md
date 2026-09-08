@@ -19,6 +19,8 @@ l'ouverture du service personnalisé restent distinctes de cette tranche.
   exemple public et alias des routes historiques conservant leurs protections.
 - Réutilisation de la projection publique `TravelGuideV1` et des visuels
   canoniques ; scripts de construction et tests iOS sur un simulateur dédié.
+- Lecture des transferts absents conforme au contrat, restauration du formulaire
+  en haut de page et couverture adaptée à la taille de texte choisie dans iOS.
 - Préparation StoreKit 2 fermée par les capacités serveur. Aucun produit réel,
   achat, upload, appel fournisseur ou compte Apple n'est activé.
 - Révision du parcours cible et des contrats de données. Conservation du
