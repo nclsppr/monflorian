@@ -18,7 +18,11 @@ Git reste la source du diff technique. Les ADR expliquent les décisions importa
 - Enregistrement d’un carnet lisible hors connexion, avec les images
   disponibles, sans lien privé d’accès ni ressource distante à charger.
 - Essais OpenAI préparés pour Tokyo et Luxembourg : recherche, synthèse,
-  illustration facultative et mesures techniques ; aucun appel réel à ce stade.
+  illustration facultative et mesures techniques. Premier appel réel refusé
+  faute de crédits API, confirmé par un diagnostic minimal.
+- Clé OpenAI dédiée créée et installée hors Git puis sur Cloudflare, génération
+  toujours fermée. Les erreurs de solde ou plafond ne conseillent plus une
+  simple attente comme les limites temporaires de débit.
 - Une illustration facultative par voyage, sans perdre l'itinéraire si elle
   échoue, et conservation jusqu'à sept jours après le retour avec minimum de
   30 jours et maximum de 180 jours.

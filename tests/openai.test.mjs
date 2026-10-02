@@ -64,6 +64,61 @@ test("l’erreur fournisseur reste générique et ne révèle pas sa réponse", 
   );
 });
 
+for (const kind of ["texte", "image"]) {
+  const generate = (fetchImpl) => kind === "texte"
+    ? generateItinerary({ apiKey: "test", model: "test", request: itineraryRequest(), requestId: "id", safetyIdentifier: "hash", fetchImpl })
+    : generateIllustration({
+      apiKey: "test", model: "test", requestId: "id", fetchImpl,
+      request: {
+        destination: "Porto", scene: "Deux personnes dessinent près du fleuve.",
+        photos: [{ buffer: syntheticPng(), mimeType: "image/png", width: 256, height: 256 }],
+      },
+    });
+
+  test(`un quota ou solde épuisé en ${kind} ne conseille pas d’attendre`, async () => {
+    for (const details of [
+      { code: "insufficient_quota" },
+      { code: "credit_balance_exhausted", type: "insufficient_quota" },
+      { code: "credit_balance_exhausted" },
+      { type: "insufficient_quota" },
+      { code: "organization_spend_limit_exceeded" },
+      { code: "project_spend_limit_exceeded" },
+      { code: "organization_usage_limit_exceeded" },
+    ]) {
+      let calls = 0;
+      const fetchImpl = async () => {
+        calls += 1;
+        return new Response(JSON.stringify({ error: { ...details, message: "sentinel-private-billing-detail" } }), {
+          status: 429, headers: { "content-type": "application/json" },
+        });
+      };
+      await assert.rejects(generate(fetchImpl), (error) => {
+        assert.ok(error instanceof AppError);
+        assert.equal(error.status, 503);
+        assert.equal(error.code, "PROVIDER_CONFIGURATION");
+        assert.match(error.message, /configuration doit être vérifiée/u);
+        assert.doesNotMatch(error.message, /attend|réessaie|minutes|sentinel/iu);
+        return true;
+      });
+      assert.equal(calls, 1);
+    }
+  });
+
+  test(`une limite de débit en ${kind} reste temporaire`, async () => {
+    const fetchImpl = async () => new Response(JSON.stringify({ error: {
+      code: "rate_limit_exceeded", type: "requests", message: "sentinel-private-rate-detail",
+    } }), { status: 429, headers: { "content-type": "application/json" } });
+    await assert.rejects(generate(fetchImpl), (error) => {
+      assert.ok(error instanceof AppError);
+      assert.equal(error.status, 429);
+      assert.equal(error.code, "PROVIDER_RATE_LIMIT");
+      assert.match(error.message, /Réessaie dans quelques minutes/u);
+      assert.doesNotMatch(error.message, /sentinel/u);
+      return true;
+    });
+  });
+}
+
 test("le délai couvre le corps complet et la réponse reste bornée", async () => {
   const stalledFetch = async () => new Response(new ReadableStream({
     start(controller) {

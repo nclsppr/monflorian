@@ -7,7 +7,7 @@ la création de voyages privés, avec recherche web, hôtels sourcés, transport
 adapté, photos et courriel facultatifs. La bêta ne demande ni paiement ni compte.
 Le paiement sera ajouté après la bêta ; aucun prix n'est arrêté.
 
-Le candidat passe `./scripts/verify.sh` : 98 tests applicatifs, TypeScript,
+Le candidat passe `./scripts/verify.sh` : 102 tests applicatifs, TypeScript,
 build Worker, Docker Compose et Nimbus. Les parcours visibles et la notice
 sont contrôlés sur ordinateur et mobile. Ces preuves locales ne prouvent ni
 déploiement, ni appel OpenAI réussi, ni image générée, ni réception de courriel.
@@ -20,10 +20,17 @@ La migration `0004_trip_research.sql` est appliquée en production. R2 conserve
 les sources un jour et les résultats 180 jours, sans accès public. La
 configuration publique reste fermée après ces opérations.
 
+La clé OpenAI dédiée est enregistrée hors Git et installée sur Cloudflare.
+Le premier essai fournisseur est refusé : `credit_balance_exhausted`, type
+`insufficient_quota`. Une requête minimale de diagnostic confirme le solde API
+épuisé. La génération reste fermée, sans nouvelle tentative ni achat de crédits.
+La version Worker issue du seul changement de secret est
+`3a3bcdfc-1c0b-4127-8321-ee24e927f91c` ; elle ne publie pas le code candidat.
+
 Avant d'annoncer la bêta ouverte, consigner :
 
 - les contrôles du candidat et les parcours visibles Tokyo et Luxembourg ;
-- la clé OpenAI présente et les modèles accessibles ;
+- des crédits API disponibles et les modèles accessibles ;
 - la purge applicative à l’échéance annoncée ;
 - la génération réelle avec sources, l'échec d'image sans perte du texte, le
   retrait pendant traitement et l'absence de contenu privé dans les logs ;

@@ -6,10 +6,11 @@ des archives historiques ; la section Cloudflare porte la migration courante.
 ## Candidat bêta gratuite, contrôles locaux du 2 octobre 2026
 
 Le candidat est poussé dans la [PR #59](https://github.com/nclsppr/monflorian/pull/59),
-branche `codex/free-beta-travel`. Aucun secret OpenAI ni drapeau de génération
-n’a été activé. Aucune personne réelle n’a été envoyée à un fournisseur.
+branche `codex/free-beta-travel`. La clé OpenAI dédiée est installée, mais les
+drapeaux de génération restent fermés. Aucune personne réelle n’a été envoyée
+à un fournisseur.
 
-- `./scripts/verify.sh` complet réussi sur le candidat final : 98 tests
+- `./scripts/verify.sh` complet réussi sur le candidat final : 102 tests
   applicatifs, TypeScript,
   build Worker, Docker Compose, contrôles publics locaux et Nimbus.
 - Tests supplémentaires du vrai Worker et Workflow, avec SQLite en mémoire,
@@ -48,11 +49,23 @@ n’a été activé. Aucune personne réelle n’a été envoyée à un fourniss
   à un jour, multipart incomplets à sept jours. Aucun domaine personnalisé et
   accès `r2.dev` désactivé, confirmés après la modification.
 
-La clé OpenAI attend la fin du parcours sécurisé de création. Le canal humain
-de contact et l’adresse de réception du test sont demandés au propriétaire.
-L’appel OpenAI réel, son coût, la génération d’image, Turnstile en production,
-la réception de courriel et la publication restent à prouver. Les sources des
-fixtures sont synthétiques ; elles ne valident aucun hôtel ni trajet réel.
+La clé OpenAI `Codex` est créée après confirmation, écrite dans `.dev.vars`
+ignoré par Git avec permissions `600`, puis installée dans le Worker. La
+relecture des noms de secrets confirme `OPENAI_API_KEY`, sans lecture de valeur.
+Le changement de secret crée la version `3a3bcdfc-1c0b-4127-8321-ee24e927f91c`,
+active à 100 %. Santé et configuration publiques restent fermées après l’action.
+
+Le smoke Luxembourg reçoit un HTTP 429. Une requête minimale de diagnostic
+confirme `credit_balance_exhausted`, type `insufficient_quota`, sans
+`Retry-After` (requête `req_1983b20703f44c548c3fe4beda5eaffa`). Aucun résultat ni
+consommation n’est retourné. Aucun nouvel appel ni achat de crédits n’est lancé.
+Le candidat distingue maintenant ces erreurs de facturation d’une limite de
+débit temporaire, avec quatre tests supplémentaires texte et image.
+
+Les crédits API, le canal humain de contact et l’adresse de réception du test
+restent à fournir. Un résultat OpenAI réel, son coût, la génération d’image,
+Turnstile en production, la réception de courriel et la publication du candidat
+restent à prouver. Les fixtures ne valident aucun hôtel ni trajet réel.
 
 ## Accueil bureau et footer, publiés le 7 septembre 2026
 

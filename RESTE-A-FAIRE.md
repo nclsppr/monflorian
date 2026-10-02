@@ -46,8 +46,11 @@ constituent pas une preuve de génération distante.
 
 ## Avant l'activation distante
 
-- [ ] Installer la clé OpenAI dédiée hors Git et vérifier accès aux modèles,
-  réglages de données, budget et limite quotidienne.
+- [x] Créer la clé OpenAI dédiée, l’enregistrer hors Git et l’installer dans le
+  Worker ; vérifier sa présence sans exposer sa valeur.
+- [ ] Alimenter les crédits API : premier essai refusé avec
+  `credit_balance_exhausted`. Vérifier ensuite accès aux modèles, réglages de
+  données, budget et limite quotidienne.
 - [x] Appliquer `0004_trip_research.sql` et vérifier l'état distant D1.
 - [x] Porter la règle R2 des résultats à 180 jours, garder les sources à
   24 heures et confirmer l'absence de domaine public.

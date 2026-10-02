@@ -66,6 +66,12 @@ async function parseProviderJson(response, maxBytes, signal) {
 
 function providerFailure(response, payload, kind) {
   const code = payload?.error?.code;
+  if ([
+    "insufficient_quota", "credit_balance_exhausted", "organization_spend_limit_exceeded",
+    "project_spend_limit_exceeded", "organization_usage_limit_exceeded",
+  ].includes(code) || payload?.error?.type === "insufficient_quota") {
+    return new AppError(503, "PROVIDER_CONFIGURATION", "Le service de composition est indisponible. Sa configuration doit être vérifiée.");
+  }
   if (code === "moderation_blocked") {
     return new AppError(
       422,
