@@ -16,8 +16,8 @@ Git reste la source du diff technique. Les ADR expliquent les décisions importa
   30 jours et maximum de 180 jours.
 - Protection des jetons dans les logs, reprise des suppressions interrompues
   et effacement des briefs refusés par quota.
-- ADR-0013 et contrats de données mis à jour. Migration, activation fournisseur,
-  validation complète et publication restent à prouver dans `STATUS.md` et
+- ADR-0013 et contrats de données mis à jour. Migration D1 et règles R2 appliquées en production, service encore fermé.
+  Activation fournisseur et publication restent à prouver dans `STATUS.md` et
   `DELIVERY-EVIDENCE.md`.
 
 ## 7 septembre 2026

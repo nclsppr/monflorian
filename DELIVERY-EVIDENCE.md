@@ -5,9 +5,9 @@ des archives historiques ; la section Cloudflare porte la migration courante.
 
 ## Candidat bêta gratuite, contrôles locaux du 2 octobre 2026
 
-La branche `codex/free-beta-travel` prépare l’ADR-0013. Aucun secret OpenAI,
-drapeau de génération, migration distante ou règle R2 n’a été modifié pendant
-ces contrôles. Aucune personne réelle n’a été envoyée à un fournisseur.
+Le candidat `76b11df` est poussé dans la [PR #59](https://github.com/nclsppr/monflorian/pull/59),
+branche `codex/free-beta-travel`. Aucun secret OpenAI ni drapeau de génération
+n’a été activé. Aucune personne réelle n’a été envoyée à un fournisseur.
 
 - `./scripts/verify.sh` complet réussi sur le candidat final : 90 tests
   applicatifs, TypeScript,
@@ -26,8 +26,13 @@ ces contrôles. Aucune personne réelle n’a été envoyée à un fournisseur.
   octets, accepté par le validateur serveur. Les captures et journaux de test
   restent hors du dépôt, sous `/tmp/monflorian-ui-qa` et `/tmp/monflorian-*`.
 - Production relue le 2 octobre : création et illustrations fermées, accès
-  privé ; seule `0004_trip_research.sql` reste à appliquer. R2 conserve ses
-  règles sources à un jour et résultats à 30 jours.
+  privé. La base ne contenait aucun voyage avant la migration.
+- Migration `0004_trip_research.sql` appliquée puis relue : aucune migration
+  restante. Les colonnes chiffrées de recherche sont ajoutées sans modifier le
+  runtime actuellement publié.
+- `config/r2-lifecycle.json` appliqué et relu : résultats à 180 jours, sources
+  à un jour, multipart incomplets à sept jours. Aucun domaine personnalisé et
+  accès `r2.dev` désactivé, confirmés après la modification.
 
 La clé OpenAI attend la fin du parcours sécurisé de création. Le canal humain
 de contact et l’adresse de réception du test sont demandés au propriétaire.

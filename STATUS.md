@@ -14,12 +14,16 @@ déploiement, ni appel OpenAI réussi, ni image générée, ni réception de cou
 Le dernier état public consigné ci-dessous reste la référence jusqu'aux sondes
 du nouveau SHA et de sa version Worker.
 
+Le candidat `76b11df` est poussé dans la [PR #59](https://github.com/nclsppr/monflorian/pull/59).
+La migration `0004_trip_research.sql` est appliquée en production. R2 conserve
+les sources un jour et les résultats 180 jours, sans accès public. La
+configuration publique reste fermée après ces opérations.
+
 Avant d'annoncer la bêta ouverte, consigner :
 
 - les contrôles du candidat et les parcours visibles Tokyo et Luxembourg ;
-- la migration `0004_trip_research.sql` appliquée et les secrets présents ;
-- la règle R2 distante à 180 jours pour les résultats, à 24 heures pour les
-  sources, et la purge applicative à l'échéance annoncée ;
+- la clé OpenAI présente et les modèles accessibles ;
+- la purge applicative à l’échéance annoncée ;
 - la génération réelle avec sources, l'échec d'image sans perte du texte, le
   retrait pendant traitement et l'absence de contenu privé dans les logs ;
 - le SHA, les contrôles GitHub, la version Worker et les capacités exposées par

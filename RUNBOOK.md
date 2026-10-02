@@ -108,8 +108,8 @@ npx wrangler r2 bucket lifecycle list monflorian-media-production --jurisdiction
 ```
 
 Les règles cibles sont `source-photo-backstop` sur `source/` à un jour et
-`generated-image-expiration` sur `generated/` à 180 jours. Le relevé distant du
-2 octobre reste à 30 jours : mettre cette règle à jour avant la bêta (ADR-0013). Les recréer seulement
+`generated-image-expiration` sur `generated/` à 180 jours. La configuration a été appliquée
+et relue le 2 octobre (ADR-0013). Les recréer seulement
 si elles manquent, après avoir vérifié qu'une règle homonyme n'existe pas :
 
 ```bash

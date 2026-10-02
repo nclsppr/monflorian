@@ -13,37 +13,39 @@ reste ouverte tant que la preuve correspondante n'est pas consignée.
 - [x] Domaine Cloudflare Email Service configuré et binding d'envoi restreint.
 - [x] Carnet Japon et guides publics, pré-rendus et lisibles sans JavaScript.
 
-Ces preuves historiques ne valident pas la génération réelle ni les nouvelles
-durées. L'ancien délai R2 de 30 jours pour les résultats doit changer avant
-d'accepter un voyage conservé plus longtemps.
+Ces preuves ne valident pas la génération réelle. La règle R2 des résultats
+est passée à 180 jours le 2 octobre, avec relecture du bucket privé.
 
-## Candidat à valider
+## Candidat validé localement
 
-- [ ] Formulaire relié à `/api/trips` avec destination, départ, dates ou durée,
+Ces points sont prouvés avec fournisseurs simulés et contrôle visible ; ils ne
+constituent pas une preuve de génération distante.
+
+- [x] Formulaire relié à `/api/trips` avec destination, départ, dates ou durée,
   budget, transport et style d'hébergement effectivement consommés.
-- [ ] Bêta gratuite sans carte ni paywall, paiement annoncé après la bêta sans
+- [x] Bêta gratuite sans carte ni paywall, paiement annoncé après la bêta sans
   ancien prix présenté comme acquis.
-- [ ] Photos facultatives, réencodées, prévisualisées localement et transmises
+- [x] Photos facultatives, réencodées, prévisualisées localement et transmises
   seulement à l'envoi explicite avec accord des personnes représentées.
-- [ ] Courriel facultatif et accès au lien privé sans compte.
-- [ ] Recherche web distincte, sources réellement retournées, recherche
+- [x] Courriel facultatif et accès au lien privé sans compte.
+- [x] Recherche web distincte, sources réellement retournées, recherche
   chiffrée et carnet `itinerary.v2` revalidé.
-- [ ] Hôtels nommés sourcés, liens Booking construits par le serveur et absence
+- [x] Hôtels nommés sourcés, liens Booking construits par le serveur et absence
   de promesse de meilleur prix ou de disponibilité.
-- [ ] Respect du transport `none`, des dates, des nuits et de la durée 1 à
+- [x] Respect du transport `none`, des dates, des nuits et de la durée 1 à
   14 jours ; refus de dates passées ou de retour à plus de 173 jours.
-- [ ] Une illustration facultative, erreur visible et texte conservé si elle
+- [x] Une illustration facultative, erreur visible et texte conservé si elle
   échoue ; aucune relance payante aveugle.
-- [ ] Alias `/api/v1` alignés avec les routes canoniques et leurs protections.
-- [ ] Contrôles `./scripts/verify.sh`, clavier, mobile, bureau et erreurs du
+- [x] Alias `/api/v1` alignés avec les routes canoniques et leurs protections.
+- [x] Contrôles `./scripts/verify.sh`, clavier, mobile, bureau et erreurs du
   parcours visibles.
 
 ## Avant l'activation distante
 
 - [ ] Installer la clé OpenAI dédiée hors Git et vérifier accès aux modèles,
   réglages de données, budget et limite quotidienne.
-- [ ] Appliquer `0004_trip_research.sql` et vérifier l'état distant D1.
-- [ ] Porter la règle R2 des résultats à 180 jours, garder les sources à
+- [x] Appliquer `0004_trip_research.sql` et vérifier l'état distant D1.
+- [x] Porter la règle R2 des résultats à 180 jours, garder les sources à
   24 heures et confirmer l'absence de domaine public.
 - [ ] Prouver la purge à l'échéance exacte : maximum entre création + 30 jours
   et retour + 7 jours, plafonné à 180 jours.
