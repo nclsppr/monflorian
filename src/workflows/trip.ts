@@ -2,7 +2,7 @@ import { WorkflowEntrypoint, type WorkflowEvent, type WorkflowStep } from "cloud
 
 import { AppError, buildAccommodationSuggestions, parseBookingConfiguration } from "../../app/core.mjs";
 import { buildTripReadyEmail } from "../../app/email.mjs";
-import { generateIllustration, generateItinerary } from "../../app/openai.mjs";
+import { generateIllustration, generateItinerary, researchTravelFacts } from "../../app/openai.mjs";
 import {
   decryptJson,
   encryptJson,
@@ -16,8 +16,10 @@ import {
   listTripAssets,
   markNotificationFailed,
   markNotificationSent,
+  markNotificationSkipped,
   markTripFailed,
   saveTripResult,
+  saveTripResearch,
   upsertGeneratedAsset,
 } from "../trips/repository";
 
@@ -88,6 +90,14 @@ function illustrationBytes(dataUrl: string): Uint8Array {
 }
 
 export class TripWorkflow extends WorkflowEntrypoint<WorkflowEnv, TripWorkflowParams> {
+  private async activeTrip(tripId: string) {
+    const trip = await findTripById(this.env.DB, tripId);
+    if (!trip || ["deleting", "deleted", "expired"].includes(trip.status) || trip.expires_at <= Date.now()) {
+      throw new AppError(409, "TRIP_CLOSED", "Le voyage a été supprimé ou a expiré.");
+    }
+    return trip;
+  }
+
   async run(event: WorkflowEvent<TripWorkflowParams>, step: WorkflowStep) {
     const tripId = event.payload.tripId;
     const gate = await step.do(
@@ -96,30 +106,43 @@ export class TripWorkflow extends WorkflowEntrypoint<WorkflowEnv, TripWorkflowPa
       async () => ({
         enabled:
           String(this.env.MONFLORIAN_GENERATION_ENABLED) === "true" &&
-          String(this.env.MONFLORIAN_ILLUSTRATION_ENABLED) === "true" &&
-          String(this.env.MONFLORIAN_EMAIL_ENABLED) === "true" &&
-          Boolean(this.env.EMAIL) &&
-          Boolean(this.env.MONFLORIAN_EMAIL_FROM) &&
           Boolean(this.env.MONFLORIAN_PUBLIC_ORIGIN) &&
           Boolean(this.env.OPENAI_API_KEY),
         tripId,
       }),
     );
 
-    if (!gate.enabled) return { status: "generation-disabled", tripId };
+    if (!gate.enabled) {
+      await markTripFailed(this.env.DB, tripId, "GENERATION_DISABLED", Date.now());
+      await deleteSourceAssets(this.env.DB, this.env.MEDIA, tripId, Date.now());
+      return { status: "generation-disabled", tripId };
+    }
 
     let itineraryProviderRequestId: string | null = null;
     let imageProviderRequestId: string | null = null;
     try {
+      if (String(this.env.MONFLORIAN_RESEARCH_ENABLED) === "true") {
+        await step.do("research-and-encrypt-sources", { ...NO_RETRY, timeout: "3 minutes" }, async () => {
+          const trip = await this.activeTrip(tripId);
+          if (trip.research_ciphertext) return { status: "researched" };
+          const request = storedRequest(await decryptJson(this.env.TRIP_DATA_KEY, trip.request_ciphertext!, trip.request_nonce!, `${tripId}:request`));
+          const research = await researchTravelFacts({ apiKey: this.env.OPENAI_API_KEY!, model: this.env.OPENAI_TEXT_MODEL,
+            request: request.itinerary, requestId: crypto.randomUUID(), safetyIdentifier: request.safetyIdentifier, signal: undefined });
+          await this.activeTrip(tripId);
+          const encrypted = await encryptJson(this.env.TRIP_DATA_KEY, research.factPack, `${tripId}:research`);
+          await saveTripResearch(this.env.DB, tripId, encrypted.ciphertext, encrypted.nonce, Date.now());
+          return { status: "researched", providerRequestId: research.providerRequestId, usage: research.usage };
+        });
+      }
       const itineraryStep = await step.do(
         "generate-and-encrypt-itinerary",
-        { ...NO_RETRY, timeout: "90 seconds" },
+        { ...NO_RETRY, timeout: "3 minutes" },
         async () => {
           const trip = await findTripById(this.env.DB, tripId);
           if (!trip || !trip.request_ciphertext || !trip.request_nonce) {
             throw new AppError(404, "TRIP_NOT_FOUND", "Le voyage à préparer est introuvable.");
           }
-          if (["deleted", "expired"].includes(trip.status)) {
+          if (["deleting", "deleted", "expired"].includes(trip.status) || trip.expires_at <= Date.now()) {
             throw new AppError(409, "TRIP_CLOSED", "Le voyage a été supprimé ou a expiré.");
           }
           if (trip.status === "ready") return { status: "ready", hasPhotos: false, providerRequestId: null };
@@ -132,14 +155,18 @@ export class TripWorkflow extends WorkflowEntrypoint<WorkflowEnv, TripWorkflowPa
           ));
           const apiKey = this.env.OPENAI_API_KEY;
           if (!apiKey) throw new AppError(503, "PROVIDER_CONFIGURATION", "OpenAI n’est pas configuré.");
+          const factPack = trip.research_ciphertext && trip.research_nonce
+            ? await decryptJson(this.env.TRIP_DATA_KEY, trip.research_ciphertext, trip.research_nonce, `${tripId}:research`) : undefined;
           const generated = await generateItinerary({
             apiKey,
             model: this.env.OPENAI_TEXT_MODEL,
             request: request.itinerary,
+            factPack,
             requestId: crypto.randomUUID(),
             safetyIdentifier: request.safetyIdentifier,
             signal: undefined,
           });
+          await this.activeTrip(tripId);
           const result = {
             itinerary: generated.itinerary,
             accommodationSuggestions: buildAccommodationSuggestions(
@@ -148,7 +175,7 @@ export class TripWorkflow extends WorkflowEntrypoint<WorkflowEnv, TripWorkflowPa
               parseBookingConfiguration(this.env),
             ),
             generatedImages: [],
-            meta: { itineraryProviderRequestId: generated.providerRequestId },
+            meta: { itineraryProviderRequestId: generated.providerRequestId, itineraryUsage: generated.usage },
           };
           const encrypted = await encryptJson(this.env.TRIP_DATA_KEY, result, `${tripId}:result`);
           const hasPhotos = request.photoCount > 0;
@@ -170,6 +197,7 @@ export class TripWorkflow extends WorkflowEntrypoint<WorkflowEnv, TripWorkflowPa
       itineraryProviderRequestId = itineraryStep.providerRequestId;
 
       if (itineraryStep.hasPhotos) {
+        try {
         const imageStep = await step.do(
           "generate-store-and-encrypt-image",
           { ...NO_RETRY, timeout: "3 minutes" },
@@ -184,6 +212,8 @@ export class TripWorkflow extends WorkflowEntrypoint<WorkflowEnv, TripWorkflowPa
             ) {
               throw new AppError(404, "TRIP_NOT_FOUND", "Le voyage à illustrer est introuvable.");
             }
+            await this.activeTrip(tripId);
+            if (String(this.env.MONFLORIAN_ILLUSTRATION_ENABLED) !== "true") throw new AppError(503, "ILLUSTRATION_DISABLED", "Les illustrations sont indisponibles.");
             const request = storedRequest(await decryptJson(
               this.env.TRIP_DATA_KEY,
               trip.request_ciphertext,
@@ -214,13 +244,7 @@ export class TripWorkflow extends WorkflowEntrypoint<WorkflowEnv, TripWorkflowPa
             const destination = typeof itinerary.destination === "string"
               ? itinerary.destination
               : "le voyage proposé";
-            const days = Array.isArray(itinerary.days) ? itinerary.days : [];
-            const firstDay = days[0] && typeof days[0] === "object"
-              ? days[0] as Record<string, unknown>
-              : null;
-            const scene = typeof firstDay?.summary === "string"
-              ? firstDay.summary
-              : "Les voyageurs découvrent calmement un lieu emblématique de leur itinéraire.";
+            const scene = "Les voyageurs découvrent ensemble un jardin calme, dans une scène éditoriale naturelle en lumière douce. Conserver les personnes des références, sans texte ni promesse de lieu exact.";
             const apiKey = this.env.OPENAI_API_KEY;
             if (!apiKey) throw new AppError(503, "PROVIDER_CONFIGURATION", "OpenAI n’est pas configuré.");
             const generated = await generateIllustration({
@@ -230,13 +254,17 @@ export class TripWorkflow extends WorkflowEntrypoint<WorkflowEnv, TripWorkflowPa
               requestId: crypto.randomUUID(),
               signal: undefined,
             });
+            await this.activeTrip(tripId);
             const image = illustrationBytes(generated.imageDataUrl);
             const objectKey = generatedObjectKey(tripId, 0);
             const now = Date.now();
+            try {
             await this.env.MEDIA.put(objectKey, image, {
               httpMetadata: { contentType: "image/webp" },
               customMetadata: { kind: "generated_image", position: "0", tripId },
             });
+            try { await this.activeTrip(tripId); }
+            catch (error) { await this.env.MEDIA.delete(objectKey); throw error; }
             await upsertGeneratedAsset(this.env.DB, {
               id: crypto.randomUUID(),
               tripId,
@@ -249,6 +277,7 @@ export class TripWorkflow extends WorkflowEntrypoint<WorkflowEnv, TripWorkflowPa
               createdAt: now,
               expiresAt: trip.expires_at,
             });
+            await this.activeTrip(tripId);
             await deleteSourceAssets(this.env.DB, this.env.MEDIA, tripId, now);
 
             const previousMeta = partialResult.meta && typeof partialResult.meta === "object"
@@ -262,9 +291,23 @@ export class TripWorkflow extends WorkflowEntrypoint<WorkflowEnv, TripWorkflowPa
             const encrypted = await encryptJson(this.env.TRIP_DATA_KEY, finalResult, `${tripId}:result`);
             await saveTripResult(this.env.DB, tripId, "ready", encrypted.ciphertext, encrypted.nonce, now);
             return { status: "ready", providerRequestId: generated.providerRequestId };
+            } catch (error) { await this.env.MEDIA.delete(objectKey); throw error; }
           },
         );
         imageProviderRequestId = imageStep.providerRequestId;
+        } catch (error) {
+          await step.do("preserve-itinerary-without-image", { ...NO_RETRY, timeout: "30 seconds" }, async () => {
+            const trip = await this.activeTrip(tripId);
+            if (!trip.result_ciphertext || !trip.result_nonce) throw error;
+            const result = await decryptJson(this.env.TRIP_DATA_KEY, trip.result_ciphertext, trip.result_nonce, `${tripId}:result`) as Record<string, unknown>;
+            const encrypted = await encryptJson(this.env.TRIP_DATA_KEY, { ...result, generatedImages: [], illustrationStatus: "failed" }, `${tripId}:result`);
+            await deleteGeneratedAssets(this.env.DB, this.env.MEDIA, tripId, Date.now());
+            await saveTripResult(this.env.DB, tripId, "ready", encrypted.ciphertext, encrypted.nonce, Date.now());
+            return { status: "ready", imageErrorCode: workflowErrorCode(error) };
+          });
+        } finally {
+          await deleteSourceAssets(this.env.DB, this.env.MEDIA, tripId, Date.now());
+        }
       }
     } catch (error) {
       const errorCode = workflowErrorCode(error);
@@ -290,6 +333,10 @@ export class TripWorkflow extends WorkflowEntrypoint<WorkflowEnv, TripWorkflowPa
           if (!trip || trip.status !== "ready") {
             throw new AppError(409, "TRIP_NOT_READY", "Le voyage n’est pas prêt à être envoyé.");
           }
+          if (String(this.env.MONFLORIAN_EMAIL_ENABLED) !== "true" || !trip.email_ciphertext || !trip.email_nonce) {
+            await markNotificationSkipped(this.env.DB, tripId, Date.now());
+            return { status: "skipped", messageId: null };
+          }
           if (trip.notification_status === "sent") {
             return { status: "sent", messageId: null };
           }
@@ -308,6 +355,7 @@ export class TripWorkflow extends WorkflowEntrypoint<WorkflowEnv, TripWorkflowPa
             trip.email_nonce,
             `${tripId}:email`,
           ));
+          await this.activeTrip(tripId);
           const response = await this.env.EMAIL.send(buildTripReadyEmail({
             to: recipient.email,
             from: this.env.MONFLORIAN_EMAIL_FROM,

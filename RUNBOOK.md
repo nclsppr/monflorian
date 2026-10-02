@@ -108,13 +108,21 @@ npx wrangler r2 bucket lifecycle list monflorian-media-production --jurisdiction
 ```
 
 Les règles cibles sont `source-photo-backstop` sur `source/` à un jour et
-`generated-image-expiration` sur `generated/` à 30 jours. Les recréer seulement
+`generated-image-expiration` sur `generated/` à 180 jours. Le relevé distant du
+2 octobre reste à 30 jours : mettre cette règle à jour avant la bêta (ADR-0013). Les recréer seulement
 si elles manquent, après avoir vérifié qu'une règle homonyme n'existe pas :
 
 ```bash
 npx wrangler r2 bucket lifecycle add monflorian-media-production source-photo-backstop source/ --expire-days 1 --jurisdiction eu
-npx wrangler r2 bucket lifecycle add monflorian-media-production generated-image-expiration generated/ --expire-days 30 --jurisdiction eu
+npx wrangler r2 bucket lifecycle add monflorian-media-production generated-image-expiration generated/ --expire-days 180 --jurisdiction eu
 ```
+
+La configuration complète de la bêta est versionnée dans
+`config/r2-lifecycle.json`. Après comparaison avec les règles distantes,
+l’appliquer avec `npx wrangler r2 bucket lifecycle set monflorian-media-production
+--jurisdiction eu --file config/r2-lifecycle.json`, puis relire les règles.
+Cette commande remplace toutes les règles ; le fichier conserve aussi l’abandon
+des téléversements multipart incomplets à sept jours.
 
 Le binding `MEDIA` est versionné dans `wrangler.jsonc`. Vérifier :
 
@@ -122,7 +130,7 @@ Le binding `MEDIA` est versionné dans `wrangler.jsonc`. Vérifier :
 - domaine `r2.dev` désactivé ;
 - aucun domaine personnalisé ;
 - aucune règle CORS tant que les uploads passent par le Worker ;
-- règles de cycle de vie cohérentes avec 24 heures et 30 jours ;
+- règles de cycle de vie cohérentes avec 24 heures et 180 jours ;
 - objet synthétique illisible sans le Worker.
 
 Ne pas mettre une clé R2 S3 dans le navigateur. Le MVP envoie les photos au
@@ -131,12 +139,11 @@ Worker dans les limites prévues, puis le Worker les écrit en flux.
 ## Secrets
 
 Les secrets cibles sont ajoutés seulement quand leur consommateur est prêt.
-`TRIP_DATA_KEY` et `TRIP_QUOTA_HASH_KEY` sont installés. Restent à installer ou
-à relier avant ouverture :
+`TRIP_DATA_KEY`, `TRIP_QUOTA_HASH_KEY` et `TURNSTILE_SECRET_KEY` sont installés.
+Restent à installer ou à relier selon la fonction :
 
 - `OPENAI_API_KEY` ;
-- `MONFLORIAN_ACCESS_CODE` ;
-- `TURNSTILE_SECRET_KEY` ;
+- `MONFLORIAN_ACCESS_CODE` uniquement pour un accès privé ;
 - `STRIPE_RESTRICTED_KEY` et `STRIPE_WEBHOOK_SECRET`, plus tard.
 
 Utiliser la saisie locale silencieuse de Wrangler ou le Dashboard. Ne jamais
@@ -158,7 +165,27 @@ Avant d'activer les drapeaux :
 7. Stocker seulement identifiant fournisseur, usage, statut et durée dans la
    preuve technique.
 8. Supprimer les photos sources après génération.
-9. Envoyer le courriel après passage atomique à `ready`.
+9. Envoyer le courriel facultatif après passage atomique à `ready`, seulement
+   si l’envoi est activé et si une adresse a été fournie.
+
+La création gratuite exige les drapeaux de création, génération et recherche.
+Les images et le courriel sont indépendants. L’ouverture publique utilise
+`MONFLORIAN_ACCESS_MODE=public`, sans code ni paiement. Installer la clé OpenAI
+ne modifie aucun drapeau à elle seule. `0004_trip_research.sql` ajoute les champs
+chiffrés de recherche ; les appliquer avant le Worker candidat.
+
+L’étape de recherche ne retourne dans le journal Workflow que des métadonnées.
+Le texte sourcé reste chiffré dans D1. Le carnet partiel est lisible pendant la
+création de l’image ; un échec d’image conserve le texte et efface les sources.
+Une suppression révoque immédiatement l’accès et efface les champs chiffrés ;
+le cron reprend les nettoyages R2 interrompus, même avant l’échéance du voyage.
+
+Avant l’ouverture publique, réaliser les cas Tokyo et Luxembourg avec une
+identité synthétique, des dates futures et une image synthétique. Contrôler les
+sources, les jours, les nuits, le choix du transport, l’absence de tarif inventé,
+les usages OpenAI et le nettoyage. Les tests locaux à fournisseur simulé ne
+remplacent pas cette preuve. La réception d’un courriel se vérifie séparément
+sur l’adresse explicitement désignée pour le test.
 
 Le binding `EMAIL` ne doit autoriser que `voyage@monflorian.com`. Un échec de
 notification marque `notification_status=failed` sans retirer le résultat. Un

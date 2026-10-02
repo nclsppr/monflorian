@@ -5,9 +5,9 @@ Source canonique de l'ordre de livraison.
 ## Résultat produit
 
 Mon Florian prépare un voyage, montre les voyageurs dans les destinations sous
-forme d'images éditoriales cohérentes, conserve une page privée et l'envoie par
-courriel. Le MVP est gratuit. Booking affilié et Stripe viennent après la preuve
-de ce parcours.
+forme d'images éditoriales cohérentes, conserve une page privée et peut en envoyer le lien par
+courriel. La bêta est gratuite. Le paiement viendra après la bêta, avec un prix
+à définir. Booking affilié et Stripe restent hors de la tranche courante.
 
 ## Principes de séquencement
 
@@ -34,7 +34,7 @@ de ce parcours.
 | 5 | F05 | Génération synthétique asynchrone | in_progress | texte, images, quotas, reprise et coûts observés |
 | 6 | F06 | Page privée et courriel | in_progress | rendu, suppression, notification et notice validés |
 | 7 | F07 | Domaine Cloudflare | done | web, DNS d'envoi, apex, `www`, TLS et release vérifiés |
-| 8 | F08 | MVP gratuit limité | planned | Turnstile, budget et premier utilisateur informé |
+| 8 | F08 | Bêta gratuite limitée | in_progress | candidat ADR-0013, preuves fournisseur et publiques encore requises |
 | 9 | F09 | Attribution Booking.com | blocked | partenariat et liens approuvés |
 | 10 | F10 | Paiement Stripe | planned | Checkout, webhook signé, fiscalité et remboursement décidés |
 | 11 | F11 | Voyage vivant | planned | parcours pendant et après le séjour testé |
@@ -87,6 +87,18 @@ fermée avec `503 TRIP_CREATION_UNAVAILABLE`. `STATUS.md` et
 `DELIVERY-EVIDENCE.md` conservent les contrôles détaillés, la version Cloudflare
 active et les limites du parcours.
 
+## Candidat du 2 octobre 2026
+
+L'ADR-0013 fixe la tranche courante : formulaire relié à la création, recherche
+web, carnet `itinerary.v2`, hôtels sourcés, transport selon le besoin et
+personnalisation facultative par une image. Tokyo à deux et Luxembourg sans
+vol sont les deux scénarios de qualification. Les phases F04 à F08 restent
+ouvertes jusqu'à la preuve du parcours en production.
+
+La migration additive `0004_trip_research.sql`, les alias API `/api/v1` et les
+règles de rétention accompagnent ce candidat. La liste d'activation détaillée
+vit dans `RESTE-A-FAIRE.md`.
+
 ## F04, stockage privé et cycle de vie
 
 Le bucket privé UE, ses règles de cycle de vie, les secrets de chiffrement et
@@ -100,58 +112,52 @@ purge. La phase reste ouverte jusqu'à une preuve synthétique après déploieme
 - Chiffrer brief, résultat et courriel dans D1 avec un Worker Secret.
 - Hacher le jeton de consultation et ne jamais le journaliser.
 - Supprimer les sources après génération, au plus tard sous 24 heures.
-- Expirer le voyage sous 30 jours et offrir une suppression anticipée.
+- Expirer à création + 30 jours ou retour + 7 jours, selon la date la plus
+  tardive, sans dépasser 180 jours. Garder la suppression anticipée.
+- Porter la règle R2 des résultats à 180 jours avant activation et prouver la
+  purge applicative propre à chaque échéance.
 - Prouver la purge avec des objets et données synthétiques.
 
-## F05, génération synthétique asynchrone
+## F05, génération sourcée asynchrone
 
-Le quota transactionnel, les étapes Responses et Image Edits sans retry, le
-stockage R2 et la lecture privée de l'image sont codés. La phase reste ouverte :
-Turnstile est configuré, mais la clé OpenAI n'est pas installée sur le Worker,
-les drapeaux sont à `false` et aucun coût fournisseur n'a été engagé.
+L'ADR-0013 enrichit le contrat historique sous `itinerary.v2` et reporte la
+promotion dynamique de `TravelGuideV1`. Sa fixture continue d'alimenter le
+carnet Japon. La bêta produit une seule illustration facultative par voyage.
 
-La fixture canonique `TravelGuideV1` alimente statiquement le carnet
-Japon, historiquement sous `/v2` et sous `/carnets/japon-10-jours` dans le
-site livré par F03-SITE, sans appel fournisseur. Le schéma, le validateur et le
-compilateur restent séparés du contrat OpenAI courant et du Workflow jusqu'à
-l'ajout des tests reportés et l'adaptation des quotas multi-images.
-
-L'adaptateur borne le JSON itinéraire extrait à 131 072 octets, à l'intérieur
-d'une enveloppe fournisseur limitée à 512 000 octets. Le budget Responses passe
-à 32 000 tokens de sortie afin de laisser de la marge au guide Japon de
-référence et aux tokens non visibles comptés dans cette limite. Ces plafonds ne rendent pas l'intégration
-dynamique active et doivent encore être mesurés sur plusieurs durées.
-
-- Vérifier Turnstile avant création.
-- Débiter les quotas D1 de façon atomique.
+- Vérifier Turnstile puis débiter atomiquement les quotas D1.
 - Démarrer une seule instance Workflow par voyage.
-- Appeler Responses avec `store: false`, schéma strict et plafond de sortie.
-- Remplacer le contrat courant par `TravelGuideV1` après validation de la
-  fixture Japon, mesure du volume et couverture des invariants métier.
-- Appeler Image Edits depuis des clés R2 validées.
-- Compiler chaque consigne d'image depuis le profil serveur et un plan typé,
-  sans transmettre le brief brut ni un prompt libre produit par Responses.
-- Ne pas relancer automatiquement un appel payant si son résultat est inconnu.
-- Stocker les identifiants techniques et l'usage sans contenu.
-- Exécuter un seul voyage synthétique avec son plan d'images borné, puis
-  inspecter coût, volume et logs.
+- Rechercher les faits utiles avec Responses `web_search`, conserver les
+  sources réellement retournées et chiffrer le résultat en D1.
+- Composer le carnet avec Responses, `store: false`, schéma strict et plafonds
+  de sortie, puis revalider dates, nuits, transport, hôtels et références.
+- Construire les liens Booking côté serveur et ne publier aucun prix ou
+  disponibilité comme garanti.
+- Produire l'illustration seulement si des photos et leur accord sont présents.
+  Conserver le texte si l'image échoue et expliquer cet état au voyageur.
+- Refuser les retries aveugles ; un résultat fournisseur incertain ne prouve
+  pas qu'aucun coût n'a été engagé.
+- Prouver Tokyo avec départ et vols, puis Luxembourg avec une nuit et sans vol.
+- Mesurer durée, volume, coût, erreurs et contenu des logs.
 
-Un test avec fake ne termine pas cette phase.
+Les appels simulés ne terminent pas cette phase. Les accès et réglages du
+projet OpenAI utilisé doivent être contrôlés avant la première donnée réelle.
 
-## F06, page privée et courriel
+## F06, page privée et courriel facultatif
 
-Le domaine Cloudflare Email Service est actif et le binding restreint à
-`voyage@monflorian.com` est déployé derrière
-`MONFLORIAN_EMAIL_ENABLED=false`. La notice publique explique les traitements,
-les destinataires, les durées et le retrait anticipé. Aucun courriel n'a encore
-été envoyé et le canal complémentaire de droits reste à ouvrir.
+Le navigateur reçoit le lien privé dès la création. La notification ne bloque
+pas l'accès au carnet et reste facultative. Cloudflare Email Service est le
+fournisseur retenu ; Resend reste une option future sans implémentation dans
+cette tranche.
 
 - Rendre `/voyages/{jeton}` depuis D1 et R2 avec `noindex` et `no-store`.
-- Ne pas enregistrer une copie HTML par voyage ; utiliser le template commun.
-- Envoyer un lien privé, jamais les photos ou le brief complet dans le courriel.
-- Chiffrer puis supprimer l'adresse après envoi réussi.
-- Fournir statut, reprise d'envoi et suppression.
-- Publier la notice et le canal de droits avant un utilisateur réel.
+- Montrer le vrai statut et une erreur exploitable, sans faux temps d'attente.
+- Permettre de copier le lien, d'imprimer et de supprimer le voyage.
+- Envoyer le lien seulement si une adresse est fournie ; ne joindre ni photo,
+  ni brief ni contenu du carnet.
+- Supprimer l'adresse chiffrée après envoi confirmé et distinguer acceptation
+  fournisseur de réception effective.
+- Prouver suppression et purge, y compris pendant un traitement en cours.
+- Publier la notice à jour et vérifier le canal de droits.
 
 ## F07, domaine Cloudflare
 
@@ -163,11 +169,12 @@ les destinataires, les durées et le retrait anticipé. Aucun courriel n'a encor
 - DNS public, TLS, page, configuration et release ont été sondés après
   propagation.
 
-## F08, MVP gratuit limité
+## F08, bêta gratuite limitée
 
 - Limite quotidienne globale et par client.
 - Turnstile visible et erreurs compréhensibles.
-- Budget OpenAI et alerte de coût.
+- Budget OpenAI, alerte de coût et mesure du coût par voyage.
+- Aucun paiement ni carte demandée au voyageur ; paiement annoncé après la bêta.
 - Consentement photo et durée de rétention visibles.
 - Premier parcours humain volontaire, limité et supprimable.
 

@@ -1,114 +1,82 @@
-# Gates de la migration Cloudflare
+# Gates de la bêta gratuite
 
-Dernière mise à jour : 2026-08-31.
+Dernière mise à jour : 2026-10-02. Candidat décrit par l'ADR-0013 ; une case
+reste ouverte tant que la preuve correspondante n'est pas consignée.
 
-## Acquis
+## Socle déjà livré
 
-- [x] Worker TypeScript et Static Assets déployés sur `workers.dev`.
-- [x] Générations texte et image fermées en configuration et dans le code.
-- [x] D1 créé en juridiction UE et migration initiale appliquée.
-- [x] Bucket R2 privé créé en juridiction UE, sans domaine public, avec règles
-  d'expiration à 24 heures et 30 jours.
-- [x] Secrets de chiffrement et de pseudonymisation installés sans valeur dans
-  Git ni dans les preuves.
-- [x] Workflow `monflorian-trip` déployé avec garde-fou fermé.
-- [x] Chaîne OCI et contrats Atlas retirés du chemin de livraison du dépôt.
-- [x] ADR-0007 acceptée.
+- [x] Worker et Static Assets sur l'apex, `www` et `workers.dev`.
+- [x] D1 en juridiction UE, secrets de chiffrement et quotas persistants.
+- [x] R2 privé UE et règle de secours des sources à 24 heures.
+- [x] Workflow déployé derrière des drapeaux d'activation fermés.
+- [x] Turnstile configuré et secret installé.
+- [x] Domaine Cloudflare Email Service configuré et binding d'envoi restreint.
+- [x] Carnet Japon et guides publics, pré-rendus et lisibles sans JavaScript.
 
-## Livraison Cloudflare encore à automatiser
+Ces preuves historiques ne valident pas la génération réelle ni les nouvelles
+durées. L'ancien délai R2 de 30 jours pour les résultats doit changer avant
+d'accepter un voyage conservé plus longtemps.
 
-- [ ] Relier le dépôt à Workers Builds ou installer un jeton GitHub limité au
-  déploiement du Worker.
-- [x] Domaine, apex, `www`, TLS et absence de réception humaine vérifiés.
+## Candidat à valider
 
-## Avant la première génération synthétique
+- [ ] Formulaire relié à `/api/trips` avec destination, départ, dates ou durée,
+  budget, transport et style d'hébergement effectivement consommés.
+- [ ] Bêta gratuite sans carte ni paywall, paiement annoncé après la bêta sans
+  ancien prix présenté comme acquis.
+- [ ] Photos facultatives, réencodées, prévisualisées localement et transmises
+  seulement à l'envoi explicite avec accord des personnes représentées.
+- [ ] Courriel facultatif et accès au lien privé sans compte.
+- [ ] Recherche web distincte, sources réellement retournées, recherche
+  chiffrée et carnet `itinerary.v2` revalidé.
+- [ ] Hôtels nommés sourcés, liens Booking construits par le serveur et absence
+  de promesse de meilleur prix ou de disponibilité.
+- [ ] Respect du transport `none`, des dates, des nuits et de la durée 1 à
+  14 jours ; refus de dates passées ou de retour à plus de 173 jours.
+- [ ] Une illustration facultative, erreur visible et texte conservé si elle
+  échoue ; aucune relance payante aveugle.
+- [ ] Alias `/api/v1` alignés avec les routes canoniques et leurs protections.
+- [ ] Contrôles `./scripts/verify.sh`, clavier, mobile, bureau et erreurs du
+  parcours visibles.
 
-### Contrat TravelGuideV1 avant intégration
+## Avant l'activation distante
 
-- [x] Versionner le contrat JSON candidat et le carnet Japon de référence.
-- [x] Alimenter statiquement le carnet Japon de `/v2` depuis la fixture
-  canonique, sans appel fournisseur.
-- [x] Compiler les consignes d'image depuis des champs bornés avec le profil
-  `fuji-editorial-v1`, sans prompt libre fourni au modèle d'image.
-- [ ] Tester le schéma, les relations entre journées, chapitres, nuits et images.
-- [ ] Tester le compilateur avec des URL, du HTML, des pseudo-instructions et
-  des valeurs hors limites.
-- [x] Borner le JSON itinéraire extrait à 131 072 octets derrière l'enveloppe
-  fournisseur de 512 000 octets, avec 32 000 tokens de sortie au maximum.
-- [ ] Mesurer les volumes sur 3, 7, 10 et 14 jours, puis dimensionner le stockage
-  et les quotas avant l'intégration dynamique.
-- [ ] Séparer dans le contrat les correspondances d'un transfert et ses modes
-  alternatifs, au lieu d'utiliser une seule liste `modes` ambiguë.
-- [ ] Remplacer le contrat d'itinéraire courant dans le Workflow et l'OpenAPI.
-- [ ] Introduire dans D1 et le Workflow les états `proposal_pending`,
-  `proposal_ready`, `illustration_pending` et `ready`, puis séparer la génération
-  du guide de l'acceptation et de l'ajout facultatif des portraits.
-- [ ] Définir un `FactPack` sourcé et daté pour les faits volatils avant de les
-  présenter comme vérifiés dans un guide.
+- [ ] Installer la clé OpenAI dédiée hors Git et vérifier accès aux modèles,
+  réglages de données, budget et limite quotidienne.
+- [ ] Appliquer `0004_trip_research.sql` et vérifier l'état distant D1.
+- [ ] Porter la règle R2 des résultats à 180 jours, garder les sources à
+  24 heures et confirmer l'absence de domaine public.
+- [ ] Prouver la purge à l'échéance exacte : maximum entre création + 30 jours
+  et retour + 7 jours, plafonné à 180 jours.
+- [ ] Prouver le retrait anticipé pendant la recherche, la génération et
+  l'envoi d'image ; aucun résultat tardif ne recrée le voyage supprimé.
+- [ ] Vérifier la notice publiée, le consentement et le canal de droits.
+- [ ] Vérifier Turnstile de bout en bout, quotas, doublons et concurrence.
 
-### Régressions V2 reportées
+## Preuves du parcours complet
 
-- [ ] Ajouter des parcours navigateur sur Chrome, Firefox et Safari mobile pour
-  l'introduction, l'en-tête, le téléphone, les trois étapes et le carnet Japon.
-- [ ] Couvrir au clavier les dialogues de partage, l'erreur de mot de passe et
-  les accordéons du guide, avec restitution du focus à la fermeture.
-- [ ] Mesurer LCP, CLS et poids transféré sur la page d'accueil et le carnet,
-  puis décider si le carnet et les dialogues doivent être chargés à la demande.
-- [ ] Générer plusieurs images sans retry aveugle, avec un plafond de coût.
+- [ ] Tokyo à deux début novembre : départ, dates, budget, rythme et recherche
+  aérienne utilisés, hôtels sourcés, jours cohérents et lien privé lisible.
+- [ ] Luxembourg : une nuit dans un hôtel luxueux, courte randonnée, départ
+  proche et aucun vol proposé avec le choix sans transport.
+- [ ] Création sans photo ni courriel et lecture du résultat sur le lien privé.
+- [ ] Création contrôlée avec références fictives, image visible et sources
+  photo supprimées ; noter le coût fournisseur et la durée observée.
+- [ ] Notification demandée : un message autorisé reçu, adresse chiffrée
+  supprimée et distinction entre livraison, bounce et envoi incertain.
+- [ ] Consultation et média refusés après suppression et expiration.
+- [ ] Aucun brief, photo, courriel, jeton ou résultat dans les logs.
+- [ ] SHA poussé, PR et CI validées, version Worker identifiée, sondes sur les
+  origines publiques et contrôle visible après publication.
 
-### Suite de l'audit V2 après la démonstration
+## Après la bêta
 
-- [ ] Ajouter saison ou dates, départ, budget, transport, intérêts et
-  contraintes par divulgation progressive quand le moteur consommera réellement
-  ces réponses.
-- [ ] Déplacer l'ajout facultatif de portraits après l'acceptation de la
-  première proposition, avec finalité et rétention visibles avant l'envoi.
-- [ ] Permettre d'alléger, remplacer, décaler ou conserver une journée depuis
-  un carnet réellement persistant.
-- [ ] Remplacer la simulation de partage par un jeton serveur révocable, limité
-  en tentatives, expirant et servi sans cache avant toute donnée personnelle.
-- [ ] Créer des pages d'exemples publiques, prérendues et indexables avec leurs
-  propres métadonnées, sans ouvrir les carnets privés à l'indexation.
-- [ ] Instrumenter les étapes du parcours seulement après décision sur la
-  mesure, le consentement et la durée de conservation.
-- [ ] Afficher un prix uniquement quand le périmètre, le paiement, les délais,
-  les modifications et les remboursements seront décidés et livrables.
+- Paiement Stripe, prix, fiscalité, remboursement et support avant mode réel.
+- Affiliation Booking seulement après partenariat et liens approuvés.
+- Inventaire de tarifs et disponibilités seulement avec une intégration dédiée.
+- Modification du carnet, illustrations multiples, compte, historique long,
+  PDF produit par le service et Voyage vivant après preuve du besoin.
+- Resend seulement si le courriel Cloudflare ne répond pas au besoin observé.
+- Workers Builds ou jeton GitHub restreint pour automatiser les publications.
 
-- [x] Écrire les photos validées dans R2 avant de démarrer le Workflow, avec la
-  création toujours fermée.
-- [x] Chiffrer le brief et l'adresse de courriel stockés dans D1.
-- [x] Porter l'adaptateur OpenAI dans les étapes Workflow sans retry aveugle,
-  derrière les drapeaux fermés.
-- [x] Rendre les états de la page privée depuis D1 avec un jeton haché.
-- [x] Installer les secrets de chiffrement hors Git.
-- [x] Servir l'illustration privée depuis R2 après génération, avec un jeton
-  valide et sans cache.
-- [ ] Installer et appeler OpenAI depuis le Workflow.
-- [x] Ajouter les quotas D1 persistants et atomiques.
-- [x] Créer Turnstile et installer son secret.
-- [x] Choisir Cloudflare Email Service, activer le domaine et câbler son binding.
-- [ ] Prouver le nettoyage des photos sous 24 heures et des voyages sous 30
-  jours.
-- [ ] Exécuter un seul parcours synthétique texte et image, puis inspecter les
-  coûts et les logs.
-- [ ] Envoyer un seul courriel synthétique et inspecter livraison, bounce et
-  suppression de l'adresse chiffrée.
-
-## Avant une personne réelle
-
-- [x] Publier la notice de traitement et la suppression anticipée.
-- [ ] Publier un canal de droits complémentaire au retrait depuis le lien privé.
-- [ ] Vérifier les réglages de rétention du projet OpenAI utilisé.
-- [ ] Tester le consentement, le retrait et le lien privé avec des données sans
-  identité réelle.
-- [ ] Définir un budget et une limite quotidienne du MVP gratuit.
-
-## Reporté
-
-- Affiliation Booking.com tant qu'aucun partenariat ni lien n'est approuvé.
-- Stripe, fiscalité, remboursements et webhooks réels après validation du MVP
-  gratuit.
-- Compte client, historique long, PDF, partage public et Voyage vivant.
-
-L'ancien environnement Atlas reste hors de cette migration. Son retrait ou ses
-secrets relèvent d'une tâche séparée explicitement autorisée.
+L'ancien Atlas reste hors du runtime. Aucun secret n'y est déployé, modifié ou
+révoqué dans cette tranche.

@@ -25,7 +25,7 @@ function inspectReferences(value) {
 
 test("le contrat OpenAPI est autonome et décrit le voyage asynchrone et les routes fermées", () => {
   assert.equal(contract.openapi, "3.1.0");
-  assert.deepEqual(Object.keys(contract.paths).sort(), [
+  const canonicalPaths = [
     "/api/config",
     "/api/health",
     "/api/illustrations",
@@ -33,7 +33,8 @@ test("le contrat OpenAPI est autonome et décrit le voyage asynchrone et les rou
     "/api/trips",
     "/api/trips/{token}",
     "/api/trips/{token}/media/{position}",
-  ]);
+  ];
+  assert.deepEqual(Object.keys(contract.paths).sort(), [...canonicalPaths, ...canonicalPaths.map((path) => path.replace("/api/", "/api/v1/"))].sort());
   assert.deepEqual(Object.keys(contract.paths["/api/health"]), ["get"]);
   assert.deepEqual(Object.keys(contract.paths["/api/config"]), ["get"]);
   assert.deepEqual(Object.keys(contract.paths["/api/itineraries"]), ["post"]);
@@ -61,8 +62,8 @@ test("les limites publiques et les corps correspondent aux validateurs du serveu
   assert.equal(publicConfig.properties.bookingAllowedHosts.type, "array");
 
   const trip = contract.components.schemas.TripCreationRequest;
-  assert.ok(trip.required.includes("email"));
-  assert.ok(trip.required.includes("photos"));
+  assert.ok(!trip.required.includes("email"));
+  assert.ok(!trip.required.includes("photos"));
   assert.equal(trip.properties.photos.maxItems, 4);
   assert.equal(trip.properties.email.format, "email");
 });

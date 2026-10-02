@@ -1,3 +1,5 @@
+import { AppError } from "../../app/core.mjs";
+
 export interface StoredTrip {
   id: string;
   public_token_hash: string;
@@ -8,6 +10,8 @@ export interface StoredTrip {
   result_nonce: ArrayBuffer | null;
   email_ciphertext: ArrayBuffer | null;
   email_nonce: ArrayBuffer | null;
+  research_ciphertext: ArrayBuffer | null;
+  research_nonce: ArrayBuffer | null;
   notification_status: string;
   error_code: string | null;
   created_at: number;
@@ -43,8 +47,8 @@ interface NewTrip {
   idempotencyKeyHash: string;
   requestCiphertext: Uint8Array;
   requestNonce: Uint8Array;
-  emailCiphertext: Uint8Array;
-  emailNonce: Uint8Array;
+  emailCiphertext: Uint8Array | null;
+  emailNonce: Uint8Array | null;
   bookingMode: string;
   createdAt: number;
   expiresAt: number;
@@ -70,7 +74,7 @@ export async function findTripByIdempotencyHash(
   return db.prepare(
     `SELECT id, public_token_hash, status, request_ciphertext, request_nonce,
             result_ciphertext, result_nonce, email_ciphertext, email_nonce,
-            notification_status, error_code, created_at, updated_at, expires_at, completed_at
+            research_ciphertext, research_nonce, notification_status, error_code, created_at, updated_at, expires_at, completed_at
        FROM trips
       WHERE idempotency_key_hash = ?1`,
   ).bind(idempotencyKeyHash).first<StoredTrip>();
@@ -80,7 +84,7 @@ export async function findTripById(db: D1Database, tripId: string): Promise<Stor
   return db.prepare(
     `SELECT id, public_token_hash, status, request_ciphertext, request_nonce,
             result_ciphertext, result_nonce, email_ciphertext, email_nonce,
-            notification_status, error_code, created_at, updated_at, expires_at, completed_at
+            research_ciphertext, research_nonce, notification_status, error_code, created_at, updated_at, expires_at, completed_at
        FROM trips
       WHERE id = ?1`,
   ).bind(tripId).first<StoredTrip>();
@@ -93,7 +97,7 @@ export async function findTripByTokenHash(
   return db.prepare(
     `SELECT id, public_token_hash, status, request_ciphertext, request_nonce,
             result_ciphertext, result_nonce, email_ciphertext, email_nonce,
-            notification_status, error_code, created_at, updated_at, expires_at, completed_at
+            research_ciphertext, research_nonce, notification_status, error_code, created_at, updated_at, expires_at, completed_at
        FROM trips
       WHERE public_token_hash = ?1`,
   ).bind(publicTokenHash).first<StoredTrip>();
@@ -105,7 +109,7 @@ export async function insertTrip(db: D1Database, trip: NewTrip): Promise<void> {
        id, public_token_hash, idempotency_key_hash, status, locale, booking_mode,
        request_ciphertext, request_nonce, email_ciphertext, email_nonce,
        notification_status, created_at, updated_at, expires_at
-     ) VALUES (?1, ?2, ?3, 'pending', 'fr', ?4, ?5, ?6, ?7, ?8, 'pending', ?9, ?9, ?10)`,
+     ) VALUES (?1, ?2, ?3, 'pending', 'fr', ?4, ?5, ?6, ?7, ?8, CASE WHEN ?7 IS NULL THEN 'skipped' ELSE 'pending' END, ?9, ?9, ?10)`,
   ).bind(
     trip.id,
     trip.publicTokenHash,
@@ -126,7 +130,8 @@ export async function insertAssets(db: D1Database, assets: NewAsset[]): Promise<
     `INSERT INTO trip_assets (
        id, trip_id, kind, position, object_key, content_type, size_bytes,
        checksum_sha256, created_at, expires_at
-     ) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10)`,
+     ) SELECT ?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10
+       WHERE EXISTS (SELECT 1 FROM trips WHERE id = ?2 AND status NOT IN ('deleting', 'deleted', 'expired') AND expires_at > ?9)`,
   ).bind(
     asset.id,
     asset.tripId,
@@ -163,7 +168,7 @@ export async function markTripFailed(
   await db.prepare(
     `UPDATE trips
         SET status = 'failed', error_code = ?2, updated_at = ?3
-      WHERE id = ?1 AND status NOT IN ('deleted', 'expired')`,
+      WHERE id = ?1 AND status NOT IN ('deleting', 'deleted', 'expired')`,
   ).bind(tripId, errorCode, now).run();
 }
 
@@ -175,16 +180,17 @@ export async function saveTripResult(
   nonce: Uint8Array,
   now: number,
 ): Promise<void> {
-  await db.prepare(
+  const saved = await db.prepare(
     `UPDATE trips
         SET status = ?2,
             result_ciphertext = ?3,
             result_nonce = ?4,
             updated_at = ?5,
             completed_at = CASE WHEN ?2 = 'ready' THEN ?5 ELSE completed_at END,
-            notification_status = CASE WHEN ?2 = 'ready' THEN 'pending' ELSE notification_status END
-      WHERE id = ?1 AND status NOT IN ('deleted', 'expired')`,
+            notification_status = CASE WHEN ?2 = 'ready' AND email_ciphertext IS NOT NULL THEN 'pending' ELSE notification_status END
+      WHERE id = ?1 AND status NOT IN ('deleting', 'deleted', 'expired') AND expires_at > ?5`,
   ).bind(tripId, status, ciphertext, nonce, now).run();
+  if (saved.meta.changes !== 1) throw new AppError(409, "TRIP_CLOSED", "Le voyage a été supprimé ou a expiré.");
 }
 
 export async function markNotificationSent(
@@ -345,6 +351,10 @@ export async function deleteTripData(
   finalStatus: "deleted" | "expired",
   now: number,
 ): Promise<number> {
+  await db.prepare(`UPDATE trips SET status = 'deleting', updated_at = ?2,
+    request_ciphertext = NULL, request_nonce = NULL, result_ciphertext = NULL, result_nonce = NULL,
+    research_ciphertext = NULL, research_nonce = NULL, email_ciphertext = NULL, email_nonce = NULL
+    WHERE id = ?1 AND status NOT IN ('deleted', 'expired')`).bind(trip.id, now).run();
   const assets = await listTripAssets(db, trip.id);
   if (assets.length) {
     await media.delete(assets.map((asset) => asset.object_key));
@@ -355,6 +365,8 @@ export async function deleteTripData(
         SET status = ?2,
             request_ciphertext = NULL,
             request_nonce = NULL,
+            research_ciphertext = NULL,
+            research_nonce = NULL,
             result_ciphertext = NULL,
             result_nonce = NULL,
             email_ciphertext = NULL,
@@ -387,16 +399,16 @@ export async function purgeExpiredData(
   const expiredTrips = await db.prepare(
     `SELECT id, public_token_hash, status, request_ciphertext, request_nonce,
             result_ciphertext, result_nonce, email_ciphertext, email_nonce,
-            notification_status, error_code, created_at, updated_at, expires_at, completed_at
+            research_ciphertext, research_nonce, notification_status, error_code, created_at, updated_at, expires_at, completed_at
        FROM trips
-      WHERE expires_at <= ?1 AND status NOT IN ('deleted', 'expired')
+      WHERE status = 'deleting' OR (expires_at <= ?1 AND status NOT IN ('deleted', 'expired'))
       ORDER BY expires_at
       LIMIT 50`,
   ).bind(now).all<StoredTrip>();
 
   let tripAssetsDeleted = 0;
   for (const trip of expiredTrips.results) {
-    tripAssetsDeleted += await deleteTripData(db, media, trip, "expired", now);
+    tripAssetsDeleted += await deleteTripData(db, media, trip, trip.expires_at <= now ? "expired" : "deleted", now);
   }
 
   const quotaCutoff = new Date(now - 31 * 24 * 60 * 60 * 1_000).toISOString().slice(0, 10);
@@ -410,4 +422,24 @@ export async function purgeExpiredData(
     tripAssetsDeleted,
     quotasDeleted: quotaPurge.meta.changes,
   };
+}
+
+export async function saveTripResearch(db: D1Database, tripId: string, ciphertext: Uint8Array, nonce: Uint8Array, now: number): Promise<void> {
+  const saved = await db.prepare(`UPDATE trips SET research_ciphertext = ?2, research_nonce = ?3,
+    status = 'generating_itinerary', updated_at = ?4
+    WHERE id = ?1 AND status NOT IN ('deleting', 'deleted', 'expired') AND expires_at > ?4`)
+    .bind(tripId, ciphertext, nonce, now).run();
+  if (saved.meta.changes !== 1) throw new AppError(409, "TRIP_CLOSED", "Le voyage a été supprimé ou a expiré.");
+}
+
+export async function markNotificationSkipped(db: D1Database, tripId: string, now: number): Promise<void> {
+  await db.prepare(`UPDATE trips SET notification_status = 'skipped', email_ciphertext = NULL,
+    email_nonce = NULL, updated_at = ?2 WHERE id = ?1 AND status = 'ready' AND notification_status <> 'sent'`)
+    .bind(tripId, now).run();
+}
+
+export async function rejectTripAtQuota(db: D1Database, tripId: string, now: number): Promise<void> {
+  await db.prepare(`UPDATE trips SET status = 'failed', error_code = 'QUOTA_EXCEEDED',
+    request_ciphertext = NULL, request_nonce = NULL, email_ciphertext = NULL, email_nonce = NULL,
+    updated_at = ?2, expires_at = ?2 + 86400000 WHERE id = ?1 AND status = 'pending'`).bind(tripId, now).run();
 }

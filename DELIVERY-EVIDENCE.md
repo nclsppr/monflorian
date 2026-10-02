@@ -3,6 +3,38 @@
 Chaque section nomme son environnement et ses limites. Les sections Atlas sont
 des archives historiques ; la section Cloudflare porte la migration courante.
 
+## Candidat bêta gratuite, contrôles locaux du 2 octobre 2026
+
+La branche `codex/free-beta-travel` prépare l’ADR-0013. Aucun secret OpenAI,
+drapeau de génération, migration distante ou règle R2 n’a été modifié pendant
+ces contrôles. Aucune personne réelle n’a été envoyée à un fournisseur.
+
+- `./scripts/verify.sh` complet réussi sur le candidat final : 90 tests
+  applicatifs, TypeScript,
+  build Worker, Docker Compose, contrôles publics locaux et Nimbus.
+- Tests supplémentaires du vrai Worker et Workflow, avec SQLite en mémoire,
+  R2 et fournisseur simulés : Tokyo avec vol, Luxembourg sans avion, création
+  sans paiement ni email, idempotence, quota, échec image, suppression pendant
+  traitement et reprise du nettoyage R2 après panne.
+- Revue indépendante : correction du masquage des chemins privés invalides,
+  effacement des demandes rejetées par quota et fermeture des écritures après
+  suppression, y compris pendant le téléversement initial.
+- Chrome à 1440 et 390 px : accueil, formulaire, récapitulatif et carnet privé
+  et notice sans débordement ni erreur JavaScript. Accord photo obligatoire, aucune
+  transmission avant envoi, même clé lors d’une reprise après erreur réseau.
+- Réencodage navigateur d’une photo synthétique : WebP 1440 × 960 de 137 476
+  octets, accepté par le validateur serveur. Les captures et journaux de test
+  restent hors du dépôt, sous `/tmp/monflorian-ui-qa` et `/tmp/monflorian-*`.
+- Production relue le 2 octobre : création et illustrations fermées, accès
+  privé ; seule `0004_trip_research.sql` reste à appliquer. R2 conserve ses
+  règles sources à un jour et résultats à 30 jours.
+
+La clé OpenAI attend la fin du parcours sécurisé de création. Le canal humain
+de contact et l’adresse de réception du test sont demandés au propriétaire.
+L’appel OpenAI réel, son coût, la génération d’image, Turnstile en production,
+la réception de courriel et la publication restent à prouver. Les sources des
+fixtures sont synthétiques ; elles ne valident aucun hôtel ni trajet réel.
+
 ## Accueil bureau et footer, publiés le 7 septembre 2026
 
 La [PR #56](https://github.com/nclsppr/monflorian/pull/56) supprime le doublon

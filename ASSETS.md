@@ -122,8 +122,10 @@ requalifiés comme des photos personnelles réelles dans les contrôles du dép�
 Les futures photos envoyées par des voyageurs réels suivent un autre flux : le
 navigateur les réencode avant l'envoi au Worker, puis R2 privé les conserve
 jusqu'à la génération ou pendant 24 heures au maximum. Les résultats du parcours
-réel restent destinés à la page privée pendant 30 jours au maximum. Le détail de
-ce flux vit dans [`DATA-PROCESSING.md`](DATA-PROCESSING.md).
+réel suivent l'échéance de l'ADR-0013 : création + 30 jours ou retour + 7 jours,
+selon la date la plus tardive, avec un maximum de 180 jours. Cette évolution
+reste candidate jusqu'à la preuve des règles distantes et de la purge. Le
+détail de ce flux vit dans [`DATA-PROCESSING.md`](DATA-PROCESSING.md).
 
 ## Retrait
 

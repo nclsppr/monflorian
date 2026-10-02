@@ -22,6 +22,8 @@ colors:
   pencilSageDark: "#626855"
   line: "rgba(6, 26, 59, 0.12)"
   muted: "#66738b"
+  helpText: "#5e6c80"
+  errorText: "#a12d19"
 typography:
   body:
     fontFamily: '"Avenir Next", "Segoe UI", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, sans-serif'
@@ -54,6 +56,11 @@ Ce contrat décrit la V2 principale publiée le 7 septembre 2026, décidée dans
 La [PR #56](https://github.com/nclsppr/monflorian/pull/56) publie ensuite la
 composition bureau et le footer décrits ici.
 
+L'[ADR-0013](docs/decisions/adr-0013-beta-gratuite-voyages-sources.md) ajoute le
+parcours personnalisé candidat décrit ci-dessous. Sa publication et ses
+capacités réelles doivent être vérifiées avant de présenter la bêta comme
+ouverte.
+
 Les sources canoniques sont `app/v2/src/main.jsx`, `Planner.jsx`, `Guides.jsx`,
 leurs styles, dont `home-shell.css` pour l’accueil et le footer, et leurs données. Le carnet consomme la fixture canonique
 `contracts/examples/japan-10-days.v1.json` par `app/v2/src/data.js`. Le build
@@ -74,8 +81,9 @@ chatbot. Le logo porte la personnalité ; les outils servent une action précise
 Florian intervient pour expliquer un choix d'itinéraire, pas pour décorer chaque
 bloc.
 
-L'accueil montre le carnet Japon et permet de préparer un pense-bête personnel.
-Il annonce que la génération sur mesure reste fermée. Les cinq pages publiques
+L'accueil montre le carnet Japon et conduit au formulaire de voyage. Le candidat
+place « Créer mon voyage gratuit » au premier plan et « Voir un exemple » en
+second. L'état fermé, s'il subsiste, est annoncé avant tout envoi. Les cinq pages publiques
 sont l'accueil, le carnet Japon, l'index des guides et deux articles. Le carnet
 et les guides se lisent sans JavaScript. Le pense-bête, la checklist et les
 commandes de partage sont des améliorations interactives du contenu déjà rendu.
@@ -128,8 +136,8 @@ restent lisibles sur mobile sans dépendre d'un agrandissement.
 
 ## Parcours et navigation
 
-L'action principale de l'accueil ouvre le carnet Japon. Une action secondaire
-mène au pense-bête. La navigation relie carnet, pense-bête et guides avec de
+L'action principale conduit à la création gratuite ; l'action secondaire ouvre
+le carnet Japon public. La navigation relie carnet, formulaire et guides avec de
 vrais liens ; le menu mobile et les trois inspirations emploient des éléments
 `details` natifs. L'utilisateur peut ouvrir une destination dans un nouvel
 onglet et comprendre où mène le lien.
@@ -167,6 +175,35 @@ jamais une réservation. L'action « Tout décocher » remet la liste à zéro e
 retire sa copie locale. Le lien partagé ne transmet ni cette liste ni le
 pense-bête.
 
+## Création personnalisée candidate
+
+La promesse porte sur un carnet adapté, des hôtels sourcés et les choix utiles
+avant réservation. Elle ne promet ni le vol le moins cher, ni une disponibilité,
+ni un voyage réservé. La mention « Gratuit pendant la bêta » accompagne
+l'action ; le paiement annoncé après la bêta n'affiche pas encore de prix.
+
+Le formulaire permet de partir d'un exemple Tokyo à deux ou Luxembourg pour
+une nuit, puis d'adapter destination, départ, dates ou durée, rythme, budget et
+hébergement. Le transport est un vrai choix ; une escapade proche peut exclure
+l'avion. Les informations facultatives restent identifiées comme telles.
+
+La sélection des photos affiche un aperçu local et une commande de retrait.
+Le texte explique leur finalité, l'accord des personnes et leur suppression
+sous 24 heures. L'envoi du formulaire est le seul déclencheur de transmission.
+Le courriel reste facultatif et sert uniquement à recevoir le lien privé.
+
+Après création, l'interface donne le lien privé et suit les états réels du
+traitement. Elle n'annonce pas un délai chiffré sans mesure. Un échec de photo
+ou de notification ne masque pas un itinéraire prêt. Le texte explique ce qui
+est disponible et l'action utile, sans détail d'infrastructure.
+
+Le carnet privé organise journées, alternatives, hébergements, transport,
+conseils et vérifications. Les sources sont visibles près des recommandations.
+Les boutons parlent de consulter, comparer ou vérifier sur le site externe,
+jamais de réservation déjà acquise. L'échéance, la copie du lien, l'impression
+et la suppression restent faciles à trouver. Une illustration générée garde
+sa mention de projection synthétique.
+
 ## Images et partage
 
 Les scènes Japon et les couvertures d'inspiration restent synthétiques. Le
@@ -184,9 +221,9 @@ contrôle d'accès privé simulé ni de mot de passe. L'impression utilise le
 navigateur et une présentation de lecture. Elle ne doit pas devenir une
 promesse de PDF généré par le service.
 
-Les futures photos réelles restent soumises au contrat distinct de consentement,
-de stockage R2 privé et de suppression. Elles ne sont demandées qu'après une
-première proposition utile et acceptée dans le futur parcours personnalisé.
+Les photos réelles restent soumises au contrat de consentement, de stockage R2
+privé et de suppression. L'ADR-0013 autorise leur ajout facultatif dès la saisie
+et remplace l'ancienne séquence qui attendait l'acceptation d'une proposition.
 
 ## Composants et accessibilité
 
@@ -212,5 +249,6 @@ génération ne précède l'ouverture du carnet.
 
 Ne pas ajouter d'avis, de note, de disponibilité, d'affiliation, de garantie ou
 de paiement sans preuve. Aucun bouton ne doit suggérer une réservation confirmée.
-La génération personnalisée, le courriel et les photos restent fermés. Le
-prototype sous `prototype/` reste une expérience locale séparée.
+La publication du candidat ne suffit pas à prouver la génération, l'image ou
+le courriel. `STATUS.md` porte l'état vérifié de chaque capacité. Le prototype
+sous `prototype/` reste une expérience locale séparée.

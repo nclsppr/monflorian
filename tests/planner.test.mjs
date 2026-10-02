@@ -59,3 +59,51 @@ test("le brief exporté reprend les choix et laisse visibles les informations à
   assert.match(text, /Aucune demande ni réservation n’a été envoyée/u);
   assert.match(plannerText(DEFAULT_PLANNER_DRAFT), /Destination, saison et envies à préciser/u);
 });
+
+const { buildTripPayload, DEFAULT_TRIP_DRAFT, privateTripUrl, TRIP_IDEAS, tripDraftErrors } = await import("../app/v2/src/trip-draft.mjs");
+const testToday = new Date("2026-10-02T12:00:00Z");
+
+test("les deux idées préparent des demandes distinctes sans inventer les dates ni le départ", () => {
+  const tokyo = { ...DEFAULT_TRIP_DRAFT, ...TRIP_IDEAS[0].draft };
+  const luxembourg = { ...DEFAULT_TRIP_DRAFT, ...TRIP_IDEAS[1].draft };
+  assert.deepEqual(tripDraftErrors(tokyo, testToday), {});
+  assert.deepEqual(tripDraftErrors(luxembourg, testToday), {});
+  assert.equal(tokyo.startDate, "");
+  assert.equal(tokyo.departureCity, "");
+  assert.match(tokyo.brief, /début novembre/u);
+  assert.equal(luxembourg.durationDays, 2);
+  assert.equal(luxembourg.transportMode, "none");
+  assert.equal(luxembourg.accommodationStyle, "luxury");
+});
+
+test("une journée est valide et les dates exactes restent cohérentes avec la durée", () => {
+  const draft = { ...DEFAULT_TRIP_DRAFT, ...TRIP_IDEAS[1].draft, durationDays: 1 };
+  assert.deepEqual(tripDraftErrors(draft, testToday), {});
+  assert.ok(tripDraftErrors({ ...draft, startDate: "2026-11-01", endDate: "2026-11-02" }, testToday).durationDays);
+  assert.deepEqual(tripDraftErrors({ ...draft, durationDays: 2, startDate: "2026-11-01", endDate: "2026-11-02" }, testToday), {});
+  for (const startDate of ["2026-02-30", "2026-09-01", "2027-11-01"]) assert.ok(tripDraftErrors({ ...draft, startDate }, testToday).startDate);
+  assert.ok(tripDraftErrors({ ...draft, startDate: "2026-11-01", endDate: "2026-11-16" }, testToday).endDate);
+  for (const budgetTotalEur of ["-1", "12e3", "abc", "0", "1200,50", "100001"]) assert.ok(tripDraftErrors({ ...draft, budgetTotalEur }, testToday).budgetTotalEur);
+});
+
+test("la demande laisse inconnues les informations absentes et exclut le code d’accès du contenu", () => {
+  const draft = { ...DEFAULT_TRIP_DRAFT, ...TRIP_IDEAS[0].draft, accessCode: "private-test", email: "person@example.test", budgetTotalEur: "1250" };
+  const payload = buildTripPayload(draft, { turnstileToken: "synthetic-test" });
+  assert.equal(payload.departureCity, null);
+  assert.equal(payload.startDate, null);
+  assert.equal(payload.endDate, null);
+  assert.equal(payload.email, null);
+  assert.equal(payload.budgetTotalEur, 1250);
+  assert.deepEqual(payload.photos, []);
+  assert.equal(payload.photoConsent, false);
+  assert.equal(Object.hasOwn(payload, "accessCode"), false);
+  assert.equal(buildTripPayload(draft, { emailEnabled: true }).email, "person@example.test");
+  assert.equal(buildTripPayload(draft, { photos: [{ dataUrl: "data:image/webp;base64,test", previewUrl: "blob:local" }], photoConsent: true }).photoConsent, true);
+});
+
+test("le lien reçu reste une page privée du site sans redirection ni paramètre étranger", () => {
+  const origin = "https://monflorian.com";
+  const path = `/voyages/${"a".repeat(43)}`;
+  assert.equal(privateTripUrl(path, origin), `${origin}${path}`);
+  for (const value of ["https://foreign.example" + path, "//foreign.example" + path, "javascript:alert(1)", "/", `${path}?next=external`, `${path}#external`, "/voyages/x", null]) assert.equal(privateTripUrl(value, origin), null);
+});

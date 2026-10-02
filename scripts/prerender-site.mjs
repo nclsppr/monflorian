@@ -37,7 +37,7 @@ const pages = [
   {
     path: "/",
     title: "Préparer un voyage à ton rythme | Mon Florian",
-    description: "Explore un carnet de voyage de dix jours au Japon, prépare ton pense-bête et retrouve des guides pour organiser tes étapes, tes trajets et tes réservations.",
+    description: "Prépare un voyage adapté à tes envies : itinéraire, idées d’hôtels et trajets. Création gratuite pendant la bêta, sans carte bancaire. Découvre aussi le carnet Japon.",
     name: "Mon Florian",
     image: socialImages.japan,
   },

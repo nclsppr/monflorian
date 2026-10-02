@@ -4,6 +4,20 @@ import { AppError, LIMITS, decodePhoto, validateItineraryInput } from "./core.mj
 
 export const TRIP_RETENTION_MS = 30 * 24 * 60 * 60 * 1_000;
 export const SOURCE_RETENTION_MS = 24 * 60 * 60 * 1_000;
+export const MAX_TRIP_RETENTION_MS = 180 * 24 * 60 * 60 * 1_000;
+
+export function tripExpiresAt(itinerary, now = Date.now()) {
+  const day = 86_400_000;
+  const today = new Date(now).toISOString().slice(0, 10);
+  if (itinerary.startDate && itinerary.startDate < today) {
+    throw new AppError(400, "PAST_TRIP", "Choisis une date de départ à venir.");
+  }
+  const afterReturn = itinerary.endDate ? Date.parse(`${itinerary.endDate}T23:59:59Z`) + 7 * day : 0;
+  if (afterReturn > now + MAX_TRIP_RETENTION_MS) {
+    throw new AppError(400, "TRIP_TOO_FAR", "Pendant la bêta, prépare un voyage dont le retour est prévu dans les 173 prochains jours.");
+  }
+  return Math.max(now + TRIP_RETENTION_MS, afterReturn);
+}
 
 const encoder = new TextEncoder();
 const decoder = new TextDecoder("utf-8", { fatal: true });
@@ -49,7 +63,7 @@ export function validateTripCreationInput(value) {
   }
 
   const itinerary = validateItineraryInput(value);
-  const email = validateEmail(value.email);
+  const email = value.email == null || value.email === "" ? null : validateEmail(value.email);
   const rawPhotos = value.photos ?? [];
   if (!Array.isArray(rawPhotos) || rawPhotos.length > LIMITS.maxPhotos) {
     throw new AppError(

@@ -1,5 +1,34 @@
 # État courant
 
+## Bêta gratuite candidate du 2 octobre 2026
+
+L'[ADR-0013](docs/decisions/adr-0013-beta-gratuite-voyages-sources.md) prépare
+la création de voyages privés, avec recherche web, hôtels sourcés, transport
+adapté, photos et courriel facultatifs. La bêta ne demande ni paiement ni compte.
+Le paiement sera ajouté après la bêta ; aucun prix n'est arrêté.
+
+Le candidat passe `./scripts/verify.sh` : 90 tests applicatifs, TypeScript,
+build Worker, Docker Compose et Nimbus. Les parcours visibles et la notice
+sont contrôlés sur ordinateur et mobile. Ces preuves locales ne prouvent ni
+déploiement, ni appel OpenAI réussi, ni image générée, ni réception de courriel.
+Le dernier état public consigné ci-dessous reste la référence jusqu'aux sondes
+du nouveau SHA et de sa version Worker.
+
+Avant d'annoncer la bêta ouverte, consigner :
+
+- les contrôles du candidat et les parcours visibles Tokyo et Luxembourg ;
+- la migration `0004_trip_research.sql` appliquée et les secrets présents ;
+- la règle R2 distante à 180 jours pour les résultats, à 24 heures pour les
+  sources, et la purge applicative à l'échéance annoncée ;
+- la génération réelle avec sources, l'échec d'image sans perte du texte, le
+  retrait pendant traitement et l'absence de contenu privé dans les logs ;
+- le SHA, les contrôles GitHub, la version Worker et les capacités exposées par
+  `/api/config` ;
+- la réception du courriel si cette option est ouverte et le coût fournisseur.
+
+La liste opérationnelle reste dans `RESTE-A-FAIRE.md`. Les preuves historiques
+qui suivent ne valident pas ces nouveaux traitements.
+
 ## Site principal publié le 7 septembre 2026
 
 La V2 améliorée est servie à la racine de `https://monflorian.com` après la

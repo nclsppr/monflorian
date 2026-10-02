@@ -366,3 +366,48 @@
     overflow: visible;
   }
 }
+
+.trip-fields { border: 0; margin: 0; min-width: 0; padding: 0; }
+.trip-fields > .planner-field { margin-bottom: 24px; }
+.planner-field select { appearance: auto; background: var(--mf-paper); border: 1px solid rgba(6, 26, 59, .35); border-radius: 16px; color: var(--mf-ink); font: inherit; min-height: 52px; padding: 14px 12px; width: 100%; }
+.planner-section select:focus-visible { outline: 3px solid var(--mf-blue-deep); outline-offset: 4px; }
+.planner-button:disabled, .planner-steps button:disabled { cursor: not-allowed; opacity: .58; filter: none; }
+.trip-beta-note { font-size: .9rem !important; max-width: 68ch; }
+.trip-ideas { margin-bottom: 30px; }
+.trip-ideas > p { margin-bottom: 8px; }
+.trip-ideas button { background: transparent; border: 0; border-bottom: 1px solid var(--mf-line); color: var(--mf-ink); cursor: pointer; display: block; padding: 14px 0; text-align: left; width: 100%; }
+.trip-ideas button:hover strong { text-decoration: underline; text-underline-offset: 4px; }
+.trip-ideas strong { display: block; font-size: 1rem; margin-bottom: 4px; }
+.trip-ideas span { color: var(--mf-ink-soft); font-size: .875rem; line-height: 1.5; }
+.trip-summary-destination { color: var(--mf-ink) !important; font-size: 1.3rem !important; font-weight: 700; }
+.trip-photo-field { border-top: 1px solid var(--mf-line); margin-top: 30px; padding-top: 22px; }
+.trip-photo-field h4 { font-size: 1rem; margin: 0; }
+.trip-photo-field h4 span { color: var(--mf-ink-soft); font-size: .875rem; font-weight: 400; }
+.trip-photo-field input[type="file"] { display: block; font: inherit; margin-top: 14px; max-width: 100%; }
+.trip-photo-field input::file-selector-button { background: var(--mf-paper); border: 1px solid rgba(6, 26, 59, .3); border-radius: 18px; color: var(--mf-ink); cursor: pointer; font: inherit; margin: 0 12px 8px 0; min-height: 48px; padding: 10px 14px; }
+.trip-photos { display: grid; gap: 12px; grid-template-columns: repeat(4, minmax(0, 1fr)); margin-top: 18px; }
+.trip-photos:empty { display: none; }
+.trip-photos figure { margin: 0; min-width: 0; }
+.trip-photos img { aspect-ratio: 1; border-radius: 18px; display: block; object-fit: cover; width: 100%; }
+.trip-consent { margin-block: 24px; }
+.trip-consent label { align-items: flex-start; cursor: pointer; display: flex; font-size: .9rem; gap: 12px; line-height: 1.6; }
+.trip-consent input { accent-color: var(--mf-blue-deep); flex-shrink: 0; height: 20px; margin: 3px 0 0; width: 20px; }
+.trip-turnstile { margin-top: 24px; min-height: 65px; width: 100%; }
+.trip-service-status { margin-top: 20px; }
+.trip-service-status p { font-size: .875rem; margin: 0; }
+.local-planner-disclosure { border-block: 1px solid var(--mf-line); margin-inline: auto; max-width: var(--mf-max); }
+.local-planner-disclosure > summary { color: var(--mf-blue-deep); cursor: pointer; font-size: 1rem; font-weight: 650; line-height: 1.5; padding: 22px var(--mf-gutter); }
+.local-planner-disclosure > .planner-section { padding-top: 36px; }
+@media (max-width: 760px) {
+  .trip-creator .planner-number-fields { gap: 18px 14px; }
+  .trip-creator .planner-step-actions { align-items: stretch; }
+  .trip-creator .planner-step-actions .planner-button-primary { flex: 1; }
+  .trip-summary { padding-top: 24px; }
+}
+@media (max-width: 420px) {
+  .trip-creator .planner-number-fields { grid-template-columns: minmax(0, 1fr); }
+}
+
+.trip-review-summary { border-block: 1px solid var(--mf-line); margin-bottom: 24px; padding-block: 18px; }
+.trip-review-summary > strong { font-size: 1.2rem; }
+.trip-review-summary p { font-size: .9rem; margin: 8px 0 0; }

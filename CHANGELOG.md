@@ -2,6 +2,24 @@
 
 Git reste la source du diff technique. Les ADR expliquent les décisions importantes.
 
+## 2 octobre 2026, candidat en validation
+
+- Préparation d'une bêta gratuite, sans compte ni paywall. Le paiement viendra
+  après la bêta, avec un prix à définir.
+- Création implémentée depuis le formulaire : destination, départ, dates ou durée,
+  budget, transport et hébergement ; photos et courriel facultatifs.
+- Contrat `itinerary.v2`, recherche web séparée, sources liées aux hôtels et
+  liens de recherche construits côté serveur. Aucune réservation ni garantie de
+  prix ou de disponibilité.
+- Une illustration facultative par voyage, sans perdre l'itinéraire si elle
+  échoue, et conservation jusqu'à sept jours après le retour avec minimum de
+  30 jours et maximum de 180 jours.
+- Protection des jetons dans les logs, reprise des suppressions interrompues
+  et effacement des briefs refusés par quota.
+- ADR-0013 et contrats de données mis à jour. Migration, activation fournisseur,
+  validation complète et publication restent à prouver dans `STATUS.md` et
+  `DELIVERY-EVIDENCE.md`.
+
 ## 7 septembre 2026
 
 ### Accueil bureau et pied de page

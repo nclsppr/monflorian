@@ -1,6 +1,10 @@
 # Valeurs locales seulement. Ne jamais recopier les secrets de production.
+# Ces exemples ne doivent jamais être déployés. Une clé présente n'active pas la bêta.
+# MONFLORIAN_ACCESS_CODE sert seulement au mode privé.
 MONFLORIAN_ACCESS_CODE=replace-with-a-local-launch-code
 TRIP_DATA_KEY=replace-with-32-random-bytes-encoded-as-base64
 TRIP_QUOTA_HASH_KEY=replace-with-32-random-bytes-encoded-as-base64
 TURNSTILE_SECRET_KEY=replace-with-a-local-turnstile-secret
 OPENAI_API_KEY=replace-with-a-local-openai-key
+# Les drapeaux de génération, recherche, image et courriel restent dans wrangler.jsonc.
+# Aucun secret Resend n'est requis : le courriel facultatif utilise le binding EMAIL.
