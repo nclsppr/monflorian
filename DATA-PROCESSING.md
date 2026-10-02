@@ -195,11 +195,19 @@ vaut pas publication, entraînement, galerie ou conservation indéfinie.
 
 ## Rétention et effacement
 
+Le bouton de conservation hors connexion prépare un fichier HTML local après
+un clic. Il contient le carnet et les illustrations déjà disponibles, sans le
+jeton d’accès ni les photos sources. Il ne charge aucune ressource distante à
+l’ouverture ; les liens des hôtels, transports et sources restent externes.
+Cette copie ne reçoit pas les mises à jour ultérieures et reste sur l’appareil
+jusqu’à sa suppression, indépendamment du retrait ou de l’expiration du voyage.
+
 | Emplacement | Données | Durée maximale MVP | Retrait |
 | --- | --- | --- | --- |
 | Mémoire navigateur | formulaire et prévisualisations | onglet courant | rechargement ou fermeture |
 | Navigateur, pense-bête | copie demandée explicitement | jusqu'à effacement, sans échéance programmée | « Effacer de cet appareil » ou réglages du navigateur |
 | Navigateur, checklist | identifiants des cases sélectionnées | jusqu'à effacement, sans échéance programmée | « Tout décocher » ou réglages du navigateur |
+| Fichier téléchargé | carnet et illustrations disponibles | jusqu’à suppression par la personne | suppression du fichier sur l’appareil |
 | R2, sources | photos réencodées | suppression après génération, limite dure 24 h | purge automatique ou retrait du voyage |
 | R2, résultats | images générées | échéance du voyage, 180 jours maximum | expiration ou retrait anticipé |
 | D1 | demande, recherche et résultat chiffrés, métadonnées | échéance du voyage, 180 jours maximum | expiration ou retrait anticipé |
@@ -246,7 +254,8 @@ Une configuration locale ne prouve ni purge ni règle distante.
   limité aux clés prévues et refus des valeurs de stockage invalides.
 - Les futures photos de voyageurs réels suivent le flux R2 privé ; elles ne sont
   pas confondues avec les fixtures fictives du dépôt.
-- Un seul parcours fournisseur contrôlé avant ouverture.
+- Scénarios fournisseur synthétiques Tokyo et Luxembourg, avec nombre d’appels,
+  durée et consommation consignés avant ouverture.
 
 ## Changements qui imposent une nouvelle décision
 

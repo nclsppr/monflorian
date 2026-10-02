@@ -109,9 +109,13 @@ restent fermés. La preuve de publication appartient à `STATUS.md` et
 - `POST /api/trips` reste canonique. Les alias `/api/v1` suivent le même
   contrat, les mêmes quotas et les mêmes contrôles d'accès.
 - Migration additive `0004_trip_research.sql` pour le résultat de recherche
-  chiffré ; application distante encore à prouver.
+  chiffré, appliquée et relue en production le 2 octobre 2026.
 - Aucun paiement exigé, courriel et illustration facultatifs. La configuration
   publique distingue la gratuité des capacités effectivement ouvertes.
+- Ville de départ demandée avant de préparer un trajet en avion, train ou
+  voiture. Un séjour à proximité ne nécessite pas ce champ.
+- Copie du carnet lisible hors connexion, avec les illustrations déjà
+  disponibles, conservée uniquement sur l’appareil après téléchargement.
 
 ### À livrer avant une génération réelle
 
@@ -123,8 +127,8 @@ restent fermés. La preuve de publication appartient à `STATUS.md` et
 - Premier appel OpenAI synthétique avec coût et journaux inspectés.
 - Courriel transactionnel et preuve synthétique du nettoyage automatique.
 - Notice de traitement et canal de droits.
-- Règle R2 des images générées portée à 180 jours avant l'activation, puis
-  preuve de purge à l'échéance propre à chaque voyage.
+- Preuve de purge à l'échéance propre à chaque voyage ; les règles R2 de
+  secours à un jour et 180 jours sont déjà appliquées.
 
 ### Non-objectifs du MVP
 

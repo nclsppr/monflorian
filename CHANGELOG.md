@@ -13,6 +13,12 @@ Git reste la source du diff technique. Les ADR expliquent les décisions importa
   prix ou de disponibilité.
 - Recherche adaptée au mois demandé même sans dates exactes, au nombre de
   voyageurs et au budget, sans transmettre le brief brut au moteur de recherche.
+- Ville de départ exigée pour les trajets en avion, train et voiture, avec
+  retour au champ manquant avant envoi ; le séjour à proximité reste possible.
+- Enregistrement d’un carnet lisible hors connexion, avec les images
+  disponibles, sans lien privé d’accès ni ressource distante à charger.
+- Essais OpenAI préparés pour Tokyo et Luxembourg : recherche, synthèse,
+  illustration facultative et mesures techniques ; aucun appel réel à ce stade.
 - Une illustration facultative par voyage, sans perdre l'itinéraire si elle
   échoue, et conservation jusqu'à sept jours après le retour avec minimum de
   30 jours et maximum de 180 jours.

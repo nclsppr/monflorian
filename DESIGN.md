@@ -82,7 +82,7 @@ Florian intervient pour expliquer un choix d'itinéraire, pas pour décorer chaq
 bloc.
 
 L'accueil montre le carnet Japon et conduit au formulaire de voyage. Le candidat
-place « Créer mon voyage gratuit » au premier plan et « Voir un exemple » en
+place « Créer mon voyage gratuitement » au premier plan et « Voir un exemple » en
 second. L'état fermé, s'il subsiste, est annoncé avant tout envoi. Les cinq pages publiques
 sont l'accueil, le carnet Japon, l'index des guides et deux articles. Le carnet
 et les guides se lisent sans JavaScript. Le pense-bête, la checklist et les

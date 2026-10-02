@@ -66,7 +66,8 @@ const testToday = new Date("2026-10-02T12:00:00Z");
 test("les deux idées préparent des demandes distinctes sans inventer les dates ni le départ", () => {
   const tokyo = { ...DEFAULT_TRIP_DRAFT, ...TRIP_IDEAS[0].draft };
   const luxembourg = { ...DEFAULT_TRIP_DRAFT, ...TRIP_IDEAS[1].draft };
-  assert.deepEqual(tripDraftErrors(tokyo, testToday), {});
+  assert.ok(tripDraftErrors(tokyo, testToday).departureCity);
+  assert.deepEqual(tripDraftErrors({ ...tokyo, departureCity: "Paris" }, testToday), {});
   assert.deepEqual(tripDraftErrors(luxembourg, testToday), {});
   assert.equal(tokyo.startDate, "");
   assert.equal(tokyo.departureCity, "");
@@ -74,6 +75,21 @@ test("les deux idées préparent des demandes distinctes sans inventer les dates
   assert.equal(luxembourg.durationDays, 2);
   assert.equal(luxembourg.transportMode, "none");
   assert.equal(luxembourg.accommodationStyle, "luxury");
+});
+
+test("la ville de départ est obligatoire pour avion, train et voiture seulement", () => {
+  const draft = { ...DEFAULT_TRIP_DRAFT, ...TRIP_IDEAS[0].draft };
+  for (const transportMode of ["flight", "train", "car"]) {
+    for (const departureCity of ["", "   ", "P"]) {
+      assert.ok(tripDraftErrors({ ...draft, transportMode, departureCity }, testToday).departureCity, `${transportMode}: départ manquant ou incomplet`);
+    }
+    assert.deepEqual(tripDraftErrors({ ...draft, transportMode, departureCity: "Paris" }, testToday), {});
+  }
+  for (const transportMode of ["auto", "none"]) {
+    assert.deepEqual(tripDraftErrors({ ...draft, transportMode, departureCity: "" }, testToday), {});
+    assert.ok(tripDraftErrors({ ...draft, transportMode, departureCity: "A" }, testToday).departureCity);
+    assert.deepEqual(tripDraftErrors({ ...draft, transportMode, departureCity: "Paris" }, testToday), {});
+  }
 });
 
 test("une journée est valide et les dates exactes restent cohérentes avec la durée", () => {

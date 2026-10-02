@@ -9,7 +9,7 @@ Le candidat est poussé dans la [PR #59](https://github.com/nclsppr/monflorian/p
 branche `codex/free-beta-travel`. Aucun secret OpenAI ni drapeau de génération
 n’a été activé. Aucune personne réelle n’a été envoyée à un fournisseur.
 
-- `./scripts/verify.sh` complet réussi sur le candidat final : 92 tests
+- `./scripts/verify.sh` complet réussi sur le candidat final : 98 tests
   applicatifs, TypeScript,
   build Worker, Docker Compose, contrôles publics locaux et Nimbus.
 - Tests supplémentaires du vrai Worker et Workflow, avec SQLite en mémoire,
@@ -18,12 +18,24 @@ n’a été activé. Aucune personne réelle n’a été envoyée à un fourniss
   traitement et reprise du nettoyage R2 après panne.
 - Recherche saisonnière avec dates flexibles : novembre conservé sans envoyer
   le brief brut, exclusions explicites écartées et dates exactes prioritaires.
+- Avion, train ou voiture sans départ : refus avant consommation de quota sur
+  les deux routes de création, retour au champ concerné dans le formulaire.
+- Script d’essai fournisseur aligné sur les deux scénarios : quatre tests
+  sans réseau, recherche transmise à la synthèse, sortie sans contenu privé,
+  sans stack fournisseur ni nouvelle tentative après échec.
 - Revue indépendante : correction du masquage des chemins privés invalides,
   effacement des demandes rejetées par quota et fermeture des écritures après
   suppression, y compris pendant le téléversement initial.
 - Chrome à 1440 et 390 px : accueil, formulaire, récapitulatif et carnet privé
   et notice sans débordement ni erreur JavaScript. Accord photo obligatoire, aucune
   transmission avant envoi, même clé lors d’une reprise après erreur réseau.
+- Copie HTML téléchargée par clic puis ouverte hors connexion à 1440 et
+  390 px : images intégrées lisibles, aucune requête réseau, aucun jeton,
+  formulaire ou script. Sept exports couvrent aussi l’image en cours, absente,
+  en échec, le séjour sans hôtel et les éléments HTML hostiles. Captures et
+  résultats sous `/tmp/monflorian-offline-qa`.
+- Contrôle visible complémentaire du départ obligatoire et de la notice de
+  conservation locale, à 1440 et 390 px, sans débordement ni erreur JavaScript.
 - Réencodage navigateur d’une photo synthétique : WebP 1440 × 960 de 137 476
   octets, accepté par le validateur serveur. Les captures et journaux de test
   restent hors du dépôt, sous `/tmp/monflorian-ui-qa` et `/tmp/monflorian-*`.

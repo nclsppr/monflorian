@@ -7,7 +7,7 @@ la création de voyages privés, avec recherche web, hôtels sourcés, transport
 adapté, photos et courriel facultatifs. La bêta ne demande ni paiement ni compte.
 Le paiement sera ajouté après la bêta ; aucun prix n'est arrêté.
 
-Le candidat passe `./scripts/verify.sh` : 92 tests applicatifs, TypeScript,
+Le candidat passe `./scripts/verify.sh` : 98 tests applicatifs, TypeScript,
 build Worker, Docker Compose et Nimbus. Les parcours visibles et la notice
 sont contrôlés sur ordinateur et mobile. Ces preuves locales ne prouvent ni
 déploiement, ni appel OpenAI réussi, ni image générée, ni réception de courriel.

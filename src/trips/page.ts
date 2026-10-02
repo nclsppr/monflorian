@@ -170,7 +170,7 @@ function renderReady(result: unknown, token: string): string {
     </header>
     ${itinerary.florianNote ? `<aside class="private-trip-note"><strong>Le point de Florian</strong><p>${escapeHtml(itinerary.florianNote)}</p></aside>` : ""}
     <nav class="private-trip-nav" aria-label="Dans ton carnet"><a href="#itinerary-title">Jour par jour</a><a href="#hotels">Hôtels</a><a href="#budget">Budget</a><a href="#sources">Sources</a></nav>
-    <div class="private-trip-actions" hidden data-trip-actions><button type="button" data-print-trip>Imprimer le carnet</button><button type="button" data-save-trip>Enregistrer le carnet</button></div><p role="status" data-trip-feedback></p>
+    <div class="private-trip-actions" hidden data-trip-actions><button type="button" data-print-trip>Imprimer le carnet</button><button type="button" data-save-trip>Garder mon carnet hors connexion</button></div><p role="status" data-trip-feedback></p>
     ${root?.illustrationStatus === "failed" ? '<p class="private-trip-notice">Ton itinéraire est prêt. L’illustration n’a pas pu être créée ; tes photos sources ont été supprimées.</p>' : ""}
     ${renderChecklist("Les hypothèses de ce voyage", itinerary.assumptions)}
     ${renderGeneratedImages(root?.generatedImages, token)}
@@ -218,7 +218,7 @@ export function renderPrivateTripPage(options: PrivateTripPageOptions): Response
   const isReady = ["ready", "generating_images"].includes(options.status) && Boolean(options.result) && !options.deleted;
   const refresh = options.status !== "ready" && state.refresh ? '<meta http-equiv="refresh" content="10">' : "";
   const content = isReady
-    ? `${options.status === "generating_images" ? '<p class="private-trip-notice" role="status">Ton itinéraire est prêt. Ton illustration se prépare ; tu peux déjà lire le carnet.</p>' : ""}${renderReady(options.result, options.token)}`
+    ? `${options.status === "generating_images" ? '<p class="private-trip-notice" role="status">Ton itinéraire est prêt. Ton illustration se prépare ; tu peux déjà lire le carnet.</p>' : ""}<div data-trip-export data-trip-export-state="${escapeHtml(options.status)}">${renderReady(options.result, options.token)}</div>`
     : `<section class="private-trip-state" ${state.refresh ? 'aria-busy="true"' : ""}>
         <p class="result-kicker">Voyage privé</p>
         <h1>${escapeHtml(state.title)}</h1>

@@ -133,6 +133,13 @@ test('quotas persistants, consentement et erreurs fournisseur restent bloquants'
   const { env, sql, jobs } = await environment(); t.after(() => sql.close()); mockProvider(t);
   const withoutConsent = await worker.fetch(request('/api/trips', { ...brief, photos: [pngDataUrl()] }), env);
   assert.equal(withoutConsent.status, 400); assert.equal(jobs.length, 0);
+  for (const path of ['/api/trips', '/api/v1/trips']) {
+    const withoutDeparture = await worker.fetch(request(path, { ...brief, transportMode: 'flight' }), env);
+    assert.equal(withoutDeparture.status, 400);
+    assert.equal((await withoutDeparture.json()).error.code, 'DEPARTURE_REQUIRED');
+  }
+  assert.equal(jobs.length, 0);
+  assert.equal(sql.prepare('SELECT count(*) AS count FROM daily_quotas').get().count, 0);
   for (let i = 0; i < 2; i++) assert.equal((await worker.fetch(request('/api/trips', brief), env)).status, 202);
   const refusedId = crypto.randomUUID();
   assert.equal((await worker.fetch(request('/api/trips', brief, refusedId), env)).status, 429);

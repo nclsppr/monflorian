@@ -41,6 +41,12 @@ ni la disponibilité d'une chambre ou d'un billet.
   sur les fichiers et les personnes représentées est exigé si une photo existe.
 - Le navigateur reçoit immédiatement le lien privé et suit l'état réel du
   traitement. La notification facultative utilise Cloudflare Email Service.
+- Un choix explicite avion, train ou voiture exige une ville de départ avant
+  envoi ; le conseiller ne peut pas inventer ce point de départ.
+- Le voyageur peut conserver une copie HTML lisible hors connexion. Elle
+  inclut les images disponibles, sans jeton d’accès, script ni ressource
+  distante à charger. Elle reste sur l’appareil jusqu’à sa suppression, même
+  après l’expiration du lien privé ; les liens externes nécessitent Internet.
 
 ### Contrat dynamique compact
 

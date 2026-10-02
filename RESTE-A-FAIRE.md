@@ -28,12 +28,16 @@ constituent pas une preuve de génération distante.
 - [x] Photos facultatives, réencodées, prévisualisées localement et transmises
   seulement à l'envoi explicite avec accord des personnes représentées.
 - [x] Courriel facultatif et accès au lien privé sans compte.
+- [x] Copie HTML lisible hors connexion, images disponibles incluses, sans
+  jeton d’accès ni dépendance réseau à l’ouverture.
 - [x] Recherche web distincte, sources réellement retournées, recherche
   chiffrée et carnet `itinerary.v2` revalidé.
 - [x] Hôtels nommés sourcés, liens Booking construits par le serveur et absence
   de promesse de meilleur prix ou de disponibilité.
 - [x] Respect du transport `none`, des dates, des nuits et de la durée 1 à
   14 jours ; refus de dates passées ou de retour à plus de 173 jours.
+- [x] Ville de départ exigée pour avion, train et voiture, sans consommation
+  du quota lorsqu’elle manque.
 - [x] Une illustration facultative, erreur visible et texte conservé si elle
   échoue ; aucune relance payante aveugle.
 - [x] Alias `/api/v1` alignés avec les routes canoniques et leurs protections.

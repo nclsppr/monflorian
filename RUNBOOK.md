@@ -1,7 +1,8 @@
 # Runbook Cloudflare de Mon Florian
 
 Ce runbook décrit le déploiement, les migrations, le domaine et le rollback de
-la cible décidée par l'ADR-0007. Il ne donne pas à lui seul l'autorisation de
+la cible décidée par l'ADR-0007, ajustée pour la bêta gratuite par l'ADR-0013.
+Il ne donne pas à lui seul l'autorisation de
 modifier un compte, un secret, un domaine ou une production.
 
 ## Portée
@@ -34,9 +35,14 @@ ne retire aucun de ses secrets, services ou routes.
 Arrêter immédiatement si une valeur secrète apparaît dans Git ou les logs, si
 R2 devient public, ou si une route coûteuse est ouverte sans tous ses contrôles.
 
-La création ne devient prête que si les drapeaux voyage, texte, image et
-courriel sont tous à `true`, avec Turnstile, le code privé et OpenAI configurés.
-Une activation partielle doit donc rester publiquement fermée.
+La création devient prête si `MONFLORIAN_TRIP_CREATION_ENABLED`,
+`MONFLORIAN_GENERATION_ENABLED` et `MONFLORIAN_RESEARCH_ENABLED` sont à `true`,
+avec origine publique, Turnstile (clé de site et secret), OpenAI, chiffrement
+et hachage des quotas configurés. Le code d'accès est exigé seulement en mode
+privé. La bêta publique utilise `MONFLORIAN_ACCESS_MODE=public`, sans paiement.
+Les images et le courriel sont facultatifs et possèdent leurs propres drapeaux ;
+leur désactivation ne ferme pas la création du carnet texte. Vérifier les
+capacités effectivement annoncées dans `/api/config` avant les essais.
 
 ## Préparation locale
 
@@ -197,8 +203,58 @@ budget. La migration `0003_atomic_quotas.sql` fait échouer tout le batch si une
 des deux limites est dépassée ; ne jamais remplacer ce débit par deux écritures
 indépendantes.
 
-Un seul voyage synthétique sans identité suffit pour la première preuve. Une
-erreur ou un coût inattendu ferme la fonction concernée.
+Commencer par un voyage synthétique sans identité, puis qualifier les deux cas.
+Une erreur ou un coût inattendu ferme la fonction concernée.
+
+### Essai direct du fournisseur
+
+Le script utilise le moteur courant : recherche web sourcée, puis synthèse
+`itinerary.v2` avec les faits obtenus. Il propose deux entrées synthétiques sans
+dates figées : Tokyo, dix jours début novembre, départ de Paris en avion ;
+Luxembourg, deux jours et une nuit de luxe avec randonnée, sans trajet longue
+distance. Paris est une donnée de test, pas la ville présumée du voyageur.
+
+La préparation ne charge aucune clé et ne fait aucun appel réseau :
+
+```bash
+npm run smoke:openai -- --help
+npm run smoke:openai -- --case tokyo --dry-run
+npm run smoke:openai -- --case luxembourg --dry-run --image
+```
+
+Sans argument, le script affiche aussi l'aide sans appel. Les options inconnues,
+dupliquées ou incomplètes arrêtent l'exécution. Une fois `OPENAI_API_KEY`
+injectée au processus par un canal local sûr, les commandes suivantes font
+chacune deux appels payants pour l'exploitant :
+
+```bash
+npm run smoke:openai -- --case tokyo
+npm run smoke:openai -- --case luxembourg
+```
+
+`--image` ajoute un troisième appel pour une seule illustration depuis un PNG
+abstrait synthétique. Aucun visage ni fichier personnel n'est lu. Les modèles
+par défaut correspondent à `wrangler.jsonc` ; `OPENAI_TEXT_MODEL` et
+`OPENAI_IMAGE_MODEL` permettent de les préciser. Le script ne charge aucun
+fichier `.env`, n'écrit aucun résultat sur disque et ne retente aucun appel.
+Une relance sans `--dry-run` génère de nouveaux appels et de nouveaux coûts.
+
+Chaque étape réussie émet une ligne JSON limitée au scénario, au modèle, à la
+durée, à l'identifiant fournisseur, aux jetons disponibles et aux quantités
+produites. La recherche indique les nombres d'appels et de sources ainsi que
+leurs domaines, sans titres, chemins ni paramètres d'URL. L'image expose son
+format et sa taille ; son usage n'est pas retourné par l'adaptateur actuel.
+Les erreurs n'émettent que le code, l'étape et le scénario, sans corps fournisseur
+ni stack. Les codes de sortie sont `0` (préparation ou succès), `2`
+(configuration invalide) et `1` (échec pendant l'essai).
+
+Ces preuves établissent la réponse du fournisseur et la validation du contrat.
+Les jetons et appels outil ne sont pas un montant facturé : vérifier le coût
+dans le projet OpenAI. Le script ne prouve ni le parcours navigateur, ni
+Turnstile, D1, R2, Workflow, réception de courriel, fidélité des visages ou
+qualité visuelle. Il ne relit pas le fond du carnet et ne vérifie pas les tarifs
+ou disponibilités. Les essais publics Tokyo et Luxembourg, la lecture humaine
+des sources et la suppression restent nécessaires.
 
 ## Domaine
 

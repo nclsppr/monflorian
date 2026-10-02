@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { accommodationStyles, buildTripPayload, DEFAULT_TRIP_DRAFT, prepareTripPhoto, privateTripUrl, transportModes, TRIP_IDEAS, tripDraftErrors, tripPaces } from "./trip-draft.mjs";
+import { accommodationStyles, buildTripPayload, DEFAULT_TRIP_DRAFT, prepareTripPhoto, privateTripUrl, requiresDepartureCity, transportModes, TRIP_IDEAS, tripDraftErrors, tripPaces } from "./trip-draft.mjs";
 
 const stepLabels = ["Ton voyage", "Tes préférences", "Créer le carnet"];
 const firstStepFields = new Set(["destination", "departureCity", "brief"]);
@@ -63,8 +63,10 @@ export default function TripCreator() {
   const photoRefs = useRef([]);
   const idempotencyKey = useRef(null);
   const pendingFocus = useRef(false);
+  const pendingFieldFocus = useRef("");
   const ready = !configurationError && config?.serviceReady === true && Boolean(config?.turnstileSiteKey);
   const illustrations = config?.illustrationEnabled === true;
+  const departureRequired = requiresDepartureCity(draft.transportMode);
   const handleToken = useCallback((value) => { setTurnstileToken(value); if (value) setTurnstileError(""); }, []);
 
   useEffect(() => {
@@ -76,7 +78,14 @@ export default function TripCreator() {
       .catch((error) => { if (error.name !== "AbortError") setConfigurationError(true); });
     return () => controller.abort();
   }, [configurationAttempt]);
-  useEffect(() => { if (pendingFocus.current) { pendingFocus.current = false; title.current?.focus(); } }, [step]);
+  useEffect(() => {
+    if (!pendingFocus.current) return;
+    pendingFocus.current = false;
+    const field = pendingFieldFocus.current;
+    pendingFieldFocus.current = "";
+    if (field) document.getElementById(`trip-${field}`)?.focus();
+    else title.current?.focus();
+  }, [step]);
   useEffect(() => { photoRefs.current = photos; }, [photos]);
   useEffect(() => () => { photoRefs.current.forEach((photo) => URL.revokeObjectURL(photo.previewUrl)); }, []);
 
@@ -111,7 +120,7 @@ export default function TripCreator() {
     const first = Object.keys(relevant)[0];
     if (!first) return true;
     const destinationStep = firstStepFields.has(first) ? 0 : ["email", "accessCode", "photoConsent"].includes(first) ? 2 : 1;
-    if (step !== destinationStep) { pendingFocus.current = true; setStep(destinationStep); }
+    if (step !== destinationStep) { pendingFocus.current = true; pendingFieldFocus.current = first; setStep(destinationStep); }
     else document.getElementById(`trip-${first}`)?.focus();
     setFeedback("Vérifie les champs indiqués avant de continuer.");
     return false;
@@ -196,7 +205,7 @@ export default function TripCreator() {
           <div className="trip-ideas"><p>Une idée pour commencer :</p>{TRIP_IDEAS.map((idea) => <button key={idea.name} onClick={() => useIdea(idea)} type="button"><strong>{idea.name}</strong><span>{idea.detail}</span></button>)}</div>
           <div className="planner-number-fields">
             <Field errors={errors} label="Destination" name="destination">{input("destination", "text", { maxLength: 120, placeholder: "Tokyo, Luxembourg…", autoComplete: "off", required: true })}</Field>
-            <Field errors={errors} help="Utile pour proposer les bons trajets. Tu peux préciser ce point plus tard." label="Ville de départ" name="departureCity" optional>{input("departureCity", "text", { maxLength: 120, placeholder: "Paris, Metz…", autoComplete: "off" })}</Field>
+            <Field errors={errors} help={departureRequired ? "Nécessaire pour proposer ton trajet en avion, train ou voiture." : "Sans ville de départ, le carnet ne proposera ni vol ni trajet longue distance."} label="Ville de départ" name="departureCity" optional={!departureRequired}>{input("departureCity", "text", { maxLength: 120, placeholder: "Paris, Metz…", autoComplete: "off", required: departureRequired })}</Field>
           </div>
           <Field errors={errors} help="Tes envies, ta période si les dates sont flexibles, ce que tu aimes et ce que tu veux éviter. De 20 à 2 000 caractères ; aucun document d’identité." label="Le voyage que tu imagines" name="brief"><textarea aria-describedby="trip-brief-help trip-brief-error" aria-invalid={Boolean(errors.brief)} id="trip-brief" maxLength={2000} minLength={20} onChange={(event) => update("brief", event.target.value)} placeholder="Nous partons à deux début novembre. Des quartiers à pied, de bonnes tables, des hôtels bien placés et du temps libre…" required rows={5} value={draft.brief} /></Field>
           {illustrations ? <div className="trip-photo-field"><h4>Vous dans le carnet <span>facultatif</span></h4><p className="planner-help">Ajoute de 1 à 4 photos des voyageurs pour les illustrations. JPEG, PNG ou WebP, 30 Mo maximum par fichier. Elles sont préparées sur ton appareil et envoyées seulement quand tu crées le voyage.</p><input accept="image/jpeg,image/png,image/webp" aria-label="Ajouter des photos des voyageurs" disabled={preparingPhotos || photos.length >= 4} multiple onChange={addPhotos} ref={photoInput} type="file" /><div className="trip-photos">{photos.map((photo, index) => <figure key={photo.previewUrl}><img alt={`Photo sélectionnée ${index + 1}`} src={photo.previewUrl} /><button aria-label={`Retirer la photo ${index + 1}`} className="planner-remove" onClick={() => { URL.revokeObjectURL(photo.previewUrl); setPhotos((current) => current.filter((_, position) => position !== index)); idempotencyKey.current = null; }} type="button">Retirer</button></figure>)}</div><p className="planner-help">Les images du carnet seront des projections générées. Elles ne prouvent pas une visite et leur ressemblance peut varier.</p></div> : <p className="planner-help">Le carnet peut être créé sans photo. L’ajout de portraits apparaît ici quand la personnalisation des images est disponible.</p>}

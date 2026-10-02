@@ -129,6 +129,10 @@ export function validateItineraryInput(value) {
   if (!TRANSPORT_VALUES.has(transportMode) || !ACCOMMODATION_VALUES.has(accommodationStyle)) {
     throw new AppError(400, "INVALID_INPUT", "Choisis un transport et un style d’hébergement proposés.");
   }
+  const departureCity = placeText(value.departureCity, "ville de départ");
+  if (["flight", "train", "car"].includes(transportMode) && !departureCity) {
+    throw new AppError(400, "DEPARTURE_REQUIRED", "Indique ta ville de départ pour proposer les trajets demandés, ou choisis « Déjà à proximité ».");
+  }
   const budgetTotalEur = value.budgetTotalEur === undefined || value.budgetTotalEur === null || value.budgetTotalEur === ""
     ? null : value.budgetTotalEur;
   if (budgetTotalEur !== null && (!Number.isInteger(budgetTotalEur) || budgetTotalEur < 1 || budgetTotalEur > 100_000)) {
@@ -153,7 +157,7 @@ export function validateItineraryInput(value) {
     requestedDays,
     durationDays,
     destination: placeText(value.destination, "destination"),
-    departureCity: placeText(value.departureCity, "ville de départ"),
+    departureCity,
     transportMode,
     accommodationStyle,
     budgetTotalEur,

@@ -850,7 +850,7 @@
           },
           "destination": {
             "type": "string",
-            "minLength": 1,
+            "minLength": 2,
             "maxLength": 120,
             "description": "Destination explicite requise pour la recherche web du voyage."
           },
@@ -859,7 +859,9 @@
               "string",
               "null"
             ],
-            "maxLength": 120
+            "maxLength": 120,
+            "description": "Ville requise si transportMode vaut flight, train ou car. Sans ville en mode auto, aucun trajet initial n’est proposé.",
+            "minLength": 2
           },
           "transportMode": {
             "type": "string",
@@ -901,7 +903,37 @@
             "startDate"
           ]
         },
-        "description": "Les dates incluent le jour de départ et celui du retour. Une nuit correspond à deux jours. Dates passées et retour au-delà de 173 jours refusés. Sans dates, durationDays peut préciser de 1 à 14 jours. Photos et courriel facultatifs ; photoConsent doit valoir true si des photos sont présentes."
+        "description": "Les dates incluent le jour de départ et celui du retour. Une nuit correspond à deux jours. Dates passées et retour au-delà de 173 jours refusés. Sans dates, durationDays peut préciser de 1 à 14 jours. Photos et courriel facultatifs ; photoConsent doit valoir true si des photos sont présentes.",
+        "allOf": [
+          {
+            "if": {
+              "required": [
+                "transportMode"
+              ],
+              "properties": {
+                "transportMode": {
+                  "enum": [
+                    "flight",
+                    "train",
+                    "car"
+                  ]
+                }
+              }
+            },
+            "then": {
+              "required": [
+                "departureCity"
+              ],
+              "properties": {
+                "departureCity": {
+                  "type": "string",
+                  "minLength": 2,
+                  "pattern": "\\S"
+                }
+              }
+            }
+          }
+        ]
       },
       "TripAccepted": {
         "type": "object",
@@ -1172,14 +1204,17 @@
               "string",
               "null"
             ],
-            "maxLength": 120
+            "maxLength": 120,
+            "minLength": 2
           },
           "departureCity": {
             "type": [
               "string",
               "null"
             ],
-            "maxLength": 120
+            "maxLength": 120,
+            "description": "Ville requise si transportMode vaut flight, train ou car. Sans ville en mode auto, aucun trajet initial n’est proposé.",
+            "minLength": 2
           },
           "transportMode": {
             "type": "string",
@@ -1220,7 +1255,37 @@
           "endDate": [
             "startDate"
           ]
-        }
+        },
+        "allOf": [
+          {
+            "if": {
+              "required": [
+                "transportMode"
+              ],
+              "properties": {
+                "transportMode": {
+                  "enum": [
+                    "flight",
+                    "train",
+                    "car"
+                  ]
+                }
+              }
+            },
+            "then": {
+              "required": [
+                "departureCity"
+              ],
+              "properties": {
+                "departureCity": {
+                  "type": "string",
+                  "minLength": 2,
+                  "pattern": "\\S"
+                }
+              }
+            }
+          }
+        ]
       },
       "ItineraryResponse": {
         "type": "object",

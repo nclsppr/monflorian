@@ -13,6 +13,10 @@ export const tripPaces = [{ value: "calm", label: "Calme" }, { value: "balanced"
 export const transportModes = [{ value: "auto", label: "À me conseiller" }, { value: "flight", label: "Avion" }, { value: "train", label: "Train" }, { value: "car", label: "Voiture" }, { value: "none", label: "Déjà à proximité, sans avion" }];
 export const accommodationStyles = [{ value: "charm", label: "Charme" }, { value: "comfort", label: "Confort essentiel" }, { value: "luxury", label: "Luxe" }, { value: "mixed", label: "Un mélange" }];
 
+export function requiresDepartureCity(transportMode) {
+  return ["flight", "train", "car"].includes(transportMode);
+}
+
 function validDate(value) {
   return /^\d{4}-\d{2}-\d{2}$/u.test(value) && !Number.isNaN(Date.parse(value)) && new Date(value).toISOString().slice(0, 10) === value;
 }
@@ -28,6 +32,10 @@ export function tripDraftErrors(draft, now = new Date()) {
   }
   for (const [field, options] of [["pace", tripPaces], ["transportMode", transportModes], ["accommodationStyle", accommodationStyles]]) {
     if (!options.some(({ value }) => value === draft[field])) errors[field] = "Choisis une des options proposées.";
+  }
+  const departure = typeof draft.departureCity === "string" ? draft.departureCity.trim() : "";
+  if ((requiresDepartureCity(draft.transportMode) || departure) && departure.length < 2) {
+    errors.departureCity = "Indique ta ville de départ pour proposer le trajet choisi.";
   }
   if (draft.budgetTotalEur !== "" && (!/^\d{1,6}$/u.test(String(draft.budgetTotalEur)) || Number(draft.budgetTotalEur) < 1 || Number(draft.budgetTotalEur) > 100000)) errors.budgetTotalEur = "Indique un budget total entier entre 1 et 100 000 euros, ou laisse ce champ vide.";
   if (draft.startDate && !validDate(draft.startDate)) errors.startDate = "Indique une date de départ valide.";
