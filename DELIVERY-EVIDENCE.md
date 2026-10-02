@@ -5,17 +5,19 @@ des archives historiques ; la section Cloudflare porte la migration courante.
 
 ## Candidat bêta gratuite, contrôles locaux du 2 octobre 2026
 
-Le candidat `76b11df` est poussé dans la [PR #59](https://github.com/nclsppr/monflorian/pull/59),
+Le candidat est poussé dans la [PR #59](https://github.com/nclsppr/monflorian/pull/59),
 branche `codex/free-beta-travel`. Aucun secret OpenAI ni drapeau de génération
 n’a été activé. Aucune personne réelle n’a été envoyée à un fournisseur.
 
-- `./scripts/verify.sh` complet réussi sur le candidat final : 90 tests
+- `./scripts/verify.sh` complet réussi sur le candidat final : 92 tests
   applicatifs, TypeScript,
   build Worker, Docker Compose, contrôles publics locaux et Nimbus.
 - Tests supplémentaires du vrai Worker et Workflow, avec SQLite en mémoire,
   R2 et fournisseur simulés : Tokyo avec vol, Luxembourg sans avion, création
   sans paiement ni email, idempotence, quota, échec image, suppression pendant
   traitement et reprise du nettoyage R2 après panne.
+- Recherche saisonnière avec dates flexibles : novembre conservé sans envoyer
+  le brief brut, exclusions explicites écartées et dates exactes prioritaires.
 - Revue indépendante : correction du masquage des chemins privés invalides,
   effacement des demandes rejetées par quota et fermeture des écritures après
   suppression, y compris pendant le téléversement initial.

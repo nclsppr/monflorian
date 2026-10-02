@@ -148,6 +148,15 @@ function researchInterests(brief = "") {
 }
 
 function publicResearchRequest(request) {
+  const months = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'];
+  const brief = request.brief || '';
+  const mentionedMonths = months.filter((month) => new RegExp(`(?:^|[^\\p{L}])${month}(?:$|[^\\p{L}])`, 'iu').test(brief));
+  const mentionedMonth = mentionedMonths.length === 1 ? mentionedMonths[0] : null;
+  const monthExcluded = mentionedMonth && new RegExp(
+    `(?:^|[^\\p{L}])(?:pas|jamais|sauf|hors|excepté|exceptée|éviter|exclure)(?:\\s+(?:en|au|le|mois|de|début|fin|mi))*\\s+${mentionedMonth}(?:$|[^\\p{L}])` +
+    `|(?:^|[^\\p{L}])${mentionedMonth}\\s*[:,]?\\s*(?:(?:est|sera|reste|n['’]est)\\s+)?(?:impossible|exclu|exclue|indisponible|à éviter|pas possible|ne convient pas)(?:$|[^\\p{L}])`,
+    'iu',
+  ).test(brief);
   return {
     destination: request.destination,
     departureCity: request.transportMode === "none" ? null : request.departureCity,
@@ -155,6 +164,9 @@ function publicResearchRequest(request) {
     startDate: request.startDate,
     endDate: request.endDate,
     durationDays: request.requestedDays,
+    travelMonth: request.startDate ? months[Number(request.startDate.slice(5, 7)) - 1] : monthExcluded ? null : mentionedMonth,
+    travelers: request.travelers,
+    budgetTotalEur: request.budgetTotalEur ?? null,
     accommodationStyle: request.accommodationStyle || "mixed",
     interests: researchInterests(request.brief),
   };
@@ -184,6 +196,7 @@ export async function researchTravelFacts({
           "Utilise au plus 20 sources officielles récentes : hôtels, offices de tourisme, sites des lieux et opérateurs de transport. Cite précisément chaque hôtel et chaque recommandation avec les annotations web natives.",
           "Pour un séjour de deux jours ou plus, compare 2 à 4 vrais hôtels adaptés au style : nom exact, quartier, raison de les choisir et compromis. Pour une seule journée, aucun hôtel.",
           "Cherche des activités proches les unes des autres, une courte randonnée si demandée, des alternatives abritées et l’organisation des transports locaux.",
+          "Tiens compte du mois souhaité pour la saison et les activités, sans inventer de dates exactes. Utilise le nombre de voyageurs et le budget total pour orienter le confort et les compromis, jamais pour inventer un devis.",
           "Si departureCity est vide ou transportMode vaut none, ne recherche aucun vol ni trajet longue distance. Sinon recherche comment rejoindre la destination dans le mode choisi ; auto autorise une comparaison raisonnée train/avion/voiture.",
           "Pour l’avion, vérifie les aéroports, opérateurs, correspondances et leviers de comparaison. N’affirme jamais connaître le moins cher, un tarif, une disponibilité, un siège libre ou un horaire pour les dates réelles.",
           "Aucun scraping Booking.com, aucune réservation, aucun paiement, aucune connexion à un compte. Ne recherche jamais de personne, photo, adresse électronique ou donnée personnelle.",

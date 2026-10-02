@@ -7,14 +7,15 @@ la création de voyages privés, avec recherche web, hôtels sourcés, transport
 adapté, photos et courriel facultatifs. La bêta ne demande ni paiement ni compte.
 Le paiement sera ajouté après la bêta ; aucun prix n'est arrêté.
 
-Le candidat passe `./scripts/verify.sh` : 90 tests applicatifs, TypeScript,
+Le candidat passe `./scripts/verify.sh` : 92 tests applicatifs, TypeScript,
 build Worker, Docker Compose et Nimbus. Les parcours visibles et la notice
 sont contrôlés sur ordinateur et mobile. Ces preuves locales ne prouvent ni
 déploiement, ni appel OpenAI réussi, ni image générée, ni réception de courriel.
 Le dernier état public consigné ci-dessous reste la référence jusqu'aux sondes
 du nouveau SHA et de sa version Worker.
 
-Le candidat `76b11df` est poussé dans la [PR #59](https://github.com/nclsppr/monflorian/pull/59).
+Le candidat est poussé dans la [PR #59](https://github.com/nclsppr/monflorian/pull/59),
+sur la branche `codex/free-beta-travel`.
 La migration `0004_trip_research.sql` est appliquée en production. R2 conserve
 les sources un jour et les résultats 180 jours, sans accès public. La
 configuration publique reste fermée après ces opérations.

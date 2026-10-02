@@ -16,8 +16,9 @@ automatique. La création reste fermée : aucun appel OpenAI n'est exécuté,
 le widget Turnstile reste masqué et le courriel n'est pas activé.
 
 Le candidat du 2 octobre 2026 ajoute un envoi explicite du formulaire, une
-recherche web et un résultat privé. Les contrôles, la migration et l'ouverture
-distante restent à prouver ; cette documentation n'annonce aucune activation.
+recherche web et un résultat privé. La migration D1 et les règles R2 sont
+appliquées et relues ; les contrôles du fournisseur et l'ouverture distante
+restent à prouver. Cette documentation n'annonce aucune activation.
 
 La fixture Japon canonique `TravelGuideV1` alimente statiquement le carnet
 public sous `/carnets/japon-10-jours`. Ses textes et ses illustrations
@@ -131,7 +132,8 @@ Worker contrôle chaque lecture à partir du jeton de voyage.
 
 Responses reçoit les paramètres utiles au voyage et un `safety_identifier`
 pseudonymisé. Une première étape utilise `web_search` avec destination, départ,
-dates, durée, transport, hébergement et catégories d'intérêts déduites du brief.
+dates ou mois souhaité, durée, voyageurs, budget, transport, hébergement et
+catégories d'intérêts déduites du brief.
 Elle ne reçoit ni brief brut, ni photo, ni courriel, ni jeton de consultation.
 Les résultats web peuvent provenir
 de tiers et ne sont jamais des instructions de confiance. La seconde étape

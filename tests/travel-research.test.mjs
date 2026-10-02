@@ -143,6 +143,44 @@ test('une recherche sans appel terminé, citations cohérentes ou URLs publiques
   }
 });
 
+test('Tokyo en dates flexibles garde novembre, le groupe et le budget sans transmettre le brief privé', async () => {
+  let captured;
+  await researchTravelFacts({ ...call, request: researchedRequest({ destination: 'Tokyo', startDate: null, endDate: null,
+    brief: 'Alice et moi partons à Tokyo début novembre, dix jours à deux.', travelers: 2, budgetTotalEur: 5000 }),
+    fetchImpl: async (_url, options) => { captured = JSON.parse(options.body); return fakeJson(researchResponse())(); } });
+  const parameters = JSON.parse(captured.input[1].content);
+  assert.equal(parameters.travelMonth, 'novembre');
+  assert.equal(parameters.startDate, null); assert.equal(parameters.endDate, null);
+  assert.equal(parameters.travelers, 2); assert.equal(parameters.budgetTotalEur, 5000);
+  assert.doesNotMatch(JSON.stringify(captured), /Alice/u);
+});
+
+test('un mois exclu ne devient pas la saison du voyage et les dates exactes restent prioritaires', async () => {
+  const scenarios = [
+    { brief: 'Tokyo début novembre, dix jours à deux.', expected: 'novembre' },
+    { brief: 'Tokyo en novembre, sans contrainte particulière.', expected: 'novembre' },
+    { brief: 'Je n’ai pas de contrainte en novembre pour Tokyo.', expected: 'novembre' },
+    { brief: 'Tokyo, dates libres, mais pas en novembre.', expected: null },
+    { brief: 'Tokyo à toute période sauf novembre.', expected: null },
+    { brief: 'Tokyo, novembre impossible pour nous.', expected: null },
+    { brief: 'Tokyo, novembre est impossible pour nous.', expected: null },
+    { brief: 'Tokyo, novembre n’est pas possible pour nous.', expected: null },
+    { brief: 'Tokyo, jamais au mois de novembre.', expected: null },
+    { brief: 'Tokyo, éviter novembre.', expected: null },
+    { brief: 'Tokyo en novembre ou décembre.', expected: null },
+    { brief: 'Tokyo début novembre, mais novembre impossible finalement.', expected: null },
+    { brief: 'Tokyo, pas en novembre.', startDate: '2026-11-07', endDate: '2026-11-08', expected: 'novembre' },
+    { brief: 'Tokyo début novembre.', startDate: '2026-10-07', endDate: '2026-10-08', expected: 'octobre' },
+  ];
+  for (const scenario of scenarios) {
+    let captured;
+    await researchTravelFacts({ ...call, request: researchedRequest({ destination: 'Tokyo',
+      startDate: scenario.startDate ?? null, endDate: scenario.endDate ?? null, brief: scenario.brief }),
+      fetchImpl: async (_url, options) => { captured = JSON.parse(options.body); return fakeJson(researchResponse())(); } });
+    assert.equal(JSON.parse(captured.input[1].content).travelMonth, scenario.expected, scenario.brief);
+  }
+});
+
 test('la synthèse utilise uniquement le schéma enrichi et des références autorisées, sans outil', async () => {
   let captured;
   const request = researchedRequest();

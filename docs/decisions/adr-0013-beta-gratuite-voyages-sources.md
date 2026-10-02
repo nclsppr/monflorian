@@ -31,7 +31,7 @@ ni la disponibilité d'une chambre ou d'un billet.
   appels fournisseur restent payants pour l'opérateur et soumis aux quotas.
 - Le paiement sera ajouté après la bêta. Aucun tarif n'est fixé dans cette
   tranche ; l'ancien montant de 50 € ne devient pas une promesse commerciale.
-- L'action principale est « Créer mon voyage gratuit ». L'exemple Japon reste
+- L'action principale est « Créer mon voyage gratuitement ». L'exemple Japon reste
   accessible avant la saisie et ne se fait jamais passer pour son résultat.
 - Le formulaire recueille destination, départ, dates ou durée de 1 à 14 jours,
   voyageurs, rythme, transport, budget global en euros et style d'hébergement.

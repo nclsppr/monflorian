@@ -11,6 +11,8 @@ Git reste la source du diff technique. Les ADR expliquent les décisions importa
 - Contrat `itinerary.v2`, recherche web séparée, sources liées aux hôtels et
   liens de recherche construits côté serveur. Aucune réservation ni garantie de
   prix ou de disponibilité.
+- Recherche adaptée au mois demandé même sans dates exactes, au nombre de
+  voyageurs et au budget, sans transmettre le brief brut au moteur de recherche.
 - Une illustration facultative par voyage, sans perdre l'itinéraire si elle
   échoue, et conservation jusqu'à sept jours après le retour avec minimum de
   30 jours et maximum de 180 jours.
