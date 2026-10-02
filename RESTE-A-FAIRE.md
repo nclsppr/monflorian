@@ -60,6 +60,8 @@ constituent pas une preuve de génération distante.
   l'envoi d'image ; aucun résultat tardif ne recrée le voyage supprimé.
 - [x] Identifier le contact de support et de droits : `support@monflorian.com`,
   fourni par le propriétaire et intégré à la notice candidate.
+- [x] Vérifier après publication la notice et la présence du contact sur le
+  domaine public. Le routage et la réception ne sont pas qualifiés.
 - [ ] Vérifier la notice publiée, le consentement et la présence du contact.
 - [ ] Vérifier Turnstile de bout en bout, quotas, doublons et concurrence.
 

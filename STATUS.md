@@ -1,5 +1,28 @@
 # État courant
 
+## Pages et parcours publiés le 2 octobre 2026, génération fermée
+
+La [PR #59](https://github.com/nclsppr/monflorian/pull/59) est fusionnée. Le
+code du formulaire gratuit, du carnet privé et des erreurs illustrées est
+publié sur `monflorian.com` et `www`. La génération reste fermée faute de
+crédits API ; aucune réussite fournisseur n’est annoncée.
+
+- Source runtime : `6d6ce30d71cf962224520c5e9cfc83bd5bd36157`.
+- Version Worker : `212b2f50-dc87-4f44-af13-45b1d8558f90`.
+- CI du SHA fusionné : `37033381249` et `37033381246`, vertes.
+- Sept réponses HTML et 21 ressources identiques au build validé, dont les six
+  adaptations de Florian. La 404 publique fonctionne sans script ; la notice
+  et les erreurs affichent `support@monflorian.com`.
+- Carnet inconnu : `404`, `no-store`, `no-referrer`, `noindex`, sans reflet du
+  chemin demandé. Redirection `www` vers l’apex en `308`.
+- Configuration : bêta gratuite, sans paiement, création, illustrations et
+  courriel désactivés. Santé : `generationReady:false`. POST synthétique :
+  `503 TRIP_CREATION_UNAVAILABLE`, sans création de voyage ni appel fournisseur.
+
+Les explications, reprises et 34 rendus d’état sont aussi contrôlés localement
+sur ordinateur et mobile. La réception du support n’est pas qualifiée. La
+section suivante conserve la préparation et ses limites fournisseur.
+
 ## Bêta gratuite candidate du 2 octobre 2026
 
 L'[ADR-0013](docs/decisions/adr-0013-beta-gratuite-voyages-sources.md) prépare

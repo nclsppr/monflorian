@@ -3,6 +3,39 @@
 Chaque section nomme son environnement et ses limites. Les sections Atlas sont
 des archives historiques ; la section Cloudflare porte la migration courante.
 
+## Publication fermée du 2 octobre 2026
+
+La [PR #59](https://github.com/nclsppr/monflorian/pull/59) est fusionnée au SHA
+`6d6ce30d71cf962224520c5e9cfc83bd5bd36157`. Les contrôles du SHA fusionné
+`37033381249` (Verify) et `37033381246` (Cloudflare release) réussissent avant
+`npm run deploy`. La version publiée est
+`212b2f50-dc87-4f44-af13-45b1d8558f90`.
+
+Sondes après publication :
+
+- Accueil, carnet Japon, index et deux guides, notice et 404 publique : sept
+  réponses HTML identiques au build local. Les 21 ressources vérifiées sont
+  identiques octet par octet, dont `error.css`, `trip.css`, `trip.js`, les
+  bundles et les six WebP d’erreur.
+- La 404 conserve l’image, l’explication et les actions sans script. La notice
+  et les erreurs contiennent le lien vers `support@monflorian.com` sans paramètre.
+- `/voyages/lien-incomplet` retourne `404`, sans reflet de ce chemin dans le
+  HTML, avec `no-store`, `no-referrer` et `noindex`.
+- `www` redirige en `308` vers la même page sur l’apex.
+- Santé et manifeste annoncent la version ci-dessus, `generationReady:false`.
+  La configuration annonce une bêta gratuite, sans paiement et avec création,
+  illustrations et courriel désactivés. Le POST synthétique est refusé en
+  `503 TRIP_CREATION_UNAVAILABLE`.
+
+La preuve détaillée des sondes reste hors Git dans
+`/tmp/monflorian-errors-production.json`. Aucun appel OpenAI, traitement de photo
+réelle, achat de crédits ou envoi de courriel n’est réalisé pendant cette
+publication. Les états 410, les pannes et les reprises sont éprouvés par les
+tests locaux ; ils ne proviennent pas de voyages réellement générés.
+
+L’adresse de contact est publiée. Son routage et sa réception restent à
+qualifier séparément ; la génération demeure bloquée par le solde API épuisé.
+
 ## Candidat bêta gratuite, contrôles locaux du 2 octobre 2026
 
 Le candidat est poussé dans la [PR #59](https://github.com/nclsppr/monflorian/pull/59),

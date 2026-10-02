@@ -2,6 +2,13 @@
 
 Git reste la source du diff technique. Les ADR expliquent les décisions importantes.
 
+## 2 octobre 2026, publication avec génération fermée
+
+La PR #59 publie le formulaire gratuit, les erreurs illustrées et le contact
+support. Sept pages et 21 ressources sont relues sur le domaine public. La
+création, les images et le courriel restent désactivés ; le solde API épuisé
+empêche encore une création réelle. Les preuves sont dans `DELIVERY-EVIDENCE.md`.
+
 ## 2 octobre 2026, candidat en validation
 
 - Pages d’erreur illustrées avec six adaptations du portrait de Florian :
