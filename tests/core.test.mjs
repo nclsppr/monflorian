@@ -91,6 +91,20 @@ test("le consentement est exigé avant tout décodage de photo", () => {
   );
 });
 
+test("un transport longue distance explicite exige une ville de départ", () => {
+  const base = { brief: "Un voyage de dix jours à Tokyo pour deux personnes.", durationDays: 10, travelers: 2, pace: "balanced" };
+  for (const transportMode of ["flight", "train", "car"]) {
+    for (const departureCity of [undefined, null, ""]) {
+      throwsCode(() => validateItineraryInput({ ...base, transportMode, departureCity }), "DEPARTURE_REQUIRED");
+    }
+    throwsCode(() => validateItineraryInput({ ...base, transportMode, departureCity: "   " }), "INVALID_INPUT");
+    assert.equal(validateItineraryInput({ ...base, transportMode, departureCity: "  Paris  " }).departureCity, "Paris");
+  }
+  for (const transportMode of ["auto", "none"]) {
+    assert.equal(validateItineraryInput({ ...base, transportMode }).departureCity, null);
+  }
+});
+
 test("une image PNG synthétique réencodée est admise en mémoire", () => {
   const request = validateIllustrationInput({
     consent: true,

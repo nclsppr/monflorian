@@ -53,7 +53,7 @@ export function GuideHub() {
         </div>
         <a className="guide-action" href="/carnets/japon-10-jours">Ouvrir le carnet Japon<GuideArrow /></a>
       </aside>
-      <a className="guide-plan-link" href="/#create">Préparer mon pense-bête<GuideArrow /></a>
+      <a className="guide-plan-link" href="/#notes">Préparer mon pense-bête<GuideArrow /></a>
     </main>
   );
 }
@@ -105,7 +105,7 @@ export function GuidePage({ guide }) {
               <p>Le carnet Japon montre comment relier ces décisions jour après jour. Tu peux aussi préparer ton propre plan depuis l'accueil.</p>
               <div className="guide-next-actions">
                 <a className="guide-action" href="/carnets/japon-10-jours">Voir le carnet Japon<GuideArrow /></a>
-                <a href="/#create">Préparer mon pense-bête</a>
+                <a href="/#notes">Préparer mon pense-bête</a>
               </div>
               {relatedGuide && <p className="guide-related">À lire ensuite : <a href={relatedGuide.path}>{relatedGuide.heading}</a></p>}
             </aside>

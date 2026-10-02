@@ -11,6 +11,7 @@ import {
   serializePlannerDraft,
 } from "./planner-state.mjs";
 import "./planner.css";
+import TripCreator from "./TripCreator.jsx";
 
 const steps = ["Ton envie", "Ton rythme", "Ton confort"];
 
@@ -28,7 +29,7 @@ function ChoiceGroup({ name, label, options, value, onChange }) {
   );
 }
 
-export default function TripPlanner() {
+function LocalTripPlanner() {
   const [draft, setDraft] = useState({ ...DEFAULT_PLANNER_DRAFT });
   const [step, setStep] = useState(0);
   const [errors, setErrors] = useState({});
@@ -161,7 +162,7 @@ export default function TripPlanner() {
   }
 
   return (
-    <section aria-labelledby="questionnaire-title" className="planner-section" id="create">
+    <section aria-labelledby="questionnaire-title" className="planner-section" id="notes">
       <div className="planner-heading">
         <h2 id="questionnaire-title">Prépare ton pense-bête de voyage.</h2>
         <p>Rassemble tes envies, puis garde une fiche à compléter ou à partager. Aucune réponse n’est envoyée et aucun itinéraire n’est généré.</p>
@@ -231,4 +232,8 @@ export default function TripPlanner() {
       {copyFallback && normalized ? <div className="planner-manual-copy"><label htmlFor="planner-copy-text">Ton pense-bête à copier</label><textarea id="planner-copy-text" readOnly ref={fallbackText} rows={12} value={plannerText(normalized)} /></div> : null}
     </section>
   );
+}
+
+export default function TripPlanner() {
+  return <><TripCreator /><details className="local-planner-disclosure"><summary>Préparer seulement un pense-bête sur cet appareil</summary><LocalTripPlanner /></details></>;
 }

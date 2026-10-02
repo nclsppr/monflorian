@@ -2,6 +2,45 @@
 
 Git reste la source du diff technique. Les ADR expliquent les décisions importantes.
 
+## 2 octobre 2026, candidat en validation
+
+- Pages d’erreur illustrées avec six adaptations du portrait de Florian :
+  introuvable, réparation, attente, quota, expiration et suppression. Les
+  explications distinguent le problème et l’action possible ; une panne du
+  service ne demande pas de corriger les envies.
+- Contact `support@monflorian.com` dans les erreurs et la notice, sans lien
+  privé ni photo préremplis. La réception des messages reste à vérifier.
+- Repli HTML pour les pannes de page, réponses API toujours en JSON, état de
+  suppression en cours et carnet illisible sans export vide.
+
+- Préparation d'une bêta gratuite, sans compte ni paywall. Le paiement viendra
+  après la bêta, avec un prix à définir.
+- Création implémentée depuis le formulaire : destination, départ, dates ou durée,
+  budget, transport et hébergement ; photos et courriel facultatifs.
+- Contrat `itinerary.v2`, recherche web séparée, sources liées aux hôtels et
+  liens de recherche construits côté serveur. Aucune réservation ni garantie de
+  prix ou de disponibilité.
+- Recherche adaptée au mois demandé même sans dates exactes, au nombre de
+  voyageurs et au budget, sans transmettre le brief brut au moteur de recherche.
+- Ville de départ exigée pour les trajets en avion, train et voiture, avec
+  retour au champ manquant avant envoi ; le séjour à proximité reste possible.
+- Enregistrement d’un carnet lisible hors connexion, avec les images
+  disponibles, sans lien privé d’accès ni ressource distante à charger.
+- Essais OpenAI préparés pour Tokyo et Luxembourg : recherche, synthèse,
+  illustration facultative et mesures techniques. Premier appel réel refusé
+  faute de crédits API, confirmé par un diagnostic minimal.
+- Clé OpenAI dédiée créée et installée hors Git puis sur Cloudflare, génération
+  toujours fermée. Les erreurs de solde ou plafond ne conseillent plus une
+  simple attente comme les limites temporaires de débit.
+- Une illustration facultative par voyage, sans perdre l'itinéraire si elle
+  échoue, et conservation jusqu'à sept jours après le retour avec minimum de
+  30 jours et maximum de 180 jours.
+- Protection des jetons dans les logs, reprise des suppressions interrompues
+  et effacement des briefs refusés par quota.
+- ADR-0013 et contrats de données mis à jour. Migration D1 et règles R2 appliquées en production, service encore fermé.
+  Activation fournisseur et publication restent à prouver dans `STATUS.md` et
+  `DELIVERY-EVIDENCE.md`.
+
 ## 7 septembre 2026
 
 ### Accueil bureau et pied de page

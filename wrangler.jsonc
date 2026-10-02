@@ -67,8 +67,9 @@
   },
   "vars": {
 		"BOOKING_MODE": "external",
-		"MONFLORIAN_ACCESS_MODE": "private",
+		"MONFLORIAN_ACCESS_MODE": "public",
 		"MONFLORIAN_GENERATION_ENABLED": "false",
+		"MONFLORIAN_RESEARCH_ENABLED": "true",
 		"MONFLORIAN_ILLUSTRATION_ENABLED": "false",
 		"MONFLORIAN_EMAIL_ENABLED": "false",
 		"MONFLORIAN_EMAIL_FROM": "voyage@monflorian.com",

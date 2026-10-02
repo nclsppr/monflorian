@@ -108,7 +108,7 @@ function expressionName(node) {
   return null;
 }
 
-test("le client éditorial ne crée pas de requête réseau ni d'accès privé simulé", () => {
+test("seul le formulaire de création appelle les API sans accès privé simulé", () => {
   const directory = new URL("app/v2/src/", rootUrl);
   const files = readdirSync(directory, { recursive: true }).filter((file) => /\.(?:jsx?|mjs)$/u.test(file));
   const networkApis = new Set(["fetch", "XMLHttpRequest", "WebSocket", "EventSource", "sendBeacon"]);
@@ -120,17 +120,21 @@ test("le client éditorial ne crée pas de requête réseau ni d'accès privé s
     visitSyntax(program, (node) => {
       if (node.type === "CallExpression" || node.type === "NewExpression") {
         const name = expressionName(node.callee);
-        assert.ok(!networkApis.has(name), `${file}: ${name} exige une décision d'ouverture du service`);
+        if (networkApis.has(name)) {
+          assert.equal(file, "TripCreator.jsx", `${file}: seul le formulaire contacte le service`);
+          assert.equal(name, "fetch");
+          assert.ok(["/api/config", "/api/trips"].includes(node.arguments[0]?.value), "seules les routes du parcours sont autorisées");
+        }
         if (name === "set" && node.arguments[0]?.type === "Literal") {
           assert.ok(!privateParameters.has(node.arguments[0].value), `${file}: aucun paramètre d'accès privé dans les liens publics`);
         }
       }
       if (node.type === "Literal" && typeof node.value === "string") {
-        assert.doesNotMatch(node.value, /^\/api(?:\/|$)/u, `${file}: le client n'appelle pas les API fermées`);
+        if (file !== "TripCreator.jsx") assert.doesNotMatch(node.value, /^\/api(?:\/|$)/u, `${file}: le carnet éditorial ne crée pas de demande`);
       }
       if (node.type === "JSXAttribute" && node.name.name === "type") {
         const value = node.value?.type === "JSXExpressionContainer" ? node.value.expression : node.value;
-        assert.notEqual(value?.value, "password", `${file}: le carnet public ne demande pas de mot de passe`);
+        if (file !== "TripCreator.jsx") assert.notEqual(value?.value, "password", `${file}: le carnet public ne demande pas de mot de passe`);
       }
     });
   }

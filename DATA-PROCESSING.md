@@ -1,13 +1,13 @@
 # Traitement des données
 
-Ce document sépare le site éditorial, ses outils locaux candidats et le parcours
-personnalisé persistant cible. Il ne constitue pas une déclaration de conformité
-juridique. Rôles, bases légales, transferts et canal de droits doivent être
-validés avant d'ouvrir le parcours personnalisé à une personne réelle.
+Ce document sépare le site éditorial, ses outils locaux et le parcours
+personnalisé candidat de l'ADR-0013. Il ne constitue pas une déclaration de conformité
+juridique. Rôles, bases légales, transferts et publication du contact de droits
+doivent être validés avant d'ouvrir le parcours personnalisé à une personne réelle.
 
 ## État courant
 
-Le backend public ne reçoit aucun brief ni photo :
+Le dernier état public consigné dans `STATUS.md` ne reçoit aucun brief ni photo :
 `/api/config` annonce `serviceReady: false` et les routes de génération répondent
 `503`. D1 contient le schéma mais aucun voyage. Le bucket R2 privé est vide, sans
 URL publique, avec des règles d'expiration de secours. Le Worker déployé relie
@@ -15,20 +15,23 @@ D1 et R2, et le Workflow déployé contient les appels OpenAI sans retry
 automatique. La création reste fermée : aucun appel OpenAI n'est exécuté,
 le widget Turnstile reste masqué et le courriel n'est pas activé.
 
+Le candidat du 2 octobre 2026 ajoute un envoi explicite du formulaire, une
+recherche web et un résultat privé. La migration D1 et les règles R2 sont
+appliquées et relues ; les contrôles du fournisseur et l'ouverture distante
+restent à prouver. Cette documentation n'annonce aucune activation.
+
 La fixture Japon canonique `TravelGuideV1` alimente statiquement le carnet
-déterministe, historiquement sous `/v2`. La promotion candidate de l'ADR-0012
-le place sous `/carnets/japon-10-jours`. Ses textes et ses illustrations
+public sous `/carnets/japon-10-jours`. Ses textes et ses illustrations
 synthétiques sont publics ; ses personnages sont fictifs. Le rendu ne provoque
 aucun appel fournisseur. Le schéma, le validateur et le compilateur restent
-candidats
-pour la génération dynamique : le Workflow ne les importe pas et aucun de ces
-artefacts n'est transmis à OpenAI dans cette tranche.
+réservés à ce carnet ; l'ADR-0013 reporte leur promotion dynamique au profit du
+contrat compact `itinerary.v2`, compatible avec les résultats historiques.
 
-## Outils locaux candidats du site principal
+## Outils locaux du site éditorial
 
-Cette section décrit le candidat du 7 septembre 2026. Elle ne constitue pas une
-preuve de déploiement. L'ADR-0012 autorise les outils de préparation suivants,
-sans nouvelle API, sans secret et sans changement des drapeaux du backend.
+Cette section décrit les copies locales issues de l'ADR-0012. La nouvelle
+création privée de l'ADR-0013 possède un bouton d'envoi explicite et suit le
+contrat distinct ci-dessous. Une sauvegarde locale n'est pas une création.
 
 ### Pense-bête
 
@@ -76,21 +79,22 @@ Le lien du carnet ouvre toujours le même exemple public. Aucun mot de passe
 simulé ne protège ce contenu. Les données des futurs voyages privés suivent le
 contrat distinct ci-dessous, avec chiffrement, contrôle d'accès et expiration.
 
-## Parcours cible
+## Parcours personnalisé candidat
 
 | Catégorie | Exemples | Finalité | Emplacement cible |
 | --- | --- | --- | --- |
 | Brief | destination, intérêts, contraintes | composer le voyage | chiffré dans D1 |
-| Paramètres | dates, voyageurs, rythme | borner et adapter | chiffrés dans D1 |
-| Courriel | adresse de notification | envoyer le lien privé | chiffré dans D1 jusqu'à l'envoi |
-| Identifiant réseau pseudonymisé | SHA-256 avec secret de quota | limiter l'abus | D1, sans adresse brute |
+| Paramètres | dates ou durée, départ, voyageurs, rythme, budget, transport, hébergement | borner et adapter | chiffrés dans D1 |
+| Courriel facultatif | adresse de notification | envoyer le lien privé si demandé | chiffré dans D1 jusqu'à l'envoi |
+| Identifiant réseau pseudonymisé | HMAC avec secret de quota | limiter l'abus | D1, sans adresse brute |
 | Photos | visages et apparence | créer une projection synthétique éditoriale | R2 privé |
-| Plan d'images | références de lieu et choix visuels bornés | choisir les scènes sans prompt libre | dans `TravelGuideV1` chiffré après validation |
-| Résultat | guide `TravelGuideV1` validé et listes de vérification | rendre la page privée | chiffré dans D1 |
+| Recherche | résultats web, références et date de consultation | appuyer les recommandations | chiffrée dans D1 |
+| Résultat | itinéraire `itinerary.v2` validé et listes de vérification | rendre la page privée | chiffré dans D1 |
 | Images générées | WebP générés | illustrer le voyage | R2 privé |
 | Jeton privé | secret dans l'URL | autoriser consultation et retrait | SHA-256 seulement dans D1 |
 | Logs | route normalisée, statut, durée, identifiants techniques | diagnostic et sécurité | Cloudflare Logs |
 | Navigation Booking.com | destination, dates, voyageurs | recherche au clic | navigateur puis site externe |
+| Navigation transport | départ, destination et critères de recherche | comparer les options au clic | navigateur puis site externe |
 
 Ne saisis pas de diagnostic médical, document d'identité, adresse privée, moyen
 de paiement, secret ou information inutile au voyage.
@@ -98,8 +102,9 @@ de paiement, secret ou information inutile au voyage.
 ## Limites d'entrée et de sortie
 
 - brief : 2 000 caractères ;
-- voyage : 14 jours et 8 voyageurs ;
-- photos : 1 à 4 ;
+- voyage : 1 à 14 jours et 1 à 8 voyageurs ;
+- retour : au plus 173 jours après la création, dates passées refusées ;
+- photos : 0 à 4, au maximum une illustration produite en bêta ;
 - photo réencodée : 1 500 000 octets, 256 à 2 048 pixels par côté et au plus
   4 194 304 pixels ;
 - JSON itinéraire extrait : 131 072 octets ;
@@ -125,12 +130,18 @@ Worker contrôle chaque lecture à partir du jeton de voyage.
 
 ### OpenAI
 
-Responses reçoit le brief, les paramètres et un `safety_identifier`
-pseudonymisé. Dans le parcours cible, Image Edits reçoit seulement les
-références réencodées et une consigne compilée côté serveur depuis des champs de
-scène validés. Il ne reçoit ni le brief brut, ni un prompt libre produit par
-Responses. Les appels Responses fixent `store: false` et demandent une sortie
-JSON stricte.
+Responses reçoit les paramètres utiles au voyage et un `safety_identifier`
+pseudonymisé. Une première étape utilise `web_search` avec destination, départ,
+dates ou mois souhaité, durée, voyageurs, budget, transport, hébergement et
+catégories d'intérêts déduites du brief.
+Elle ne reçoit ni brief brut, ni photo, ni courriel, ni jeton de consultation.
+Les résultats web peuvent provenir
+de tiers et ne sont jamais des instructions de confiance. La seconde étape
+compose le JSON strict à partir du brief et des références validées.
+
+Image Edits reçoit les photos réencodées seulement si elles ont été jointes
+avec accord. Sa consigne est contrôlée côté serveur ; le brief brut ne devient
+pas une instruction d'image. Tous les appels Responses fixent `store: false`.
 
 Selon la [documentation OpenAI sur les contrôles de
 données](https://developers.openai.com/api/docs/guides/your-data), `store: false`
@@ -146,10 +157,16 @@ Cloudflare gère aussi le journal de livraison, les bounces et les suppressions.
 Le message réel et les réglages de rétention doivent être vérifiés avant une
 personne réelle.
 
+La notification est facultative et sa panne ne supprime pas le carnet. Resend
+n'est pas un destinataire dans cette tranche : aucun adaptateur ni secret n'est
+ajouté. Son éventuelle adoption demanderait une mise à jour de ce contrat.
+
 ### Booking.com et CJ
 
-Le backend n'envoie aucune donnée à Booking.com ou CJ. Le navigateur les contacte
-seulement après un clic. Le mode `external` peut placer destination, dates et
+Le backend ne réserve rien auprès de Booking.com ou CJ. Une recherche web peut
+consulter des pages publiques utiles au voyage, sans adresse de courriel ni
+photo. Le navigateur ouvre les liens de réservation seulement après un clic.
+Le mode `external` peut placer destination, dates et
 nombre d'adultes dans l'URL. `cj-static` reste fermé sans partenariat, liens
 approuvés et notice commerciale.
 
@@ -160,6 +177,11 @@ ne recevra aucune donnée de carte. La durée, la fiscalité, les remboursements
 le lien entre paiement et voyage seront décidés avant toute ressource réelle.
 
 ## Consentement sur les photos
+
+Les photos sont facultatives dès la saisie. Leur sélection affiche un aperçu
+local et ne lance aucun téléversement. Elles sont transmises au clic explicite
+de création, après validation de l'accord ci-dessous. Aucun carnet n'exige une
+photo pour être utile ou consultable.
 
 Avant envoi, l'interface exige que la personne confirme :
 
@@ -173,24 +195,39 @@ vaut pas publication, entraînement, galerie ou conservation indéfinie.
 
 ## Rétention et effacement
 
+Le bouton de conservation hors connexion prépare un fichier HTML local après
+un clic. Il contient le carnet et les illustrations déjà disponibles, sans le
+jeton d’accès ni les photos sources. Il ne charge aucune ressource distante à
+l’ouverture ; les liens des hôtels, transports et sources restent externes.
+Cette copie ne reçoit pas les mises à jour ultérieures et reste sur l’appareil
+jusqu’à sa suppression, indépendamment du retrait ou de l’expiration du voyage.
+
 | Emplacement | Données | Durée maximale MVP | Retrait |
 | --- | --- | --- | --- |
 | Mémoire navigateur | formulaire et prévisualisations | onglet courant | rechargement ou fermeture |
-| Navigateur, pense-bête candidat | copie demandée explicitement | jusqu'à effacement, sans échéance programmée | « Effacer de cet appareil » ou réglages du navigateur |
-| Navigateur, checklist candidate | identifiants des cases sélectionnées | jusqu'à effacement, sans échéance programmée | « Tout décocher » ou réglages du navigateur |
+| Navigateur, pense-bête | copie demandée explicitement | jusqu'à effacement, sans échéance programmée | « Effacer de cet appareil » ou réglages du navigateur |
+| Navigateur, checklist | identifiants des cases sélectionnées | jusqu'à effacement, sans échéance programmée | « Tout décocher » ou réglages du navigateur |
+| Fichier téléchargé | carnet et illustrations disponibles | jusqu’à suppression par la personne | suppression du fichier sur l’appareil |
 | R2, sources | photos réencodées | suppression après génération, limite dure 24 h | purge automatique ou retrait du voyage |
-| R2, résultats | images générées | 30 jours | expiration ou retrait anticipé |
-| D1 | demande et résultat chiffrés, métadonnées | 30 jours | expiration ou retrait anticipé |
-| D1, courriel | adresse chiffrée | jusqu'à l'envoi réussi, au plus 30 jours | suppression après envoi ou expiration |
+| R2, résultats | images générées | échéance du voyage, 180 jours maximum | expiration ou retrait anticipé |
+| D1 | demande, recherche et résultat chiffrés, métadonnées | échéance du voyage, 180 jours maximum | expiration ou retrait anticipé |
+| D1, courriel | adresse chiffrée | jusqu'à l'envoi réussi, au plus l'échéance du voyage | suppression après envoi ou expiration |
 | D1, quotas | date et sujet pseudonymisé par HMAC | 31 jours | purge automatique |
 | Logs Cloudflare | métadonnées techniques | durée minimale à configurer et consigner | politique Cloudflare |
 | OpenAI | entrées et sorties | selon le contrat et les contrôles du compte | procédure fournisseur |
 | Booking.com, CJ, Stripe | données après action explicite | politiques propres | procédure du fournisseur |
 
-Les durées D1 et R2 concernent le parcours personnalisé cible. La tâche de purge
-doit être idempotente, supprimer R2 avant de marquer D1 comme expiré et produire
-une preuve sans nom de fichier ni contenu. Tant qu'elle n'est pas déployée et
-testée, aucune donnée réelle ne peut être envoyée dans ce parcours.
+L'échéance du voyage est la plus tardive entre création + 30 jours et retour +
+7 jours, plafonnée à création + 180 jours. Sans date de retour : 30 jours. Elle
+est affichée près du lien privé. Cette règle remplace la limite uniforme de
+30 jours selon l'ADR-0013.
+
+La purge est idempotente. Le retrait révoque l'accès puis supprime R2 et les
+champs chiffrés ; un Workflow encore en cours ne doit pas recréer les données.
+La preuve ne contient aucun nom de fichier ni contenu. La règle de secours R2
+des résultats doit être portée à 180 jours avant activation, tandis que la
+purge applicative respecte l'échéance précise. Les sources restent à 24 heures.
+Une configuration locale ne prouve ni purge ni règle distante.
 
 ## Accès et incidents
 
@@ -203,8 +240,13 @@ testée, aucune donnée réelle ne peut être envoyée dans ce parcours.
   l'exposition sans recopier de contenu.
 - Une fuite de brief ou photo coupe les générations, conserve les métadonnées
   utiles et identifie les destinataires.
-- Le canal de contact des droits manque encore et bloque l'ouverture du
-  parcours personnalisé à une personne réelle.
+- Le propriétaire a fourni `support@monflorian.com` le 2 octobre 2026 pour le
+  support et les demandes de droits. Cette adresse figure dans la notice
+  candidate ; sa présence publique sera contrôlée après déploiement.
+- La désignation de cette adresse ne prouve ni boîte de réception, ni routage,
+  ni réception d'un message. Ces contrôles restent à consigner séparément.
+  Le courriel de notification du carnet est facultatif et peut rester désactivé
+  pendant l'ouverture du texte et des illustrations.
 
 ## Tests autorisés
 
@@ -217,11 +259,12 @@ testée, aucune donnée réelle ne peut être envoyée dans ce parcours.
   limité aux clés prévues et refus des valeurs de stockage invalides.
 - Les futures photos de voyageurs réels suivent le flux R2 privé ; elles ne sont
   pas confondues avec les fixtures fictives du dépôt.
-- Un seul parcours fournisseur contrôlé avant ouverture.
+- Scénarios fournisseur synthétiques Tokyo et Luxembourg, avec nombre d’appels,
+  durée et consommation consignés avant ouverture.
 
 ## Changements qui imposent une nouvelle décision
 
-- durée supérieure à 30 jours pour un voyage privé côté serveur ;
+- durée supérieure à 180 jours ou changement de la formule d'échéance ;
 - compte, partage public de données personnelles, historique serveur ou PDF
   produit par le service ;
 - biométrie ou reconnaissance ;
@@ -236,6 +279,7 @@ testée, aucune donnée réelle ne peut être envoyée dans ce parcours.
 - [`THREAT-MODEL.md`](THREAT-MODEL.md)
 - [`RUNBOOK.md`](RUNBOOK.md)
 - [ADR-0012, V2 comme site principal](docs/decisions/adr-0012-v2-site-principal.md)
+- [ADR-0013, bêta gratuite sourcée](docs/decisions/adr-0013-beta-gratuite-voyages-sources.md)
 - [OpenAI, contrôles de données](https://developers.openai.com/api/docs/guides/your-data)
 - [Cloudflare, localisation D1](https://developers.cloudflare.com/d1/configuration/data-location/)
 - [Cloudflare, juridictions R2](https://developers.cloudflare.com/r2/reference/data-location/)

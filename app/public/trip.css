@@ -1,0 +1,26 @@
+.private-trip-shell { max-width: 960px; }
+.private-trip-hero h1 { max-width: 18ch; text-wrap: balance; }
+.private-trip-nav, .private-trip-actions { display: flex; flex-wrap: wrap; gap: 12px 24px; margin: 24px 0; }
+.private-trip-actions[hidden] { display: none; }
+.private-trip-actions button { min-height: 44px; padding: 10px 16px; border: 1px solid #0b4fd8; border-radius: 18px; background: #fffefb; color: #0b4fd8; font: inherit; cursor: pointer; }
+.private-trip-actions button:first-child { background: #0b4fd8; color: white; }
+.private-trip-actions button:focus-visible, .private-trip-nav a:focus-visible { outline: 3px solid #1772ff; outline-offset: 4px; }
+.private-trip-section, .private-trip-day, #itinerary-title { scroll-margin-top: 24px; }
+.private-trip-links > li, .private-trip-option { padding: 24px 0; border-bottom: 1px solid rgba(6,26,59,.15); }
+.private-trip-links h3, .private-trip-option h3 { margin: 0 0 12px; font-size: 1.4rem; }
+.private-trip-source-links { font-size: .9rem; }
+.private-trip-notice { padding: 18px 22px; border: 1px solid #0b4fd8; background: #f4f7ff; }
+.private-trip-delete summary { cursor: pointer; min-height: 44px; display: list-item; }
+.private-trip-shell p, .private-trip-shell a, .private-trip-shell li { overflow-wrap: anywhere; }
+.private-trip-shell li p { margin: 8px 0 16px; }
+.private-trip-shell h2 { text-wrap: balance; }
+@media (max-width: 600px) {
+  .private-trip-shell { padding-inline: 18px; }
+  .private-trip-actions button { width: 100%; }
+}
+@media print {
+  .private-trip-actions, .private-trip-nav, .private-trip-delete, [data-trip-feedback] { display: none !important; }
+  .private-trip-page { background: white; color: black; }
+  .private-trip-shell { max-width: none; margin: 0; padding: 0; }
+  .private-trip-day, .private-trip-option, .private-trip-image { break-inside: avoid; }
+}

@@ -1,5 +1,52 @@
 # État courant
 
+## Bêta gratuite candidate du 2 octobre 2026
+
+L'[ADR-0013](docs/decisions/adr-0013-beta-gratuite-voyages-sources.md) prépare
+la création de voyages privés, avec recherche web, hôtels sourcés, transport
+adapté, photos et courriel facultatifs. La bêta ne demande ni paiement ni compte.
+Le paiement sera ajouté après la bêta ; aucun prix n'est arrêté.
+
+Le candidat passe `./scripts/verify.sh` : 111 tests applicatifs, TypeScript,
+build Worker, Docker Compose et Nimbus. Les parcours visibles et la notice
+sont contrôlés sur ordinateur et mobile. Ces preuves locales ne prouvent ni
+déploiement, ni appel OpenAI réussi, ni image générée, ni réception de courriel.
+Le dernier état public consigné ci-dessous reste la référence jusqu'aux sondes
+du nouveau SHA et de sa version Worker.
+
+Le candidat est poussé dans la [PR #59](https://github.com/nclsppr/monflorian/pull/59),
+sur la branche `codex/free-beta-travel`.
+La migration `0004_trip_research.sql` est appliquée en production. R2 conserve
+les sources un jour et les résultats 180 jours, sans accès public. La
+configuration publique reste fermée après ces opérations.
+
+La clé OpenAI dédiée est enregistrée hors Git et installée sur Cloudflare.
+Le premier essai fournisseur est refusé : `credit_balance_exhausted`, type
+`insufficient_quota`. Une requête minimale de diagnostic confirme le solde API
+épuisé. La génération reste fermée, sans nouvelle tentative ni achat de crédits.
+La version Worker issue du seul changement de secret est
+`3a3bcdfc-1c0b-4127-8321-ee24e927f91c` ; elle ne publie pas le code candidat.
+
+Le propriétaire a fourni `support@monflorian.com` pour le support et les droits.
+L'adresse est intégrée à la notice candidate. Sa publication distante, son
+routage et la réception d'un message ne sont pas encore prouvés. Le courriel
+facultatif du carnet peut rester désactivé indépendamment du texte et des images.
+
+Avant d'annoncer la bêta ouverte, consigner :
+
+- les contrôles du candidat et les parcours visibles Tokyo et Luxembourg ;
+- des crédits API disponibles et les modèles accessibles ;
+- la purge applicative à l’échéance annoncée ;
+- la génération réelle avec sources, l'échec d'image sans perte du texte, le
+  retrait pendant traitement et l'absence de contenu privé dans les logs ;
+- le SHA, les contrôles GitHub, la version Worker et les capacités exposées par
+  `/api/config` ;
+- la notice publiée, le contact de droits visible et le consentement ;
+- la réception du courriel si cette option est ouverte et le coût fournisseur.
+
+La liste opérationnelle reste dans `RESTE-A-FAIRE.md`. Les preuves historiques
+qui suivent ne valident pas ces nouveaux traitements.
+
 ## Site principal publié le 7 septembre 2026
 
 La V2 améliorée est servie à la racine de `https://monflorian.com` après la

@@ -6,6 +6,7 @@ const publicDirectory = fileURLToPath(new URL("../app/public/", import.meta.url)
 const brandDirectory = fileURLToPath(new URL("../assets/brand/", import.meta.url));
 const outputDirectory = fileURLToPath(new URL("../dist/", import.meta.url));
 const outputAssetsDirectory = fileURLToPath(new URL("../dist/assets/", import.meta.url));
+const errorAssetsDirectory = fileURLToPath(new URL("../assets/errors/", import.meta.url));
 
 await rm(outputDirectory, { force: true, recursive: true });
 await cp(publicDirectory, outputDirectory, { recursive: true });
@@ -20,8 +21,17 @@ for (const asset of brandAssets) {
   await cp(`${brandDirectory}/${asset}`, `${outputAssetsDirectory}/${asset}`);
 }
 
+await mkdir(`${outputAssetsDirectory}/errors`, { recursive: true });
+const errorAssets = (await readdir(errorAssetsDirectory, { withFileTypes: true }))
+  .filter((entry) => entry.isFile() && entry.name.endsWith(".webp"))
+  .map((entry) => entry.name).sort();
+for (const asset of errorAssets) {
+  await cp(`${errorAssetsDirectory}/${asset}`, `${outputAssetsDirectory}/errors/${asset}`);
+}
+
 console.log(JSON.stringify({
   event: "worker_assets_built",
   output: outputDirectory.slice(projectRoot.length),
   brandAssets: brandAssets.length,
+  errorAssets: errorAssets.length,
 }));

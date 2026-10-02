@@ -3,6 +3,84 @@
 Chaque section nomme son environnement et ses limites. Les sections Atlas sont
 des archives historiques ; la section Cloudflare porte la migration courante.
 
+## Candidat bêta gratuite, contrôles locaux du 2 octobre 2026
+
+Le candidat est poussé dans la [PR #59](https://github.com/nclsppr/monflorian/pull/59),
+branche `codex/free-beta-travel`. La clé OpenAI dédiée est installée, mais les
+drapeaux de génération restent fermés. Aucune personne réelle n’a été envoyée
+à un fournisseur.
+
+- `./scripts/verify.sh` complet réussi sur le candidat final : 111 tests
+  applicatifs, TypeScript,
+  build Worker, Docker Compose, contrôles publics locaux et Nimbus.
+- Tests supplémentaires du vrai Worker et Workflow, avec SQLite en mémoire,
+  R2 et fournisseur simulés : Tokyo avec vol, Luxembourg sans avion, création
+  sans paiement ni email, idempotence, quota, échec image, suppression pendant
+  traitement et reprise du nettoyage R2 après panne.
+- Recherche saisonnière avec dates flexibles : novembre conservé sans envoyer
+  le brief brut, exclusions explicites écartées et dates exactes prioritaires.
+- Avion, train ou voiture sans départ : refus avant consommation de quota sur
+  les deux routes de création, retour au champ concerné dans le formulaire.
+- Script d’essai fournisseur aligné sur les deux scénarios : quatre tests
+  sans réseau, recherche transmise à la synthèse, sortie sans contenu privé,
+  sans stack fournisseur ni nouvelle tentative après échec.
+- Revue indépendante : correction du masquage des chemins privés invalides,
+  effacement des demandes rejetées par quota et fermeture des écritures après
+  suppression, y compris pendant le téléversement initial.
+- Chrome à 1440 et 390 px : accueil, formulaire, récapitulatif et carnet privé
+  et notice sans débordement ni erreur JavaScript. Accord photo obligatoire, aucune
+  transmission avant envoi, même clé lors d’une reprise après erreur réseau.
+- Copie HTML téléchargée par clic puis ouverte hors connexion à 1440 et
+  390 px : images intégrées lisibles, aucune requête réseau, aucun jeton,
+  formulaire ou script. Sept exports couvrent aussi l’image en cours, absente,
+  en échec, le séjour sans hôtel et les éléments HTML hostiles. Captures et
+  résultats sous `/tmp/monflorian-offline-qa`.
+- Contrôle visible complémentaire du départ obligatoire et de la notice de
+  conservation locale, à 1440 et 390 px, sans débordement ni erreur JavaScript.
+- Six portraits d’erreur générés depuis l’identité du site, sans personne
+  réelle : sources PNG 1254 × 1254 et WebP transparents 512 × 512, tous sous
+  51 Ko. Le logo master reste inchangé.
+- Chrome à 1440 et 390 px : 34 rendus de pages d’erreur, d’attente, de résultat
+  partiel et de notice, sans débordement, image manquante ni erreur JavaScript.
+  La 404 conserve ses actions sans JavaScript. Les métadonnées des carnets
+  ne contiennent ni titre personnel ni jeton ; les liens support restent sans
+  paramètres. Captures et résultats sous `/tmp/monflorian-errors-qa`.
+- Reprises du formulaire simulées sur les deux largeurs : demande incertaine
+  avec même clé et photo conservée, quota confirmé avec nouvelle clé au clic
+  suivant, disponibilité vérifiée sans nouvel envoi et correction du code
+  d’accès au bon champ. La sauvegarde des envies exclut photos, code et courriel.
+- Réencodage navigateur d’une photo synthétique : WebP 1440 × 960 de 137 476
+  octets, accepté par le validateur serveur. Les captures et journaux de test
+  restent hors du dépôt, sous `/tmp/monflorian-ui-qa` et `/tmp/monflorian-*`.
+- Production relue le 2 octobre : création et illustrations fermées, accès
+  privé. La base ne contenait aucun voyage avant la migration.
+- Migration `0004_trip_research.sql` appliquée puis relue : aucune migration
+  restante. Les colonnes chiffrées de recherche sont ajoutées sans modifier le
+  runtime actuellement publié.
+- `config/r2-lifecycle.json` appliqué et relu : résultats à 180 jours, sources
+  à un jour, multipart incomplets à sept jours. Aucun domaine personnalisé et
+  accès `r2.dev` désactivé, confirmés après la modification.
+
+La clé OpenAI `Codex` est créée après confirmation, écrite dans `.dev.vars`
+ignoré par Git avec permissions `600`, puis installée dans le Worker. La
+relecture des noms de secrets confirme `OPENAI_API_KEY`, sans lecture de valeur.
+Le changement de secret crée la version `3a3bcdfc-1c0b-4127-8321-ee24e927f91c`,
+active à 100 %. Santé et configuration publiques restent fermées après l’action.
+
+Le smoke Luxembourg reçoit un HTTP 429. Une requête minimale de diagnostic
+confirme `credit_balance_exhausted`, type `insufficient_quota`, sans
+`Retry-After` (requête `req_1983b20703f44c548c3fe4beda5eaffa`). Aucun résultat ni
+consommation n’est retourné. Aucun nouvel appel ni achat de crédits n’est lancé.
+Le candidat distingue maintenant ces erreurs de facturation d’une limite de
+débit temporaire, avec quatre tests supplémentaires texte et image.
+
+Le propriétaire a fourni `support@monflorian.com`, intégré à la notice candidate.
+La publication distante, le routage et la réception de cette adresse restent
+à vérifier. Les crédits API et l’adresse de réception du test de notification
+restent à fournir. Un résultat OpenAI réel, son coût, la génération d’image,
+Turnstile en production, la réception de courriel et la publication du candidat
+restent à prouver. Les fixtures ne valident aucun hôtel ni trajet réel.
+
 ## Accueil bureau et footer, publiés le 7 septembre 2026
 
 La [PR #56](https://github.com/nclsppr/monflorian/pull/56) supprime le doublon

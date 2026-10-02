@@ -123,6 +123,19 @@ function webpDimensions(webp, file) {
   };
 }
 
+test("les illustrations d’erreur sont transparentes et bornées pour le web", () => {
+  const manifest = JSON.parse(readFileSync(new URL("../assets/errors/manifest.json", import.meta.url), "utf8"));
+  assert.deepEqual(manifest.map(({ name }) => name).sort(), ["deleted", "expired", "limit", "lost", "repair", "waiting"]);
+  for (const { name } of manifest) {
+    const file = `florian-${name}.webp`;
+    const webp = readFileSync(new URL(`../assets/errors/${file}`, import.meta.url));
+    assert.equal(webp.toString("ascii", 8, 12), "WEBP");
+    assert.deepEqual(webpDimensions(webp, file), { width: 512, height: 512 });
+    assert.ok(webp[20] & 0x10, `${file}: transparence requise pour le fond crème`);
+    assert.ok(webp.length < 100 * 1024, `${file}: rester sous 100 Kio`);
+  }
+});
+
 test("les portraits de Florian gardent un vrai fond transparent", () => {
   for (const file of AVATARS) {
     const { width, height, pixels } = decodeRgbaPng(file);

@@ -60,6 +60,29 @@ Source canonique des visuels de marque et des références importées depuis le 
 | `references/concepts/landing-primary.png` | Capture de la direction retenue | Référence non éditable | 1440 x 1100, RGB | `78497298fa76359524fdbb384ef7bffb3dae835939c2bcbaadafacce5040e2f7` | Fourni sous le nom `concet01.png` |
 | `references/concepts/landing-alternative.png` | Exploration plus dense de type agence | Archive non canonique | 1448 x 1086, RGB | `c6f37af3934b8bb0ab92e13904b3d6c6be729e76c2cc6721e7f5d8500f2c3216` | Fourni sous le nom `monflorian-concept-utopie.png` |
 
+## Florian dans les erreurs
+
+La famille `assets/errors/` est générée le 2 octobre 2026 avec ImageGen intégré.
+Elle reprend `florian-v2-original.png` et le master du logo, sans les modifier.
+`lost` sert ensuite de référence de tenue et de rendu aux cinq autres états.
+Les [prompts](ERROR-ILLUSTRATIONS.md) et `assets/errors/manifest.json`
+conservent les consignes, dimensions, tailles et SHA-256 des fichiers.
+
+| Variante | Situation | Source | Dérivé servi |
+| --- | --- | --- | --- |
+| `lost` | Page ou carnet introuvable | `florian-lost.png` | `florian-lost.webp` |
+| `repair` | Préparation échouée ou page illisible | `florian-repair.png` | `florian-repair.webp` |
+| `waiting` | Préparation en cours, indisponibilité temporaire | `florian-waiting.png` | `florian-waiting.webp` |
+| `limit` | Limite gratuite du jour | `florian-limit.png` | `florian-limit.webp` |
+| `expired` | Fin de conservation | `florian-expired.png` | `florian-expired.webp` |
+| `deleted` | Retrait du carnet | `florian-deleted.png` | `florian-deleted.webp` |
+
+Les sources sont des PNG RGBA de 1254 × 1254 px. Les WebP RGBA de 512 × 512 px
+sont des dérivés par redimensionnement et compression qualité 82, sans retouche
+de l’illustration. Le build ne publie que les WebP, sous `/assets/errors/`.
+Les explications restent en HTML ; ces images n’apportent aucune information
+nécessaire et portent un `alt` vide. Aucun portrait de voyageur n’est utilisé.
+
 ## Police d'accent
 
 | Fichier | Rôle | Format | Taille | SHA-256 | Provenance et licence |
@@ -122,8 +145,10 @@ requalifiés comme des photos personnelles réelles dans les contrôles du dép�
 Les futures photos envoyées par des voyageurs réels suivent un autre flux : le
 navigateur les réencode avant l'envoi au Worker, puis R2 privé les conserve
 jusqu'à la génération ou pendant 24 heures au maximum. Les résultats du parcours
-réel restent destinés à la page privée pendant 30 jours au maximum. Le détail de
-ce flux vit dans [`DATA-PROCESSING.md`](DATA-PROCESSING.md).
+réel suivent l'échéance de l'ADR-0013 : création + 30 jours ou retour + 7 jours,
+selon la date la plus tardive, avec un maximum de 180 jours. Cette évolution
+reste candidate jusqu'à la preuve des règles distantes et de la purge. Le
+détail de ce flux vit dans [`DATA-PROCESSING.md`](DATA-PROCESSING.md).
 
 ## Retrait
 

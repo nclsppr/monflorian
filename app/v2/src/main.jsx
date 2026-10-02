@@ -147,12 +147,12 @@ function BrandHeader({ isTrip, onShare }) {
         </a>
         <nav aria-label="Navigation principale" className="desktop-nav">
           <a href={TRIP_PATH}>Le carnet Japon</a>
-          <a href="/#create">Mon pense-bête</a>
+          <a href="/#create">Créer mon voyage</a>
           <a href="/guides">Les guides</a>
         </nav>
         <details className="mobile-menu">
           <summary>Menu</summary>
-          <nav aria-label="Navigation mobile" onClick={(event) => { if (event.target.closest("a")) event.currentTarget.closest("details").open = false; }}><a href={TRIP_PATH}>Le carnet Japon</a><a href="/#create">Mon pense-bête</a><a href="/guides">Les guides</a><a href="/#examples">Inspirations</a></nav>
+          <nav aria-label="Navigation mobile" onClick={(event) => { if (event.target.closest("a")) event.currentTarget.closest("details").open = false; }}><a href={TRIP_PATH}>Le carnet Japon</a><a href="/#create">Créer mon voyage</a><a href="/guides">Les guides</a><a href="/#examples">Inspirations</a></nav>
         </details>
         {isTrip ? <Button className="header-action js-only" icon={<Icon name="share" size={17} />} label="Partager" onClick={onShare} size="lg" variant="primary" /> : null}
       </div>
@@ -185,7 +185,7 @@ function CarnetPreview() {
   const image = japanTrip.featuredImage.asset;
   return (
     <div className="carnet-preview">
-      <p className="carnet-annotation">Un premier départ : le Japon.</p>
+      <p className="carnet-annotation">Un exemple pour se projeter : le Japon.</p>
       <a className="carnet-cover" href={TRIP_PATH} aria-label="Découvrir Le Japon à deux, le carnet de dix jours">
         <div className="carnet-cover-image">
           <img
@@ -221,21 +221,21 @@ function Hero() {
         <h1 id="hero-title">Ton voyage,<br />à ton rythme.</h1>
         <p className="hero-intro">
           Des étapes qui s’enchaînent, du temps pour improviser.
-          Explore le carnet Japon, puis pose les envies de ton prochain voyage.
+          Un carnet adapté à tes envies, des idées d’hôtels et les trajets pour y aller.
         </p>
         <div className="hero-actions">
           <Button
             endContent={<Icon name="arrow" />}
-            label="Ouvrir le carnet Japon"
-            href={TRIP_PATH}
+            label="Créer mon voyage gratuitement"
+            href="#create"
             size="lg"
             variant="primary"
           />
-          <a className="text-link" href="#create">Préparer mon pense-bête</a>
+          <a className="text-link" href={TRIP_PATH}>Voir le carnet Japon d’exemple</a>
         </div>
         <p className="hero-demo-note">
-          Un carnet d’exemple, à lire sans compte.<br />
-          La création sur mesure n’est pas encore ouverte.
+          Gratuit pendant la bêta, sans carte bancaire.<br />
+          Le paiement sera ajouté à la sortie de bêta.
         </p>
       </div>
       <CarnetPreview />
@@ -246,8 +246,8 @@ function Hero() {
 function WhatYouReceive() {
   const items = [
     ["01", "Un parcours cohérent", "Les étapes, les nuits et les transferts suivent une logique simple à comprendre."],
-    ["02", "Dix journées détaillées", "Matin, après-midi, soir, temps de trajet et solution en cas de pluie ou de fatigue."],
-    ["03", "Des choix à réserver", "Hôtels, trains et activités sont classés par priorité, avec les points à vérifier."],
+    ["02", "Un rythme à ta mesure", "D’une journée à deux semaines, des idées pour les visites et le temps libre."],
+    ["03", "Des choix à comparer", "Hôtels, vols ou trajets de proximité : des pistes liées à tes envies et les points à vérifier."],
     ["04", "Un carnet commun", "Une seule page à garder sous la main et à envoyer aux personnes qui voyagent avec toi."],
   ];
   return (
@@ -344,8 +344,8 @@ function HowItWorks() {
         <h2>De l’envie aux premières décisions.</h2>
       </div>
       <ol className="how-list">
-        <li><span>01</span><div><h3>Explore le carnet</h3><p>Regarde comment les nuits, les trajets et les journées s’articulent dans l’exemple Japon.</p></div></li>
-        <li><span>02</span><div><h3>Pose tes envies</h3><p>Ton pense-bête rassemble destination, rythme et confort. Garde-le sur ton appareil ou télécharge-le.</p></div></li>
+        <li><span>01</span><div><h3>Raconte ton départ</h3><p>Une destination, une période, tes envies et ton confort. Les portraits sont facultatifs.</p></div></li>
+        <li><span>02</span><div><h3>Retrouve ton carnet privé</h3><p>Ton lien donne accès à la préparation puis au voyage, sans attendre un courriel.</p></div></li>
         <li><span>03</span><div><h3>Tu décides</h3><p>Le carnet distingue l’essentiel du facultatif et rassemble les points à vérifier avant de réserver.</p></div></li>
       </ol>
     </section>
@@ -354,11 +354,11 @@ function HowItWorks() {
 
 function Questions() {
   const questions = [
-    ["Puis-je créer un voyage sur mesure ?", "Pas encore. Tu peux explorer le carnet Japon, lire les guides et préparer ton propre pense-bête. Aucun paiement, envoi de courriel ou génération ne se déclenche."],
+    ["Combien coûte la création pendant la bêta ?", "La création est gratuite, sans carte bancaire, dans les limites quotidiennes du service. Le paiement sera ajouté à la sortie de bêta. Il sera annoncé avant toute nouvelle création payante."],
     ["Les prix sont-ils en temps réel ?", "Non. Les liens ouvrent une recherche Booking.com et les prix, disponibilités et conditions doivent être vérifiés au moment de réserver."],
     ["Est-ce que Mon Florian réserve à ma place ?", "Non. Le carnet organise les décisions et te conduit vers les services concernés, sans acheter ni confirmer quoi que ce soit."],
-    ["Que deviennent mes réponses ?", "Ton pense-bête reste dans cette page. Tu peux choisir de le conserver sur cet appareil, le télécharger ou le copier. Il n’est jamais envoyé à Mon Florian et ne personnalise pas le carnet Japon."],
-    ["Dois-je ajouter des photos ?", "Non. Aucune photo n’est demandée. Les illustrations sont synthétiques et les personnages du carnet Japon sont fictifs."],
+    ["Que deviennent mes réponses ?", "Le formulaire envoie tes réponses seulement quand tu crées le voyage. Ton carnet est accessible par un lien privé, avec une date d’expiration et une action de suppression. Le pense-bête secondaire reste local sur ton appareil."],
+    ["Dois-je ajouter des photos ?", "Non. Tu peux créer ton voyage sans portrait. Quand la personnalisation est disponible, les photos ne sont envoyées qu’après ton accord, à la création du voyage. Les illustrations générées ne sont pas des photos de vacances. Le couple du carnet Japon est fictif."],
   ];
   return (
     <section id="questions" className="questions-section" aria-labelledby="questions-title">
@@ -381,9 +381,9 @@ function HomePage() {
   return (
     <main id="main-content">
       <Hero />
+      <TripPlanner />
       <WhatYouReceive />
       <JapanProof />
-      <TripPlanner />
       <Examples />
       <section className="home-guides" aria-labelledby="home-guides-title">
         <div><h2 id="home-guides-title">Avant de remplir les valises.</h2><p>Deux guides pour passer d’une envie à un parcours réaliste.</p></div>
@@ -812,7 +812,7 @@ function Footer() {
       <div className="footer-inner">
         <div className="footer-invitation">
           <h2>Alors, on part où&nbsp;?</h2>
-          <a href="/#create">Poser mes idées <span><Icon name="arrow" size={26} /></span></a>
+          <a href="/#create">Créer mon voyage gratuitement <span><Icon name="arrow" size={26} /></span></a>
         </div>
         <div className="footer-directory">
           <div className="footer-brand">
@@ -829,7 +829,7 @@ function Footer() {
           </nav>
           <nav className="footer-column" aria-label="Préparer ton voyage">
             <h3>Préparer ton voyage</h3>
-            <a href="/#create">Mon pense-bête</a>
+            <a href="/#create">Créer mon voyage</a>
             <a href="/#questions">Questions fréquentes</a>
             <a href="/confidentialite">Confidentialité</a>
           </nav>

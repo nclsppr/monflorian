@@ -59,7 +59,14 @@ test("les surfaces privées et techniques restent explicitement hors index", () 
   assert.match(privatePage, /"X-Robots-Tag": "noindex, nofollow, noarchive, nosnippet, noimageindex"/u);
   assert.match(privatePage, /<meta name="robots" content="noindex,nofollow,noarchive,nosnippet,noimageindex">/u);
   assert.match(privatePage, /<title>Voyage privé · Mon Florian<\/title>/u);
-  assert.doesNotMatch(privatePage, /<title>\$\{/u);
+  const titles = [...privatePage.matchAll(/<title>(.*?)<\/title>/gsu)].map((match) => match[1]);
+  for (const title of titles) {
+    assert.ok([
+      'Voyage privé · Mon Florian',
+      '${escapeHtml(state.title)} · Mon Florian',
+    ].includes(title), 'seuls le titre privé constant et les états locaux échappés sont autorisés');
+    assert.doesNotMatch(title, /itinerary|result|token/iu);
+  }
 });
 
 test("les redirections canoniques produisent de vraies réponses HTTP", () => {

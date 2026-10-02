@@ -1,0 +1,43 @@
+{
+  "rules": [
+    {
+      "id": "Default Multipart Abort Rule",
+      "enabled": true,
+      "conditions": {
+        "prefix": ""
+      },
+      "abortMultipartUploadsTransition": {
+        "condition": {
+          "type": "Age",
+          "maxAge": 604800
+        }
+      }
+    },
+    {
+      "id": "generated-image-expiration",
+      "enabled": true,
+      "conditions": {
+        "prefix": "generated/"
+      },
+      "deleteObjectsTransition": {
+        "condition": {
+          "type": "Age",
+          "maxAge": 15552000
+        }
+      }
+    },
+    {
+      "id": "source-photo-backstop",
+      "enabled": true,
+      "conditions": {
+        "prefix": "source/"
+      },
+      "deleteObjectsTransition": {
+        "condition": {
+          "type": "Age",
+          "maxAge": 86400
+        }
+      }
+    }
+  ]
+}

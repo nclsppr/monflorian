@@ -30,9 +30,9 @@
         <p class="result-kicker">Confidentialité</p>
         <h1>Tes données, sans détour.</h1>
         <p>
-          Le carnet Japon et les guides sont publics. Ton pense-bête et les cases cochées restent
-          dans ton navigateur. La création d’un voyage personnalisé est fermée : aucun brief,
-          courriel ou portrait n’est envoyé pour préparer un voyage.
+          Le carnet Japon et les guides sont publics. Pour ton voyage, le formulaire indique si
+          la création est disponible. Tes réponses et tes photos restent dans la page tant que
+          tu ne confirmes pas leur envoi. Les photos et le courriel sont facultatifs.
         </p>
       </header>
 
@@ -42,8 +42,8 @@
           Le pense-bête réunit tes envies, la durée, le nombre de voyageurs, le rythme et le confort.
           Il reste dans cette page tant que tu ne choisis pas « Garder sur cet appareil ».
           Ce bouton enregistre une copie dans ce navigateur. Après une modification, il faut choisir
-          « Mettre à jour la copie » pour la conserver. Aucune de ces réponses n’est envoyée à
-          Mon Florian, Cloudflare ou OpenAI.
+          « Mettre à jour la copie » pour la conserver. Enregistrer une copie locale ne crée
+          pas de voyage et n’envoie pas ces réponses au service.
         </p>
         <p>
           La checklist du carnet enregistre les cases dès que tu les coches ou les décoches.
@@ -71,38 +71,68 @@
       </section>
 
       <section class="privacy-section" aria-labelledby="privacy-data">
-        <h2 id="privacy-data">Le futur parcours personnalisé</h2>
+        <h2 id="privacy-data">Quand tu demandes ton voyage</h2>
         <p>
-          Les traitements suivants décrivent le parcours prévu, encore fermé. Quand il sera ouvert,
-          une demande pourra utiliser :
+          Si la création est disponible et que tu confirmes l’envoi, la préparation utilise :
         </p>
         <ul>
-          <li>ton brief, tes dates, le nombre de voyageurs et le rythme choisi ;</li>
-          <li>ton adresse de courriel pour envoyer le lien privé ;</li>
+          <li>ton brief, la destination, le départ, les dates ou la durée et le nombre de voyageurs ;</li>
+          <li>le rythme, le budget global, le transport et le style d’hébergement choisis ;</li>
+          <li>ton adresse de courriel, seulement si tu demandes à recevoir le lien privé ;</li>
           <li>jusqu’à quatre portraits, seulement si tu les ajoutes et confirmes les accords ;</li>
           <li>des données techniques pseudonymisées pour limiter les abus.</li>
         </ul>
+        <p>
+          Choisir une photo affiche un aperçu sur ton appareil. Elle n’est transmise qu’à l’envoi
+          du formulaire, après confirmation des droits sur le fichier et de l’accord des personnes
+          représentées pour sa transformation en illustration. Tu peux continuer sans photo.
+        </p>
         <p>Ne joins ni document d’identité, ni donnée médicale, ni moyen de paiement.</p>
       </section>
 
       <section class="privacy-section" aria-labelledby="privacy-services">
         <h2 id="privacy-services">Les services concernés</h2>
         <p>
-          Cloudflare sert le site et traite les requêtes techniques de navigation. Le contenu du
-          pense-bête et la checklist ne lui sont pas transmis. Dans le futur parcours personnalisé,
-          D1 conservera les données chiffrées, un espace R2 privé gardera les images et un courriel
-          transmettra le lien. OpenAI recevra le brief pour composer l’itinéraire et, si tu ajoutes
-          des portraits après avoir accepté la proposition, les images nécessaires à l’illustration.
+          Cloudflare sert le site et traite les requêtes. Après l’envoi d’une demande, D1 conserve
+          le brief, la recherche et le résultat chiffrés ; un espace R2 privé garde les images.
+          Cloudflare vérifie aussi un contrôle anti-abus avant la création. Si tu fournis une
+          adresse, Cloudflare Email Service reçoit le destinataire et le lien privé, sans photo
+          ni copie complète du carnet.
         </p>
         <p>
-          Les liens d’hébergement ouvrent Booking.com uniquement quand tu les sélectionnes. Le
-          brief et les portraits ne sont pas envoyés à Booking.com par Mon Florian.
+          OpenAI reçoit les informations de voyage pour rechercher des sources puis composer
+          l’itinéraire. La recherche web utilise la destination, le départ, les dates ou le mois
+          souhaité, la durée, le nombre de voyageurs, le budget, le transport, l’hébergement et les
+          catégories d’intérêts ; elle exclut ton texte libre, tes photos, ton courriel et ton lien privé. Des services
+          de recherche et des sites publics peuvent recevoir ces critères. Si tu joins des photos
+          avec les accords demandés, OpenAI les reçoit aussi pour créer l’illustration.
+        </p>
+        <p>
+          Les liens d’hébergement et de transport ouvrent un site externe quand tu les sélectionnes.
+          Leur recherche peut reprendre destination, départ, dates et nombre de voyageurs. Tes
+          portraits, ton courriel et ton lien privé n’y sont pas ajoutés. Les recommandations
+          sourcées ne garantissent pas les prix ni les disponibilités.
+        </p>
+      </section>
+
+      <section class="privacy-section" aria-labelledby="privacy-offline">
+        <h2 id="privacy-offline">Le carnet gardé hors connexion</h2>
+        <p>
+          Le bouton « Garder mon carnet hors connexion » prépare un fichier sur ton appareil,
+          avec le texte et les illustrations disponibles, sans les photos sources ni le lien
+          privé d’accès. Le carnet se lit sans Internet ; les liens vers les hôtels, transports
+          et sources nécessitent une connexion quand tu les ouvres.
+        </p>
+        <p>
+          Cette copie ne se met pas à jour et reste sur ton appareil jusqu’à ce que tu supprimes
+          le fichier. Supprimer le voyage sur Mon Florian ou laisser son lien expirer ne retire
+          pas les copies déjà téléchargées. Choisis avec qui tu partages ce fichier personnel.
         </p>
       </section>
 
       <section class="privacy-section" aria-labelledby="privacy-retention">
-        <h2 id="privacy-retention">Durées prévues pour un voyage personnalisé</h2>
-        <p>Ces durées concernent le futur parcours envoyé au service, pas les copies locales ci-dessus.</p>
+        <h2 id="privacy-retention">Combien de temps les données restent</h2>
+        <p>Ces durées concernent une demande envoyée au service, pas les copies locales ci-dessus.</p>
         <dl class="privacy-retention">
           <div>
             <dt>Portraits dans R2</dt>
@@ -111,14 +141,18 @@
           <div>
             <dt>Données envoyées à OpenAI</dt>
             <dd>
-              Le texte est envoyé avec l’option <code>store:false</code>. Les traitements et
-              éventuels journaux techniques suivent les réglages du projet OpenAI ; aucune durée
-              plus courte n’est promise ici.
+              Les appels de texte utilisent <code>store:false</code>. Cette option ne supprime
+              pas tous les journaux de sûreté. OpenAI et les services de recherche appliquent
+              leurs propres règles ; Mon Florian ne promet pas leur effacement immédiat.
             </dd>
           </div>
           <div>
-            <dt>Proposition et projection dessinée</dt>
-            <dd>Après 30 jours au plus tard, ou dès la suppression depuis la page privée.</dd>
+            <dt>Demande, recherche, carnet et illustration</dt>
+            <dd>
+              Jusqu’à 7 jours après ton retour, avec au moins 30 jours après la création et
+              au maximum 180 jours. Sans date de retour, 30 jours. La page privée indique
+              l’échéance et permet de supprimer le voyage plus tôt.
+            </dd>
           </div>
           <div>
             <dt>Adresse de courriel</dt>
@@ -137,19 +171,19 @@
       <section class="privacy-section" aria-labelledby="privacy-control">
         <h2 id="privacy-control">Garder le contrôle</h2>
         <p>
-          Pour les outils disponibles sur ce site, utilise les actions d’effacement décrites
-          ci-dessus. Pour un futur voyage personnalisé, le lien privé sera un secret. L’action
-          « Supprimer cette proposition » devra effacer le voyage et ses images sans attendre
-          la fin des 30 jours.
+          Pour les copies locales, utilise les actions d’effacement décrites ci-dessus. Le lien
+          d’un voyage privé permet d’accéder au carnet et de le supprimer : garde-le pour toi
+          ou partage-le uniquement avec les personnes de ton choix. La suppression depuis cette
+          page révoque l’accès et efface les données et images du voyage avant son échéance.
         </p>
         <p>
-          Aucun canal complémentaire n’est publié aujourd’hui. Son ouverture et la vérification
-          du parcours de suppression restent nécessaires avant de recevoir une demande réelle.
+          Pour une question sur tes données ou une demande concernant tes droits, contacte
+          <a href="mailto:support@monflorian.com">support@monflorian.com</a>.
         </p>
       </section>
 
       <footer class="privacy-footer">
-        <p>Dernière mise à jour : 7 septembre 2026.</p>
+        <p>Dernière mise à jour : 2 octobre 2026.</p>
         <a class="primary-button privacy-home" href="/">Revenir à l’accueil</a>
       </footer>
     </main>

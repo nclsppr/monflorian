@@ -380,9 +380,13 @@ test("la notice publique explique les destinataires, la rétention et la suppres
   assert.match(privacy, /OpenAI/u);
   assert.match(privacy, /au plus tard sous 24 heures/u);
   assert.match(privacy, /store:false/u);
-  assert.match(privacy, /aucune durée\s+plus courte n’est promise/u);
-  assert.match(privacy, /Après 30 jours au plus tard/u);
-  assert.match(privacy, /Supprimer cette proposition/u);
-  assert.match(privacy, /Aucun canal complémentaire n’est publié aujourd’hui/u);
+  assert.match(privacy, /Cette option ne supprime\s+pas tous les journaux de sûreté/u);
+  assert.match(privacy, /ne promet pas leur effacement immédiat/u);
+  assert.match(privacy, /au moins 30 jours après la création/u);
+  assert.match(privacy, /au maximum 180 jours/u);
+  assert.match(privacy, /Sans date de retour, 30 jours/u);
+  assert.match(privacy, /permet de supprimer le voyage plus tôt/u);
+  assert.match(privacy, /href="mailto:support@monflorian.com"/u);
+  assert.doesNotMatch(privacy, /mailto:[^"]*\?/u);
   assert.match(privatePage, /href="\/confidentialite"/u);
 });

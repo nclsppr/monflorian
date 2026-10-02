@@ -6,10 +6,11 @@
 | --- | --- |
 | Nom | Mon Florian |
 | Propriétaire | `nclsppr` |
+| Contact support et droits | `support@monflorian.com`, fourni par le propriétaire ; réception non vérifiée |
 | Classe | Critique |
 | Surface Cloudflare | Web actif sur l'apex, `www` et `workers.dev`, envoi transactionnel fermé |
 | Domaine public | `monflorian.com` sur Cloudflare Workers |
-| Décisions courantes | [ADR-0007](docs/decisions/adr-0007-runtime-et-production-cloudflare.md), [ADR-0008](docs/decisions/adr-0008-domaine-web-only-cloudflare.md), [ADR-0009](docs/decisions/adr-0009-courriel-transactionnel-cloudflare.md), [ADR-0011](docs/decisions/adr-0011-contrat-guide-voyage-et-plan-images.md) et [ADR-0012](docs/decisions/adr-0012-v2-site-principal.md) |
+| Décisions courantes | [ADR-0007](docs/decisions/adr-0007-runtime-et-production-cloudflare.md), [ADR-0009](docs/decisions/adr-0009-courriel-transactionnel-cloudflare.md), [ADR-0012](docs/decisions/adr-0012-v2-site-principal.md) et [ADR-0013](docs/decisions/adr-0013-beta-gratuite-voyages-sources.md) |
 | Licence | Aucune licence de réutilisation accordée |
 
 ## Problème
@@ -26,23 +27,24 @@ préparer un pense-bête local et cocher les vérifications du carnet. Ces outil
 ne créent aucune demande et ne réservent rien. Les pages publiques contiennent
 uniquement du contenu éditorial et des personnages fictifs.
 
-### MVP personnalisé cible
+### Bêta personnalisée candidate
 
-Dans le futur parcours personnalisé, une personne décrit son envie, ajoute des
-dates, le nombre de voyageurs et son adresse de courriel. Elle reçoit une
-première proposition structurée. Si elle la
-retient, elle peut ensuite ajouter, avec consentement, une à quatre photos pour
-personnaliser les illustrations avant de recevoir le lien privé final, qui
-contient :
+L'ADR-0013 prépare une création réelle de 1 à 14 jours : destination, ville de
+départ, dates ou durée, voyageurs, rythme, transport, budget global et style
+d'hébergement. La personne peut joindre des photos et une adresse de courriel,
+sans obligation. Les photos choisies restent locales jusqu'à l'envoi explicite
+et exigent l'accord des personnes représentées.
 
-- un itinéraire structuré et signalé comme projection ;
-- des points à vérifier avant réservation ;
-- des recherches d'hébergement externes ou des liens affiliés approuvés ;
-- des images éditoriales générées, signalées comme projections synthétiques ;
-- une échéance et une action de suppression anticipée.
+Le lien privé est fourni dès la création. Il expose l'état réel, puis un
+itinéraire adapté, des hôtels sourcés, des recherches Booking.com construites
+côté serveur, des options de transport et les vérifications avant réservation.
+Le choix sans transport exclut les vols. Les photos permettent au maximum une
+illustration en bêta ; son échec laisse le texte disponible avec une explication.
 
-Le premier MVP est gratuit. L'offre à 50 €, le paiement Stripe, le PDF, le compte
-client et le Voyage vivant restent des hypothèses non livrées.
+La bêta est gratuite pour le voyageur, sans carte ni compte. Le paiement sera
+ajouté après la bêta, à un prix qui reste à définir. L'opérateur paie les appels
+fournisseur. Le PDF produit par le service et le Voyage vivant restent hors
+tranche. Aucun prix d'hôtel ou de vol ni disponibilité n'est garanti.
 
 ## Périmètre courant
 
@@ -99,20 +101,36 @@ changent. La création personnalisée, les photos, le courriel et les paiements
 restent fermés. La preuve de publication appartient à `STATUS.md` et
 `DELIVERY-EVIDENCE.md`.
 
-### Contrat dynamique candidat non intégré
+### Candidat du 2 octobre 2026, ouverture à vérifier
 
-- Contrat dynamique `TravelGuideV1`, validation métier et compilation contrôlée
-  des consignes d'image, sans branchement au Workflow ni à OpenAI.
+- Contrat dynamique `itinerary.v2` enrichi et compatible avec les résultats
+  historiques, recherche web distincte et sources réellement retournées.
+- `TravelGuideV1` conserve son rôle de fixture du carnet Japon. Sa promotion au
+  Workflow et ses images multiples sont reportées par l'ADR-0013.
+- `POST /api/trips` reste canonique. Les alias `/api/v1` suivent le même
+  contrat, les mêmes quotas et les mêmes contrôles d'accès.
+- Migration additive `0004_trip_research.sql` pour le résultat de recherche
+  chiffré, appliquée et relue en production le 2 octobre 2026.
+- Aucun paiement exigé, courriel et illustration facultatifs. La configuration
+  publique distingue la gratuité des capacités effectivement ouvertes.
+- Ville de départ demandée avant de préparer un trajet en avion, train ou
+  voiture. Un séjour à proximité ne nécessite pas ce champ.
+- Copie du carnet lisible hors connexion, avec les illustrations déjà
+  disponibles, conservée uniquement sur l’appareil après téléchargement.
 
 ### À livrer avant une génération réelle
 
 - Déployer puis éprouver la création asynchrone et la page privée à jeton.
 - Prouver le chiffrement, la suppression anticipée et la purge sur des données
   synthétiques.
-- Secret OpenAI, code d'accès, preuve réelle du courriel et budget fournisseur.
+- Secret OpenAI, Turnstile, budget fournisseur et preuve réelle du courriel si
+  la notification est activée.
 - Premier appel OpenAI synthétique avec coût et journaux inspectés.
 - Courriel transactionnel et preuve synthétique du nettoyage automatique.
-- Notice de traitement et canal de droits.
+- Notice de traitement avec `support@monflorian.com` visible après déploiement ;
+  ne pas confondre la publication du contact avec une preuve de réception.
+- Preuve de purge à l'échéance propre à chaque voyage ; les règles R2 de
+  secours à un jour et 180 jours sont déjà appliquées.
 
 ### Non-objectifs du MVP
 
@@ -134,14 +152,14 @@ restent fermés. La preuve de publication appartient à `STATUS.md` et
 | Site principal | HTML pré-rendu et hydratation React | `app/v2/src/main.jsx`, `Planner.jsx`, `Guides.jsx`, `scripts/prerender-site.mjs` | publié le 7 septembre 2026 |
 | Static Assets | HTML dérivé, ressources publiques et visuels canoniques | `dist/` depuis `app/v2/`, `app/public/` et `assets/brand/` | distribution Cloudflare active, cinq pages pré-rendues publiées |
 | Coeur métier | Validation des briefs, photos, résultats et liens | `app/core.mjs` | réutilisé, tests locaux |
-| Adaptateur OpenAI | Responses et Image Edits sans SDK | `app/openai.mjs` | non appelé en production |
+| Adaptateur OpenAI | Recherche web, itinéraire structuré et Image Edits sans SDK | `app/openai.mjs` | candidat, appels réels à prouver |
 | Contrat de guide candidat | Fixture statique, schéma, validation métier et compilation d'image | `contracts/`, `app/travel-guide.mjs`, `app/v2/src/data.js` | fixture du carnet Japon, génération dynamique non intégrée |
 | Données locales de préparation | Pense-bête et cases de vérification | `app/v2/src/planner-state.mjs`, `app/v2/src/main.jsx` | publié le 7 septembre 2026, navigateur seulement |
 | D1 | États, quotas, données chiffrées et jetons hachés | `migrations/` | base vide, schéma appliqué |
 | R2 | Photos d'entrée et images générées | binding `MEDIA` | bucket privé UE créé, vide, binding déployé |
 | Workflows | Traitement durable et notification | `src/workflows/` | texte et image câblés, garde-fous fermés |
 | Turnstile | Réduction de l'abus gratuit | clé publique et Worker Secret | widget géré configuré, parcours fermé |
-| Courriel | Envoi du lien privé | binding Cloudflare `EMAIL` | domaine actif, code câblé, drapeau fermé |
+| Courriel facultatif | Envoi du lien privé | binding Cloudflare `EMAIL` | domaine actif, preuve de réception à obtenir |
 | Stripe | Paiement ponctuel futur | Checkout Sessions et webhook | hors tranche |
 | Documentation Nimbus | Rendu des contrats | `docs-nimbus/` | local et CI |
 
@@ -165,9 +183,9 @@ navigateur
       -> D1 : état, quota, jeton haché, données chiffrées
       -> R2 : photos privées et images générées
       -> Workflow
-          -> OpenAI Responses
-          -> OpenAI Image Edits
-          -> Cloudflare Email Service
+          -> OpenAI Responses : recherche web, puis itinéraire strict
+          -> OpenAI Image Edits si des photos sont jointes
+          -> Cloudflare Email Service si une adresse est fournie
 
 navigateur
   -> /voyages/{jeton}
@@ -189,10 +207,10 @@ structurées ; il ne stocke pas une copie HTML par voyage.
 | D1 | Métadonnées et état | fermer la création, garder les lectures existantes |
 | R2 | Images privées | fermer les photos et préserver les objets existants |
 | Workflows | Traitement asynchrone | laisser le voyage en échec explicite sans retry payant aveugle |
-| OpenAI Responses | Itinéraire JSON strict avec `store: false` | marquer le voyage en échec et permettre un nouvel essai contrôlé |
-| OpenAI Image Edits | Projection synthétique éditoriale depuis les photos | livrer l'itinéraire sans image si le contrat produit le permet |
+| OpenAI Responses | Recherche web puis itinéraire JSON strict avec `store: false` | échec explicite, aucune source ni offre inventée |
+| OpenAI Image Edits | Projection synthétique éditoriale depuis les photos | livrer l'itinéraire sans image et signaler son absence |
 | Booking.com | Recherche externe au clic | retirer les liens sans perdre le voyage |
-| Cloudflare Email Service | Envoyer le lien privé | conserver la page et proposer une reprise d'envoi |
+| Cloudflare Email Service | Envoyer le lien privé si demandé | conserver la page, signaler l'échec sans retry aveugle |
 | Stripe, plus tard | Paiement ponctuel | ne jamais autoriser depuis le seul retour navigateur |
 
 ## Environnements
@@ -203,6 +221,10 @@ structurées ; il ne stocke pas une copie HTML par voyage.
 | CI | GitHub Actions | runs du dépôt | `.github/workflows/` |
 | Diagnostic Cloudflare | Workers | `https://monflorian.nclsppr.workers.dev` | version Worker et bindings |
 | Production | Workers Custom Domains et Email Service | `https://monflorian.com`, `https://www.monflorian.com` | `wrangler.jsonc` et zone Cloudflare |
+
+Resend reste une option future ; aucun adaptateur ni compte supplémentaire
+n'est requis dans cette tranche. Le binding Cloudflare existant couvre le
+courriel transactionnel.
 
 Les deux noms publics servent directement le même Worker. La zone autorise
 l'envoi transactionnel, sans boîte de réception humaine. Atlas ne fait plus
@@ -232,16 +254,19 @@ partie de cette chaîne de livraison.
 - Les Worker Secrets ne sont jamais inscrits dans Git, les commandes ou les
   preuves.
 - Le jeton de page possède 256 bits et seul son SHA-256 est indexé dans D1.
-- Le brief, le résultat et l'adresse de courriel sont chiffrés avant persistance.
+- Le brief, la recherche, le résultat et l'adresse de courriel sont chiffrés
+  avant persistance.
 - Les photos d'entrée sont supprimées après génération et au plus tard sous 24
-  heures ; le voyage expire sous 30 jours dans le MVP.
+  heures. Le voyage expire à la plus tardive de ces dates : création + 30 jours ou retour +
+  7 jours, sans dépasser 180 jours après création. Sans retour daté : 30 jours.
 - Les quotas global et client sont débités dans une seule transaction D1 avant
   le démarrage du Workflow et leurs sujets sont pseudonymisés par HMAC.
 - R2 reste privé. Aucune URL `r2.dev` ni clé d'objet prévisible n'est publiée.
 - Les logs contiennent seulement identifiant de requête, route, statut, code
   d'erreur, durée et version.
 - Les sorties OpenAI sont hostiles jusqu'à leur revalidation locale.
-- Booking est construit après la génération et n'entre pas dans le prompt.
+- Les liens Booking sont construits après validation. Les sources web sont
+  contrôlées séparément ; elles ne prouvent ni disponibilité ni réservation.
 - Les routes coûteuses restent fermées si un seul garde-fou manque.
 
 Les détails normatifs vivent dans [`DATA-PROCESSING.md`](DATA-PROCESSING.md) et

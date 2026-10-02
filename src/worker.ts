@@ -11,7 +11,7 @@ import {
 } from "../app/http.mjs";
 import {
   SOURCE_RETENTION_MS,
-  TRIP_RETENTION_MS,
+  tripExpiresAt,
   decryptJson,
   encryptJson,
   generateTripToken,
@@ -28,6 +28,9 @@ import {
   deleteTripData,
   findGeneratedAsset,
   findTripByIdempotencyHash,
+  findTripById,
+  deleteSourceAssets,
+  rejectTripAtQuota,
   findTripByTokenHash,
   insertAssets,
   insertTrip,
@@ -36,7 +39,7 @@ import {
   purgeExpiredData,
   type StoredTrip,
 } from "./trips/repository";
-import { renderPrivateTripPage, renderUnknownTripPage } from "./trips/page";
+import { renderPrivateTripPage, renderServiceErrorPage, renderUnknownTripPage } from "./trips/page";
 
 export { TripWorkflow } from "./workflows/trip";
 
@@ -106,14 +109,13 @@ function tripCreationReady(env: Env): boolean {
   const accessReady = String(env.MONFLORIAN_ACCESS_MODE) !== "private" || Boolean(secrets.MONFLORIAN_ACCESS_CODE);
   return tripCreationEnabled(env) &&
     String(env.MONFLORIAN_GENERATION_ENABLED) === "true" &&
-    String(env.MONFLORIAN_ILLUSTRATION_ENABLED) === "true" &&
-    String(env.MONFLORIAN_EMAIL_ENABLED) === "true" &&
-    Boolean(env.EMAIL) &&
-    Boolean(env.MONFLORIAN_EMAIL_FROM) &&
+    String(env.MONFLORIAN_RESEARCH_ENABLED) === "true" &&
     Boolean(env.MONFLORIAN_PUBLIC_ORIGIN) &&
     Boolean(env.TURNSTILE_SITE_KEY) &&
     Boolean(secrets.TURNSTILE_SECRET_KEY) &&
     Boolean(secrets.OPENAI_API_KEY) &&
+    Boolean(env.TRIP_DATA_KEY) &&
+    Boolean(env.TRIP_QUOTA_HASH_KEY) &&
     accessReady;
 }
 
@@ -124,7 +126,10 @@ function publicConfiguration(env: Env) {
   return {
     serviceReady: tripCreationReady(env),
     tripCreationEnabled: tripCreationReady(env),
-    illustrationEnabled: tripCreationReady(env),
+    illustrationEnabled: tripCreationReady(env) && String(env.MONFLORIAN_ILLUSTRATION_ENABLED) === "true",
+    emailEnabled: String(env.MONFLORIAN_EMAIL_ENABLED) === "true" && Boolean(env.EMAIL) && Boolean(env.MONFLORIAN_EMAIL_FROM),
+    researchEnabled: String(env.MONFLORIAN_RESEARCH_ENABLED) === "true",
+    beta: { free: true, paymentRequired: false },
     turnstileSiteKey: tripCreationReady(env) && env.TURNSTILE_SITE_KEY
       ? env.TURNSTILE_SITE_KEY
       : null,
@@ -216,6 +221,7 @@ async function verifyTurnstile(
 }
 
 async function storedTripToken(env: Env, trip: StoredTrip): Promise<string> {
+  if (trip.error_code === "QUOTA_EXCEEDED") throw new AppError(429, "QUOTA_EXCEEDED", "La limite gratuite du jour est atteinte.");
   if (!trip.request_ciphertext || !trip.request_nonce) {
     throw new AppError(409, "TRIP_NOT_RETRYABLE", "Cette ancienne demande ne peut pas être reprise.");
   }
@@ -266,8 +272,28 @@ async function parseTripBody(request: Request): Promise<unknown> {
     throw new AppError(413, "REQUEST_TOO_LARGE", "La demande dépasse la taille autorisée.");
   }
   try {
-    return await request.json();
-  } catch {
+    const reader = request.body?.getReader();
+    if (!reader) throw new AppError(400, "INVALID_JSON", "La demande est vide.");
+    const chunks: Uint8Array[] = [];
+    let total = 0;
+    try {
+      while (true) {
+        const chunk = await reader.read();
+        if (chunk.done) break;
+        total += chunk.value.byteLength;
+        if (total > LIMITS.illustrationBodyBytes) {
+          await reader.cancel();
+          throw new AppError(413, "REQUEST_TOO_LARGE", "La demande dépasse la taille autorisée.");
+        }
+        chunks.push(chunk.value);
+      }
+    } finally { reader.releaseLock(); }
+    const bytes = new Uint8Array(total);
+    let offset = 0;
+    for (const chunk of chunks) { bytes.set(chunk, offset); offset += chunk.byteLength; }
+    return JSON.parse(new TextDecoder("utf-8", { fatal: true, ignoreBOM: false }).decode(bytes));
+  } catch (error) {
+    if (error instanceof AppError) throw error;
     throw new AppError(400, "INVALID_JSON", "Le corps JSON est invalide.");
   }
 }
@@ -292,6 +318,13 @@ async function createTrip(request: Request, env: Env, requestId: string): Promis
     : null;
   await verifyTurnstile(turnstileToken, request, env, idempotencyKey);
   const validated = validateTripCreationInput(body);
+  if (!validated.itinerary.destination) throw new AppError(400, "DESTINATION_REQUIRED", "Indique une destination pour préparer ton carnet.");
+  if (validated.photos.length && String(env.MONFLORIAN_ILLUSTRATION_ENABLED) !== "true") {
+    throw new AppError(503, "ILLUSTRATION_UNAVAILABLE", "Les illustrations sont momentanément indisponibles. Retire les photos pour préparer ton itinéraire.");
+  }
+  if (validated.email && !publicConfiguration(env).emailEnabled) {
+    throw new AppError(503, "EMAIL_UNAVAILABLE", "L’envoi par email est indisponible. Retire l’adresse pour ouvrir directement ton carnet.");
+  }
   const clientAddress = request.headers.get("CF-Connecting-IP") || "unknown";
   const clientSubjectHash = await hmacSha256Hex(env.TRIP_QUOTA_HASH_KEY, `network:${clientAddress}`);
   const globalSubjectHash = await hmacSha256Hex(env.TRIP_QUOTA_HASH_KEY, "quota:global");
@@ -300,7 +333,7 @@ async function createTrip(request: Request, env: Env, requestId: string): Promis
   const publicToken = generateTripToken();
   const publicTokenHash = await sha256Hex(publicToken);
   const createdAt = Date.now();
-  const expiresAt = createdAt + TRIP_RETENTION_MS;
+  const expiresAt = tripExpiresAt(validated.itinerary, createdAt);
   const requestEnvelope = await encryptJson(env.TRIP_DATA_KEY, {
     publicToken,
     itinerary: validated.itinerary,
@@ -308,11 +341,11 @@ async function createTrip(request: Request, env: Env, requestId: string): Promis
     photoCount: validated.photos.length,
     safetyIdentifier: clientSubjectHash,
   }, `${tripId}:request`);
-  const emailEnvelope = await encryptJson(
+  const emailEnvelope = validated.email ? await encryptJson(
     env.TRIP_DATA_KEY,
     { email: validated.email },
     `${tripId}:email`,
-  );
+  ) : null;
 
   try {
     await insertTrip(env.DB, {
@@ -321,8 +354,8 @@ async function createTrip(request: Request, env: Env, requestId: string): Promis
       idempotencyKeyHash,
       requestCiphertext: requestEnvelope.ciphertext,
       requestNonce: requestEnvelope.nonce,
-      emailCiphertext: emailEnvelope.ciphertext,
-      emailNonce: emailEnvelope.nonce,
+      emailCiphertext: emailEnvelope?.ciphertext ?? null,
+      emailNonce: emailEnvelope?.nonce ?? null,
       bookingMode,
       createdAt,
       expiresAt,
@@ -346,13 +379,19 @@ async function createTrip(request: Request, env: Env, requestId: string): Promis
     });
   } catch (error) {
     if (error instanceof QuotaExceededError) {
-      await markTripFailed(env.DB, tripId, "QUOTA_EXCEEDED", Date.now());
+      await rejectTripAtQuota(env.DB, tripId, Date.now());
       throw new AppError(429, "QUOTA_EXCEEDED", "La limite gratuite du jour est atteinte.");
     }
     await markTripFailed(env.DB, tripId, "QUOTA_CHECK_FAILED", Date.now());
     throw error;
   }
 
+  async function requireOpenCreation() {
+    const current = await findTripById(env.DB, tripId);
+    if (!current || ["deleting", "deleted", "expired"].includes(current.status) || current.expires_at <= Date.now()) {
+      throw new AppError(409, "TRIP_CLOSED", "Ce voyage a été supprimé ou a expiré.");
+    }
+  }
   const uploadedKeys: string[] = [];
   try {
     const assets = [];
@@ -371,6 +410,7 @@ async function createTrip(request: Request, env: Env, requestId: string): Promis
         },
       });
       uploadedKeys.push(objectKey);
+      await requireOpenCreation();
       assets.push({
         id: crypto.randomUUID(),
         tripId,
@@ -384,7 +424,9 @@ async function createTrip(request: Request, env: Env, requestId: string): Promis
         expiresAt: createdAt + SOURCE_RETENTION_MS,
       });
     }
+    await requireOpenCreation();
     await insertAssets(env.DB, assets);
+    await requireOpenCreation();
 
     const instance = await env.TRIP_WORKFLOW.create({
       id: `trip-${tripId}`,
@@ -396,8 +438,10 @@ async function createTrip(request: Request, env: Env, requestId: string): Promis
       },
     });
     await markTripQueued(env.DB, tripId, instance.id, Date.now());
+    await requireOpenCreation();
   } catch (error) {
     if (uploadedKeys.length) await env.MEDIA.delete(uploadedKeys);
+    await deleteSourceAssets(env.DB, env.MEDIA, tripId, Date.now());
     await markTripFailed(env.DB, tripId, "TRIP_START_FAILED", Date.now());
     throw error;
   }
@@ -422,7 +466,7 @@ async function privateTripPage(env: Env, token: string): Promise<Response> {
     return renderPrivateTripPage({ status: "expired", token, expiresAt: trip.expires_at });
   }
   let result: unknown;
-  if (trip.status === "ready" && trip.result_ciphertext && trip.result_nonce) {
+  if (["ready", "generating_images"].includes(trip.status) && trip.result_ciphertext && trip.result_nonce) {
     result = await decryptJson(
       env.TRIP_DATA_KEY,
       trip.result_ciphertext,
@@ -435,6 +479,8 @@ async function privateTripPage(env: Env, token: string): Promise<Response> {
     token,
     expiresAt: trip.expires_at,
     result,
+    notificationStatus: trip.notification_status,
+    errorCode: trip.error_code,
     deleted: trip.status === "deleted",
   });
 }
@@ -455,7 +501,7 @@ async function tripStatus(
     }, requestId);
   }
   let result: unknown;
-  if (trip.status === "ready" && trip.result_ciphertext && trip.result_nonce) {
+  if (["ready", "generating_images"].includes(trip.status) && trip.result_ciphertext && trip.result_nonce) {
     result = await decryptJson(
       env.TRIP_DATA_KEY,
       trip.result_ciphertext,
@@ -526,11 +572,17 @@ async function deletePrivateTrip(
 }
 
 function normalizedLogPath(pathname: string): string {
-  if (PRIVATE_TRIP_PATH.test(pathname)) return "/voyages/:token";
-  if (PRIVATE_TRIP_DELETE_PATH.test(pathname)) return "/voyages/:token/supprimer";
-  if (TRIP_API_PATH.test(pathname)) return "/api/trips/:token";
-  if (TRIP_MEDIA_PATH.test(pathname)) return "/api/trips/:token/media/:position";
+  // Un jeton reste secret même si le suffixe ne correspond à aucune route.
+  if (pathname.startsWith("/voyages/")) return "/voyages/:private-path";
+  if (pathname.startsWith("/api/trips/")) return "/api/trips/:private-path";
+  if (pathname.startsWith("/api/v1/trips/")) return "/api/v1/trips/:private-path";
   return pathname;
+}
+
+function isPageRequest(request: Request, url: URL): boolean {
+  if (url.pathname === "/api" || url.pathname.startsWith("/api/") || url.pathname.startsWith("/.well-known/")) return false;
+  return url.pathname.startsWith("/voyages/") || request.headers.get("Sec-Fetch-Dest") === "document" ||
+    Boolean(request.headers.get("Accept")?.includes("text/html"));
 }
 
 const worker = {
@@ -538,6 +590,8 @@ const worker = {
     const started = Date.now();
     const requestId = crypto.randomUUID();
     const url = new URL(request.url);
+    // Même contrat et même politique d’accès pour le web et les clients natifs.
+    if (url.pathname.startsWith("/api/v1/")) url.pathname = url.pathname.replace("/api/v1/", "/api/");
     let status = 500;
     let errorCode: string | null = null;
 
@@ -553,7 +607,7 @@ const worker = {
         return jsonResponse(env, status, {
           status: "ok",
           release: release(env),
-          generationReady: false,
+          generationReady: tripCreationReady(env),
         }, requestId);
       }
 
@@ -629,8 +683,16 @@ const worker = {
         return response;
       }
 
+      if (url.pathname.startsWith("/voyages/") && ["GET", "HEAD"].includes(request.method)) {
+        status = 404;
+        return renderUnknownTripPage();
+      }
+
       const response = await env.ASSETS.fetch(request);
       status = response.status;
+      if (status >= 500 && isPageRequest(request, url)) {
+        return renderServiceErrorPage(status, "SERVICE_UNAVAILABLE", requestId);
+      }
       return shouldNoIndexStaticAsset(request) ? noIndexResponse(response) : response;
     } catch (error) {
       const appError = error instanceof AppError
@@ -638,6 +700,7 @@ const worker = {
         : new AppError(500, "INTERNAL_ERROR", "Le service a rencontré un problème inattendu.");
       status = appError.status;
       errorCode = appError.code;
+      if (isPageRequest(request, url)) return renderServiceErrorPage(status, errorCode || "INTERNAL_ERROR", requestId);
       return errorResponse(env, appError, requestId);
     } finally {
       console.log(JSON.stringify({

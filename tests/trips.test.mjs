@@ -110,8 +110,8 @@ test("la configuration R2 reste privee et les routes masquent les jetons", () =>
     [config.vars.MONFLORIAN_DAILY_GLOBAL_LIMIT, config.vars.MONFLORIAN_DAILY_CLIENT_LIMIT],
     ["10", "2"],
   );
-  assert.match(worker, /return "\/voyages\/:token"/u);
-  assert.match(worker, /return "\/api\/trips\/:token\/media\/:position"/u);
+  assert.match(worker, /return "\/voyages\/:private-path"/u);
+  assert.match(worker, /return "\/api\/trips\/:private-path"/u);
   assert.doesNotMatch(worker, /path:\s*url\.pathname/u);
   assert.match(page, /noindex, nofollow, noarchive/u);
   assert.match(page, /"Cache-Control": "no-store, max-age=0"/u);

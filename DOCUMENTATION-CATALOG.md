@@ -8,8 +8,8 @@ Moteur déclaré : `nimbus`.
 
 | Collection | Visibilité | Fichiers |
 | --- | --- | ---: |
-| Documentation du projet | `internal` | 20 |
-| Décisions | `internal` | 12 |
+| Documentation du projet | `internal` | 21 |
+| Décisions | `internal` | 13 |
 | Socle vendorisé | `reference` | 10 |
 | Maintenance Nimbus | `reference` | 1 |
 
@@ -24,6 +24,7 @@ Moteur déclaré : `nimbus`.
 - [DESIGN.md](DESIGN.md)
 - [DOCUMENTATION-CATALOG.md](DOCUMENTATION-CATALOG.md)
 - [DOCUMENTATION.md](DOCUMENTATION.md)
+- [ERROR-ILLUSTRATIONS.md](ERROR-ILLUSTRATIONS.md)
 - [FOUNDATION.md](FOUNDATION.md)
 - [PROJECT.md](PROJECT.md)
 - [README.md](README.md)
@@ -50,6 +51,7 @@ Moteur déclaré : `nimbus`.
 - [docs/decisions/adr-0010-parcours-v2-astryx.md](docs/decisions/adr-0010-parcours-v2-astryx.md)
 - [docs/decisions/adr-0011-contrat-guide-voyage-et-plan-images.md](docs/decisions/adr-0011-contrat-guide-voyage-et-plan-images.md)
 - [docs/decisions/adr-0012-v2-site-principal.md](docs/decisions/adr-0012-v2-site-principal.md)
+- [docs/decisions/adr-0013-beta-gratuite-voyages-sources.md](docs/decisions/adr-0013-beta-gratuite-voyages-sources.md)
 
 ## Socle vendorisé
 

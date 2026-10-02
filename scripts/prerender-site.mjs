@@ -37,7 +37,7 @@ const pages = [
   {
     path: "/",
     title: "Préparer un voyage à ton rythme | Mon Florian",
-    description: "Explore un carnet de voyage de dix jours au Japon, prépare ton pense-bête et retrouve des guides pour organiser tes étapes, tes trajets et tes réservations.",
+    description: "Prépare un voyage adapté à tes envies : itinéraire, idées d’hôtels et trajets. Création gratuite pendant la bêta, sans carte bancaire. Découvre aussi le carnet Japon.",
     name: "Mon Florian",
     image: socialImages.japan,
   },
@@ -190,12 +190,18 @@ for (const page of pages) {
   await writeFile(output, html);
 }
 
-const notFoundContent = `<div class="v2-shell">
-  <header class="site-header"><div class="header-inner"><a class="brand-button" href="/" aria-label="Mon Florian, accueil"><img alt="Mon Florian" src="/assets/monflorian-wordmark-web.webp" width="338" height="181" /></a></div></header>
-  <main class="guide-page" id="main-content" tabindex="-1"><div class="guide-heading"><p class="eyebrow">ERREUR 404</p><h1>Cette page est introuvable.</h1><div class="guide-intro"><p>Le lien a peut-être changé. Tu peux revenir à l’accueil, ouvrir le carnet Japon ou retrouver les guides de préparation.</p><ul><li><a href="/">Revenir à l’accueil</a></li><li><a href="/carnets/japon-10-jours">Lire le carnet Japon en dix jours</a></li><li><a href="/guides">Consulter les guides</a></li></ul></div></div></main>
+const notFoundContent = `<div class="error-page">
+  <header class="error-page-brand"><a href="/" aria-label="Mon Florian, accueil"><img alt="Mon Florian" src="/assets/monflorian-wordmark-web.webp" width="338" height="181" /></a></header>
+  <main class="error-page-shell" id="main-content" tabindex="-1"><section class="error-state error-state--lost">
+    <img class="error-state-art" src="/assets/errors/florian-lost.webp" alt="" width="360" height="360" />
+    <div class="error-state-copy"><h1>Cette page est introuvable.</h1><p>Même avec sa carte, Florian ne la trouve pas. Le lien peut être incomplet ou la page a changé d’adresse.</p><p class="error-state-guidance">Vérifie l’adresse, ou retrouve les carnets et les guides depuis l’accueil.</p>
+      <div class="error-state-actions"><a class="primary-button" href="/">Revenir à l’accueil</a><a class="error-state-secondary" href="/guides">Consulter les guides</a></div>
+      <p class="error-state-support">Besoin d’un coup de main ? Écris à <a href="mailto:support@monflorian.com">support@monflorian.com</a> en précisant ce que tu essayais de faire. Pour un carnet privé, ne joins ni son lien ni tes photos.</p>
+    </div></section></main>
 </div>`;
 const notFoundHtml = template
-  .replace(metadataMarker, '<title>Page introuvable | Mon Florian</title>\n    <meta name="robots" content="noindex,follow" />')
+  .replace("<body>", '<body class="error-page">')
+  .replace(metadataMarker, '<title>Page introuvable | Mon Florian</title>\n    <meta name="robots" content="noindex,follow" />\n    <link rel="stylesheet" href="/error.css" />')
   .replace(contentMarker, () => notFoundContent)
   .replace(/\s*<script\b[^>]*\btype="module"[^>]*>[\s\S]*?<\/script>/gu, "")
   .replace(/\s*<link\b[^>]*\brel="modulepreload"[^>]*>/gu, "")

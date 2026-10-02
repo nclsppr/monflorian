@@ -3,9 +3,10 @@
 ## Portée
 
 Ce modèle couvre le navigateur, Cloudflare Workers et Static Assets, D1, R2,
-Workflows, OpenAI, Cloudflare Email Service, les liens Booking.com et le futur
-webhook Stripe. L'aperçu actuel garde les générations fermées ; les contrôles
-marqués requis sont des gates d'activation.
+Workflows, OpenAI avec recherche web, Cloudflare Email Service, les liens de
+voyage et le futur webhook Stripe. Le candidat de l'ADR-0013 ajoute le parcours
+personnalisé gratuit ; son ouverture reste à prouver. Les contrôles marqués
+requis sont des gates d'activation.
 
 ## Actifs à protéger
 
@@ -27,6 +28,7 @@ marqués requis sont des gates d'activation.
 | Site tiers | provoque une requête navigateur | CSRF, dépense ou fuite de résultat |
 | Détenteur d'un lien | consulte ou partage le jeton | accéder au voyage privé |
 | Fournisseur défaillant | renvoie délai, erreur ou contenu arbitraire | casser le Workflow ou injecter du contenu |
+| Page web consultée | contient des informations ou instructions arbitraires | détourner la recommandation ou inventer une offre |
 | Dépendance compromise | exécute au build ou au runtime | voler un secret ou modifier le bundle |
 | Opérateur mal configuré | change binding, secret, bucket ou DNS | exposer les données, le mail ou une mauvaise version |
 | Compte Cloudflare compromis | administre toutes les ressources | lire, modifier, supprimer ou détourner le service |
@@ -41,8 +43,8 @@ navigateur
           -> D1
           -> R2 privé
           -> Workflow
-              -> OpenAI
-              -> Cloudflare Email Service
+              -> OpenAI -> recherche web de pages publiques
+              -> Cloudflare Email Service si demandé
 
 navigateur -> Booking.com ou CJ après clic
 navigateur -> Stripe Checkout plus tard
@@ -52,8 +54,10 @@ GitHub Actions ou Workers Builds -> version Worker
 OVHcloud registrar -> serveurs de noms Cloudflare
 ```
 
-Booking.com ne traverse pas OpenAI. R2 ne sert jamais un objet directement. Le
-retour navigateur Stripe ne prouve jamais un paiement.
+Les recherches peuvent consulter des pages publiques de voyage ; les liens
+Booking restent construits côté serveur. Ni photo, ni courriel, ni jeton ne
+fait partie des requêtes web. R2 ne sert jamais un objet directement. Le retour
+navigateur Stripe ne prouve jamais un paiement.
 
 ## Hypothèses d'activation
 
@@ -83,20 +87,23 @@ revue.
 | T09 | Photo sans droit | atteinte aux personnes | consentement explicite, durée courte, retrait, pas de galerie | déclarations impossibles à vérifier automatiquement |
 | T10 | Prompt injection | contenu trompeur ou hostile | brief comme donnée, instructions séparées, JSON strict, revalidation | texte conforme mais faux ou offensant |
 | T11 | XSS dans la sortie | exécution navigateur | rendu par noeuds texte, CSP, aucun HTML fournisseur | future régression de rendu |
-| T12 | Lien injecté par le modèle | phishing ou attribution fausse | aucun URL dans le schéma, liens construits après validation, hôtes autorisés | mauvaise configuration opérateur |
-| T13 | Voyage halluciné | mauvaise décision | mentions de projection, vérifications, revue Florian, aucune disponibilité annoncée | information plausible mais fausse |
+| T12 | Lien injecté par le modèle | phishing ou attribution fausse | références recoupées avec les sources réelles, URL HTTPS publiques validées, liens Booking construits côté serveur, aucun lien d'affiliation inventé | page source compromise |
+| T13 | Voyage halluciné | mauvaise décision | hôtels nommés sourcés, dates et transport revalidés, vérifications visibles, aucune garantie de prix ou de disponibilité | une source peut être fausse ou périmée |
 | T14 | Retry Workflow duplique un appel payant | coût et résultats multiples | étapes à zéro retry, résultat chiffré en D1 et identifiant fournisseur | timeout après traitement fournisseur |
 | T15 | État partiel entre D1 et R2 | page cassée ou donnée orpheline | statuts explicites, clés déterministes, écritures idempotentes, purge des orphelins | panne entre deux écritures |
 | T16 | Bucket ou objet public | fuite de photos | pas de `r2.dev`, binding Worker uniquement, noms opaques, contrôle périodique | erreur d'administration Cloudflare |
 | T17 | D1 lu sans clé | contenu personnel exposé | AES-GCM, clé distincte, nonces uniques, métadonnées minimales | clé et base compromises ensemble |
-| T18 | Purge non exécutée | rétention excessive | échéances D1/R2, tâche planifiée et règles R2 de secours à 24 heures et 30 jours | panne prolongée du nettoyage |
+| T18 | Purge non exécutée | rétention excessive | échéances D1, tâche planifiée, sources à 24 heures et secours R2 des résultats à 180 jours avant ouverture | panne prolongée du nettoyage |
 | T19 | Courriel envoyé au mauvais destinataire | lien privé divulgué | validation, confirmation visible, envoi unique, expéditeur restreint, contenu minimal | faute de saisie de l'utilisateur |
 | T20 | Logs contiennent du contenu | fuite durable | allowlist de champs, pas de query string, tests négatifs | logs propres aux fournisseurs |
 | T21 | Bundle ou action compromis | code malveillant | lockfiles, actions par SHA, dry-run Wrangler, PR protégée | vulnérabilité inconnue d'une dépendance |
 | T22 | Compte Cloudflare pris | contrôle total | MFA forte, portée minimale des jetons, comptes séparés si possible, audit | propriétaire unique sans suppléant |
 | T23 | Bascule DNS casse le mail | perte de réception | inventaire complet, copie MX/SPF/TXT, diff limité, rollback par NS | caches et propagation |
 | T24 | Webhook Stripe falsifié ou rejoué | génération non payée | signature brute vérifiée, identifiant d'événement unique, état idempotent | erreurs opérateur et litiges |
-| T25 | Le modèle texte détourne la génération d'image avec une consigne libre | contenu arbitraire, abus ou coût | aucun prompt ni profil libre dans `TravelGuideV1`, champs transmis au modèle d'image bornés et énumérés, compilation serveur avec profil fixe, refus des URL et du HTML | une scène valide peut encore être inadéquate |
+| T25 | Le modèle texte détourne la génération d'image | contenu arbitraire, abus ou coût | consigne contrôlée côté serveur, aucune transmission du brief brut, une image maximum et références limitées au voyage | une scène valide peut encore être inadéquate |
+| T26 | Injection depuis une page web ou fausse citation | recommandation détournée ou contenu non sourcé | recherche distincte, données bornées et chiffrées, références présentes dans les résultats réellement retournés, sortie stricte revalidée | la citation ne garantit pas la véracité du contenu |
+| T27 | Suppression concurrente au Workflow | réapparition du carnet ou image orpheline | accès révoqué, garde avant persistance et notification, nettoyage d'un résultat tardif, scénario de concurrence | panne entre stockage et nettoyage |
+| T28 | Expiration avant le séjour ou durée illimitée | perte du carnet ou rétention excessive | retour + 7 jours, minimum 30 jours, maximum 180 jours, refus des dates passées et retours au-delà de 173 jours | incohérence d'une règle distante non vérifiée |
 
 ## Contrôles de sortie courants
 
@@ -106,15 +113,19 @@ Le Worker traite toute sortie OpenAI comme hostile :
 - enveloppe fournisseur limitée à 512 000 octets et JSON itinéraire extrait
   limité à 131 072 octets avant analyse ;
 - jours, dates, moments et caractères bornés ;
-- aucun URL fournisseur dans le schéma ;
+- URLs de source acceptées uniquement si elles proviennent des résultats
+  de recherche et passent le contrôle de protocole et de destination ;
 - liens Booking.com construits après validation ;
 - image décodée, taille et format contrôlés avant R2 ;
 - page rendue sans `innerHTML` alimenté par le modèle.
 
-La fixture canonique affichée statiquement sous `/v2` ne franchit pas la
+La fixture canonique affichée sous `/carnets/japon-10-jours` ne franchit pas la
 frontière OpenAI et ne reçoit aucune donnée du visiteur.
 
-### Contrôles candidats avant intégration dynamique de TravelGuideV1 au Workflow
+### Contrôles conservés pour le futur TravelGuideV1 dynamique
+
+L'ADR-0013 reporte cette intégration. Le candidat utilise `itinerary.v2` et une
+seule image facultative ; la fixture Japon conserve les contrôles suivants.
 
 - cohérence entre durée, journées, chapitres, nuits et plan d'images ;
 - aucune instruction libre, URL, profil de rendu ou option fournisseur dans le
@@ -132,11 +143,16 @@ frontière OpenAI et ne reçoit aucune donnée du visiteur.
 - jeton faux, expiré, supprimé ou inclus dans un `Referer` externe ;
 - R2 sans domaine public et objet inaccessible hors Worker ;
 - voyage partiellement écrit puis repris ou purgé ;
-- expiration source à 24 heures et résultat à 30 jours ;
+- expiration source à 24 heures et résultat à l'échéance calculée, jusqu'à
+  180 jours ;
 - sortie contenant HTML, JavaScript, URL ou mauvaise date ;
 - plan d'images contenant une pseudo-instruction, un chapitre inconnu, une plage
   de jours incohérente ou trop d'images ;
 - courriel en échec puis repris sans doublon de voyage ;
+- hôtel avec référence absente de la recherche et URL privée ou dangereuse ;
+- carnet textuel disponible après échec de l'image facultative ;
+- suppression concurrente à chaque étape et résultat fournisseur tardif ;
+- Luxembourg sans vol et Tokyo avec dates, départ et nuits cohérents ;
 - retour Stripe sans webhook signé, quand cette phase existera ;
 - changement de serveurs de noms avec MX et SPF identiques.
 
@@ -151,4 +167,5 @@ frontière OpenAI et ne reçoit aucune donnée du visiteur.
 - DNS mail différent du relevé approuvé ;
 - hausse de coût sans requête autorisée.
 
-L'aperçu actuel évite ces risques en maintenant toutes les générations fermées.
+La fermeture des générations reste le repli tant que les contrôles du candidat
+et leur preuve distante sont incomplets.
