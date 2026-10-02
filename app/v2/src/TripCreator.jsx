@@ -1,8 +1,48 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { accommodationStyles, buildTripPayload, DEFAULT_TRIP_DRAFT, prepareTripPhoto, privateTripUrl, requiresDepartureCity, transportModes, TRIP_IDEAS, tripDraftErrors, tripPaces } from "./trip-draft.mjs";
+import "./error-state.css";
 
 const stepLabels = ["Ton voyage", "Tes préférences", "Créer le carnet"];
 const firstStepFields = new Set(["destination", "departureCity", "brief"]);
+const serviceErrors = {
+  configuration: { image: "lost", title: "Impossible de vérifier la disponibilité", description: "La connexion au service n’a pas abouti. Tu peux continuer à préparer ton voyage, puis vérifier à nouveau sans quitter cette page." },
+  unavailable: { image: "waiting", title: "La création fait une pause", description: "Le service est momentanément indisponible. Tes réponses restent dans cette page. Tu peux les sauvegarder et vérifier la disponibilité plus tard." },
+  quota: { image: "limit", title: "La limite gratuite du jour est atteinte", description: "Réessaie demain. Tu peux sauvegarder tes envies pour les retrouver ; les photos restent uniquement dans cette page tant qu’elle est ouverte." },
+  request: { image: "repair", title: "La demande n’a pas pu aboutir", description: "Le service a rencontré un problème. Tes réponses et photos restent dans cette page. Confirme à nouveau la vérification, puis réessaie sans modifier le formulaire pour reprendre la même demande." },
+  network: { image: "lost", title: "La connexion a été interrompue", description: "Nous ne savons pas encore si ta demande a été enregistrée. Vérifie ta connexion, puis réessaie sans modifier le formulaire : la même demande sera reprise." },
+  response: { image: "lost", title: "Le lien du carnet n’a pas pu être récupéré", description: "Ta demande a peut-être été enregistrée. Confirme à nouveau la vérification, puis réessaie sans modifier le formulaire pour retrouver la même demande." },
+  input: { image: "repair", title: "La demande doit être vérifiée", description: "Le service n’a pas accepté ces informations. Revois tes envies et les options choisies avant de réessayer. Tes réponses restent dans cette page." },
+  photos: { image: "waiting", title: "Les portraits ne sont pas disponibles", description: "Tu peux revenir à tes envies et retirer les photos pour créer un carnet sans portrait, ou garder le formulaire ouvert et réessayer plus tard." },
+  email: { image: "waiting", title: "L’envoi par courriel est indisponible", description: "Tu peux retirer ton adresse de courriel et continuer. Le lien privé du carnet s’ouvrira dans cette page après l’enregistrement de ta demande." },
+};
+
+export function tripRequestFailure(code, status) {
+  if (code === "QUOTA_EXCEEDED") return { kind: "quota", terminal: true };
+  if (["TRIP_CREATION_UNAVAILABLE", "SERVICE_NOT_CONFIGURED"].includes(code)) return { kind: "unavailable" };
+  if (code === "ILLUSTRATION_UNAVAILABLE") return { kind: "photos" };
+  if (code === "EMAIL_UNAVAILABLE") return { kind: "email" };
+  const fields = {
+    ACCESS_REQUIRED: ["accessCode", "Le code d’accès est absent ou incorrect. Vérifie-le avant de réessayer."],
+    INVALID_ACCESS_CODE: ["accessCode", "Le code d’accès est incorrect. Vérifie-le avant de réessayer."],
+    INVALID_EMAIL: ["email", "Vérifie ton adresse de courriel, ou retire-la pour continuer sans courriel."],
+    PAST_TRIP: ["startDate", "Choisis une date de départ à venir."],
+    TRIP_TOO_FAR: ["endDate", "Choisis un retour dans les 173 prochains jours, ou laisse les deux dates vides et précise la période dans tes envies."],
+    DESTINATION_REQUIRED: ["destination", "Indique la destination du voyage."],
+    CONSENT_REQUIRED: ["photoConsent", "Confirme les droits et l’accord des personnes, ou retire les photos."],
+  };
+  if (typeof code === "string" && Object.hasOwn(fields, code)) return { field: fields[code][0], message: fields[code][1] };
+  if (["TURNSTILE_REQUIRED", "TURNSTILE_REJECTED", "TURNSTILE_UNAVAILABLE"].includes(code)) return { verification: true, message: "La vérification n’a pas abouti. Relance-la avant de réessayer." };
+  if (status >= 400 && status < 500) return { kind: "input" };
+  return { kind: "request" };
+}
+
+function TripErrorState({ kind, headingRef, children }) {
+  const error = serviceErrors[kind];
+  return <div aria-labelledby="trip-service-error-title" className={`trip-error-state trip-error-${kind}`}>
+    <div className="error-state-art"><img src={`/assets/errors/florian-${error.image}.webp`} alt="" height="160" width="160" onError={(event) => { event.currentTarget.hidden = true; }} /></div>
+    <div className="error-state-copy"><h4 id="trip-service-error-title" ref={headingRef} tabIndex="-1">{error.title}</h4><p>{error.description}</p><div className="error-state-actions">{children}</div><p className="error-state-support">Besoin d’aide ? <a href="mailto:support@monflorian.com">support@monflorian.com</a></p></div>
+  </div>;
+}
 
 function Field({ name, label, optional, help, errors, children }) {
   return <div className="planner-field"><label htmlFor={`trip-${name}`}>{label}{optional ? <span> facultatif</span> : null}</label>{children}<p className="planner-help" id={`trip-${name}-help`}>{help}</p><p className="planner-error" id={`trip-${name}-error`}>{errors[name] || ""}</p></div>;
@@ -19,10 +59,11 @@ function Turnstile({ siteKey, onToken, onError }) {
         sitekey: siteKey, action: "create-trip", theme: "light", size: "flexible",
         callback: onToken,
         "expired-callback": () => { onToken(""); onError("La vérification a expiré. Confirme-la à nouveau."); },
-        "error-callback": () => { onToken(""); onError("La vérification n’a pas chargé. Recharge la page ou réessaie plus tard."); },
+        "error-callback": () => { onToken(""); onError("La vérification n’a pas chargé. Relance-la avant de réessayer."); },
       });
     }
     let script = document.querySelector("script[data-monflorian-turnstile]");
+    if (script?.dataset.failed === "true") { script.remove(); script = null; }
     if (window.turnstile) render();
     else {
       if (!script) {
@@ -35,7 +76,7 @@ function Turnstile({ siteKey, onToken, onError }) {
       script.addEventListener("load", render);
       script.addEventListener("error", failed);
     }
-    function failed() { if (!disposed) onError("La vérification n’a pas chargé. Recharge la page ou réessaie plus tard."); }
+    function failed() { if (!disposed) { script.dataset.failed = "true"; onError("La vérification n’a pas chargé. Relance-la avant de réessayer."); } }
     return () => { disposed = true; script?.removeEventListener("load", render); script?.removeEventListener("error", failed); if (widget !== undefined) window.turnstile?.remove(widget); onToken(""); };
   }, [siteKey, onToken, onError]);
   return <div aria-label="Vérification de la demande" className="trip-turnstile" ref={container} />;
@@ -48,6 +89,7 @@ export default function TripCreator() {
   const [errors, setErrors] = useState({});
   const [config, setConfig] = useState(null);
   const [configurationError, setConfigurationError] = useState(false);
+  const [configurationLoading, setConfigurationLoading] = useState(true);
   const [configurationAttempt, setConfigurationAttempt] = useState(0);
   const [photos, setPhotos] = useState([]);
   const [preparingPhotos, setPreparingPhotos] = useState(false);
@@ -57,35 +99,44 @@ export default function TripCreator() {
   const [verificationAttempt, setVerificationAttempt] = useState(0);
   const [pending, setPending] = useState(false);
   const [feedback, setFeedback] = useState("");
+  const [requestError, setRequestError] = useState(null);
   const [acceptedUrl, setAcceptedUrl] = useState("");
   const title = useRef(null);
+  const errorTitle = useRef(null);
   const photoInput = useRef(null);
   const photoRefs = useRef([]);
   const idempotencyKey = useRef(null);
   const pendingFocus = useRef(false);
   const pendingFieldFocus = useRef("");
-  const ready = !configurationError && config?.serviceReady === true && Boolean(config?.turnstileSiteKey);
+  const ready = !configurationLoading && !configurationError && config?.serviceReady === true && Boolean(config?.turnstileSiteKey);
+  const serviceError = requestError || (!configurationLoading && (configurationError ? "configuration" : config && !ready ? "unavailable" : null));
+  const retryInPanel = step === 2 && ["network", "request", "response"].includes(serviceError);
   const illustrations = config?.illustrationEnabled === true;
   const departureRequired = requiresDepartureCity(draft.transportMode);
   const handleToken = useCallback((value) => { setTurnstileToken(value); if (value) setTurnstileError(""); }, []);
 
   useEffect(() => {
     const controller = new AbortController();
+    let disposed = false;
+    const timeout = window.setTimeout(() => controller.abort(), 15000);
     setHydrated(true);
+    setConfigurationLoading(true);
     setConfigurationError(false);
     fetch("/api/config", { signal: controller.signal, headers: { Accept: "application/json" } })
       .then(async (response) => { if (!response.ok) throw new Error("Configuration unavailable"); const value = await response.json(); if (typeof value.serviceReady !== "boolean") throw new Error("Invalid configuration"); setConfig(value); })
-      .catch((error) => { if (error.name !== "AbortError") setConfigurationError(true); });
-    return () => controller.abort();
+      .catch(() => { if (!disposed) setConfigurationError(true); })
+      .finally(() => { window.clearTimeout(timeout); if (!disposed) setConfigurationLoading(false); });
+    return () => { disposed = true; window.clearTimeout(timeout); controller.abort(); };
   }, [configurationAttempt]);
+  useEffect(() => { if (requestError) errorTitle.current?.focus(); }, [requestError]);
   useEffect(() => {
-    if (!pendingFocus.current) return;
+    if (!pendingFocus.current || pending) return;
     pendingFocus.current = false;
     const field = pendingFieldFocus.current;
     pendingFieldFocus.current = "";
     if (field) document.getElementById(`trip-${field}`)?.focus();
     else title.current?.focus();
-  }, [step]);
+  }, [step, pending]);
   useEffect(() => { photoRefs.current = photos; }, [photos]);
   useEffect(() => () => { photoRefs.current.forEach((photo) => URL.revokeObjectURL(photo.previewUrl)); }, []);
 
@@ -101,12 +152,14 @@ export default function TripCreator() {
     idempotencyKey.current = null;
     setErrors((current) => ({ ...current, [name]: undefined }));
     setFeedback("");
+    setRequestError(null);
   }
 
   function useIdea(idea) {
     setDraft((current) => ({ ...current, ...idea.draft, startDate: "", endDate: "" }));
     idempotencyKey.current = null;
     setErrors({});
+    setRequestError(null);
     setFeedback("Cette idée est ajoutée. Ajuste les envies, la durée et ta ville de départ.");
     document.getElementById("trip-destination")?.focus();
   }
@@ -134,6 +187,28 @@ export default function TripCreator() {
     setFeedback("");
   }
 
+  function retryAvailability() {
+    setRequestError(null);
+    setConfigurationLoading(true);
+    setConfigurationAttempt((value) => value + 1);
+  }
+
+  function reviewDraft() {
+    setRequestError(null);
+    goTo(0);
+  }
+
+  function saveWishes() {
+    const text = ["Mes envies de voyage · Mon Florian", "", `Destination : ${draft.destination || "À préciser"}`, `Départ : ${draft.departureCity || "À préciser"}`, `Dates : ${draft.startDate || "Flexibles"}${draft.endDate ? ` au ${draft.endDate}` : ""}`, `Durée : ${draft.durationDays} jours`, `Voyageurs : ${draft.travelers}`, `Transport : ${transportModes.find(({ value }) => value === draft.transportMode)?.label}`, `Hébergement : ${accommodationStyles.find(({ value }) => value === draft.accommodationStyle)?.label}`, `Rythme : ${tripPaces.find(({ value }) => value === draft.pace)?.label}`, `Budget total : ${draft.budgetTotalEur ? `${draft.budgetTotalEur} €` : "À préciser"}`, "", draft.brief, "", "Les photos, le code d’accès et l’adresse de courriel ne sont pas inclus."].join("\n");
+    const url = URL.createObjectURL(new Blob([text], { type: "text/plain;charset=utf-8" }));
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "mes-envies-monflorian.txt";
+    link.click();
+    window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+    setFeedback("Tes envies ont été téléchargées, sans photos, code d’accès ni adresse de courriel.");
+  }
+
   async function addPhotos(event) {
     const files = Array.from(event.target.files || []);
     event.target.value = "";
@@ -159,31 +234,50 @@ export default function TripCreator() {
     if (pending || preparingPhotos || !ready || acceptedUrl || !validate()) return;
     if (!turnstileToken) { setTurnstileError("Termine la vérification avant de créer ton voyage."); return; }
     setPending(true);
+    setRequestError(null);
     setFeedback("Enregistrement de ta demande et création du lien privé…");
     idempotencyKey.current ||= crypto.randomUUID();
+    const controller = new AbortController();
+    const timeout = window.setTimeout(() => controller.abort(), 45000);
+    let accepted = false;
     try {
       const response = await fetch("/api/trips", {
+        signal: controller.signal,
         method: "POST", headers: { "Content-Type": "application/json", Accept: "application/json", "Idempotency-Key": idempotencyKey.current, ...(config.accessMode === "private" ? { "X-Monflorian-Access-Code": draft.accessCode.trim() } : {}) },
         body: JSON.stringify(buildTripPayload(draft, { photos: illustrations ? photos : [], photoConsent, turnstileToken, emailEnabled: config.emailEnabled === true })),
       });
       const result = await response.json().catch(() => null);
       if (!response.ok) {
-        const messages = { QUOTA_EXCEEDED: "La limite gratuite du jour est atteinte. Garde tes envies et réessaie demain.", TRIP_CREATION_UNAVAILABLE: "La création est momentanément indisponible. Tes envies restent dans cette page.", INVALID_ACCESS_CODE: "Le code d’accès est incorrect. Vérifie-le avant de réessayer.", TURNSTILE_REJECTED: "La vérification a échoué. Confirme-la à nouveau avant de réessayer." };
         const code = result?.error?.code || result?.code;
-        throw new Error(messages[code] || result?.error?.message || "La demande n’a pas pu être enregistrée. Vérifie les champs et réessaie.");
+        const failure = tripRequestFailure(code, response.status);
+        if (failure.terminal) idempotencyKey.current = null;
+        if (failure.field) {
+          setErrors((current) => ({ ...current, [failure.field]: failure.message }));
+          const destinationStep = firstStepFields.has(failure.field) ? 0 : ["startDate", "endDate"].includes(failure.field) ? 1 : 2;
+          pendingFocus.current = true;
+          pendingFieldFocus.current = failure.field;
+          if (step !== destinationStep) setStep(destinationStep);
+          setFeedback("Vérifie le champ indiqué avant de réessayer.");
+        } else if (failure.verification) { setTurnstileError(failure.message); setFeedback(""); }
+        else { setRequestError(failure.kind); setFeedback(""); }
+        return;
       }
       const url = privateTripUrl(result?.privateUrl || response.headers.get("Location"), window.location.origin);
-      if (!url) throw new Error("La demande a été reçue, mais son lien n’a pas pu être ouvert. Réessaie sans modifier le formulaire pour retrouver la même demande.");
+      if (!url) { setRequestError("response"); setFeedback(""); return; }
+      accepted = true;
       setAcceptedUrl(url);
       setFeedback("Ta demande est enregistrée. Ouvre ton carnet privé pour suivre sa préparation.");
       photos.forEach((photo) => URL.revokeObjectURL(photo.previewUrl));
       setPhotos([]);
       window.location.assign(url);
-    } catch (error) {
-      setFeedback(error instanceof TypeError ? "La connexion a été interrompue. Réessaie sans modifier le formulaire : la même demande sera reprise." : error.message);
-      setTurnstileToken("");
-      setVerificationAttempt((value) => value + 1);
-    } finally { setPending(false); }
+    } catch {
+      setRequestError("network");
+      setFeedback("");
+    } finally {
+      window.clearTimeout(timeout);
+      if (!accepted) { setTurnstileToken(""); setVerificationAttempt((value) => value + 1); }
+      setPending(false);
+    }
   }
 
   function input(name, type = "text", extra = {}) {
@@ -228,11 +322,14 @@ export default function TripCreator() {
           {config?.accessMode === "private" && ready ? <Field errors={errors} label="Code d’accès à la bêta" name="accessCode">{input("accessCode", "password", { autoComplete: "off", maxLength: 200 })}</Field> : null}
           {photos.length ? <div className="trip-consent"><label><input aria-describedby="trip-photoConsent-error" aria-invalid={Boolean(errors.photoConsent)} checked={photoConsent} id="trip-photoConsent" onChange={(event) => { setPhotoConsent(event.target.checked); setErrors((current) => ({ ...current, photoConsent: undefined })); }} type="checkbox" /><span>Je possède les droits sur ces photos et l’accord de toutes les personnes représentées pour leur envoi à Mon Florian et à OpenAI afin de générer les illustrations du voyage.</span></label><p className="planner-error" id="trip-photoConsent-error">{errors.photoConsent}</p></div> : null}
           <p className="planner-help">Le brief et le carnet sont conservés sur une page privée pendant au moins 30 jours, jusqu’à 7 jours après le retour connu, avec un maximum de 180 jours. Les photos sources sont effacées après traitement, au plus tard sous 24 heures. Tu peux supprimer le voyage depuis son lien. <a href="/confidentialite" target="_blank" rel="noopener noreferrer">Lire la notice de confidentialité</a>.</p>
-          {ready ? <><Turnstile key={verificationAttempt} onError={setTurnstileError} onToken={handleToken} siteKey={config.turnstileSiteKey} /><p aria-live="polite" className="planner-error">{turnstileError}</p></> : null}
+          {ready ? <><Turnstile key={verificationAttempt} onError={setTurnstileError} onToken={handleToken} siteKey={config.turnstileSiteKey} /><p aria-live="polite" className="planner-error">{turnstileError}</p>{turnstileError ? <button className="planner-remove" onClick={() => { setTurnstileError(""); setVerificationAttempt((value) => value + 1); }} type="button">Relancer la vérification</button> : null}</> : null}
         </> : null}
         </fieldset>
-        <div className="trip-service-status" role="status">{configurationError ? <><p>La disponibilité du service n’a pas pu être vérifiée. Tes réponses restent sur cette page.</p><button className="planner-remove" onClick={() => setConfigurationAttempt((value) => value + 1)} type="button">Vérifier à nouveau</button></> : config ? !ready ? <><p>La création est momentanément fermée. Tu peux préparer tes envies et revenir quand le service sera disponible.</p><button className="planner-remove" onClick={() => setConfigurationAttempt((value) => value + 1)} type="button">Vérifier la disponibilité</button></> : <p>La création gratuite est disponible, dans la limite quotidienne de la bêta.</p> : <p>Vérification de la disponibilité…</p>}</div>
-        <div className="planner-step-actions">{step > 0 ? <button className="planner-button planner-button-quiet" disabled={!hydrated || pending || preparingPhotos} onClick={() => goTo(step - 1)} type="button">Retour</button> : <span />}<button className="planner-button planner-button-primary" disabled={!hydrated || pending || preparingPhotos || Boolean(acceptedUrl) || (step === 2 && (!ready || !turnstileToken))} type="submit">{pending ? "Création du lien privé…" : step < 2 ? "Continuer" : "Créer mon voyage gratuitement"}</button></div>
+        {serviceError ? <TripErrorState headingRef={errorTitle} kind={serviceError}>
+          {["configuration", "unavailable"].includes(serviceError) ? <button className="planner-button planner-button-primary" disabled={configurationLoading || pending} onClick={retryAvailability} type="button">Vérifier la disponibilité</button> : retryInPanel ? <button className="planner-button planner-button-primary" disabled={pending || !ready || !turnstileToken} type="submit">Réessayer la création</button> : ["input", "photos"].includes(serviceError) ? <button className="planner-button planner-button-primary" onClick={reviewDraft} type="button">Revoir mes envies</button> : serviceError === "email" ? <button className="planner-button planner-button-primary" onClick={() => document.getElementById("trip-email")?.focus()} type="button">Modifier mon courriel</button> : null}
+          <button className="planner-remove" disabled={pending} onClick={saveWishes} type="button">Sauvegarder mes envies</button>
+        </TripErrorState> : <div className="trip-service-status" role="status"><p>{configurationLoading ? "Vérification de la disponibilité…" : "La création gratuite est disponible, dans la limite quotidienne de la bêta."}</p></div>}
+        <div className="planner-step-actions">{step > 0 ? <button className="planner-button planner-button-quiet" disabled={!hydrated || pending || preparingPhotos} onClick={() => goTo(step - 1)} type="button">Retour</button> : <span />}{!retryInPanel ? <button className="planner-button planner-button-primary" disabled={!hydrated || pending || preparingPhotos || Boolean(acceptedUrl) || (step === 2 && (!ready || !turnstileToken))} type="submit">{pending ? "Création du lien privé…" : step < 2 ? "Continuer" : "Créer mon voyage gratuitement"}</button> : null}</div>
         <p aria-live="polite" className="planner-feedback" role="status">{feedback}</p>
         {acceptedUrl ? <a className="planner-button planner-button-primary" href={acceptedUrl}>Ouvrir mon carnet privé</a> : null}
       </form>

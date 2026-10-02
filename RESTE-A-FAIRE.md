@@ -58,7 +58,9 @@ constituent pas une preuve de génération distante.
   et retour + 7 jours, plafonné à 180 jours.
 - [ ] Prouver le retrait anticipé pendant la recherche, la génération et
   l'envoi d'image ; aucun résultat tardif ne recrée le voyage supprimé.
-- [ ] Vérifier la notice publiée, le consentement et le canal de droits.
+- [x] Identifier le contact de support et de droits : `support@monflorian.com`,
+  fourni par le propriétaire et intégré à la notice candidate.
+- [ ] Vérifier la notice publiée, le consentement et la présence du contact.
 - [ ] Vérifier Turnstile de bout en bout, quotas, doublons et concurrence.
 
 ## Preuves du parcours complet
@@ -72,6 +74,8 @@ constituent pas une preuve de génération distante.
   photo supprimées ; noter le coût fournisseur et la durée observée.
 - [ ] Notification demandée : un message autorisé reçu, adresse chiffrée
   supprimée et distinction entre livraison, bounce et envoi incertain.
+- [ ] Contact de support : routage et réception vérifiés séparément de la
+  publication de l'adresse et des notifications du carnet.
 - [ ] Consultation et média refusés après suppression et expiration.
 - [ ] Aucun brief, photo, courriel, jeton ou résultat dans les logs.
 - [ ] SHA poussé, PR et CI validées, version Worker identifiée, sondes sur les

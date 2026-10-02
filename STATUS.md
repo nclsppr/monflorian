@@ -7,7 +7,7 @@ la création de voyages privés, avec recherche web, hôtels sourcés, transport
 adapté, photos et courriel facultatifs. La bêta ne demande ni paiement ni compte.
 Le paiement sera ajouté après la bêta ; aucun prix n'est arrêté.
 
-Le candidat passe `./scripts/verify.sh` : 102 tests applicatifs, TypeScript,
+Le candidat passe `./scripts/verify.sh` : 111 tests applicatifs, TypeScript,
 build Worker, Docker Compose et Nimbus. Les parcours visibles et la notice
 sont contrôlés sur ordinateur et mobile. Ces preuves locales ne prouvent ni
 déploiement, ni appel OpenAI réussi, ni image générée, ni réception de courriel.
@@ -27,6 +27,11 @@ Le premier essai fournisseur est refusé : `credit_balance_exhausted`, type
 La version Worker issue du seul changement de secret est
 `3a3bcdfc-1c0b-4127-8321-ee24e927f91c` ; elle ne publie pas le code candidat.
 
+Le propriétaire a fourni `support@monflorian.com` pour le support et les droits.
+L'adresse est intégrée à la notice candidate. Sa publication distante, son
+routage et la réception d'un message ne sont pas encore prouvés. Le courriel
+facultatif du carnet peut rester désactivé indépendamment du texte et des images.
+
 Avant d'annoncer la bêta ouverte, consigner :
 
 - les contrôles du candidat et les parcours visibles Tokyo et Luxembourg ;
@@ -36,6 +41,7 @@ Avant d'annoncer la bêta ouverte, consigner :
   retrait pendant traitement et l'absence de contenu privé dans les logs ;
 - le SHA, les contrôles GitHub, la version Worker et les capacités exposées par
   `/api/config` ;
+- la notice publiée, le contact de droits visible et le consentement ;
 - la réception du courriel si cette option est ouverte et le coût fournisseur.
 
 La liste opérationnelle reste dans `RESTE-A-FAIRE.md`. Les preuves historiques

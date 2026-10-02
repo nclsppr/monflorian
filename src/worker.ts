@@ -39,7 +39,7 @@ import {
   purgeExpiredData,
   type StoredTrip,
 } from "./trips/repository";
-import { renderPrivateTripPage, renderUnknownTripPage } from "./trips/page";
+import { renderPrivateTripPage, renderServiceErrorPage, renderUnknownTripPage } from "./trips/page";
 
 export { TripWorkflow } from "./workflows/trip";
 
@@ -480,6 +480,7 @@ async function privateTripPage(env: Env, token: string): Promise<Response> {
     expiresAt: trip.expires_at,
     result,
     notificationStatus: trip.notification_status,
+    errorCode: trip.error_code,
     deleted: trip.status === "deleted",
   });
 }
@@ -576,6 +577,12 @@ function normalizedLogPath(pathname: string): string {
   if (pathname.startsWith("/api/trips/")) return "/api/trips/:private-path";
   if (pathname.startsWith("/api/v1/trips/")) return "/api/v1/trips/:private-path";
   return pathname;
+}
+
+function isPageRequest(request: Request, url: URL): boolean {
+  if (url.pathname === "/api" || url.pathname.startsWith("/api/") || url.pathname.startsWith("/.well-known/")) return false;
+  return url.pathname.startsWith("/voyages/") || request.headers.get("Sec-Fetch-Dest") === "document" ||
+    Boolean(request.headers.get("Accept")?.includes("text/html"));
 }
 
 const worker = {
@@ -676,8 +683,16 @@ const worker = {
         return response;
       }
 
+      if (url.pathname.startsWith("/voyages/") && ["GET", "HEAD"].includes(request.method)) {
+        status = 404;
+        return renderUnknownTripPage();
+      }
+
       const response = await env.ASSETS.fetch(request);
       status = response.status;
+      if (status >= 500 && isPageRequest(request, url)) {
+        return renderServiceErrorPage(status, "SERVICE_UNAVAILABLE", requestId);
+      }
       return shouldNoIndexStaticAsset(request) ? noIndexResponse(response) : response;
     } catch (error) {
       const appError = error instanceof AppError
@@ -685,6 +700,7 @@ const worker = {
         : new AppError(500, "INTERNAL_ERROR", "Le service a rencontré un problème inattendu.");
       status = appError.status;
       errorCode = appError.code;
+      if (isPageRequest(request, url)) return renderServiceErrorPage(status, errorCode || "INTERNAL_ERROR", requestId);
       return errorResponse(env, appError, requestId);
     } finally {
       console.log(JSON.stringify({

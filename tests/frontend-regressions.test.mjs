@@ -386,6 +386,7 @@ test("la notice publique explique les destinataires, la rétention et la suppres
   assert.match(privacy, /au maximum 180 jours/u);
   assert.match(privacy, /Sans date de retour, 30 jours/u);
   assert.match(privacy, /permet de supprimer le voyage plus tôt/u);
-  assert.match(privacy, /Aucun canal complémentaire n’est publié aujourd’hui/u);
+  assert.match(privacy, /href="mailto:support@monflorian.com"/u);
+  assert.doesNotMatch(privacy, /mailto:[^"]*\?/u);
   assert.match(privatePage, /href="\/confidentialite"/u);
 });

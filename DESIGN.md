@@ -204,6 +204,26 @@ jamais de réservation déjà acquise. L'échéance, la copie du lien, l'impress
 et la suppression restent faciles à trouver. Une illustration générée garde
 sa mention de projection synthétique.
 
+## Erreurs et aide
+
+Les pages d’erreur reprennent le fond crème, l’encre et les actions bleues du
+site. Une illustration de Florian accompagne chaque famille : carte pour un
+lien introuvable, outil pour une préparation échouée, sablier pour l’attente,
+pause pour la limite du jour, carnet fermé pour l’expiration et dossier vide
+pour la suppression. Ces variantes gardent le visage, les lunettes et la
+casquette du portrait principal. Elles ne remplacent pas le logo de l’en-tête.
+
+L’explication nomme le problème et propose l’action possible. Une panne du
+service ne demande pas de corriger les envies. Les erreurs de champ restent
+près du champ ; elles n’ajoutent pas une illustration au formulaire. Un échec
+d’image ou de courriel laisse le carnet prêt accessible.
+
+Le lien `support@monflorian.com` reste disponible dans les erreurs. Il ne
+préremplit ni lien privé, ni photo, ni brief. Le texte invite à décrire l’action
+qui a échoué. La boîte et sa réception ne sont pas qualifiées par ce lien.
+Les variantes sont décoratives : l’explication HTML reste complète si l’image
+ne charge pas. La page 404 fonctionne sans JavaScript.
+
 ## Images et partage
 
 Les scènes Japon et les couvertures d'inspiration restent synthétiques. Le

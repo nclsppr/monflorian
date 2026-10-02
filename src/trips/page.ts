@@ -18,6 +18,7 @@ interface PrivateTripPageOptions {
   result?: unknown;
   deleted?: boolean;
   notificationStatus?: string;
+  errorCode?: string | null;
 }
 
 function escapeHtml(value: unknown): string {
@@ -160,7 +161,12 @@ function renderReady(result: unknown, token: string): string {
   const root = objectValue(result);
   const itinerary = objectValue(root?.itinerary ?? result);
   if (!itinerary) {
-    return `<section class="private-trip-state"><p class="result-kicker">Résultat indisponible</p><h1>Cette proposition ne peut pas être affichée.</h1><p>Le lien reste valide, mais le contenu doit être réparé.</p></section>`;
+    return renderStateSection({
+      ...renderState("failed"),
+      title: "Ton carnet ne peut pas être affiché",
+      body: "Le lien est reconnu, mais son contenu n’est pas lisible pour le moment.",
+      guidance: "Contacte-nous pour signaler le problème, sans envoyer ton lien privé ni tes photos.",
+    });
   }
   const booking = objectValue(root?.accommodationSuggestions);
   return `<header class="private-trip-hero">
@@ -171,7 +177,7 @@ function renderReady(result: unknown, token: string): string {
     ${itinerary.florianNote ? `<aside class="private-trip-note"><strong>Le point de Florian</strong><p>${escapeHtml(itinerary.florianNote)}</p></aside>` : ""}
     <nav class="private-trip-nav" aria-label="Dans ton carnet"><a href="#itinerary-title">Jour par jour</a><a href="#hotels">Hôtels</a><a href="#budget">Budget</a><a href="#sources">Sources</a></nav>
     <div class="private-trip-actions" hidden data-trip-actions><button type="button" data-print-trip>Imprimer le carnet</button><button type="button" data-save-trip>Garder mon carnet hors connexion</button></div><p role="status" data-trip-feedback></p>
-    ${root?.illustrationStatus === "failed" ? '<p class="private-trip-notice">Ton itinéraire est prêt. L’illustration n’a pas pu être créée ; tes photos sources ont été supprimées.</p>' : ""}
+    ${root?.illustrationStatus === "failed" ? '<p class="private-trip-notice">Ton itinéraire est prêt. L’illustration n’a pas pu être créée ; tes photos sources ont été supprimées. Besoin d’aide ? <a href="mailto:support@monflorian.com">support@monflorian.com</a>.</p>' : ""}
     ${renderChecklist("Les hypothèses de ce voyage", itinerary.assumptions)}
     ${renderGeneratedImages(root?.generatedImages, token)}
     ${renderTransport(itinerary.transportOptions)}
@@ -184,47 +190,137 @@ function renderReady(result: unknown, token: string): string {
     ${renderSources(itinerary.research)}`;
 }
 
-function renderState(status: string): { title: string; body: string; refresh: boolean } {
+interface TripPageState {
+  title: string;
+  body: string;
+  guidance?: string;
+  illustration: "lost" | "repair" | "waiting" | "limit" | "expired" | "deleted";
+  actionLabel: string;
+  actionHref: string;
+  refresh: boolean;
+}
+
+function renderState(status: string, errorCode?: string | null): TripPageState {
+  const defaults = { actionLabel: "Préparer un autre voyage", actionHref: "/#create", refresh: false };
   if (["pending", "queued", "generating_itinerary", "generating_images"].includes(status)) {
     return {
+      ...defaults,
       title: "Ton voyage se prépare",
       body: "Garde ce lien privé pour revenir à ton carnet. Cette page se met à jour pendant la recherche et la préparation de ton itinéraire.",
+      guidance: "Tu peux consulter un exemple pendant la préparation.",
+      illustration: "waiting",
+      actionLabel: "Voir le carnet Japon",
+      actionHref: "/carnets/japon-10-jours",
       refresh: true,
     };
   }
-  if (status === "failed") {
+  if (status === "deleting") {
     return {
-      title: "La préparation n’a pas abouti",
-      body: "La préparation s’est arrêtée. Tes photos sources sont supprimées. Tu peux revenir à l’accueil pour corriger ta demande et créer un nouveau voyage.",
-      refresh: false,
+      ...defaults,
+      title: "La suppression est en cours",
+      body: "Ton carnet n’est plus accessible. Le nettoyage des images doit encore se terminer.",
+      guidance: "Cette page se met à jour. Si cet état persiste, contacte-nous sans joindre ton lien privé.",
+      illustration: "waiting",
+      actionLabel: "Revenir à l’accueil",
+      actionHref: "/",
+      refresh: true,
     };
   }
   if (status === "expired") {
     return {
-      title: "Ce voyage a expiré",
-      body: "La proposition et ses images ont été supprimées à la fin de leur durée de conservation.",
-      refresh: false,
+      ...defaults,
+      title: "Ce carnet a expiré",
+      body: "Sa durée de conservation est terminée. Le carnet et ses images ont été supprimés du service.",
+      guidance: "Si tu as gardé une copie hors connexion, elle reste lisible sur ton appareil. Sinon, tu peux préparer un nouveau voyage.",
+      illustration: "expired",
+    };
+  }
+  if (status === "deleted") {
+    return {
+      ...defaults,
+      title: "Ce carnet a été supprimé",
+      body: "Le carnet et ses images ont été retirés du service. Ce lien ne permet plus de les retrouver.",
+      guidance: "Une copie téléchargée reste sur ton appareil jusqu’à ce que tu la supprimes toi-même.",
+      illustration: "deleted",
+    };
+  }
+  if (errorCode === "CONTENT_BLOCKED") {
+    return {
+      ...defaults,
+      title: "Ce brief n’a pas pu être traité",
+      body: "Le service de composition n’a pas pu traiter le contenu de cette demande. Aucun carnet n’a été créé.",
+      guidance: "Tu peux reformuler tes envies de voyage. Si tu ne comprends pas le refus, contacte-nous.",
+      illustration: "repair",
+      actionLabel: "Reformuler ma demande",
+    };
+  }
+  if (errorCode === "QUOTA_EXCEEDED") {
+    return {
+      ...defaults,
+      title: "La limite du jour est atteinte",
+      body: "Le nombre de créations gratuites disponibles pour aujourd’hui a été atteint. Ce carnet n’a pas été préparé.",
+      guidance: "Reviens un autre jour pour créer ton voyage. Tu peux déjà parcourir le carnet d’exemple.",
+      illustration: "limit",
+      actionLabel: "Voir le carnet Japon",
+      actionHref: "/carnets/japon-10-jours",
+    };
+  }
+  if (errorCode === "PROVIDER_RATE_LIMIT") {
+    return {
+      ...defaults,
+      title: "Le service est très sollicité",
+      body: "La préparation a été interrompue par un trop grand nombre de demandes. Ce carnet ne sera pas relancé automatiquement.",
+      guidance: "Tu peux réessayer de créer un voyage dans quelques minutes, avec les mêmes envies.",
+      illustration: "waiting",
+      actionLabel: "Revenir au formulaire",
+    };
+  }
+  if (["PROVIDER_CONFIGURATION", "TRIP_CREATION_UNAVAILABLE", "GENERATION_UNAVAILABLE", "SERVICE_NOT_CONFIGURED"].includes(errorCode || "")) {
+    return {
+      ...defaults,
+      title: "La création est indisponible",
+      body: "Le service de composition doit être rétabli avant de pouvoir préparer ton carnet.",
+      guidance: "Ton brief n’a pas besoin d’être corrigé. Tu peux nous contacter pour signaler le problème.",
+      illustration: "repair",
+      actionLabel: "Voir le carnet Japon",
+      actionHref: "/carnets/japon-10-jours",
     };
   }
   return {
-    title: "Ce voyage a été supprimé",
-    body: "La proposition et ses images ne sont plus conservées.",
-    refresh: false,
+    ...defaults,
+    title: "Ton carnet n’a pas pu être préparé",
+    body: "La préparation s’est arrêtée avant de produire un carnet complet. Elle ne reprendra pas automatiquement.",
+    guidance: "Tes envies ne sont pas en cause. Tu peux réessayer plus tard ou nous contacter si le problème persiste.",
+    illustration: "repair",
+    actionLabel: "Revenir au formulaire",
   };
 }
 
+function renderStateSection(state: TripPageState): string {
+  return `<section class="private-trip-state error-state error-state--${state.illustration}" aria-labelledby="trip-state-title" ${state.refresh ? 'aria-busy="true"' : ""}>
+    <img class="error-state-art" src="/assets/errors/florian-${state.illustration}.webp" width="360" height="360" alt="">
+    <div class="error-state-copy"><h1 id="trip-state-title">${escapeHtml(state.title)}</h1>
+    <p>${escapeHtml(state.body)}</p>
+    ${state.guidance ? `<p class="error-state-guidance">${escapeHtml(state.guidance)}</p>` : ""}
+    <div class="error-state-actions"><a class="primary-button" href="${escapeHtml(state.actionHref)}">${escapeHtml(state.actionLabel)}</a>${state.actionHref !== "/" ? '<a class="error-state-secondary" href="/">Revenir à l’accueil</a>' : ""}</div>
+    <p class="error-state-support">Besoin d’aide ? <a href="mailto:support@monflorian.com">support@monflorian.com</a><span>Ne joins pas ton lien privé ni tes photos à ton message.</span></p></div>
+  </section>`;
+}
+
 export function renderPrivateTripPage(options: PrivateTripPageOptions): Response {
-  const state = renderState(options.deleted ? "deleted" : options.status);
-  const isReady = ["ready", "generating_images"].includes(options.status) && Boolean(options.result) && !options.deleted;
+  const expectsResult = ["ready", "generating_images"].includes(options.status);
+  const root = objectValue(options.result);
+  const itinerary = objectValue(root?.itinerary ?? options.result);
+  const readableResult = Array.isArray(itinerary?.days) && itinerary.days.length > 0;
+  const state = expectsResult && !readableResult && (options.status === "ready" || options.result) && !options.deleted
+    ? { ...renderState("failed"), title: "Ton carnet ne peut pas être affiché", body: "Le lien est reconnu, mais son contenu n’est pas lisible pour le moment.", guidance: "Contacte-nous pour signaler le problème, sans envoyer ton lien privé ni tes photos." }
+    : renderState(options.deleted ? "deleted" : options.status, options.errorCode);
+  const isReady = expectsResult && readableResult && !options.deleted;
   const refresh = options.status !== "ready" && state.refresh ? '<meta http-equiv="refresh" content="10">' : "";
   const content = isReady
     ? `${options.status === "generating_images" ? '<p class="private-trip-notice" role="status">Ton itinéraire est prêt. Ton illustration se prépare ; tu peux déjà lire le carnet.</p>' : ""}<div data-trip-export data-trip-export-state="${escapeHtml(options.status)}">${renderReady(options.result, options.token)}</div>`
-    : `<section class="private-trip-state" ${state.refresh ? 'aria-busy="true"' : ""}>
-        <p class="result-kicker">Voyage privé</p>
-        <h1>${escapeHtml(state.title)}</h1>
-        <p>${escapeHtml(state.body)}</p><a href="/#create">Préparer un autre voyage</a>
-      </section>`;
-  const canDelete = !options.deleted && !["deleted", "expired"].includes(options.status);
+    : renderStateSection(state);
+  const canDelete = !options.deleted && !["deleted", "expired", "deleting"].includes(options.status);
   const deletion = canDelete
     ? `<details class="private-trip-delete"><summary>Supprimer mon carnet et ses images</summary><p>Cette suppression est définitive. Enregistre ton carnet avant de continuer.</p><form method="post" action="/voyages/${escapeHtml(options.token)}/supprimer">
         <button type="submit">Supprimer cette proposition</button>
@@ -247,28 +343,57 @@ export function renderPrivateTripPage(options: PrivateTripPageOptions): Response
     <title>Voyage privé · Mon Florian</title>
     <link rel="stylesheet" href="/styles.css?v=intro-full-1">
     <link rel="stylesheet" href="/trip.css">
+    ${isReady ? "" : '<link rel="stylesheet" href="/error.css">'}
     <script src="/trip.js" defer></script>
   </head>
-  <body class="private-trip-page">
+  <body class="private-trip-page${isReady ? "" : " error-page"}">
     <header class="private-trip-brand"><a href="/" aria-label="Revenir à l’accueil de Mon Florian"><img src="/assets/monflorian-logo.png" alt="Mon Florian"></a></header>
-    <main class="private-trip-shell">
+    <main class="private-trip-shell${isReady ? "" : " error-page-shell"}">
       ${content}
       <footer class="private-trip-footer">
-        ${options.notificationStatus === "failed" ? '<p>L’email n’a pas pu être envoyé. Garde ce lien privé pour retrouver ton carnet.</p>' : ""}
+        ${options.notificationStatus === "failed" ? '<p class="private-trip-notice">L’email n’a pas pu être envoyé. Garde ce lien privé pour retrouver ton carnet. Besoin d’aide ? <a href="mailto:support@monflorian.com">support@monflorian.com</a>.</p>' : ""}
         <p>Gratuit pendant la bêta, sans carte bancaire. Un paiement sera ajouté à la sortie de bêta.</p>
         <p>Cette proposition est une aide à la préparation. Vérifie prix, horaires, formalités et disponibilités avant de réserver.</p>
-        <p>Conservée jusqu’au ${escapeHtml(formatExpiry(options.expiresAt))} au plus tard.</p>
+        ${canDelete ? `<p>Conservée jusqu’au ${escapeHtml(formatExpiry(options.expiresAt))} au plus tard.</p>` : ""}
         <p><a href="/confidentialite">Confidentialité et données</a></p>
+        <p>Besoin d’aide ? <a href="mailto:support@monflorian.com">support@monflorian.com</a>. Décris le problème sans joindre ton lien privé ni tes photos.</p>
         ${deletion}
       </footer>
     </main>
   </body>
-</html>`, { headers: PRIVATE_PAGE_HEADERS });
+</html>`, { status: options.deleted || ["expired", "deleted"].includes(options.status) ? 410 : 200, headers: PRIVATE_PAGE_HEADERS });
 }
 
 export function renderUnknownTripPage(): Response {
-  return new Response(`<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="noindex,nofollow,noarchive,nosnippet,noimageindex"><title>Voyage introuvable · Mon Florian</title><link rel="stylesheet" href="/styles.css?v=intro-full-1"></head><body class="private-trip-page"><main class="private-trip-shell"><section class="private-trip-state"><p class="result-kicker">Lien privé</p><h1>Ce voyage est introuvable.</h1><p>Le lien est incorrect, expiré ou la proposition a été supprimée.</p><a class="primary-button private-trip-home" href="/">Revenir à l’accueil</a></section></main></body></html>`, {
-    status: 404,
-    headers: PRIVATE_PAGE_HEADERS,
+  return renderStandaloneState({
+    title: "Ce carnet est introuvable",
+    body: "Ce lien ne correspond à aucun carnet accessible. Il peut être incomplet, avoir expiré ou avoir été supprimé.",
+    guidance: "Vérifie que tu as copié le lien entier depuis ton message ou ton navigateur. Si tu as une copie hors connexion, tu peux toujours la lire.",
+    illustration: "lost", actionLabel: "Revenir à l’accueil", actionHref: "/", refresh: false,
+  }, 404);
+}
+
+function renderStandaloneState(state: TripPageState, status: number, requestId?: string): Response {
+  return new Response(`<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="noindex,nofollow,noarchive,nosnippet,noimageindex"><title>${escapeHtml(state.title)} · Mon Florian</title><link rel="stylesheet" href="/styles.css?v=intro-full-1"><link rel="stylesheet" href="/trip.css"><link rel="stylesheet" href="/error.css"></head><body class="private-trip-page error-page"><header class="private-trip-brand"><a href="/" aria-label="Revenir à l’accueil de Mon Florian"><img src="/assets/monflorian-logo.png" alt="Mon Florian"></a></header><main class="private-trip-shell error-page-shell">${renderStateSection(state)}<footer class="private-trip-footer"><p><a href="/confidentialite">Confidentialité et données</a></p></footer></main></body></html>`, {
+    status, headers: { ...PRIVATE_PAGE_HEADERS, ...(requestId ? { "X-Request-Id": requestId } : {}) },
   });
+}
+
+export function renderServiceErrorPage(status: number, errorCode: string, requestId: string): Response {
+  const state: TripPageState = {
+    title: "Cette page ne peut pas être affichée",
+    body: "Le service a rencontré un problème. Il ne peut pas afficher cette page pour le moment.",
+    guidance: "Réessaie de l’ouvrir plus tard. Si le problème persiste, contacte-nous sans joindre ton lien privé.",
+    illustration: "repair", actionLabel: "Revenir à l’accueil", actionHref: "/", refresh: false,
+  };
+  if (["PROVIDER_CONFIGURATION", "SERVICE_NOT_CONFIGURED", "TRIP_CREATION_UNAVAILABLE"].includes(errorCode)) {
+    state.title = "Le service est indisponible";
+    state.body = "Le service doit être rétabli avant de pouvoir continuer.";
+    state.guidance = "Tu n’as rien à modifier dans ta demande. Tu peux nous contacter pour signaler le problème.";
+  } else if (status === 403) {
+    state.title = "Cette action n’a pas été autorisée";
+    state.body = "La demande n’a pas été acceptée. Ouvre ton carnet depuis son lien privé avant de recommencer.";
+    state.guidance = "Si le problème persiste, contacte-nous sans joindre ton lien privé ni tes photos.";
+  }
+  return renderStandaloneState(state, status, requestId);
 }

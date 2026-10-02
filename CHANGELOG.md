@@ -4,6 +4,15 @@ Git reste la source du diff technique. Les ADR expliquent les décisions importa
 
 ## 2 octobre 2026, candidat en validation
 
+- Pages d’erreur illustrées avec six adaptations du portrait de Florian :
+  introuvable, réparation, attente, quota, expiration et suppression. Les
+  explications distinguent le problème et l’action possible ; une panne du
+  service ne demande pas de corriger les envies.
+- Contact `support@monflorian.com` dans les erreurs et la notice, sans lien
+  privé ni photo préremplis. La réception des messages reste à vérifier.
+- Repli HTML pour les pannes de page, réponses API toujours en JSON, état de
+  suppression en cours et carnet illisible sans export vide.
+
 - Préparation d'une bêta gratuite, sans compte ni paywall. Le paiement viendra
   après la bêta, avec un prix à définir.
 - Création implémentée depuis le formulaire : destination, départ, dates ou durée,

@@ -10,7 +10,7 @@ branche `codex/free-beta-travel`. La clé OpenAI dédiée est installée, mais l
 drapeaux de génération restent fermés. Aucune personne réelle n’a été envoyée
 à un fournisseur.
 
-- `./scripts/verify.sh` complet réussi sur le candidat final : 102 tests
+- `./scripts/verify.sh` complet réussi sur le candidat final : 111 tests
   applicatifs, TypeScript,
   build Worker, Docker Compose, contrôles publics locaux et Nimbus.
 - Tests supplémentaires du vrai Worker et Workflow, avec SQLite en mémoire,
@@ -37,6 +37,18 @@ drapeaux de génération restent fermés. Aucune personne réelle n’a été en
   résultats sous `/tmp/monflorian-offline-qa`.
 - Contrôle visible complémentaire du départ obligatoire et de la notice de
   conservation locale, à 1440 et 390 px, sans débordement ni erreur JavaScript.
+- Six portraits d’erreur générés depuis l’identité du site, sans personne
+  réelle : sources PNG 1254 × 1254 et WebP transparents 512 × 512, tous sous
+  51 Ko. Le logo master reste inchangé.
+- Chrome à 1440 et 390 px : 34 rendus de pages d’erreur, d’attente, de résultat
+  partiel et de notice, sans débordement, image manquante ni erreur JavaScript.
+  La 404 conserve ses actions sans JavaScript. Les métadonnées des carnets
+  ne contiennent ni titre personnel ni jeton ; les liens support restent sans
+  paramètres. Captures et résultats sous `/tmp/monflorian-errors-qa`.
+- Reprises du formulaire simulées sur les deux largeurs : demande incertaine
+  avec même clé et photo conservée, quota confirmé avec nouvelle clé au clic
+  suivant, disponibilité vérifiée sans nouvel envoi et correction du code
+  d’accès au bon champ. La sauvegarde des envies exclut photos, code et courriel.
 - Réencodage navigateur d’une photo synthétique : WebP 1440 × 960 de 137 476
   octets, accepté par le validateur serveur. Les captures et journaux de test
   restent hors du dépôt, sous `/tmp/monflorian-ui-qa` et `/tmp/monflorian-*`.
@@ -62,7 +74,9 @@ consommation n’est retourné. Aucun nouvel appel ni achat de crédits n’est 
 Le candidat distingue maintenant ces erreurs de facturation d’une limite de
 débit temporaire, avec quatre tests supplémentaires texte et image.
 
-Les crédits API, le canal humain de contact et l’adresse de réception du test
+Le propriétaire a fourni `support@monflorian.com`, intégré à la notice candidate.
+La publication distante, le routage et la réception de cette adresse restent
+à vérifier. Les crédits API et l’adresse de réception du test de notification
 restent à fournir. Un résultat OpenAI réel, son coût, la génération d’image,
 Turnstile en production, la réception de courriel et la publication du candidat
 restent à prouver. Les fixtures ne valident aucun hôtel ni trajet réel.

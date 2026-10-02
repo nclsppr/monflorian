@@ -6,6 +6,7 @@
 | --- | --- |
 | Nom | Mon Florian |
 | Propriétaire | `nclsppr` |
+| Contact support et droits | `support@monflorian.com`, fourni par le propriétaire ; réception non vérifiée |
 | Classe | Critique |
 | Surface Cloudflare | Web actif sur l'apex, `www` et `workers.dev`, envoi transactionnel fermé |
 | Domaine public | `monflorian.com` sur Cloudflare Workers |
@@ -126,7 +127,8 @@ restent fermés. La preuve de publication appartient à `STATUS.md` et
   la notification est activée.
 - Premier appel OpenAI synthétique avec coût et journaux inspectés.
 - Courriel transactionnel et preuve synthétique du nettoyage automatique.
-- Notice de traitement et canal de droits.
+- Notice de traitement avec `support@monflorian.com` visible après déploiement ;
+  ne pas confondre la publication du contact avec une preuve de réception.
 - Preuve de purge à l'échéance propre à chaque voyage ; les règles R2 de
   secours à un jour et 180 jours sont déjà appliquées.
 

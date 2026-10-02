@@ -1,0 +1,44 @@
+.error-page {
+  min-height: 100vh;
+  margin: 0;
+  color: #061a3b;
+  background: #fff8eb;
+  font-family: "Avenir Next", "Segoe UI", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+}
+.error-page *, .error-page *::before, .error-page *::after { box-sizing: border-box; }
+.error-page ::selection { color: #061a3b; background: #dfff55; }
+.error-page-brand, .error-page .private-trip-brand { width: min(1120px, calc(100% - 48px)); margin: 0 auto; padding: 28px 0; }
+.error-page-brand a { display: inline-flex; }
+.error-page-brand img { width: 146px; height: auto; }
+.error-page .error-page-shell { width: min(1120px, calc(100% - 48px)); margin: 16px auto 64px; padding: 0; background: transparent; border: 0; border-radius: 0; box-shadow: none; }
+.error-state { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(240px, .8fr); align-items: center; gap: 48px; padding: 36px 0; }
+.error-state-art { grid-column: 2; grid-row: 1; width: 100%; max-width: 360px; height: auto; justify-self: center; }
+.error-state-copy { grid-column: 1; grid-row: 1; min-width: 0; }
+.error-state-copy h1, .private-trip-state .error-state-copy h1 { max-width: 17ch; margin: 0 0 24px; font-size: clamp(2.4rem, 4.6vw, 4rem); font-weight: 800; letter-spacing: -.04em; line-height: 1.06; text-wrap: balance; }
+.error-state-copy p { max-width: 56ch; margin: 0 0 18px; font-size: 1.075rem; line-height: 1.65; overflow-wrap: anywhere; }
+.error-state-copy .error-state-guidance { color: #17345f; }
+.error-state-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 24px; margin: 28px 0; }
+.error-state-actions .primary-button { display: inline-flex; align-items: center; justify-content: center; min-height: 48px; padding: 13px 22px; border: 1px solid #0b4fd8; border-radius: 18px; background: #0b4fd8; color: #fffefb; box-shadow: none; font: inherit; font-weight: 700; line-height: 1.3; text-align: center; text-decoration: none; }
+.error-state-actions .primary-button:hover { background: #061a3b; border-color: #061a3b; }
+.error-state-secondary, .error-state-support a { color: #0b4fd8; text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 4px; }
+.error-state-secondary { display: inline-flex; align-items: center; min-height: 48px; }
+.error-state-copy .error-state-support { margin-top: 32px; padding-top: 20px; border-top: 1px solid rgba(6, 26, 59, .12); font-size: .95rem; line-height: 1.65; }
+.error-state-support span { display: block; margin-top: 6px; }
+.error-page a:focus-visible, .error-state a:focus-visible { outline: 3px solid #1772ff; outline-offset: 5px; }
+.error-state[aria-busy="true"]::before { display: none; }
+.private-trip-shell:not(.error-page-shell) .error-state { gap: 28px; }
+.private-trip-shell:not(.error-page-shell) .error-state-copy h1 { font-size: clamp(2rem, 4vw, 3.4rem); }
+@media (max-width: 700px) {
+  .error-page-brand, .error-page .private-trip-brand, .error-page .error-page-shell { width: calc(100% - 40px); }
+  .error-page-brand, .error-page .private-trip-brand { padding: 22px 0 12px; }
+  .error-page .error-page-shell { margin-top: 0; }
+  .error-state { grid-template-columns: minmax(0, 1fr); gap: 28px; padding-top: 12px; }
+  .error-state-art { grid-column: 1; grid-row: 1; width: 208px; }
+  .error-state-copy { grid-column: 1; grid-row: 2; }
+  .error-state-copy h1, .private-trip-state .error-state-copy h1 { max-width: 18ch; font-size: clamp(2.2rem, 9vw, 3rem); }
+  .error-state-copy p { font-size: 1rem; }
+  .error-state-actions { align-items: stretch; gap: 8px; }
+  .error-state-actions .primary-button, .error-state-secondary { width: 100%; justify-content: center; }
+  .private-trip-shell:not(.error-page-shell) .error-state-art { width: 180px; }
+}
+@media print { .error-state-art { display: none; } .error-state { display: block; } }

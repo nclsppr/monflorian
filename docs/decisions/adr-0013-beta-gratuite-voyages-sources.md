@@ -108,6 +108,12 @@ Le compte OpenAI existant reçoit une clé dédiée selon l'autorisation du
 propriétaire. Aucun nouveau compte voyageur ou Resend n'est nécessaire pour
 cette tranche. Resend reste une option future, sans adaptateur ni secret ajouté.
 
+Le propriétaire désigne `support@monflorian.com` pour le support et les demandes
+de droits. L'adresse doit figurer dans la notice publique. Cette désignation
+ne prouve pas la configuration d'une boîte, son routage ou sa réception.
+Le contact et la notification facultative du carnet sont deux usages distincts ;
+le texte et les images peuvent être ouverts avec les notifications désactivées.
+
 `/api/trips` reste l'entrée canonique ; les alias `/api/v1` utilisent les mêmes
 validateurs et contrôles. La configuration publique expose la gratuité de la
 bêta et les capacités effectivement ouvertes. La présence d'une clé ne suffit
@@ -116,6 +122,8 @@ pas à annoncer `serviceReady: true`.
 ## Vérification avant ouverture
 
 - Exécuter `./scripts/verify.sh` et les contrôles visibles sur mobile et bureau.
+- Contrôler la notice publiée, le contact de droits et le consentement ;
+  consigner séparément les preuves de routage et de réception du courriel.
 - Appliquer la migration de recherche chiffrée et vérifier la règle R2 à
   180 jours, la purge à 24 heures et le retrait pendant un traitement.
 - Éprouver Tokyo avec transport aérien et Luxembourg sans vol, puis inspecter

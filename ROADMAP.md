@@ -157,7 +157,9 @@ cette tranche.
 - Supprimer l'adresse chiffrée après envoi confirmé et distinguer acceptation
   fournisseur de réception effective.
 - Prouver suppression et purge, y compris pendant un traitement en cours.
-- Publier la notice à jour et vérifier le canal de droits.
+- Publier la notice à jour avec `support@monflorian.com`, adresse fournie par
+  le propriétaire, et contrôler sa présence. Vérifier séparément son routage
+  et sa réception ; aucune preuve n'est encore consignée.
 
 ## F07, domaine Cloudflare
 

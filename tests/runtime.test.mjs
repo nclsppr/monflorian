@@ -6,8 +6,8 @@ import { pathToFileURL } from 'node:url';
 import { DatabaseSync } from 'node:sqlite';
 import test, { after } from 'node:test';
 import { build } from 'esbuild';
-import { pngDataUrl } from './helpers.mjs';
-import { tripExpiresAt } from '../app/trips.mjs';
+import { itineraryOutput, pngDataUrl } from './helpers.mjs';
+import { encryptJson, tripExpiresAt } from '../app/trips.mjs';
 import { researchedRequest, researchedItinerary, researchResponse } from './researched-fixtures.mjs';
 
 const directory = await mkdtemp(join(tmpdir(), 'monflorian-runtime-'));
@@ -111,8 +111,14 @@ test('une panne image conserve le carnet et supprime les photos sources', async 
   const accepted = await created.json();
   const run = await new TripWorkflow({}, env).run({ payload: jobs[0].params }, step);
   assert.equal(run.status, 'ready'); assert.equal(objects.size, 0);
+  sql.prepare("UPDATE trips SET notification_status = 'failed'").run();
   const page = await worker.fetch(new Request(accepted.privateUrl), env);
-  assert.match(await page.text(), /L’illustration n’a pas pu être créée/);
+  const html = await page.text();
+  assert.match(html, /L’illustration n’a pas pu être créée/);
+  assert.match(html, /L’email n’a pas pu être envoyé/);
+  assert.match(html, /L’illustration n’a pas pu être créée[\s\S]*?mailto:support@monflorian.com[^<]*<\/a>[\s\S]*?<\/p>/);
+  assert.match(html, /L’email n’a pas pu être envoyé[\s\S]*?mailto:support@monflorian.com[^<]*<\/a>[\s\S]*?<\/p>/);
+  assert.doesNotMatch(html, /mailto:[^"]*\?/);
 });
 
 test('la suppression pendant un appel ne ressuscite pas les données', async (t) => {
@@ -203,6 +209,134 @@ test('les routes privées malformées ne journalisent jamais le jeton', async (t
   }
   assert.equal(entries.length, 4);
   assert.ok(entries.every((line) => !line.includes(token)));
+});
+
+function assertPrivateErrorPage(response, html) {
+  assert.match(response.headers.get('Content-Type'), /text\/html/);
+  assert.match(response.headers.get('Cache-Control'), /no-store/);
+  assert.equal(response.headers.get('Referrer-Policy'), 'no-referrer');
+  assert.match(response.headers.get('X-Robots-Tag'), /noindex/);
+  assert.match(response.headers.get('Content-Security-Policy'), /frame-ancestors 'none'/);
+  assert.match(html, /href="\/error.css"/);
+  assert.match(html, /href="mailto:support@monflorian.com"/);
+  assert.doesNotMatch(html, /mailto:[^"]*\?/);
+  assert.equal((html.match(/<h1\b/g) || []).length, 1);
+}
+
+test('les pages privées distinguent les causes sans transmettre le lien au support', async (t) => {
+  const { env, sql } = await environment(); t.after(() => sql.close()); mockProvider(t);
+  const created = await worker.fetch(request('/api/trips', brief), env);
+  const { privateUrl } = await created.json();
+  const cases = [
+    { status: 'failed', code: 'CONTENT_BLOCKED', title: 'Ce brief n’a pas pu être traité', art: 'repair', copy: /Reformuler ma demande/ },
+    { status: 'failed', code: 'PROVIDER_CONFIGURATION', title: 'La création est indisponible', art: 'repair', copy: /service de composition doit être rétabli/ },
+    { status: 'failed', code: 'PROVIDER_RATE_LIMIT', title: 'Le service est très sollicité', art: 'waiting', copy: /dans quelques minutes/ },
+    { status: 'failed', code: 'QUOTA_EXCEEDED', title: 'La limite du jour est atteinte', art: 'limit', copy: /Reviens un autre jour/ },
+    { status: 'failed', code: 'PROVIDER_TIMEOUT', title: 'Ton carnet n’a pas pu être préparé', art: 'repair', copy: /ne reprendra pas automatiquement/ },
+    { status: 'failed', code: '<script>sentinel-secret</script>', title: 'Ton carnet n’a pas pu être préparé', art: 'repair', copy: /Tes envies ne sont pas en cause/ },
+    { status: 'expired', title: 'Ce carnet a expiré', art: 'expired', http: 410, copy: /copie hors connexion/ },
+    { status: 'deleted', title: 'Ce carnet a été supprimé', art: 'deleted', http: 410, copy: /copie téléchargée/ },
+    { status: 'deleting', title: 'La suppression est en cours', art: 'waiting', copy: /nettoyage des images doit encore se terminer/ },
+  ];
+  for (const scenario of cases) {
+    sql.prepare('UPDATE trips SET status = ?, error_code = ?').run(scenario.status, scenario.code || null);
+    const response = await worker.fetch(new Request(privateUrl), env);
+    const html = await response.text();
+    assert.equal(response.status, scenario.http || 200);
+    assertPrivateErrorPage(response, html);
+    assert.ok(html.includes(`<h1 id="trip-state-title">${scenario.title}</h1>`));
+    assert.ok(html.includes(`/assets/errors/florian-${scenario.art}.webp`));
+    assert.match(html, scenario.copy);
+    assert.doesNotMatch(html, /sentinel-secret/);
+    if (scenario.code !== 'CONTENT_BLOCKED') assert.doesNotMatch(html, /Reformuler ma demande|corriger ta demande/);
+    if (scenario.code === 'PROVIDER_CONFIGURATION') assert.doesNotMatch(html, /quelques minutes|Réessaie|réessayer/);
+    if (['expired', 'deleted', 'deleting'].includes(scenario.status)) assert.doesNotMatch(html, /<form|Conservée jusqu’au/);
+    assert.equal(html.includes('http-equiv="refresh"'), scenario.status === 'deleting');
+  }
+});
+
+test('un lien inconnu ou malformé reçoit une page privée404 sans reflet du jeton', async (t) => {
+  const { env, sql } = await environment(); t.after(() => sql.close());
+  const token = 'a'.repeat(43);
+  for (const suffix of [token, `${token}/inconnu`, 'incomplet']) {
+    const response = await worker.fetch(new Request(`https://monflorian.com/voyages/${suffix}`), env);
+    const html = await response.text();
+    assert.equal(response.status, 404);
+    assertPrivateErrorPage(response, html);
+    assert.match(html, /Ce carnet est introuvable/);
+    assert.match(html, /florian-lost.webp/);
+    assert.ok(!html.includes(token));
+    assert.doesNotMatch(html, /<form/);
+  }
+});
+
+test('un résultat illisible ne présente pas un carnet vide comme prêt', async (t) => {
+  const { env, sql } = await environment(); t.after(() => sql.close()); mockProvider(t);
+  const created = await worker.fetch(request('/api/trips', brief), env);
+  const { privateUrl } = await created.json();
+  const { id } = sql.prepare('SELECT id FROM trips').get();
+  for (const invalid of [{ itinerary: null }, 'sentinel-invalid-result', true, {}]) {
+    const encrypted = await encryptJson(env.TRIP_DATA_KEY, invalid, `${id}:result`);
+    sql.prepare("UPDATE trips SET status = 'ready', result_ciphertext = ?, result_nonce = ?").run(encrypted.ciphertext, encrypted.nonce);
+    const response = await worker.fetch(new Request(privateUrl), env);
+    const html = await response.text();
+    assertPrivateErrorPage(response, html);
+    assert.match(html, /Ton carnet ne peut pas être affiché/);
+    assert.doesNotMatch(html, /data-save-trip|data-trip-export|http-equiv="refresh"|sentinel-invalid-result/);
+  }
+});
+
+test('le titre personnel reste dans le carnet et jamais dans les métadonnées privées', async (t) => {
+  const { env, sql } = await environment(); t.after(() => sql.close()); mockProvider(t);
+  const created = await worker.fetch(request('/api/trips', brief), env);
+  const { privateUrl } = await created.json();
+  const token = new URL(privateUrl).pathname.split('/').at(-1);
+  const rawTitle = 'SENTINEL_PERSONAL_TITLE_東京';
+  const { id } = sql.prepare('SELECT id FROM trips').get();
+  const encrypted = await encryptJson(env.TRIP_DATA_KEY, { itinerary: itineraryOutput({ title: rawTitle }) }, `${id}:result`);
+  sql.prepare('UPDATE trips SET result_ciphertext = ?, result_nonce = ?').run(encrypted.ciphertext, encrypted.nonce);
+  for (const status of ['ready', 'generating_images', 'failed', 'expired', 'deleted']) {
+    sql.prepare('UPDATE trips SET status = ?').run(status);
+    const response = await worker.fetch(new Request(privateUrl), env);
+    const html = await response.text();
+    const head = /<head>([\s\S]*?)<\/head>/u.exec(html)?.[1];
+    assert.ok(head);
+    assert.match(head, /<title>Voyage privé · Mon Florian<\/title>/u);
+    assert.match(head, /<meta property="og:title" content="Voyage privé · Mon Florian">/u);
+    assert.match(head, /<meta name="twitter:title" content="Voyage privé · Mon Florian">/u);
+    assert.ok(!head.includes(rawTitle));
+    assert.ok(!head.includes(token));
+    if (['ready', 'generating_images'].includes(status)) assert.ok(html.includes(`<h1>${rawTitle}</h1>`));
+    else assert.ok(!html.includes(rawTitle));
+  }
+});
+
+test('les pannes serveur ont un repliHTML mais lesAPI restent enJSON', async (t) => {
+  const { env, sql } = await environment(); t.after(() => sql.close());
+  env.DB.prepare = () => { throw new Error('sentinel-internal-detail'); };
+  const token = 'b'.repeat(43);
+  const page = await worker.fetch(new Request(`https://monflorian.com/voyages/${token}`), env);
+  const html = await page.text();
+  assert.equal(page.status, 500);
+  assertPrivateErrorPage(page, html);
+  assert.match(html, /Cette page ne peut pas être affichée/);
+  assert.ok(!html.includes(token));
+  assert.doesNotMatch(html, /sentinel-internal-detail/);
+  for (const prefix of ['/api/trips/', '/api/v1/trips/']) {
+    const response = await worker.fetch(new Request(`https://monflorian.com${prefix}${token}`, { headers: { Accept: 'text/html' } }), env);
+    assert.equal(response.status, 500);
+    assert.match(response.headers.get('Content-Type'), /application\/json/);
+    assert.equal((await response.json()).error.code, 'INTERNAL_ERROR');
+  }
+  env.ASSETS.fetch = async () => new Response('sentinel-asset-outage', { status: 503 });
+  const assetPage = await worker.fetch(new Request('https://monflorian.com/guides', { headers: { Accept: 'text/html' } }), env);
+  const assetHtml = await assetPage.text();
+  assert.equal(assetPage.status, 503);
+  assertPrivateErrorPage(assetPage, assetHtml);
+  assert.doesNotMatch(assetHtml, /sentinel-asset-outage/);
+  const css = await worker.fetch(new Request('https://monflorian.com/trip.css', { headers: { Accept: 'text/css' } }), env);
+  assert.equal(css.status, 503);
+  assert.equal(await css.text(), 'sentinel-asset-outage');
 });
 
 for (const scenario of [{ destination: 'Tokyo', departureCity: 'Paris', transportMode: 'flight', durationDays: 10 },

@@ -2,8 +2,8 @@
 
 Ce document sépare le site éditorial, ses outils locaux et le parcours
 personnalisé candidat de l'ADR-0013. Il ne constitue pas une déclaration de conformité
-juridique. Rôles, bases légales, transferts et canal de droits doivent être
-validés avant d'ouvrir le parcours personnalisé à une personne réelle.
+juridique. Rôles, bases légales, transferts et publication du contact de droits
+doivent être validés avant d'ouvrir le parcours personnalisé à une personne réelle.
 
 ## État courant
 
@@ -240,8 +240,13 @@ Une configuration locale ne prouve ni purge ni règle distante.
   l'exposition sans recopier de contenu.
 - Une fuite de brief ou photo coupe les générations, conserve les métadonnées
   utiles et identifie les destinataires.
-- Le canal de contact des droits manque encore et bloque l'ouverture du
-  parcours personnalisé à une personne réelle.
+- Le propriétaire a fourni `support@monflorian.com` le 2 octobre 2026 pour le
+  support et les demandes de droits. Cette adresse figure dans la notice
+  candidate ; sa présence publique sera contrôlée après déploiement.
+- La désignation de cette adresse ne prouve ni boîte de réception, ni routage,
+  ni réception d'un message. Ces contrôles restent à consigner séparément.
+  Le courriel de notification du carnet est facultatif et peut rester désactivé
+  pendant l'ouverture du texte et des illustrations.
 
 ## Tests autorisés
 
